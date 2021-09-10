@@ -7,8 +7,9 @@ import {
   Input,
   Layout,
 } from 'ant-design-vue';
+import { Icon } from '/@/components/Icon';
 
-const compList = [AntButton.Group];
+const compList = [AntButton.Group, Icon];
 
 export function registerGlobComp(app: App) {
   compList.forEach((comp) => {

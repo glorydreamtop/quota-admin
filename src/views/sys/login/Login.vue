@@ -219,6 +219,14 @@
       }
     }
 
+    input.captcha {
+      min-width: unset;
+    }
+
+    .captcha-img {
+      height: 40px;
+    }
+
     .@{countdown-prefix-cls} input {
       min-width: unset;
     }

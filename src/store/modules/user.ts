@@ -2,12 +2,11 @@ import type { UserInfo } from '/#/store';
 import type { ErrorMessageMode } from '/#/axios';
 import { defineStore } from 'pinia';
 import { store } from '/@/store';
-import { RoleEnum } from '/@/enums/roleEnum';
 import { PageEnum } from '/@/enums/pageEnum';
 import { ROLES_KEY, TOKEN_KEY, USER_INFO_KEY } from '/@/enums/cacheEnum';
 import { getAuthCache, setAuthCache } from '/@/utils/auth';
 import { GetUserInfoModel, LoginParams } from '/@/api/sys/model/userModel';
-import { doLogout, getUserInfo, loginApi } from '/@/api/sys/user';
+import { getUserInfo, loginApi } from '/@/api/sys/user';
 import { useI18n } from '/@/hooks/web/useI18n';
 import { useMessage } from '/@/hooks/web/useMessage';
 import { router } from '/@/router';
@@ -18,7 +17,7 @@ import { PAGE_NOT_FOUND_ROUTE } from '/@/router/routes/basic';
 interface UserState {
   userInfo: Nullable<UserInfo>;
   token?: string;
-  roleList: RoleEnum[];
+  roleIdList: number[];
   sessionTimeout?: boolean;
   lastUpdateTime: number;
 }
@@ -31,7 +30,7 @@ export const useUserStore = defineStore({
     // token
     token: undefined,
     // roleList
-    roleList: [],
+    roleIdList: [],
     // Whether the login expired
     sessionTimeout: false,
     // Last fetch time
@@ -44,8 +43,8 @@ export const useUserStore = defineStore({
     getToken(): string {
       return this.token || getAuthCache<string>(TOKEN_KEY);
     },
-    getRoleList(): RoleEnum[] {
-      return this.roleList.length > 0 ? this.roleList : getAuthCache<RoleEnum[]>(ROLES_KEY);
+    getRoleList(): number[] {
+      return this.roleIdList.length > 0 ? this.roleIdList : getAuthCache<number[]>(ROLES_KEY);
     },
     getSessionTimeout(): boolean {
       return !!this.sessionTimeout;
@@ -59,8 +58,8 @@ export const useUserStore = defineStore({
       this.token = info;
       setAuthCache(TOKEN_KEY, info);
     },
-    setRoleList(roleList: RoleEnum[]) {
-      this.roleList = roleList;
+    setRoleList(roleList: number[]) {
+      this.roleIdList = roleList;
       setAuthCache(ROLES_KEY, roleList);
     },
     setUserInfo(info: UserInfo) {
@@ -74,7 +73,7 @@ export const useUserStore = defineStore({
     resetState() {
       this.userInfo = null;
       this.token = '';
-      this.roleList = [];
+      this.roleIdList = [];
       this.sessionTimeout = false;
     },
     /**
@@ -89,6 +88,8 @@ export const useUserStore = defineStore({
       try {
         const { goHome = true, mode, ...loginParams } = params;
         const data = await loginApi(loginParams, mode);
+        console.log(data);
+
         const { token } = data;
 
         // save token
@@ -118,21 +119,20 @@ export const useUserStore = defineStore({
     },
     async getUserInfoAction(): Promise<UserInfo> {
       const userInfo = await getUserInfo();
-      const { roles } = userInfo;
-      const roleList = roles.map((item) => item.value) as RoleEnum[];
+      const { roleIdList } = userInfo;
       this.setUserInfo(userInfo);
-      this.setRoleList(roleList);
+      this.setRoleList(roleIdList);
       return userInfo;
     },
     /**
      * @description: logout
      */
     async logout(goLogin = false) {
-      try {
-        await doLogout();
-      } catch {
-        console.log('注销Token失败');
-      }
+      // try {
+      //   await doLogout();
+      // } catch {
+      //   console.log('注销Token失败');
+      // }
       this.setToken(undefined);
       this.setSessionTimeout(false);
       goLogin && router.push(PageEnum.BASE_LOGIN);

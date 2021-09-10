@@ -83,7 +83,8 @@ export default {
     // placeholder
     accountPlaceholder: '请输入账号',
     passwordPlaceholder: '请输入密码',
-    smsPlaceholder: '请输入验证码',
+    smsPlaceholder: '请输入短信验证码',
+    captchaPlaceholder: '请输入图形验证码',
     mobilePlaceholder: '请输入手机号码',
     policyPlaceholder: '勾选后才能注册',
     diffPwd: '两次输入密码不一致',
@@ -91,8 +92,11 @@ export default {
     userName: '账号',
     password: '密码',
     confirmPassword: '确认密码',
+    captchaCode: '图形验证码',
     email: '邮箱',
     smsCode: '短信验证码',
     mobile: '手机号码',
+
+    nocaptchaImgUrl: '未获取到图形验证码',
   },
 };

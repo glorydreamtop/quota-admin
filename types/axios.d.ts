@@ -25,9 +25,9 @@ export interface RequestOptions {
 
 export interface Result<T = any> {
   code: number;
-  type: 'success' | 'error' | 'warning';
-  message: string;
-  result: T;
+  flag: boolean;
+  msg: string;
+  info: T;
 }
 
 // multipart/form-data: upload file

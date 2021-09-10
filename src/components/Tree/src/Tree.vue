@@ -414,8 +414,9 @@
                 }}
               </Tree>
             </ScrollContainer>
-
-            <Empty v-show={unref(getNotFound)} image={Empty.PRESENTED_IMAGE_SIMPLE} class="!mt-4" />
+            <div v-show={unref(getNotFound)} class="pt-8">
+              <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+            </div>
           </div>
         );
       };
