@@ -17,4 +17,6 @@ export default {
 
   light: '亮色主题',
   dark: '黑暗主题',
+
+  searchResEmpty: '暂无搜索结果',
 };

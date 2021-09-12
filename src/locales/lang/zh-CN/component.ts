@@ -88,6 +88,7 @@ export default {
     unExpandAll: '折叠全部',
     checkStrictly: '层级关联',
     checkUnStrictly: '层级独立',
+    plusToolTip: '在目录下添加...',
   },
   upload: {
     save: '保存',

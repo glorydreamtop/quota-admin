@@ -22,6 +22,8 @@ export interface QuotaItem {
   sourceCode: string;
   sourceType: sourceTypeEnum;
   frequency: Nullable<'日' | '月' | '年' | '周' | '季'>;
-  shortName: string;
-  unit: string;
+  shortName: Nullable<string>;
+  unit: Nullable<string>;
+  categoryIdList?: number[];
+  categoryId?: number;
 }

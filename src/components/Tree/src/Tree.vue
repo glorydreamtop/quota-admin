@@ -223,8 +223,8 @@
         );
       }
 
-      function handleClickNode(key: string, children: TreeItem[]) {
-        if (!props.clickRowToExpand || !children || children.length === 0) return;
+      function handleClickNode(key: string, isLeaf: boolean) {
+        if (!props.clickRowToExpand && isLeaf) return;
         if (!state.expandedKeys.includes(key)) {
           setExpandedKeys([...state.expandedKeys, key]);
         } else {
@@ -352,13 +352,14 @@
           const propsData = omit(item, 'title');
           const icon = getIcon({ ...item, level }, item.icon);
           const children = get(item, childrenField) || [];
+
           return (
             <Tree.TreeNode {...propsData} node={toRaw(item)} key={get(item, keyField)}>
               {{
                 title: () => (
                   <span
                     class={`${prefixCls}-title pl-2`}
-                    onClick={handleClickNode.bind(null, item[keyField], item[childrenField])}
+                    onClick={handleClickNode.bind(null, item[keyField], item.isLeaf)}
                   >
                     {slots?.title ? (
                       getSlot(slots, 'title', item)
@@ -386,6 +387,7 @@
       return () => {
         const { title, helpMessage, toolbar, search, checkable } = props;
         const showTitle = title || toolbar || search || slots.headerTitle;
+        // const scrollStyle: CSSProperties = { height: 'calc(100% - 38px)' };
         const scrollStyle: CSSProperties = { height: 'calc(100% - 38px)' };
         return (
           <div class={[prefixCls, 'h-full', attrs.class]}>
@@ -447,6 +449,10 @@
       padding-right: 10px;
 
       &:hover {
+        .@{prefix-cls}__actions {
+          background-color: @white;
+        }
+
         .@{prefix-cls}__action {
           visibility: visible;
         }
@@ -459,8 +465,9 @@
 
     &__actions {
       position: absolute;
-      top: 2px;
-      right: 3px;
+      // top: 2px;
+      right: 0;
+      padding-right: 8px;
       display: flex;
     }
 
