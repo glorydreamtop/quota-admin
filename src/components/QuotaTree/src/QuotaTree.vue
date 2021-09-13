@@ -7,7 +7,7 @@
       @select="handleSelect"
       :options="searchList"
     />
-    <Tabs v-model:activeKey="treeType" class="h-full" centered>
+    <Tabs v-model:activeKey="treeType" class="tabs" centered>
       <TabPane :key="CategoryTreeType.sysQuota" :tab="t('quota.sysQuota')">
         <BasicTree
           v-bind="treeProps[CategoryTreeType.sysQuota]"
@@ -184,6 +184,8 @@
     const instance = getTreeInstance(treeType.value);
     const oldList = unref(multiSelectedList);
     const key = e.node.eventKey;
+    console.log(e);
+
     if (e.nativeEvent.ctrlKey) {
       const index = oldList.indexOf(key);
       if (index > -1) {
@@ -191,10 +193,16 @@
       } else {
         multiSelectedList.value.push(key);
       }
+    } else if (e.nativeEvent.shiftKey) {
+      // let minIndex = 0;
+      // const parentNode = findNode(treeProps[treeType.value].treeData!, (item) => {
+      //   item.key === key;
+      // });
+      // for (let i = 0; i < multiSelectedList.value.length; i++) {
+      // }
     } else {
       multiSelectedList.value = [key];
     }
-    console.log(e);
     hightlightList.forEach((item) => {
       Reflect.deleteProperty(item, 'class');
     });
@@ -218,5 +226,9 @@
     > .ant-tree-node-content-wrapper {
       background-color: @primary-2;
     }
+  }
+
+  .tabs {
+    height: calc(100% - 32px);
   }
 </style>
