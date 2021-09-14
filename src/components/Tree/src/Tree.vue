@@ -461,6 +461,7 @@
 
     &__content {
       overflow: hidden;
+      user-select: none;
     }
 
     &__actions {

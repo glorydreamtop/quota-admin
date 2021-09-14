@@ -9,14 +9,25 @@
     />
     <Tabs v-model:activeKey="treeType" class="tabs" centered>
       <TabPane :key="CategoryTreeType.sysQuota" :tab="t('quota.sysQuota')">
+        <Icon
+          @click="getData(CategoryTreeType.sysQuota)"
+          class="refresh-icon"
+          icon="ant-design:redo-outlined"
+          :spin="loading[CategoryTreeType.sysQuota]"
+        />
         <BasicTree
           v-bind="treeProps[CategoryTreeType.sysQuota]"
           ref="sysTree"
           @select="handleTreeSelect"
         />
       </TabPane>
-      <TabPane :key="CategoryTreeType.userQuota" :tab="t('quota.userQuota')" class="h-full"
-        ><BasicTree
+      <TabPane :key="CategoryTreeType.userQuota" :tab="t('quota.userQuota')" class="h-full">
+        <Icon
+          @click="getData(CategoryTreeType.userQuota)"
+          class="refresh-icon"
+          icon="ant-design:redo-outlined"
+          :spin="loading[CategoryTreeType.sysQuota]" />
+        <BasicTree
           v-bind="treeProps[CategoryTreeType.userQuota]"
           ref="userTree"
           @select="handleTreeSelect"
@@ -35,6 +46,7 @@
   import type { CategoryTreeModel, QuotaItem } from '/#/quota';
   import { CategoryTreeType } from '/@/enums/quotaEnum';
   import { useI18n } from '/@/hooks/web/useI18n';
+  import Icon from '/@/components/Icon';
   import { findNode, findPath, forEach } from '/@/utils/helper/treeHelper';
   import { useDebounceFn } from '@vueuse/shared';
   import { useMessage } from '/@/hooks/web/useMessage';
@@ -57,6 +69,8 @@
     value: any;
     categoryId: number;
   }
+
+  const HIGHTLIGHT = 'select-hightlight';
 
   const { t } = useI18n();
   const { createMessage } = useMessage();
@@ -82,14 +96,23 @@
       loadData: ({ eventKey }) => loadData(eventKey),
     },
   });
-
-  async function getData(type: QuotaType) {
-    const res = (await getQuotaTree({ type })) as Partial<CategoryTreeModel & TreeItem>[];
-    forEach(res, (item) => {
-      item.isLeaf = !item.folder;
-      item.icon = item.folder ? 'ant-design:folder-outlined' : 'tabler:letter-q';
-    });
-    treeProps[type].treeData = res;
+  const loading = reactive({
+    [CategoryTreeType.sysQuota]: false,
+    [CategoryTreeType.userQuota]: false,
+  });
+  async function getData(type: QuotaType = treeType.value) {
+    loading[treeType.value] = true;
+    try {
+      const res = (await getQuotaTree({ type })) as Partial<CategoryTreeModel & TreeItem>[];
+      forEach(res, (item) => {
+        item.isLeaf = !item.folder;
+        item.icon = item.folder ? 'ant-design:folder-outlined' : 'tabler:letter-q';
+      });
+      treeProps[type].treeData = res;
+    } catch (error) {
+    } finally {
+      loading[treeType.value] = false;
+    }
   }
   getData(CategoryTreeType.sysQuota);
   getData(CategoryTreeType.userQuota);
@@ -115,6 +138,7 @@
       item.icon = 'tabler:letter-q';
       item.isLeaf = true;
       item.key = item.id;
+      item.categoryId = key;
       item.name = `[${item.id}]${item.shortName || item.name}`;
       return item;
     });
@@ -142,7 +166,7 @@
       Reflect.deleteProperty(item, 'class');
       return item.id === id;
     })!;
-    node.class = 'select-hightlight';
+    node.class = HIGHTLIGHT;
     hightlightList.push(node);
   }
   function findParentNode(id: number, type?: QuotaType) {
@@ -180,26 +204,54 @@
 
   const multiSelectedList = ref<number[]>([]);
   const hightlightList: TreeItem[] = [];
-  function handleTreeSelect(_, e: { nativeEvent: PointerEvent; node: { eventKey: number } }) {
+  // 树节点的选择，支持多选
+  function handleTreeSelect(
+    _,
+    e: { nativeEvent: PointerEvent; node: { eventKey: number; $attrs: QuotaItem } }
+  ) {
     const instance = getTreeInstance(treeType.value);
     const oldList = unref(multiSelectedList);
     const key = e.node.eventKey;
-    console.log(e);
-
-    if (e.nativeEvent.ctrlKey) {
+    const isFolder = Reflect.has(e.node.$attrs, 'folder');
+    if (e.nativeEvent.ctrlKey && !isFolder) {
+      // Ctrl多选
       const index = oldList.indexOf(key);
       if (index > -1) {
         multiSelectedList.value.splice(index, 1);
       } else {
         multiSelectedList.value.push(key);
       }
-    } else if (e.nativeEvent.shiftKey) {
-      // let minIndex = 0;
-      // const parentNode = findNode(treeProps[treeType.value].treeData!, (item) => {
-      //   item.key === key;
-      // });
-      // for (let i = 0; i < multiSelectedList.value.length; i++) {
-      // }
+    } else if (e.nativeEvent.shiftKey && !isFolder) {
+      // Shift多选
+      let minIndex = 999;
+      let maxIndex = 0;
+      const list = findNode<TreeItem>(
+        treeProps[treeType.value].treeData!,
+        (node) => node.id === e.node.$attrs.categoryId
+      )!.children!;
+      for (let i = 0; i < multiSelectedList.value.length; i++) {
+        minIndex = Math.min(
+          list.findIndex((item) => item.key === multiSelectedList.value[i]),
+          minIndex
+        );
+        maxIndex = Math.max(
+          list.findIndex((item) => item.key === multiSelectedList.value[i]),
+          maxIndex
+        );
+      }
+      const currentIndex = list.findIndex((item) => item.key === key);
+      if (currentIndex < minIndex) {
+        minIndex = currentIndex;
+      }
+      if (currentIndex > maxIndex) {
+        maxIndex = currentIndex;
+      }
+      for (let index = minIndex; index <= maxIndex; index++) {
+        const key = list[index].key as number;
+        if (multiSelectedList.value.indexOf(key) === -1) {
+          multiSelectedList.value.push(key);
+        }
+      }
     } else {
       multiSelectedList.value = [key];
     }
@@ -209,7 +261,7 @@
     remove(hightlightList, (_) => _);
     forEach(treeProps[treeType.value].treeData!, (item) => {
       if (multiSelectedList.value.includes(item.key as number)) {
-        item.class = 'select-hightlight';
+        item.class = HIGHTLIGHT;
         hightlightList.push(item);
       }
     });
@@ -220,15 +272,24 @@
 <style lang="less" scoped>
   ::v-deep(.ant-tabs .ant-tabs-top-content) {
     height: calc(100% - 70px);
+    position: relative;
   }
 
   ::v-deep(.select-hightlight) {
     > .ant-tree-node-content-wrapper {
-      background-color: @primary-2;
+      background-color: @primary-2 !important;
     }
   }
 
   .tabs {
     height: calc(100% - 32px);
+  }
+
+  .refresh-icon {
+    position: absolute;
+    top: 4px;
+    right: 16px;
+    font-size: 20px !important;
+    z-index: 9;
   }
 </style>
