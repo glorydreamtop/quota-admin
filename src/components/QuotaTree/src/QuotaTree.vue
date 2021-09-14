@@ -21,12 +21,12 @@
           @select="handleTreeSelect"
         />
       </TabPane>
-      <TabPane :key="CategoryTreeType.userQuota" :tab="t('quota.userQuota')" class="h-full">
+      <TabPane :key="CategoryTreeType.userQuota" :tab="t('quota.userQuota')">
         <Icon
           @click="getData(CategoryTreeType.userQuota)"
           class="refresh-icon"
           icon="ant-design:redo-outlined"
-          :spin="loading[CategoryTreeType.sysQuota]" />
+          :spin="loading[CategoryTreeType.userQuota]" />
         <BasicTree
           v-bind="treeProps[CategoryTreeType.userQuota]"
           ref="userTree"
@@ -37,7 +37,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { reactive, ref, unref } from 'vue';
+  import { onMounted, reactive, ref, unref } from 'vue';
   // import type {ComponentPublicInstance} from 'vue';
   import { BasicTree } from '/@/components/Tree/index';
   import type { ReplaceFields, TreeItem, TreeActionType } from '/@/components/Tree/index';
@@ -51,6 +51,7 @@
   import { useDebounceFn } from '@vueuse/shared';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { remove, uniq } from 'lodash';
+  import { useTimeoutFn } from '/@/hooks/core/useTimeout';
 
   type treeProp = Partial<{
     treeData: TreeItem[];
@@ -100,30 +101,37 @@
     [CategoryTreeType.sysQuota]: false,
     [CategoryTreeType.userQuota]: false,
   });
-  async function getData(type: QuotaType = treeType.value) {
+  async function getData(type: QuotaType) {
     loading[treeType.value] = true;
+    const expandedKeys = getTreeInstance(treeType.value)?.getExpandedKeys() || null;
     try {
       const res = (await getQuotaTree({ type })) as Partial<CategoryTreeModel & TreeItem>[];
       forEach(res, (item) => {
         item.isLeaf = !item.folder;
         item.icon = item.folder ? 'ant-design:folder-outlined' : 'tabler:letter-q';
+        if (expandedKeys && expandedKeys.includes(item.key!) && !item.children) {
+          loadData(item.key!);
+        }
       });
       treeProps[type].treeData = res;
+      createMessage.success(t('sys.api.getOK'));
     } catch (error) {
+      createMessage.error(t('sys.api.getFailed'));
     } finally {
-      loading[treeType.value] = false;
+      useTimeoutFn(() => {
+        loading[treeType.value] = false;
+      }, 950);
     }
   }
-  getData(CategoryTreeType.sysQuota);
-  getData(CategoryTreeType.userQuota);
+
   const sysTree = ref<TreeActionType>();
   const userTree = ref<TreeActionType>();
 
   function getTreeInstance(type: QuotaType) {
-    if (type === CategoryTreeType.sysQuota && sysTree.value) {
+    if (type === CategoryTreeType.sysQuota && unref(sysTree)) {
       return unref(sysTree);
     }
-    if (type === CategoryTreeType.userQuota && sysTree.value) {
+    if (type === CategoryTreeType.userQuota && unref(userTree)) {
       return unref(userTree);
     }
     throw new Error('tree instance did not inited or mounted!');
@@ -267,12 +275,19 @@
     });
     instance?.setSelectedKeys(unref(multiSelectedList));
   }
+  onMounted(() => {
+    getData(CategoryTreeType.sysQuota);
+    getData(CategoryTreeType.userQuota);
+  });
 </script>
 
 <style lang="less" scoped>
   ::v-deep(.ant-tabs .ant-tabs-top-content) {
     height: calc(100% - 70px);
-    position: relative;
+
+    .ant-tabs-tabpane {
+      position: relative;
+    }
   }
 
   ::v-deep(.select-hightlight) {

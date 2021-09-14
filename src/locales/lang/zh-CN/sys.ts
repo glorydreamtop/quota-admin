@@ -20,6 +20,18 @@ export default {
     errMsg503: '服务不可用，服务器暂时过载或维护!',
     errMsg504: '网络超时!',
     errMsg505: 'http版本不支持该请求!',
+
+    getFailed: '获取失败',
+    updateFailed: '更新失败',
+    uploadFailed: '上传失败',
+    addFailed: '添加失败',
+    delFailed: '删除失败',
+
+    getOK: '获取成功',
+    updateOK: '更新成功',
+    uploadOK: '上传成功',
+    addOK: '添加成功',
+    delOK: '删除成功',
   },
   app: { logoutTip: '温馨提醒', logoutMessage: '是否确认退出系统?', menuLoading: '菜单加载中...' },
   errorLog: {

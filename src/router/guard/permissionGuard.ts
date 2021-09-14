@@ -72,7 +72,11 @@ export function createPermissionGuard(router: Router) {
 
     // get userinfo while last fetch time is empty
     if (userStore.getLastUpdateTime === 0) {
-      await userStore.getUserInfoAction();
+      try {
+        await userStore.getUserInfoAction();
+      } catch (error) {
+        next(LOGIN_PATH);
+      }
     }
 
     if (permissionStore.getIsDynamicAddedRoute) {
