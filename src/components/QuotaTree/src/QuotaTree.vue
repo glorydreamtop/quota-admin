@@ -10,12 +10,17 @@
     <Tabs v-model:activeKey="treeType" class="tabs" centered>
       <TabPane :key="CategoryTreeType.sysQuota" :tab="t('quota.sysQuota')">
         <Icon
-          @click="getData(CategoryTreeType.sysQuota)"
+          v-repeat-click="
+            () => {
+              getData(CategoryTreeType.sysQuota);
+            }
+          "
           class="refresh-icon"
           icon="ant-design:redo-outlined"
           :spin="loading[CategoryTreeType.sysQuota]"
         />
         <BasicTree
+          v-loading="loading[CategoryTreeType.sysQuota]"
           v-bind="treeProps[CategoryTreeType.sysQuota]"
           ref="sysTree"
           @select="handleTreeSelect"
@@ -41,7 +46,7 @@
   // import type {ComponentPublicInstance} from 'vue';
   import { BasicTree } from '/@/components/Tree/index';
   import type { ReplaceFields, TreeItem, TreeActionType } from '/@/components/Tree/index';
-  import { Tabs, TabPane, AutoComplete } from 'ant-design-vue';
+  import { Tabs, AutoComplete } from 'ant-design-vue';
   import { getQuotaTree, getDirQuota, searchQuota } from '/@/api/quota';
   import type { CategoryTreeModel, QuotaItem } from '/#/quota';
   import { CategoryTreeType } from '/@/enums/quotaEnum';
@@ -50,8 +55,9 @@
   import { findNode, findPath, forEach } from '/@/utils/helper/treeHelper';
   import { useDebounceFn } from '@vueuse/shared';
   import { useMessage } from '/@/hooks/web/useMessage';
-  import { remove, uniq } from 'lodash';
+  import { uniq } from 'lodash';
   import { useTimeoutFn } from '/@/hooks/core/useTimeout';
+  import { useHighLight } from '../hooks';
 
   type treeProp = Partial<{
     treeData: TreeItem[];
@@ -72,7 +78,7 @@
   }
 
   const HIGHTLIGHT = 'select-hightlight';
-
+  const TabPane = Tabs.TabPane;
   const { t } = useI18n();
   const { createMessage } = useMessage();
   const treeType = ref<QuotaType>(CategoryTreeType.sysQuota);
@@ -169,14 +175,8 @@
     }
   }
   const handleSearch = useDebounceFn(search, 800);
-  async function setHighLight(parentNode: TreeItem, id: number) {
-    const node = parentNode.children!.find((item) => {
-      Reflect.deleteProperty(item, 'class');
-      return item.id === id;
-    })!;
-    node.class = HIGHTLIGHT;
-    hightlightList.push(node);
-  }
+
+  const [_, { setHighLight, clearHightLight, insertHightListNode }] = useHighLight(HIGHTLIGHT);
   function findParentNode(id: number, type?: QuotaType) {
     function fn(): [TreeItem | null, TreeActionType] {
       return [
@@ -194,8 +194,10 @@
     }
     return { parentNode: parentNode!, instance };
   }
+  // 搜索列表选中回调
   async function handleSelect(str: string, node: searchItemType) {
     const id = parseInt(str.match(/\[(\d+)\](.+)/i)![1]);
+    clearHightLight();
     const { parentNode, instance } = findParentNode(node.categoryId);
     if (parentNode.children && parentNode.children.length > 0) {
       setHighLight(parentNode, id);
@@ -211,7 +213,7 @@
   }
 
   const multiSelectedList = ref<number[]>([]);
-  const hightlightList: TreeItem[] = [];
+
   // 树节点的选择，支持多选
   function handleTreeSelect(
     _,
@@ -263,14 +265,10 @@
     } else {
       multiSelectedList.value = [key];
     }
-    hightlightList.forEach((item) => {
-      Reflect.deleteProperty(item, 'class');
-    });
-    remove(hightlightList, (_) => _);
+    clearHightLight();
     forEach(treeProps[treeType.value].treeData!, (item) => {
       if (multiSelectedList.value.includes(item.key as number)) {
-        item.class = HIGHTLIGHT;
-        hightlightList.push(item);
+        insertHightListNode(item);
       }
     });
     instance?.setSelectedKeys(unref(multiSelectedList));

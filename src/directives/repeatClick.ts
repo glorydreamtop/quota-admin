@@ -3,7 +3,7 @@
  * @Example v-repeat-click="()=>{}"
  */
 import { on, once } from '/@/utils/domUtils';
-import type { Directive, DirectiveBinding } from 'vue';
+import type { Directive, DirectiveBinding, App } from 'vue';
 
 const repeatDirective: Directive = {
   beforeMount(el: Element, binding: DirectiveBinding<any>) {
@@ -27,5 +27,9 @@ const repeatDirective: Directive = {
     });
   },
 };
+
+export function setupRepeatDirective(app: App) {
+  app.directive('repeat-click', repeatDirective);
+}
 
 export default repeatDirective;
