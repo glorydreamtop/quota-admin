@@ -1,24 +1,27 @@
 <template>
-  <div class="bg-white">
+  <div class="bg-white shadow-md rounded-md tail">
     <AutoComplete
-      class="w-full"
+      class="w-full search-on"
       v-model:value="searchWord"
+      :placeholder="t('component.search.searchQuota')"
       @search="handleSearch"
       @select="handleSelect"
       :options="searchList"
+    >
+      <Input>
+        <template #suffix>
+          <Icon icon="ant-design:search-outlined" />
+        </template>
+      </Input>
+    </AutoComplete>
+    <Icon
+      v-repeat-click="getData"
+      class="refresh-icon"
+      icon="ant-design:redo-outlined"
+      :spin="loading[CategoryTreeType.sysQuota]"
     />
     <Tabs v-model:activeKey="treeType" class="tabs" centered>
       <TabPane :key="CategoryTreeType.sysQuota" :tab="t('quota.sysQuota')">
-        <Icon
-          v-repeat-click="
-            () => {
-              getData(CategoryTreeType.sysQuota);
-            }
-          "
-          class="refresh-icon"
-          icon="ant-design:redo-outlined"
-          :spin="loading[CategoryTreeType.sysQuota]"
-        />
         <BasicTree
           v-loading="loading[CategoryTreeType.sysQuota]"
           v-bind="treeProps[CategoryTreeType.sysQuota]"
@@ -27,11 +30,6 @@
         />
       </TabPane>
       <TabPane :key="CategoryTreeType.userQuota" :tab="t('quota.userQuota')">
-        <Icon
-          @click="getData(CategoryTreeType.userQuota)"
-          class="refresh-icon"
-          icon="ant-design:redo-outlined"
-          :spin="loading[CategoryTreeType.userQuota]" />
         <BasicTree
           v-bind="treeProps[CategoryTreeType.userQuota]"
           ref="userTree"
@@ -46,7 +44,7 @@
   // import type {ComponentPublicInstance} from 'vue';
   import { BasicTree } from '/@/components/Tree/index';
   import type { ReplaceFields, TreeItem, TreeActionType } from '/@/components/Tree/index';
-  import { Tabs, AutoComplete } from 'ant-design-vue';
+  import { Tabs, AutoComplete, Input } from 'ant-design-vue';
   import { getQuotaTree, getDirQuota, searchQuota } from '/@/api/quota';
   import type { CategoryTreeModel, QuotaItem } from '/#/quota';
   import { CategoryTreeType } from '/@/enums/quotaEnum';
@@ -107,7 +105,7 @@
     [CategoryTreeType.sysQuota]: false,
     [CategoryTreeType.userQuota]: false,
   });
-  async function getData(type: QuotaType) {
+  async function getData(type: QuotaType = unref(treeType)) {
     loading[treeType.value] = true;
     const expandedKeys = getTreeInstance(treeType.value)?.getExpandedKeys() || null;
     try {
@@ -162,6 +160,7 @@
   const searchWord = ref('');
   const searchList = ref<searchItemType[]>([]);
   async function search(key) {
+    searchList.value = [];
     try {
       searchList.value = (await searchQuota({ key })).map((item) => {
         return {
@@ -281,10 +280,10 @@
 
 <style lang="less" scoped>
   ::v-deep(.ant-tabs .ant-tabs-top-content) {
-    height: calc(100% - 70px);
+    height: calc(100% - 66px);
 
     .ant-tabs-tabpane {
-      position: relative;
+      overflow-y: scroll;
     }
   }
 
@@ -300,9 +299,37 @@
 
   .refresh-icon {
     position: absolute;
-    top: 4px;
+    top: 90px;
     right: 16px;
     font-size: 20px !important;
     z-index: 9;
+  }
+
+  ::v-deep(.ant-input-affix-wrapper) {
+    border: none !important;
+
+    &-focused {
+      box-shadow: none !important;
+      border: none !important;
+    }
+  }
+
+  .tail {
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 6px;
+      width: 100%;
+      height: 6%;
+      background-image: linear-gradient(
+        fade(@white, 10%),
+        fade(@white, 60%),
+        fade(@white, 80%),
+        @white
+      );
+      pointer-events: none;
+    }
   }
 </style>

@@ -132,4 +132,7 @@ export default {
     dragText: '请按住滑块拖动',
     successText: '验证通过',
   },
+  search: {
+    searchQuota: '搜索指标名称/ID/代码',
+  },
 };
