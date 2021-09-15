@@ -124,7 +124,7 @@
     } finally {
       useTimeoutFn(() => {
         loading[treeType.value] = false;
-      }, 950);
+      }, 960);
     }
   }
 
