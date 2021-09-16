@@ -13,4 +13,9 @@ export default {
     usda: 'USDA',
     manual: '人工',
   },
+  actions: {
+    multiSelectQuota: '批量应用指标',
+    multiUpdateQuota: '批量更新指标',
+    multiMoveQuota: '批量移动指标',
+  },
 };

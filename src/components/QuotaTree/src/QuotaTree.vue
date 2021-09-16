@@ -1,19 +1,6 @@
 <template>
   <div class="bg-white shadow-md rounded-md tail">
-    <AutoComplete
-      class="w-full search-on"
-      v-model:value="searchWord"
-      :placeholder="t('component.search.searchQuota')"
-      @search="handleSearch"
-      @select="handleSelect"
-      :options="searchList"
-    >
-      <Input>
-        <template #suffix>
-          <Icon icon="ant-design:search-outlined" />
-        </template>
-      </Input>
-    </AutoComplete>
+    <QuotaSearch v-if="showSearch" @select="handleSelect" />
     <Icon
       v-repeat-click="getData"
       class="refresh-icon"
@@ -40,18 +27,18 @@
 </template>
 
 <script lang="ts" setup>
-  import { onMounted, reactive, ref, unref } from 'vue';
-  // import type {ComponentPublicInstance} from 'vue';
+  import { onMounted, reactive, ref, unref, defineEmits, defineProps, toRefs } from 'vue';
+  import { QuotaSearch } from '../index';
   import { BasicTree } from '/@/components/Tree/index';
+  import type { ContextMenuItem } from '/@/components/Tree/index';
   import type { ReplaceFields, TreeItem, TreeActionType } from '/@/components/Tree/index';
-  import { Tabs, AutoComplete, Input } from 'ant-design-vue';
-  import { getQuotaTree, getDirQuota, searchQuota } from '/@/api/quota';
+  import { Tabs } from 'ant-design-vue';
+  import { getQuotaTree, getDirQuota } from '/@/api/quota';
   import type { CategoryTreeModel, QuotaItem } from '/#/quota';
   import { CategoryTreeType } from '/@/enums/quotaEnum';
   import { useI18n } from '/@/hooks/web/useI18n';
   import Icon from '/@/components/Icon';
   import { findNode, findPath, forEach } from '/@/utils/helper/treeHelper';
-  import { useDebounceFn } from '@vueuse/shared';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { uniq } from 'lodash';
   import { useTimeoutFn } from '/@/hooks/core/useTimeout';
@@ -63,23 +50,50 @@
     blockNode: boolean;
     clickRowToExpand: boolean;
     loadData: Fn;
+    rightMenuList: ContextMenuItem[];
   }>;
   interface treePropsModel {
     [CategoryTreeType.sysQuota]: treeProp;
     [CategoryTreeType.userQuota]: treeProp;
   }
-  type QuotaType = CategoryTreeType.sysQuota | CategoryTreeType.userQuota;
   interface searchItemType {
     label: string;
     value: any;
     categoryId: number;
   }
+  type QuotaType = CategoryTreeType.sysQuota | CategoryTreeType.userQuota;
 
+  const emit = defineEmits<{
+    (event: 'selectNode', node: QuotaItem): void;
+    (event: 'selectFolder', folder: CategoryTreeModel): void;
+  }>();
+  const props = defineProps<{
+    showSearch: boolean;
+  }>();
+  const { showSearch } = toRefs(props);
   const HIGHTLIGHT = 'select-hightlight';
   const TabPane = Tabs.TabPane;
   const { t } = useI18n();
   const { createMessage } = useMessage();
   const treeType = ref<QuotaType>(CategoryTreeType.sysQuota);
+
+  const rightMenuList: ContextMenuItem[] = [
+    {
+      label: t('quota.actions.multiSelectQuota'),
+      icon: '',
+      handler: () => {},
+    },
+    {
+      label: t('quota.actions.multiUpdateQuota'),
+      icon: '',
+      handler: () => {},
+    },
+    {
+      label: t('quota.actions.multiMoveQuota'),
+      icon: '',
+      handler: () => {},
+    },
+  ];
 
   const treeProps: treePropsModel = reactive({
     [CategoryTreeType.sysQuota]: {
@@ -90,6 +104,7 @@
       blockNode: true,
       clickRowToExpand: true,
       loadData: ({ eventKey }) => loadData(eventKey),
+      rightMenuList,
     },
     [CategoryTreeType.userQuota]: {
       treeData: [],
@@ -99,6 +114,7 @@
       blockNode: true,
       clickRowToExpand: true,
       loadData: ({ eventKey }) => loadData(eventKey),
+      rightMenuList,
     },
   });
   const loading = reactive({
@@ -157,24 +173,6 @@
     instance?.setExpandedKeys(uniq([key, ...instance.getExpandedKeys()]));
   }
 
-  const searchWord = ref('');
-  const searchList = ref<searchItemType[]>([]);
-  async function search(key) {
-    searchList.value = [];
-    try {
-      searchList.value = (await searchQuota({ key })).map((item) => {
-        return {
-          label: item.shortName || item.name,
-          value: `[${item.id}]${item.shortName || item.name}`,
-          categoryId: item.categoryId!,
-        };
-      });
-    } catch (error) {
-      createMessage.warn(t('common.searchResEmpty'));
-    }
-  }
-  const handleSearch = useDebounceFn(search, 800);
-
   const [_, { setHighLight, clearHightLight, insertHightListNode }] = useHighLight(HIGHTLIGHT);
   function findParentNode(id: number, type?: QuotaType) {
     function fn(): [TreeItem | null, TreeActionType] {
@@ -216,7 +214,10 @@
   // 树节点的选择，支持多选
   function handleTreeSelect(
     _,
-    e: { nativeEvent: PointerEvent; node: { eventKey: number; $attrs: QuotaItem } }
+    e: {
+      nativeEvent: PointerEvent;
+      node: { eventKey: number; $attrs: QuotaItem | CategoryTreeModel };
+    }
   ) {
     const instance = getTreeInstance(treeType.value);
     const oldList = unref(multiSelectedList);
@@ -236,7 +237,7 @@
       let maxIndex = 0;
       const list = findNode<TreeItem>(
         treeProps[treeType.value].treeData!,
-        (node) => node.id === e.node.$attrs.categoryId
+        (node) => node.id === (e.node.$attrs as QuotaItem).categoryId
       )!.children!;
       for (let i = 0; i < multiSelectedList.value.length; i++) {
         minIndex = Math.min(
@@ -263,6 +264,12 @@
       }
     } else {
       multiSelectedList.value = [key];
+      // 仅在单选情况下直接触发选择事件
+      if (isFolder) {
+        emit('selectFolder', e.node.$attrs as CategoryTreeModel);
+      } else {
+        emit('selectNode', e.node.$attrs as QuotaItem);
+      }
     }
     clearHightLight();
     forEach(treeProps[treeType.value].treeData!, (item) => {
