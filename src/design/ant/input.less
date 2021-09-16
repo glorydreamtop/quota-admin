@@ -2,6 +2,10 @@
 
 // input
 .ant-input {
+  &:focus {
+    box-shadow: none !important;
+  }
+
   &-number {
     min-width: 110px;
   }
@@ -20,5 +24,38 @@
 
   textarea.ant-input {
     padding: 4px;
+  }
+}
+
+.ant-select {
+  &:not(.ant-select-disabled):hover .ant-select-selector {
+    border: none !important;
+  }
+}
+
+.search-on {
+  .ant-input {
+    border: none;
+  }
+
+  &::before {
+    content: '';
+    width: 100%;
+    margin: 0;
+    opacity: 0;
+    transform: scaleX(0.9) translateY(-4px);
+    height: 1px;
+    background: fade(@primary-color, 50%);
+    position: absolute;
+    z-index: 19;
+    bottom: 0;
+    transition: transform 0.3s ease;
+  }
+
+  &:focus-within {
+    &::before {
+      transform: scaleX(0.96) translateY(0);
+      opacity: 1;
+    }
   }
 }

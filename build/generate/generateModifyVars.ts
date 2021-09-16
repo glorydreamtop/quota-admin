@@ -32,6 +32,7 @@ export function generateModifyVars(dark = false) {
     'font-size-base': '14px', //  Main font size
     'border-radius-base': '2px', //  Component/float fillet
     'link-color': primary, //   Link color
-    'layout-body-background': '#f0f0f0', //  layout bg color
+    'layout-body-background': '#F6F6F6', //  layout bg color
+    'app-content-background': 'F6F6F6',
   };
 }

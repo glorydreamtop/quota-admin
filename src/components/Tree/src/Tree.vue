@@ -388,9 +388,9 @@
         const { title, helpMessage, toolbar, search, checkable } = props;
         const showTitle = title || toolbar || search || slots.headerTitle;
         // const scrollStyle: CSSProperties = { height: 'calc(100% - 38px)' };
-        const scrollStyle: CSSProperties = { height: 'calc(100% - 38px)' };
+        const scrollStyle: CSSProperties = { height: '100%' };
         return (
-          <div class={[prefixCls, 'h-full', attrs.class]}>
+          <div class={[prefixCls, attrs.class]}>
             {showTitle && (
               <TreeHeader
                 checkable={checkable}
