@@ -350,6 +350,7 @@
           } = unref(getReplaceFields);
 
           const propsData = omit(item, 'title');
+          propsData.dataRef = item;
           const icon = getIcon({ ...item, level }, item.icon);
           const children = get(item, childrenField) || [];
 
@@ -433,6 +434,11 @@
 
     .ant-tree-node-content-wrapper {
       position: relative;
+
+      &:hover {
+        border: 1px solid @primary-1;
+        border-radius: 2px;
+      }
 
       .ant-tree-title {
         position: absolute;

@@ -10,9 +10,19 @@ export default defineConfig({
       zIndex: {
         '-1': '-1',
       },
+      width: {
+        fit: 'fit-content',
+      },
       colors: {
         ...colors,
         primary: primaryColor,
+      },
+      cursor: {
+        'nw-resize': 'nw-resize',
+        move: 'move',
+        'w-resize': 'w-resize',
+        'n-resize': 'n-resize',
+        pointer: 'pointer',
       },
       screens: {
         sm: '576px',
@@ -22,6 +32,9 @@ export default defineConfig({
         '2xl': '1600px',
       },
     },
+  },
+  shortcuts: {
+    'component-border': 'border-gray-300 rounded-sm border',
   },
 });
 

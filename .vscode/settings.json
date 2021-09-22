@@ -121,6 +121,7 @@
   "i18n-ally.sourceLanguage": "en",
   "i18n-ally.displayLanguage": "zh-CN",
   "i18n-ally.enabledFrameworks": ["vue", "react"],
+  "less.validate": false,
   "cSpell.words": [
     "vben",
     "windi",

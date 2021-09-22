@@ -18,3 +18,16 @@ export enum SourceTypeEnum {
   usda = 'usda',
   manual = 'manual',
 }
+
+export enum SourceTypeNameEnum {
+  wind = '万得',
+  bloomberg = '彭博',
+  reuter = '路透',
+  mysteel = '钢联',
+  cofeed = '天下粮仓',
+  formula = '公式',
+  website = '网站',
+  eia = 'EIA',
+  usda = 'USDA',
+  manual = '人工',
+}

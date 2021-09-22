@@ -1,5 +1,7 @@
-import type { FunctionArgs } from '@vueuse/core';
+import { FunctionArgs, useDebounceFn } from '@vueuse/core';
 import { upperFirst } from 'lodash-es';
+import { dataURLtoBlob, dataURLtoFile } from './file/base64Conver';
+import html2canvas from 'html2canvas';
 
 export interface ViewportOffsetResult {
   left: number;
@@ -177,4 +179,85 @@ export function useRafThrottle<T extends FunctionArgs>(fn: T): T {
       locked = false;
     });
   };
+}
+
+export enum fileType {
+  BLOB = 'blob',
+  FILE = 'file',
+}
+
+export interface dom2imgFileParams {
+  dom: HTMLElement;
+  fileName?: string;
+  type: fileType;
+  scale?: number;
+}
+
+// DOM截图生成文件对象
+export async function dom2imgFile({
+  dom,
+  fileName,
+  type,
+  scale,
+}: dom2imgFileParams): Promise<File | Blob> {
+  if (scale === undefined) {
+    scale = 1;
+  }
+  scale *= window.devicePixelRatio;
+  const width = dom.offsetWidth;
+  const height = dom.offsetHeight;
+  const canvas = document.createElement('canvas');
+  canvas.width = width * scale;
+  canvas.height = height * scale;
+  // canvas.getContext('2d')!.scale(scale, scale);
+  const canvasRes: HTMLCanvasElement = await html2canvas(dom, {
+    canvas,
+    width,
+    height,
+    useCORS: true,
+  });
+  canvasRes.getContext('2d')!.imageSmoothingEnabled = false;
+  const obj = {
+    blob: dataURLtoBlob(canvasRes.toDataURL('image/jpeg', 1.0)),
+    file: dataURLtoFile(canvasRes.toDataURL('image/jpeg', 1.0), fileName!),
+  };
+  return obj[type];
+}
+
+export function setRem() {
+  const baseSize = 16; // 32
+  function setRem() {
+    const scale = screen.width / 1920;
+    document.documentElement.style.fontSize = baseSize * Math.min(scale, 2) + 'px';
+  }
+  const handler = useDebounceFn(setRem, 800);
+  window.onresize = function () {
+    handler();
+  };
+}
+
+interface coordinateInfo {
+  x: number;
+  y: number;
+}
+
+export function checkInDOM(target: HTMLElement, dom: HTMLElement | coordinateInfo) {
+  const { top, bottom, left, right } = target.getBoundingClientRect();
+  if (Reflect.has(dom, 'x') && Reflect.has(dom, 'y')) {
+    const x = (dom as coordinateInfo).x,
+      y = (dom as coordinateInfo).y;
+    return left < x && x < right && top < y && y < bottom;
+  } else if (dom instanceof HTMLElement) {
+    const { top: top2, bottom: bottom2, left: left2, right: right2 } = dom.getBoundingClientRect();
+    return left < left2 && right2 < right && top2 < bottom && top < bottom2;
+  }
+}
+
+type domCallbackType = (ele: HTMLElement) => void;
+
+export function domForeach(doms: HTMLCollectionOf<Element>, callback: domCallbackType) {
+  for (let index = 0; index < doms.length; index++) {
+    const element = doms.item(index)! as HTMLElement;
+    callback(element);
+  }
 }

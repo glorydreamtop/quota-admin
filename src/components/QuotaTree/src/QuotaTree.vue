@@ -1,10 +1,10 @@
 <template>
-  <div class="bg-white shadow-md rounded-md tail">
+  <div class="bg-white tail">
     <QuotaSearch v-if="showSearch" @select="handleSelect" />
     <Icon
       v-repeat-click="getData"
       class="refresh-icon"
-      icon="ant-design:redo-outlined"
+      icon="ant-design:sync-outlined"
       :spin="loading[CategoryTreeType.sysQuota]"
     />
     <Tabs v-model:activeKey="treeType" class="tabs" centered>
@@ -14,7 +14,17 @@
           v-bind="treeProps[CategoryTreeType.sysQuota]"
           ref="sysTree"
           @select="handleTreeSelect"
-        />
+        >
+          <template #title="item">
+            <Icon :icon="item.icon" />
+            <span
+              class="select-none tree-node w-full"
+              :data-folderId="item.folder ? item.key : undefined"
+              :data-LeafId="!item.folder ? item.key : undefined"
+              >{{ nodeFilter(item) }}</span
+            >
+          </template>
+        </BasicTree>
       </TabPane>
       <TabPane :key="CategoryTreeType.userQuota" :tab="t('quota.userQuota')">
         <BasicTree
@@ -27,11 +37,11 @@
 </template>
 
 <script lang="ts" setup>
-  import { onMounted, reactive, ref, unref, defineEmits, defineProps, toRefs } from 'vue';
+  import { onMounted, reactive, ref, unref, defineEmits, defineProps, toRefs, nextTick } from 'vue';
   import { QuotaSearch } from '../index';
   import { BasicTree } from '/@/components/Tree/index';
   import type { ContextMenuItem } from '/@/components/Tree/index';
-  import type { ReplaceFields, TreeItem, TreeActionType } from '/@/components/Tree/index';
+  import type { TreeItem, TreeActionType } from '/@/components/Tree/index';
   import { Tabs } from 'ant-design-vue';
   import { getQuotaTree, getDirQuota } from '/@/api/quota';
   import type { CategoryTreeModel, QuotaItem } from '/#/quota';
@@ -40,28 +50,11 @@
   import Icon from '/@/components/Icon';
   import { findNode, findPath, forEach } from '/@/utils/helper/treeHelper';
   import { useMessage } from '/@/hooks/web/useMessage';
-  import { uniq } from 'lodash';
+  import { uniq } from 'lodash-es';
   import { useTimeoutFn } from '/@/hooks/core/useTimeout';
-  import { useHighLight } from '../hooks';
-
-  type treeProp = Partial<{
-    treeData: TreeItem[];
-    replaceFields: ReplaceFields;
-    blockNode: boolean;
-    clickRowToExpand: boolean;
-    loadData: Fn;
-    rightMenuList: ContextMenuItem[];
-  }>;
-  interface treePropsModel {
-    [CategoryTreeType.sysQuota]: treeProp;
-    [CategoryTreeType.userQuota]: treeProp;
-  }
-  interface searchItemType {
-    label: string;
-    value: any;
-    categoryId: number;
-  }
-  type QuotaType = CategoryTreeType.sysQuota | CategoryTreeType.userQuota;
+  import { useHighLight, useMultiSelect } from '../hooks';
+  import { useCopyToClipboard } from '/@/hooks/web/useCopyToClipboard';
+  import type { treeSelectParams, treePropsModel, QuotaType, searchItemType } from '../types';
 
   const emit = defineEmits<{
     (event: 'selectNode', node: QuotaItem): void;
@@ -77,24 +70,15 @@
   const { createMessage } = useMessage();
   const treeType = ref<QuotaType>(CategoryTreeType.sysQuota);
 
-  const rightMenuList: ContextMenuItem[] = [
-    {
-      label: t('quota.actions.multiSelectQuota'),
-      icon: '',
-      handler: () => {},
-    },
-    {
-      label: t('quota.actions.multiUpdateQuota'),
-      icon: '',
-      handler: () => {},
-    },
-    {
-      label: t('quota.actions.multiMoveQuota'),
-      icon: '',
-      handler: () => {},
-    },
-  ];
+  const isFolder = (node: QuotaItem | CategoryTreeModel) =>
+    Reflect.has(node, 'folder') && (node as CategoryTreeModel).folder;
 
+  function nodeFilter(item: QuotaItem | CategoryTreeModel) {
+    if (isFolder(item)) {
+      return item.name;
+    }
+    return `[${item.id}]${(item as QuotaItem).shortName || item.name}`;
+  }
   const treeProps: treePropsModel = reactive({
     [CategoryTreeType.sysQuota]: {
       treeData: [],
@@ -104,7 +88,7 @@
       blockNode: true,
       clickRowToExpand: true,
       loadData: ({ eventKey }) => loadData(eventKey),
-      rightMenuList,
+      beforeRightClick,
     },
     [CategoryTreeType.userQuota]: {
       treeData: [],
@@ -114,7 +98,7 @@
       blockNode: true,
       clickRowToExpand: true,
       loadData: ({ eventKey }) => loadData(eventKey),
-      rightMenuList,
+      beforeRightClick,
     },
   });
   const loading = reactive({
@@ -144,8 +128,8 @@
     }
   }
 
-  const sysTree = ref<TreeActionType>();
-  const userTree = ref<TreeActionType>();
+  const sysTree = ref<TreeActionType & ComponentRef>();
+  const userTree = ref<TreeActionType & ComponentRef>();
 
   function getTreeInstance(type: QuotaType) {
     if (type === CategoryTreeType.sysQuota && unref(sysTree)) {
@@ -167,15 +151,14 @@
       item.isLeaf = true;
       item.key = item.id;
       item.categoryId = key;
-      item.name = `[${item.id}]${item.shortName || item.name}`;
       return item;
     });
     instance?.setExpandedKeys(uniq([key, ...instance.getExpandedKeys()]));
   }
-
+  // 启用高亮Hooks
   const [_, { setHighLight, clearHightLight, insertHightListNode }] = useHighLight(HIGHTLIGHT);
   function findParentNode(id: number, type?: QuotaType) {
-    function fn(): [TreeItem | null, TreeActionType] {
+    function fn(): [TreeItem | null, TreeActionType & ComponentRef] {
       return [
         findNode<TreeItem>(treeProps[type || treeType.value].treeData, (item) => item.id === id),
         getTreeInstance(type || treeType.value)!,
@@ -207,77 +190,88 @@
       instance?.setExpandedKeys(uniq([...path, ...instance.getExpandedKeys()]));
       setHighLight(parentNode, id);
     }
+    await nextTick();
+    instance.$el
+      .getElementsByClassName(HIGHTLIGHT)[0]
+      .scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
-
-  const multiSelectedList = ref<number[]>([]);
-
-  // 树节点的选择，支持多选
-  function handleTreeSelect(
-    _,
-    e: {
-      nativeEvent: PointerEvent;
-      node: { eventKey: number; $attrs: QuotaItem | CategoryTreeModel };
-    }
-  ) {
-    const instance = getTreeInstance(treeType.value);
-    const oldList = unref(multiSelectedList);
-    const key = e.node.eventKey;
-    const isFolder = Reflect.has(e.node.$attrs, 'folder');
-    if (e.nativeEvent.ctrlKey && !isFolder) {
-      // Ctrl多选
-      const index = oldList.indexOf(key);
-      if (index > -1) {
-        multiSelectedList.value.splice(index, 1);
-      } else {
-        multiSelectedList.value.push(key);
-      }
-    } else if (e.nativeEvent.shiftKey && !isFolder) {
-      // Shift多选
-      let minIndex = 999;
-      let maxIndex = 0;
-      const list = findNode<TreeItem>(
-        treeProps[treeType.value].treeData!,
-        (node) => node.id === (e.node.$attrs as QuotaItem).categoryId
-      )!.children!;
-      for (let i = 0; i < multiSelectedList.value.length; i++) {
-        minIndex = Math.min(
-          list.findIndex((item) => item.key === multiSelectedList.value[i]),
-          minIndex
-        );
-        maxIndex = Math.max(
-          list.findIndex((item) => item.key === multiSelectedList.value[i]),
-          maxIndex
-        );
-      }
-      const currentIndex = list.findIndex((item) => item.key === key);
-      if (currentIndex < minIndex) {
-        minIndex = currentIndex;
-      }
-      if (currentIndex > maxIndex) {
-        maxIndex = currentIndex;
-      }
-      for (let index = minIndex; index <= maxIndex; index++) {
-        const key = list[index].key as number;
-        if (multiSelectedList.value.indexOf(key) === -1) {
-          multiSelectedList.value.push(key);
+  // 启用树多选Hooks
+  const [__, { insertMultiSelectedKey, clearMultiSelected, setTreeData, getMultiList }] =
+    useMultiSelect({
+      onSingleSelect: ({ dataRef, allowMultiSelect }) => {
+        // 仅在单选情况下直接触发选择事件
+        if (!allowMultiSelect) {
+          emit('selectFolder', dataRef as CategoryTreeModel);
+        } else {
+          emit('selectNode', dataRef as QuotaItem);
         }
-      }
-    } else {
-      multiSelectedList.value = [key];
-      // 仅在单选情况下直接触发选择事件
-      if (isFolder) {
-        emit('selectFolder', e.node.$attrs as CategoryTreeModel);
-      } else {
-        emit('selectNode', e.node.$attrs as QuotaItem);
-      }
-    }
+      },
+    });
+  // 树节点的选择，支持多选
+  function handleTreeSelect(_, e: treeSelectParams) {
+    const instance = getTreeInstance(treeType.value);
+    setTreeData(treeProps[treeType.value].treeData);
+    const allowMultiSelect = !isFolder(e.node.dataRef);
+    insertMultiSelectedKey({ e, allowMultiSelect });
     clearHightLight();
+    const list = getMultiList();
     forEach(treeProps[treeType.value].treeData!, (item) => {
-      if (multiSelectedList.value.includes(item.key as number)) {
+      if (list.includes(item.key as number)) {
         insertHightListNode(item);
       }
     });
-    instance?.setSelectedKeys(unref(multiSelectedList));
+    instance?.setSelectedKeys(list);
+  }
+  function copy(str: string) {
+    const { isSuccessRef } = useCopyToClipboard(str);
+    if (isSuccessRef.value) {
+      createMessage.success(t('quota.actionsRes.copyOK'));
+    } else {
+      createMessage.success(t('quota.actionsRes.copyFailed'));
+    }
+  }
+  function beforeRightClick({
+    dataRef,
+  }: {
+    dataRef: QuotaItem | CategoryTreeModel;
+  }): ContextMenuItem[] {
+    const list = getMultiList();
+    if (!list.includes(dataRef.id)) {
+      clearMultiSelected();
+      clearHightLight();
+    }
+    const commonActions: ContextMenuItem[] = [
+      {
+        label: t('quota.actions.copyID'),
+        icon: '',
+        handler: () => {
+          copy(dataRef.id.toString());
+        },
+      },
+      {
+        label: t('quota.actions.copyName'),
+        icon: '',
+        handler: () => copy(dataRef.name),
+      },
+    ];
+    const _isFolder = isFolder(dataRef);
+    if (_isFolder) {
+      return [...commonActions];
+    } else {
+      return [
+        ...commonActions,
+        {
+          label: t('quota.actions.multiSelectQuota'),
+          icon: '',
+          handler: () => {},
+        },
+        {
+          label: t('quota.actions.multiUpdateQuota'),
+          icon: '',
+          handler: () => {},
+        },
+      ];
+    }
   }
   onMounted(() => {
     getData(CategoryTreeType.sysQuota);

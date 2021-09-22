@@ -1,5 +1,5 @@
 <template>
-  <ConfigProvider :locale="getAntdLocale">
+  <ConfigProvider :locale="getAntdLocale" size="small">
     <AppProvider>
       <RouterView />
     </AppProvider>
@@ -17,3 +17,10 @@
 
   useTitle();
 </script>
+
+<style>
+  @font-face {
+    font-family: 'PingFang';
+    src: url('https://imgs.zixinco.com/pingfang.otf');
+  }
+</style>

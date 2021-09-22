@@ -9,7 +9,7 @@
   >
     <Input>
       <template #suffix>
-        <Icon icon="ant-design:search-outlined" />
+        <Icon icon="ic:twotone-search" />
       </template>
     </Input>
   </AutoComplete>
@@ -23,12 +23,7 @@
   import { searchQuota } from '/@/api/quota';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useMessage } from '/@/hooks/web/useMessage';
-
-  interface searchItemType {
-    label: string;
-    value: any;
-    categoryId: number;
-  }
+  import type { searchItemType } from '../types';
 
   const { t } = useI18n();
   const { createMessage } = useMessage();
@@ -58,4 +53,16 @@
   }
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+  ::v-deep(.ant-input) {
+    &:focus {
+      box-shadow: none !important;
+    }
+
+    .ant-select {
+      &:not(.ant-select-disabled):hover .ant-select-selector {
+        border: none !important;
+      }
+    }
+  }
+</style>

@@ -34,5 +34,6 @@ export function generateModifyVars(dark = false) {
     'link-color': primary, //   Link color
     'layout-body-background': '#F6F6F6', //  layout bg color
     'app-content-background': 'F6F6F6',
+    'font-family': 'PingFang',
   };
 }
