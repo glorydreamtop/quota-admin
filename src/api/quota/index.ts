@@ -8,12 +8,23 @@ enum Api {
   DelCategoryTree = '/updatemonitor/dict-index/categoryDelete',
   GetDirQuota = '/index/index',
   SearchQuota = '/updatemonitor/dict-index/searchIndex',
+  GetQuotaData = '/updatemonitor/dict-index/exportData',
 }
 
 export enum searchType {
   sys = 0,
   user = 1,
   all = 2,
+}
+
+export enum quotaDataExportTypeEnum {
+  JSON = '0',
+  XLSX = '1',
+  CSV = '2',
+}
+
+export enum quotaDataPastUnitTypeEnum {
+  day = '日',
 }
 
 /**
@@ -43,6 +54,13 @@ export function searchQuota(params: {
   if (!params.flag) params.flag = searchType.all;
   return defHttp.get<QuotaItem[]>({
     url: Api.SearchQuota,
+    params,
+  });
+}
+
+export function getQuotaData(params: { categoryId: number }) {
+  return defHttp.get<QuotaItem[]>({
+    url: Api.GetQuotaData,
     params,
   });
 }

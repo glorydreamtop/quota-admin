@@ -38,5 +38,14 @@ export default {
         yAxisIndex: '适用Y轴',
       },
     },
+    advance: {
+      show: '显示',
+      hide: '隐藏',
+      rectSetting: {
+        title: '模块设置',
+        lastest: '最新值',
+        highest: '最高值',
+      },
+    },
   },
 };

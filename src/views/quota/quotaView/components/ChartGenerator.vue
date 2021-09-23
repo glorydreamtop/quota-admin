@@ -1,15 +1,16 @@
 <template>
   <div class="bg-white shadow-md flex-grow p-4 overflow-hidden rounded-md flex">
-    <div class="w-2/3">
+    <div class="w-3/5">
       <ToolBar class="" />
-      <div></div>
+      <BasicChart class="mt-4 component-border w-full" />
     </div>
-    <Advance class="w-1/3" />
+    <Advance class="w-2/5" />
   </div>
 </template>
 <script lang="ts" setup>
   import ToolBar from './ToolBar.vue';
   import Advance from './Advance.vue';
+  import { BasicChart } from '/@/components/Chart';
 </script>
 
 <style lang="less" scoped>

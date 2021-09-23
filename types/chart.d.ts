@@ -33,12 +33,15 @@ export interface baseChartConfigType {
   typeOptions: typeOptionsType;
 }
 
-export interface seasonalChartOptions {
-  quota: Nullable<QuotaItem>;
+export interface reactSettingType {
   showLastest: boolean;
+  showHighest: boolean;
 }
 
-export interface normalChartOptions {
+export interface seasonalChartOptions extends reactSettingType {
+  quota: Nullable<QuotaItem>;
+}
+
+export interface normalChartOptions extends reactSettingType {
   quotaList: Nullable<QuotaItem[]>;
-  showLastest: boolean;
 }

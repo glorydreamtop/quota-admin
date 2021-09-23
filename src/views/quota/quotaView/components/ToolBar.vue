@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="relative">
     <Space align="center">
       <Select
         class="w-30"
@@ -27,12 +27,18 @@
       />
       <Icon class="save-icon" size="24" icon="ant-design:save-outlined" />
     </Space>
+    <div class="absolute right-0 top-0 w-18 h-18 overflow-hidden">
+      <div v-ripple class="w-36 h-36 !absolute -right-18 -top-18 bg-primary rounded-1">
+        <Icon class="absolute left-7 bottom-7" size="32" color="#fff" icon="ph:paint-brush-light" />
+      </div>
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
   import { reactive } from 'vue';
   import { Space, DatePicker, Select } from 'ant-design-vue';
+  import vRipple from '/@/directives/ripple';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useChartConfigContext } from './hooks';
   import { chartTypeEnum } from '/@/enums/chartEnum';

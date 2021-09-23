@@ -15,6 +15,7 @@ export function getchartDefaultConfig(): baseChartConfigType {
     type: chartTypeEnum.normal,
     typeOptions: {
       showLastest: true,
+      showHighest: false,
       quotaList: [],
     },
   };
