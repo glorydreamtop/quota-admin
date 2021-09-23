@@ -21,11 +21,11 @@
       />
       <Icon
         class="setting-icon rotate-icon"
-        size="20"
+        size="24"
         @click="openAdvanceModal"
         icon="ant-design:setting-outlined"
       />
-      <Icon class="save-icon" size="20" icon="ant-design:save-outlined" />
+      <Icon class="save-icon" size="24" icon="ant-design:save-outlined" />
     </Space>
   </div>
 </template>

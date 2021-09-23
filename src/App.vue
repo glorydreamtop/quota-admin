@@ -20,7 +20,13 @@
 
 <style>
   @font-face {
-    font-family: 'PingFang';
-    src: url('https://imgs.zixinco.com/pingfang.otf');
+    font-family: '思源黑体';
+    src: url('./assets/cn2.otf');
+
+    /* src:url('https://imgs.zixinco.com/pingfang.otf') */
+  }
+
+  body {
+    font-family: '思源黑体' !important;
   }
 </style>
