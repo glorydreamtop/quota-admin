@@ -1,6 +1,8 @@
 import { defHttp } from '/@/utils/http/axios';
 import type { CategoryTreeModel, QuotaItem } from '/#/quota';
 import { CategoryTreeType, SourceTypeEnum } from '/@/enums/quotaEnum';
+import { getQuotaDataParams, getQuotaDataResult } from './model';
+import { pick } from 'lodash-es';
 
 enum Api {
   GetCategoryTree = '/updatemonitor/dict-index/categoryTree',
@@ -58,9 +60,15 @@ export function searchQuota(params: {
   });
 }
 
-export function getQuotaData(params: { categoryId: number }) {
-  return defHttp.get<QuotaItem[]>({
+export function getQuotaData(params: getQuotaDataParams) {
+  const rows = params.rows.map((item) => {
+    return pick(item, ['sourceCode', 'id', 'name']);
+  });
+  return defHttp.post<getQuotaDataResult[]>({
     url: Api.GetQuotaData,
-    params,
+    params: {
+      ...params,
+      rows,
+    },
   });
 }

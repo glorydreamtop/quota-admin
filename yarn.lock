@@ -1846,6 +1846,13 @@
   resolved "https://registry.npmjs.org/@types/crypto-js/-/crypto-js-4.0.2.tgz#4524325a175bf819fec6e42560c389ce1fb92c97"
   integrity sha512-sCVniU+h3GcGqxOmng11BRvf9TfN9yIs8KKjB8C8d75W69cpTfZG80gau9yTx5SxF3gvHGbJhdESzzvnjtf3Og==
 
+"@types/echarts@^4.9.10":
+  version "4.9.10"
+  resolved "https://registry.nlark.com/@types/echarts/download/@types/echarts-4.9.10.tgz?cache=0&sync_timestamp=1629707272371&other_urls=https%3A%2F%2Fregistry.nlark.com%2F%40types%2Fecharts%2Fdownload%2F%40types%2Fecharts-4.9.10.tgz#a3dd598fbb3b36e797f3ce771be3fa8dc18a7da6"
+  integrity sha1-o91Zj7s7NueX8853G+P6jcGKfaY=
+  dependencies:
+    "@types/zrender" "*"
+
 "@types/estree@*", "@types/estree@^0.0.48":
   version "0.0.48"
   resolved "https://registry.npmjs.org/@types/estree/-/estree-0.0.48.tgz#18dc8091b285df90db2f25aa7d906cfc394b7f74"
@@ -2133,6 +2140,11 @@
   integrity sha512-YlFfTGS+zqCgXuXNV26rOIeETOkXnGQXP/pjjL9P0gO/EP9jTmc7pUBhx+jVEIxpq41RX33GQ7N3DzOSfZoglQ==
   dependencies:
     "@types/yargs-parser" "*"
+
+"@types/zrender@*":
+  version "4.0.1"
+  resolved "https://registry.nlark.com/@types/zrender/download/@types/zrender-4.0.1.tgz?cache=0&sync_timestamp=1629608722862&other_urls=https%3A%2F%2Fregistry.nlark.com%2F%40types%2Fzrender%2Fdownload%2F%40types%2Fzrender-4.0.1.tgz#6280c40207927ce086be24b4391d668cd330e956"
+  integrity sha1-YoDEAgeSfOCGviS0OR1mjNMw6VY=
 
 "@typescript-eslint/eslint-plugin@^4.29.1":
   version "4.29.1"

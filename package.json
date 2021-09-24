@@ -66,6 +66,7 @@
     "@purge-icons/generated": "^0.7.0",
     "@types/codemirror": "^5.60.2",
     "@types/crypto-js": "^4.0.2",
+    "@types/echarts": "^4.9.10",
     "@types/fs-extra": "^9.0.12",
     "@types/inquirer": "^7.3.3",
     "@types/intro.js": "^3.0.2",

@@ -34,8 +34,14 @@
   } from './components/hooks';
   import type { QuotaItem } from '/#/quota';
   import type { SelectedQuotaItem } from './components/hooks';
-  import type { baseChartConfigType } from '/#/chart';
-  import { getchartDefaultConfig } from './helper';
+  import type { normalChartConfigType } from '/#/chart';
+  import { getNormalChartDefaultConfig } from './helper';
+  import { useMessage } from '/@/hooks/web/useMessage';
+  import { useI18n } from '/@/hooks/web/useI18n';
+  import { cloneDeep } from 'lodash-es';
+
+  const { createMessage } = useMessage();
+  const { t } = useI18n();
 
   // 交付给绘图的指标列表
   const quotaList = ref<QuotaItem[]>([]);
@@ -44,7 +50,8 @@
   const selectedQuotaList = ref<SelectedQuotaItem[]>([]);
   createSelectedQuotaListContext(selectedQuotaList);
   // 一份图表的配置信息
-  const chartConfig: baseChartConfigType = reactive(getchartDefaultConfig());
+  const def = cloneDeep(getNormalChartDefaultConfig());
+  const chartConfig: normalChartConfigType = reactive(def);
   createChartConfigContext(chartConfig);
 
   const containerRef1 = ref<HTMLDivElement>();
@@ -63,6 +70,10 @@
   });
   function selectNode(q: QuotaItem) {
     const sq = q as SelectedQuotaItem;
+    if (selectedQuotaList.value.find((q) => q.id === sq.id)) {
+      createMessage.warn(t('page.quotaView.uniqSelectedQuotaMessage'));
+      return;
+    }
     sq.selected = true;
     selectedQuotaList.value.push(sq);
   }

@@ -137,7 +137,7 @@
   import { domForeach } from '/@/utils/domUtils';
   import QuotaSetting from './QuotaSetting.vue';
   import { useI18n } from '/@/hooks/web/useI18n';
-  import { getquotaDefaultSetting } from '../helper';
+  import { getNormalQuotaDefaultSetting } from '../helper';
 
   let animationFlag = false;
   // 交付给绘图的指标列表
@@ -165,7 +165,7 @@
       for (let i = 0; i < cur.length; i++) {
         if (pre.findIndex((quota) => quota.id === cur[i].id) === -1) {
           cur[i].selected = true;
-          cur[i].setting = getquotaDefaultSetting();
+          cur[i].setting = getNormalQuotaDefaultSetting();
         }
       }
       animationFlag = true;
@@ -254,13 +254,13 @@
           label: '保存到个人',
           icon: 'ant-design:folder-add-outlined',
           handler: () => {
-            setQuotaSave({
-              title: '添加到我的指标',
-            });
+            // setQuotaSave({
+            //   title: '添加到我的指标',
+            // });
             const clone = cloneDeep(item);
             Reflect.deleteProperty(clone, 'id');
             clone.categoryIdList = [];
-            openQuotaSave(true, clone);
+            // openQuotaSave(true, clone);
           },
         },
       ],
@@ -324,7 +324,7 @@
           return;
         }
         // Sort column
-        const columns = quotaList.value;
+        const columns = selectedQuota.value;
         if (oldIndex > newIndex) {
           columns.splice(newIndex, 0, columns[oldIndex]);
           columns.splice(oldIndex + 1, 1);

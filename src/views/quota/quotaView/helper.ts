@@ -1,8 +1,8 @@
-import { baseChartConfigType, baseQuotaSettingType } from '/#/chart';
+import type { normalChartConfigType, normalQuotaSettingType } from '/#/chart';
 import { today, yearsAgo } from '/@/utils/dateUtil';
 import { timeConfigEnum, chartTypeEnum } from '/@/enums/chartEnum';
 
-export function getchartDefaultConfig(): baseChartConfigType {
+export function getNormalChartDefaultConfig(): normalChartConfigType {
   return {
     title: '',
     timeConfig: {
@@ -13,15 +13,14 @@ export function getchartDefaultConfig(): baseChartConfigType {
     colorSchemeId: 0,
     selfColorScheme: '',
     type: chartTypeEnum.normal,
-    typeOptions: {
-      showLastest: true,
-      showHighest: false,
-      quotaList: [],
-    },
+    showLastest: true,
+    showHighest: false,
+    quotaList: [],
   };
 }
-export function getquotaDefaultSetting(): baseQuotaSettingType {
+export function getNormalQuotaDefaultSetting(): normalQuotaSettingType {
   return {
     yAxisIndex: 0,
+    type: 'line',
   };
 }

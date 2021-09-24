@@ -1,7 +1,5 @@
-import { QuotaItem } from './quota';
 import { chartTypeEnum, timeConfigEnum } from '/@/enums/chartEnum';
-
-export type typeOptionsType = seasonalChartOptions | normalChartOptions;
+import { SelectedQuotaItem } from '/@/views/quota/quotaView/components/hooks';
 
 export interface timeConfigType {
   startDate: string;
@@ -14,10 +12,7 @@ export interface timeConfigType {
   timeRule?: string;
 }
 
-export interface baseQuotaSettingType {
-  yAxisIndex: number;
-}
-
+// export interface baseQuotaSettingType {}
 export interface baseChartConfigType {
   // 图表标题
   title: string;
@@ -29,8 +24,6 @@ export interface baseChartConfigType {
   type: chartTypeEnum;
   // 时间相关配置
   timeConfig: timeConfigType;
-  // 图表参数
-  typeOptions: typeOptionsType;
 }
 
 export interface reactSettingType {
@@ -38,10 +31,16 @@ export interface reactSettingType {
   showHighest: boolean;
 }
 
-export interface seasonalChartOptions extends reactSettingType {
-  quota: Nullable<QuotaItem>;
+export interface seasonalChartConfigType extends reactSettingType, baseChartConfigType {
+  quotaList: Nullable<SelectedQuotaItem[]>;
 }
 
-export interface normalChartOptions extends reactSettingType {
-  quotaList: Nullable<QuotaItem[]>;
+export interface normalChartConfigType extends reactSettingType, baseChartConfigType {
+  quotaList: Nullable<SelectedQuotaItem[]>;
+}
+
+export type chartConfigType = seasonalChartConfigType | normalChartConfigType;
+export interface normalQuotaSettingType {
+  yAxisIndex: number;
+  type: 'line' | 'bar';
 }

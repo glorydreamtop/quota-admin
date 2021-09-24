@@ -321,13 +321,16 @@
     &::after {
       content: '';
       position: absolute;
-      bottom: 6px;
+      bottom: 0;
       width: 100%;
-      height: 6%;
+      height: 10%;
       background-image: linear-gradient(
-        fade(@white, 10%),
-        fade(@white, 60%),
-        fade(@white, 80%),
+        fade(@white, 5%),
+        fade(@white, 30%),
+        fade(@white, 50%),
+        fade(@white, 70%),
+        fade(@white, 90%),
+        fade(@white, 100%),
         @white
       );
       pointer-events: none;

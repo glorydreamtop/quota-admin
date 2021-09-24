@@ -6,7 +6,7 @@
         <Switch
           :checked-children="t('page.quotaView.advance.show')"
           :un-checked-children="t('page.quotaView.advance.hide')"
-          v-model:checked="chartConfig.typeOptions.showLastest"
+          v-model:checked="chartConfig.showLastest"
         />
         <span>{{ t('page.quotaView.advance.rectSetting.lastest') }}</span>
       </span>
@@ -14,7 +14,7 @@
         <Switch
           :checked-children="t('page.quotaView.advance.show')"
           :un-checked-children="t('page.quotaView.advance.hide')"
-          v-model:checked="chartConfig.typeOptions.showHighest"
+          v-model:checked="chartConfig.showHighest"
         />
         <span>{{ t('page.quotaView.advance.rectSetting.highest') }}</span>
       </span>
