@@ -1,3 +1,4 @@
+import { YAXisComponentOption } from 'echarts';
 import { chartTypeEnum, timeConfigEnum } from '/@/enums/chartEnum';
 import { SelectedQuotaItem } from '/@/views/quota/quotaView/components/hooks';
 
@@ -24,6 +25,11 @@ export interface baseChartConfigType {
   type: chartTypeEnum;
   // 时间相关配置
   timeConfig: timeConfigType;
+  // 数据格式化方式
+  valueFormatter: {
+    afterDot: number;
+    scientificNotation: boolean;
+  };
 }
 
 export interface reactSettingType {
@@ -37,6 +43,7 @@ export interface seasonalChartConfigType extends reactSettingType, baseChartConf
 
 export interface normalChartConfigType extends reactSettingType, baseChartConfigType {
   quotaList: Nullable<SelectedQuotaItem[]>;
+  yAxis: YAXisComponentOption[];
 }
 
 export type chartConfigType = seasonalChartConfigType | normalChartConfigType;

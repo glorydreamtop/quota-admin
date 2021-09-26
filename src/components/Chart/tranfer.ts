@@ -6,7 +6,10 @@ import type {
   SeriesOption,
   TitleComponentOption,
   ToolboxComponentOption,
+  YAXisComponentOption,
 } from 'echarts';
+import { round } from 'lodash-es';
+import { useAddGraphicElement, useHighestQuotaData, useLastestQuotaData } from './helper';
 import { chartConfigType, normalChartConfigType, seasonalChartConfigType } from '/#/chart';
 import { getQuotaData, quotaDataExportTypeEnum } from '/@/api/quota';
 import { getQuotaDataParams } from '/@/api/quota/model';
@@ -40,8 +43,6 @@ const gridConfig: GridComponentOption = {
 export async function useSeasonalChart(
   chartConfig: seasonalChartConfigType
 ): Promise<EChartsOption> {
-  console.log(chartConfig);
-
   const fetchParams: getQuotaDataParams = {
     startDate: chartConfig.timeConfig.startDate,
     endDate: chartConfig.timeConfig.endDate,
@@ -60,7 +61,7 @@ export async function useSeasonalChart(
   quota.data.forEach((data) => {
     const time = data[0];
     const y = dayjs(time).year().toString();
-    const v = data[1];
+    const v = round(data[1], chartConfig.valueFormatter.afterDot);
     if (legend.data?.includes(y)) {
       const s = series.find((series) => series.name === y)!;
       (s.data as [number, number][]).push([dayjs(time).year(2020).unix() * 1000, v]);
@@ -82,10 +83,13 @@ export async function useSeasonalChart(
         formatter: '{MM}/{dd}',
       },
     },
-    yAxis: {
-      type: 'value',
-      scale: true,
-    },
+    yAxis: [
+      {
+        type: 'value',
+        scale: true,
+        triggerEvent: true,
+      },
+    ],
     legend,
     series,
     toolbox: toolboxConfig,
@@ -102,12 +106,14 @@ export async function useSeasonalChart(
     },
     grid: gridConfig,
   };
+  useAddGraphicElement({ options });
+  // 最新值模块
+  useLastestQuotaData({ chartConfig, options, quotaDataList });
+  useHighestQuotaData({ chartConfig, options, quotaDataList });
   return options;
 }
 
 export async function useNormalChart(chartConfig: normalChartConfigType): Promise<EChartsOption> {
-  console.log(chartConfig);
-
   const fetchParams: getQuotaDataParams = {
     startDate: chartConfig.timeConfig.startDate,
     endDate: chartConfig.timeConfig.endDate,
@@ -124,6 +130,7 @@ export async function useNormalChart(chartConfig: normalChartConfigType): Promis
   quotaDataList.forEach((quota) => {
     const quotaConfig = chartConfig.quotaList!.find((q) => q.id === quota.id)!;
     legend.data!.push(quota.name);
+    quota.data.forEach((item) => (item[1] = round(item[1], chartConfig.valueFormatter.afterDot)));
     series.push({
       name: quota.name,
       type: quotaConfig.setting.type,
@@ -136,10 +143,15 @@ export async function useNormalChart(chartConfig: normalChartConfigType): Promis
     xAxis: {
       type: 'time',
     },
-    yAxis: {
-      type: 'value',
-      scale: true,
-    },
+    yAxis: chartConfig.yAxis?.map((y) => {
+      const base: YAXisComponentOption = {
+        type: 'value',
+        scale: true,
+        triggerEvent: true,
+      };
+      Object.assign(base, y);
+      return base;
+    }),
     legend,
     series,
     toolbox: toolboxConfig,
@@ -149,5 +161,9 @@ export async function useNormalChart(chartConfig: normalChartConfigType): Promis
     },
     grid: gridConfig,
   };
+  useAddGraphicElement({ options });
+  // 最新值模块
+  useLastestQuotaData({ chartConfig, options, quotaDataList });
+  useHighestQuotaData({ chartConfig, options, quotaDataList });
   return options;
 }

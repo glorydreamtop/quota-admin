@@ -5,18 +5,22 @@
 </template>
 
 <script lang="ts" setup>
-  import { h, onBeforeUnmount, onDeactivated, ref, render, toRefs, unref, watch } from 'vue';
+  import { onBeforeUnmount, onDeactivated, ref, toRefs, unref, watch } from 'vue';
   import type { Ref } from 'vue';
   import { useECharts } from '/@/hooks/web/useECharts';
   import { chartTypeEnum } from '/@/enums/chartEnum';
   import { useSeasonalChart, useNormalChart } from '../tranfer';
-  import { chartConfigType } from '/#/chart';
+  import type { chartConfigType, normalChartConfigType } from '/#/chart';
   import { onMountedOrActivated } from '/@/hooks/core/onMountedOrActivated';
   import { useDebounceFn, useResizeObserver } from '@vueuse/core';
-  import { Popover, Input } from 'ant-design-vue';
+  import { useChartTitlePopover, useYAxisIndexEdit } from '../helper';
+  import { cloneDeep } from 'lodash';
 
   const props = defineProps<{
     chartConfig: chartConfigType;
+  }>();
+  const emit = defineEmits<{
+    (event: 'updateConfig', chartConfig: chartConfigType): void;
   }>();
 
   const { chartConfig } = toRefs(props);
@@ -31,15 +35,20 @@
     chartConfig,
     async (v) => {
       const options = await chartTypeHooks[v.type](v);
-      console.log(options);
-
       setOptions(options);
     },
     { deep: true }
   );
-  let title = ref(chartConfig.value.title);
+
+  interface eventBusType {
+    event: any;
+    target: 'title';
+    eventType: 'dblclick' | 'contextmenu';
+  }
+  // 监听事件的列表
+  const eventBus: eventBusType[] = [];
   onMountedOrActivated(() => {
-    const instance = getInstance();
+    const instance = getInstance()!;
     // 自适应大小
     const handler = useDebounceFn(resize, 200);
     const { stop } = useResizeObserver(unref(chartElRef), () => {
@@ -51,38 +60,40 @@
     onDeactivated(() => {
       stop();
     });
-    instance?.on('dblclick', (e) => {
-      if (e.componentType === 'title') {
-        const { clientX, clientY } = e.event?.event as MouseEvent;
-        const dom = document.createElement('span');
-        Object.assign(dom.style, {
-          position: 'fixed',
-          top: `${clientY}px`,
-          left: `${clientX}px`,
-        });
-        document.body.appendChild(dom);
+    const titleClickEvent = useChartTitlePopover({
+      chartConfig,
+      onOk: (title) => {
+        chartConfig.value.title = title;
+        emit('updateConfig', cloneDeep(unref(chartConfig)));
+      },
+    });
+    eventBus.push({
+      event: titleClickEvent,
+      eventType: 'dblclick',
+      target: 'title',
+    });
+    const yAxisClickEvent = useYAxisIndexEdit({
+      instance,
+      chartConfig: chartConfig as Ref<normalChartConfigType>,
+      onOk: () => {},
+    });
+    eventBus.push({
+      event: yAxisClickEvent,
+      eventType: 'dblclick',
+      target: 'title',
+    });
+    instance.on('dblclick', (e) => {
+      console.log(e);
 
-        function input() {
-          return h(Input, {
-            value: title.value,
-            onChange: function (e) {
-              title = e.target.value;
-            },
-          });
-        }
-        const pop = h(Popover, {
-          content: input(),
-          defaultVisible: true,
-          trigger: 'click',
-          onVisibleChange: (visible: boolean) => {
-            if (!visible) {
-              chartConfig.value.title = title.value;
-              dom.remove();
-            }
-          },
+      // 激活双击监听的所有事件
+      eventBus
+        .filter((event) => event.eventType === 'dblclick')
+        .forEach((event) => {
+          event.event(e);
         });
-        render(pop, dom);
-      }
+    });
+    instance.on('click', (e) => {
+      console.log(e);
     });
   });
 </script>

@@ -42,10 +42,24 @@ export default {
     advance: {
       show: '显示',
       hide: '隐藏',
+      use: '启用',
+      stop: '停用',
       rectSetting: {
         title: '模块设置',
         lastest: '最新值',
         highest: '最高值',
+      },
+      valueFormatter: {
+        title: '数字格式设置',
+        afterDot: '位小数',
+        scientificNotation: '科学计数法',
+      },
+      timeSeries: {
+        title: '时间序列设置',
+        startMonth: '起始月份',
+      },
+      axisSetting: {
+        title: '直角坐标轴设置',
       },
     },
   },

@@ -19,12 +19,32 @@
         <span>{{ t('page.quotaView.advance.rectSetting.highest') }}</span>
       </span>
     </div>
+    <Divider orientation="left">{{ t('page.quotaView.advance.valueFormatter.title') }}</Divider>
+    <div class="grid grid-cols-2 pl-8">
+      <span class="label">
+        <InputNumber
+          size="small"
+          class="!w-12 min-w-12"
+          :min="0"
+          v-model:value="chartConfig.valueFormatter.afterDot"
+        /><span>{{ t('page.quotaView.advance.valueFormatter.afterDot') }}</span>
+      </span>
+      <span class="label">
+        <Switch
+          v-model:checked="chartConfig.valueFormatter.scientificNotation"
+          :checked-children="t('page.quotaView.advance.use')"
+          :un-checked-children="t('page.quotaView.advance.stop')"
+        /><span>{{ t('page.quotaView.advance.valueFormatter.scientificNotation') }}</span>
+      </span>
+    </div>
+    <Divider orientation="left">{{ t('page.quotaView.advance.axisSetting.title') }}</Divider>
+    <div> </div>
   </div>
 </template>
 
 <script lang="ts" setup>
   // import { ref } from 'vue';
-  import { Divider, Switch } from 'ant-design-vue';
+  import { Divider, Switch, InputNumber } from 'ant-design-vue';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useChartConfigContext } from './hooks';
 

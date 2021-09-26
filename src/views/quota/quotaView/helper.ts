@@ -16,6 +16,18 @@ export function getNormalChartDefaultConfig(): normalChartConfigType {
     showLastest: true,
     showHighest: false,
     quotaList: [],
+    valueFormatter: {
+      afterDot: 2,
+      scientificNotation: false,
+    },
+    yAxis: [
+      {
+        min: undefined,
+        max: undefined,
+        inverse: false,
+        position: 'left',
+      },
+    ],
   };
 }
 export function getNormalQuotaDefaultSetting(): normalQuotaSettingType {

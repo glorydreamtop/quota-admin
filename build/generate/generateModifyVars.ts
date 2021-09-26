@@ -29,7 +29,7 @@ export function generateModifyVars(dark = false) {
     'error-color': '#ED6F6F', //  False color
     'warning-color': '#EFBD47', //   Warning color
     //'border-color-base': '#EEEEEE',
-    'font-size-base': '16px', //  Main font size
+    'font-size-base': '14px', //  Main font size
     'border-radius-base': '2px', //  Component/float fillet
     'link-color': primary, //   Link color
     'layout-body-background': '#F6F6F6', //  layout bg color

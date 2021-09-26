@@ -1848,7 +1848,7 @@
 
 "@types/echarts@^4.9.10":
   version "4.9.10"
-  resolved "https://registry.nlark.com/@types/echarts/download/@types/echarts-4.9.10.tgz?cache=0&sync_timestamp=1629707272371&other_urls=https%3A%2F%2Fregistry.nlark.com%2F%40types%2Fecharts%2Fdownload%2F%40types%2Fecharts-4.9.10.tgz#a3dd598fbb3b36e797f3ce771be3fa8dc18a7da6"
+  resolved "https://registry.nlark.com/@types/echarts/download/@types/echarts-4.9.10.tgz?cache=0&sync_timestamp=1629707323053&other_urls=https%3A%2F%2Fregistry.nlark.com%2F%40types%2Fecharts%2Fdownload%2F%40types%2Fecharts-4.9.10.tgz#a3dd598fbb3b36e797f3ce771be3fa8dc18a7da6"
   integrity sha1-o91Zj7s7NueX8853G+P6jcGKfaY=
   dependencies:
     "@types/zrender" "*"
@@ -2143,7 +2143,7 @@
 
 "@types/zrender@*":
   version "4.0.1"
-  resolved "https://registry.nlark.com/@types/zrender/download/@types/zrender-4.0.1.tgz?cache=0&sync_timestamp=1629608722862&other_urls=https%3A%2F%2Fregistry.nlark.com%2F%40types%2Fzrender%2Fdownload%2F%40types%2Fzrender-4.0.1.tgz#6280c40207927ce086be24b4391d668cd330e956"
+  resolved "https://registry.nlark.com/@types/zrender/download/@types/zrender-4.0.1.tgz?cache=0&sync_timestamp=1629609255818&other_urls=https%3A%2F%2Fregistry.nlark.com%2F%40types%2Fzrender%2Fdownload%2F%40types%2Fzrender-4.0.1.tgz#6280c40207927ce086be24b4391d668cd330e956"
   integrity sha1-YoDEAgeSfOCGviS0OR1mjNMw6VY=
 
 "@typescript-eslint/eslint-plugin@^4.29.1":

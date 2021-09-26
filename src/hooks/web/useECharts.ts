@@ -14,7 +14,7 @@ export function useECharts(
   theme: 'light' | 'dark' | 'default' = 'light'
 ) {
   const { getDarkMode } = useRootSetting();
-  let chartInstance: echarts.ECharts | null = null;
+  let chartInstance: echarts.EChartsType | null = null;
   let resizeFn: Fn = resize;
   const cacheOptions = ref({}) as Ref<EChartsOption>;
   let removeResizeFn: Fn = () => {};

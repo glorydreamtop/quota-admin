@@ -15,12 +15,13 @@
   import { BasicChart } from '/@/components/Chart';
   import { useChartConfigContext } from './hooks';
   import { reactive } from 'vue';
-  import { chartConfigType } from '/#/chart';
+  import type { chartConfigType } from '/#/chart';
+  import { cloneDeep } from 'lodash';
 
   const chartConfig = useChartConfigContext();
   const config = reactive({}) as chartConfigType;
   function paint() {
-    Object.assign(config, chartConfig);
+    Object.assign(config, cloneDeep(chartConfig));
   }
 </script>
 
