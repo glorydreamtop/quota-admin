@@ -22,22 +22,26 @@ interface chartTitlePopoverParams {
   onOk: (str: string) => void;
 }
 
+function createMountNode(e) {
+  const { clientX, clientY } = e.event?.event as MouseEvent;
+  const dom = document.createElement('span');
+  Object.assign(dom.style, {
+    position: 'fixed',
+    top: `${clientY}px`,
+    left: `${clientX}px`,
+    zIndex: '19',
+  });
+  document.body.appendChild(dom);
+  return dom;
+}
+
 // 支持修改标题
 export function useChartTitlePopover({ onOk, chartConfig }: chartTitlePopoverParams) {
   const title = ref('');
   return function (e) {
     if (e.componentType !== 'title') return;
     title.value = chartConfig.value.title;
-    const { clientX, clientY } = e.event?.event as MouseEvent;
-    const dom = document.createElement('span');
-    Object.assign(dom.style, {
-      position: 'fixed',
-      top: `${clientY}px`,
-      left: `${clientX}px`,
-      zIndex: '19',
-    });
-    document.body.appendChild(dom);
-
+    const dom = createMountNode(e);
     function input() {
       // @ts-ignore
       return h(Input, {
@@ -75,15 +79,7 @@ interface yAxixIndexEditParams {
 export function useYAxisIndexEdit({ chartConfig, onOk }: yAxixIndexEditParams) {
   return function (e) {
     if (e.componentType !== 'yAxis') return;
-    const { clientX, clientY } = e.event?.event as MouseEvent;
-    const dom = document.createElement('span');
-    Object.assign(dom.style, {
-      position: 'fixed',
-      top: `${clientY}px`,
-      left: `${clientX}px`,
-      zIndex: '19',
-    });
-    document.body.appendChild(dom);
+    const dom = createMountNode(e);
     const idx = e.yAxisIndex;
     // 当前轴的配置
     const current = reactive(cloneDeep(chartConfig.value.yAxis![idx]));
@@ -97,7 +93,11 @@ export function useYAxisIndexEdit({ chartConfig, onOk }: yAxixIndexEditParams) {
         current,
         idx,
         onUpdate: (v) => Object.assign(current, v),
-        onCreate: (v) => chartConfig.value.yAxis.push(v),
+        // onCreate: (v) => {
+        //   chartConfig.value.yAxis.push(v);
+        //   console.log(chartConfig.value);
+
+        // },
       });
     }
     const pop = h(Popover, {

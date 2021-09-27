@@ -38,14 +38,24 @@
       </span>
     </div>
     <Divider orientation="left">{{ t('page.quotaView.advance.axisSetting.title') }}</Divider>
-    <div> </div>
+    <div class="pl-8">
+      <span class="label">
+        <Button size="small">
+          <template #icon>
+            <Icon icon="ant-design:plus-outlined" />
+          </template>
+          <span>{{ t('page.quotaView.advance.axisSetting.yAxis.createY') }}</span>
+        </Button>
+      </span>
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
   // import { ref } from 'vue';
-  import { Divider, Switch, InputNumber } from 'ant-design-vue';
+  import { Divider, Switch, InputNumber, Button } from 'ant-design-vue';
   import { useI18n } from '/@/hooks/web/useI18n';
+  import Icon from '/@/components/Icon';
   import { useChartConfigContext } from './hooks';
 
   const { t } = useI18n();

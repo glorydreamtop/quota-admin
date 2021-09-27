@@ -25,6 +25,7 @@ export function getNormalChartDefaultConfig(): normalChartConfigType {
         min: undefined,
         max: undefined,
         inverse: false,
+        offset: 0,
         position: 'left',
       },
     ],

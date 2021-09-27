@@ -35,11 +35,16 @@
     chartConfig,
     async (v) => {
       const options = await chartTypeHooks[v.type](v);
+      console.log(options);
+
       setOptions(options);
     },
     { deep: true }
   );
 
+  function update() {
+    emit('updateConfig', cloneDeep(unref(chartConfig)));
+  }
   interface eventBusType {
     event: any;
     target: 'title';
@@ -65,7 +70,7 @@
       chartConfig,
       onOk: (title) => {
         chartConfig.value.title = title;
-        emit('updateConfig', cloneDeep(unref(chartConfig)));
+        update();
       },
     });
     eventBus.push({
@@ -78,7 +83,7 @@
       chartConfig: chartConfig as Ref<normalChartConfigType>,
       onOk: (yAxisOption, idx) => {
         (chartConfig.value as normalChartConfigType).yAxis[idx] = yAxisOption;
-        emit('updateConfig', cloneDeep(unref(chartConfig)));
+        update();
       },
     });
     eventBus.push({
