@@ -60,6 +60,16 @@ export default {
       },
       axisSetting: {
         title: '直角坐标轴设置',
+        yAxis: {
+          index: '序号',
+          min: '最小值',
+          max: '最大值',
+          position: '位置',
+          inverse: '逆序',
+          create: '创建轴',
+          left: '左',
+          right: '右',
+        },
       },
     },
   },

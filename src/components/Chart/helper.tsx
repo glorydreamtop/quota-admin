@@ -1,17 +1,16 @@
 import { getQuotaData } from '/@/api/quota';
 import { getQuotaDataParams, getQuotaDataResult } from '/@/api/quota/model';
-import { Popover, Input, Switch, Radio, InputNumber } from 'ant-design-vue';
-import { h, Ref, ref, render } from 'vue';
+import { Popover, Input } from 'ant-design-vue';
+import { h, reactive, Ref, ref, render } from 'vue';
 import { chartConfigType, normalChartConfigType } from '/#/chart';
-import { EChartsOption, GraphicComponentOption, SeriesOption } from 'echarts';
-import { last, maxBy, nth, round } from 'lodash-es';
+import { EChartsOption, GraphicComponentOption, SeriesOption, YAXisComponentOption } from 'echarts';
+import { cloneDeep, last, maxBy, nth, round } from 'lodash-es';
 import { chartTypeEnum } from '/@/enums/chartEnum';
 import { formatToDate } from '/@/utils/dateUtil';
 import dayjs from 'dayjs';
 import { useI18n } from '/@/hooks/web/useI18n';
+import YAxisEdit from './src/YAxisEdit.vue';
 
-const RadioGroup = Radio.Group;
-const RadioButton = Radio.Button;
 const { t } = useI18n();
 export async function fetchQuotaData(params: getQuotaDataParams) {
   const res = await getQuotaData(params);
@@ -70,7 +69,7 @@ export function useChartTitlePopover({ onOk, chartConfig }: chartTitlePopoverPar
 
 interface yAxixIndexEditParams {
   chartConfig: Ref<normalChartConfigType>;
-  onOk: (e: any) => void;
+  onOk: (e: YAXisComponentOption, idx: number) => void;
 }
 // 支持Y轴编辑
 export function useYAxisIndexEdit({ chartConfig, onOk }: yAxixIndexEditParams) {
@@ -85,43 +84,24 @@ export function useYAxisIndexEdit({ chartConfig, onOk }: yAxixIndexEditParams) {
       zIndex: '19',
     });
     document.body.appendChild(dom);
-    function tsx() {
-      const idx = e.yAxisIndex;
-      const current = chartConfig.value.yAxis![idx];
-      return (
-        <div class="flex flex-col gap-2 children:whitespace-nowrap children:flex children:items-center w-24">
-          <div>
-            <div class="w-3em text-justify">序号</div>
-            <span>{idx + 1}</span>
-          </div>
-          <div>
-            <div class="min-w-3em text-justify">最小值</div>
-            <InputNumber size="small" class="!w-12" v-model:value={current.min}></InputNumber>
-          </div>
-          <div>
-            <div class="min-w-3em text-justify">最大值</div>
-            <InputNumber size="small" class="!w-12" v-model:value={current.max}></InputNumber>
-          </div>
-          <div>
-            <div class="min-w-3em text-justify">位置</div>
-            <RadioGroup size="small" v-model:value={current.position} button-style="solid">
-              <RadioButton value="left">左</RadioButton>
-              <RadioButton value="right">右</RadioButton>
-            </RadioGroup>
-          </div>
-          <div>
-            <div class="min-w-3em text-justify">逆序</div>
-            <Switch size="small" v-model:checked={current.inverse} />
-          </div>
-        </div>
-      );
-    }
+    const idx = e.yAxisIndex;
+    // 当前轴的配置
+    const current = reactive(cloneDeep(chartConfig.value.yAxis![idx]));
+
     const placementMap = {
       left: 'right',
       right: 'left',
     };
+    function YAxisEditComponent() {
+      return h(YAxisEdit, {
+        current,
+        idx,
+        onUpdate: (v) => Object.assign(current, v),
+        onCreate: (v) => chartConfig.value.yAxis.push(v),
+      });
+    }
     const pop = h(Popover, {
-      content: tsx(),
+      content: YAxisEditComponent,
       defaultVisible: true,
       trigger: 'click',
       placement: placementMap[chartConfig.value.yAxis![e.yAxisIndex].position!],
@@ -129,7 +109,7 @@ export function useYAxisIndexEdit({ chartConfig, onOk }: yAxixIndexEditParams) {
       getPopupContainer: (_) => dom,
       onVisibleChange: (visible: boolean) => {
         if (!visible) {
-          onOk(e);
+          onOk(current, idx);
           dom.remove();
         }
       },

@@ -60,6 +60,7 @@
     onDeactivated(() => {
       stop();
     });
+    // 编辑标题
     const titleClickEvent = useChartTitlePopover({
       chartConfig,
       onOk: (title) => {
@@ -72,10 +73,13 @@
       eventType: 'dblclick',
       target: 'title',
     });
+    // 编辑Y轴
     const yAxisClickEvent = useYAxisIndexEdit({
-      instance,
       chartConfig: chartConfig as Ref<normalChartConfigType>,
-      onOk: () => {},
+      onOk: (yAxisOption, idx) => {
+        (chartConfig.value as normalChartConfigType).yAxis[idx] = yAxisOption;
+        emit('updateConfig', cloneDeep(unref(chartConfig)));
+      },
     });
     eventBus.push({
       event: yAxisClickEvent,
@@ -84,16 +88,12 @@
     });
     instance.on('dblclick', (e) => {
       console.log(e);
-
       // 激活双击监听的所有事件
       eventBus
         .filter((event) => event.eventType === 'dblclick')
         .forEach((event) => {
           event.event(e);
         });
-    });
-    instance.on('click', (e) => {
-      console.log(e);
     });
   });
 </script>
