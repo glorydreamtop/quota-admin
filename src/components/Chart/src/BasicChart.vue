@@ -13,7 +13,7 @@
   import type { chartConfigType, normalChartConfigType } from '/#/chart';
   import { onMountedOrActivated } from '/@/hooks/core/onMountedOrActivated';
   import { useDebounceFn, useResizeObserver } from '@vueuse/core';
-  import { useChartTitlePopover, useYAxisIndexEdit } from '../helper';
+  import { createMountNode, useChartTitlePopover, useYAxisIndexEdit } from '../helper';
   import { cloneDeep } from 'lodash';
 
   const props = defineProps<{
@@ -47,7 +47,7 @@
   }
   interface eventBusType {
     event: any;
-    target: 'title';
+    target: 'title' | 'yAxis';
     eventType: 'dblclick' | 'contextmenu';
   }
   // 监听事件的列表
@@ -67,7 +67,7 @@
     });
     // 编辑标题
     const titleClickEvent = useChartTitlePopover({
-      chartConfig,
+      chartConfig: chartConfig.value,
       onOk: (title) => {
         chartConfig.value.title = title;
         update();
@@ -80,16 +80,16 @@
     });
     // 编辑Y轴
     const yAxisClickEvent = useYAxisIndexEdit({
-      chartConfig: chartConfig as Ref<normalChartConfigType>,
-      onOk: (yAxisOption, idx) => {
-        (chartConfig.value as normalChartConfigType).yAxis[idx] = yAxisOption;
+      chartConfig: chartConfig.value as normalChartConfigType,
+      onOk: (config) => {
+        Object.assign(chartConfig.value, config);
         update();
       },
     });
     eventBus.push({
       event: yAxisClickEvent,
       eventType: 'dblclick',
-      target: 'title',
+      target: 'yAxis',
     });
     instance.on('dblclick', (e) => {
       console.log(e);
@@ -97,7 +97,8 @@
       eventBus
         .filter((event) => event.eventType === 'dblclick')
         .forEach((event) => {
-          event.event(e);
+          const dom = createMountNode(e);
+          event.event(dom, e);
         });
     });
   });

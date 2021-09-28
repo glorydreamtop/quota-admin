@@ -39,7 +39,7 @@
     </div>
     <Divider orientation="left">{{ t('page.quotaView.advance.axisSetting.title') }}</Divider>
     <div class="pl-8">
-      <Button size="small">
+      <Button size="small" @click="createYAxis">
         <template #icon>
           <Icon icon="ant-design:plus-outlined" />
         </template>
@@ -55,10 +55,27 @@
   import { useI18n } from '/@/hooks/web/useI18n';
   import Icon from '/@/components/Icon';
   import { useChartConfigContext } from './hooks';
-  // import YAxisEdit from '/@/components/Chart/src/YAxisEdit.vue';
+  import { useYAxisIndexEdit } from '/@/components/Chart/helper';
+  import type { normalChartConfigType } from '/#/chart';
 
   const { t } = useI18n();
   const chartConfig = useChartConfigContext();
+
+  function createYAxis(e) {
+    const config = chartConfig as normalChartConfigType;
+    config.yAxis.push({
+      min: undefined,
+      max: undefined,
+      inverse: false,
+      position: 'left',
+      offset: 40,
+    });
+    const yAxisIndexEvent = useYAxisIndexEdit({
+      chartConfig: config,
+      onOk: () => {},
+    });
+    yAxisIndexEvent(e.target, { yAxisIndex: config.yAxis.length - 1 });
+  }
 </script>
 
 <style lang="less" scoped>

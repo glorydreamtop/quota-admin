@@ -74,7 +74,6 @@
         </div>
       </div>
     </template>
-    <slot></slot>
   </Popover>
 </template>
 

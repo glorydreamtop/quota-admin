@@ -1,7 +1,7 @@
 import { getQuotaData } from '/@/api/quota';
 import { getQuotaDataParams, getQuotaDataResult } from '/@/api/quota/model';
 import { Popover, Input } from 'ant-design-vue';
-import { h, Ref, ref, render } from 'vue';
+import { h, ref, render } from 'vue';
 import { chartConfigType, normalChartConfigType } from '/#/chart';
 import { EChartsOption, GraphicComponentOption, SeriesOption } from 'echarts';
 import { last, maxBy, nth, round } from 'lodash-es';
@@ -18,11 +18,11 @@ export async function fetchQuotaData(params: getQuotaDataParams) {
 }
 
 interface chartTitlePopoverParams {
-  chartConfig: Ref<chartConfigType>;
+  chartConfig: chartConfigType;
   onOk: (str: string) => void;
 }
 
-function createMountNode(e) {
+export function createMountNode(e) {
   const { clientX, clientY } = e.event?.event as MouseEvent;
   const dom = document.createElement('span');
   Object.assign(dom.style, {
@@ -38,10 +38,8 @@ function createMountNode(e) {
 // 支持修改标题
 export function useChartTitlePopover({ onOk, chartConfig }: chartTitlePopoverParams) {
   const title = ref('');
-  return function (e) {
-    if (e.componentType !== 'title') return;
-    title.value = chartConfig.value.title;
-    const dom = createMountNode(e);
+  return function (dom: HTMLElement) {
+    title.value = chartConfig.title;
     function input() {
       // @ts-ignore
       return h(Input, {
@@ -72,20 +70,19 @@ export function useChartTitlePopover({ onOk, chartConfig }: chartTitlePopoverPar
 }
 
 interface yAxixIndexEditParams {
-  chartConfig: Ref<normalChartConfigType>;
+  chartConfig: normalChartConfigType;
+  onOk: (str: string) => void;
 }
 // 支持Y轴编辑
-export function useYAxisIndexEdit({ chartConfig }: yAxixIndexEditParams) {
-  return function (e) {
-    if (e.componentType !== 'yAxis') return;
-    const dom = createMountNode(e);
-    const idx = e.yAxisIndex;
+export function useYAxisIndexEdit({ chartConfig, onOk }: yAxixIndexEditParams) {
+  return function (dom: HTMLElement, { yAxisIndex }: any) {
+    const idx = yAxisIndex;
     function YAxisEditComponent() {
       return h(YAxisEdit, {
-        chartConfig: chartConfig.value,
+        chartConfig,
         idx,
         onUpdate: (v) => {
-          Object.assign(chartConfig.value, v);
+          onOk(v);
           dom.remove();
         },
       });

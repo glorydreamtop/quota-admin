@@ -42,6 +42,7 @@ export interface seasonalChartConfigType extends reactSettingType, baseChartConf
 }
 
 export interface normalChartConfigType extends reactSettingType, baseChartConfigType {
+  [x: string]: any;
   quotaList: Nullable<SelectedQuotaItem[]>;
   yAxis: YAXisComponentOption[];
 }
