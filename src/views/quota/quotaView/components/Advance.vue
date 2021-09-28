@@ -39,14 +39,12 @@
     </div>
     <Divider orientation="left">{{ t('page.quotaView.advance.axisSetting.title') }}</Divider>
     <div class="pl-8">
-      <span class="label">
-        <Button size="small">
-          <template #icon>
-            <Icon icon="ant-design:plus-outlined" />
-          </template>
-          <span>{{ t('page.quotaView.advance.axisSetting.yAxis.createY') }}</span>
-        </Button>
-      </span>
+      <Button size="small">
+        <template #icon>
+          <Icon icon="ant-design:plus-outlined" />
+        </template>
+        <span>{{ t('page.quotaView.advance.axisSetting.yAxis.createY') }}</span>
+      </Button>
     </div>
   </div>
 </template>
@@ -57,6 +55,7 @@
   import { useI18n } from '/@/hooks/web/useI18n';
   import Icon from '/@/components/Icon';
   import { useChartConfigContext } from './hooks';
+  // import YAxisEdit from '/@/components/Chart/src/YAxisEdit.vue';
 
   const { t } = useI18n();
   const chartConfig = useChartConfigContext();

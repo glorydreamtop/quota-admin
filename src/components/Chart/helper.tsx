@@ -1,10 +1,10 @@
 import { getQuotaData } from '/@/api/quota';
 import { getQuotaDataParams, getQuotaDataResult } from '/@/api/quota/model';
 import { Popover, Input } from 'ant-design-vue';
-import { h, reactive, Ref, ref, render } from 'vue';
+import { h, Ref, ref, render } from 'vue';
 import { chartConfigType, normalChartConfigType } from '/#/chart';
-import { EChartsOption, GraphicComponentOption, SeriesOption, YAXisComponentOption } from 'echarts';
-import { cloneDeep, last, maxBy, nth, round } from 'lodash-es';
+import { EChartsOption, GraphicComponentOption, SeriesOption } from 'echarts';
+import { last, maxBy, nth, round } from 'lodash-es';
 import { chartTypeEnum } from '/@/enums/chartEnum';
 import { formatToDate } from '/@/utils/dateUtil';
 import dayjs from 'dayjs';
@@ -73,48 +73,24 @@ export function useChartTitlePopover({ onOk, chartConfig }: chartTitlePopoverPar
 
 interface yAxixIndexEditParams {
   chartConfig: Ref<normalChartConfigType>;
-  onOk: (e: YAXisComponentOption, idx: number) => void;
 }
 // 支持Y轴编辑
-export function useYAxisIndexEdit({ chartConfig, onOk }: yAxixIndexEditParams) {
+export function useYAxisIndexEdit({ chartConfig }: yAxixIndexEditParams) {
   return function (e) {
     if (e.componentType !== 'yAxis') return;
     const dom = createMountNode(e);
     const idx = e.yAxisIndex;
-    // 当前轴的配置
-    const current = reactive(cloneDeep(chartConfig.value.yAxis![idx]));
-
-    const placementMap = {
-      left: 'right',
-      right: 'left',
-    };
     function YAxisEditComponent() {
       return h(YAxisEdit, {
-        current,
+        chartConfig: chartConfig.value,
         idx,
-        onUpdate: (v) => Object.assign(current, v),
-        // onCreate: (v) => {
-        //   chartConfig.value.yAxis.push(v);
-        //   console.log(chartConfig.value);
-
-        // },
+        onUpdate: (v) => {
+          Object.assign(chartConfig.value, v);
+          dom.remove();
+        },
       });
     }
-    const pop = h(Popover, {
-      content: YAxisEditComponent,
-      defaultVisible: true,
-      trigger: 'click',
-      placement: placementMap[chartConfig.value.yAxis![e.yAxisIndex].position!],
-      destroyTooltipOnHide: true,
-      getPopupContainer: (_) => dom,
-      onVisibleChange: (visible: boolean) => {
-        if (!visible) {
-          onOk(current, idx);
-          dom.remove();
-        }
-      },
-    });
-    render(pop, dom);
+    render(YAxisEditComponent(), dom);
   };
 }
 
