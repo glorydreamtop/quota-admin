@@ -39,42 +39,29 @@
     </div>
     <Divider orientation="left">{{ t('page.quotaView.advance.axisSetting.title') }}</Divider>
     <div class="pl-8">
-      <Button size="small" @click="createYAxis">
-        <template #icon>
-          <Icon icon="ant-design:plus-outlined" />
-        </template>
-        <span>{{ t('page.quotaView.advance.axisSetting.yAxis.createY') }}</span>
-      </Button>
+      <YAxisEdit :chart-config="chartConfig" :idx="0" @update="updateConfig">
+        <Button size="small">
+          <template #icon>
+            <Icon icon="ant-design:plus-outlined" />
+          </template>
+          <span>{{ t('page.quotaView.advance.axisSetting.yAxis.createY') }}</span>
+        </Button>
+      </YAxisEdit>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-  // import { ref } from 'vue';
   import { Divider, Switch, InputNumber, Button } from 'ant-design-vue';
   import { useI18n } from '/@/hooks/web/useI18n';
   import Icon from '/@/components/Icon';
   import { useChartConfigContext } from './hooks';
-  import { useYAxisIndexEdit } from '/@/components/Chart/helper';
-  import type { normalChartConfigType } from '/#/chart';
+  import YAxisEdit from '/@/components/Chart/src/YAxisEdit.vue';
 
   const { t } = useI18n();
   const chartConfig = useChartConfigContext();
-
-  function createYAxis(e) {
-    const config = chartConfig as normalChartConfigType;
-    config.yAxis.push({
-      min: undefined,
-      max: undefined,
-      inverse: false,
-      position: 'left',
-      offset: 40,
-    });
-    const yAxisIndexEvent = useYAxisIndexEdit({
-      chartConfig: config,
-      onOk: () => {},
-    });
-    yAxisIndexEvent(e.target, { yAxisIndex: config.yAxis.length - 1 });
+  function updateConfig(config) {
+    Object.assign(chartConfig, config);
   }
 </script>
 

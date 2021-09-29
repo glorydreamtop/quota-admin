@@ -147,6 +147,7 @@ export async function useNormalChart(chartConfig: normalChartConfigType): Promis
       const base: YAXisComponentOption = {
         type: 'value',
         scale: true,
+        show: true,
         triggerEvent: true,
       };
       Object.assign(base, y);

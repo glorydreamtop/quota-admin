@@ -1,9 +1,9 @@
 <template>
   <Popover
+    v-bind="$attrs"
     trigger="click"
     :placement="placement"
     destroyTooltipOnHide
-    defaultVisible
     @visibleChange="visibleChange"
   >
     <template #content>
@@ -72,14 +72,22 @@
             @input="(e) => onInputNumber(e, 'offset')"
           />
         </div>
+        <div class="mt-2">
+          <Button size="small" block type="primary" @clicl="confirm">{{
+            t('common.okText')
+          }}</Button>
+        </div>
       </div>
     </template>
+    <div>
+      <slot></slot>
+    </div>
   </Popover>
 </template>
 
 <script lang="ts" setup>
   import { reactive, ref } from 'vue';
-  import { Input, Switch, Radio, Popover } from 'ant-design-vue';
+  import { Input, Switch, Radio, Popover, Button } from 'ant-design-vue';
   import { cloneDeep } from 'lodash-es';
   import { useI18n } from '/@/hooks/web/useI18n';
   import type { normalChartConfigType } from '/#/chart';
@@ -95,14 +103,13 @@
   const emit = defineEmits<{
     (event: 'update', chartConfig: normalChartConfigType);
   }>();
-
-  const idx = ref(props.idx);
-  const currentCfg = reactive(cloneDeep(props.chartConfig.yAxis[idx.value]));
+  const currentCfg = reactive({});
   const placementMap = {
     left: 'right',
     right: 'left',
   };
-  const placement = ref(placementMap[currentCfg.position!]);
+
+  const placement = ref('right');
   // 数字格式化
   function onInputNumber(e, type: 'min' | 'max' | 'offset') {
     if (e.target.value === '') {
@@ -111,12 +118,32 @@
     }
     currentCfg[type] = parseFloat((e.target.value as string).replace(/[^\d|\.]/g, ''));
   }
-  function visibleChange(v) {
-    if (!v) {
-      const config = props.chartConfig;
-      config.yAxis[idx.value] = currentCfg;
-      emit('update', config);
+  function visibleChange(v: boolean) {
+    if (v) {
+      if (props.idx === 0) {
+        Object.assign(currentCfg, {
+          min: undefined,
+          max: undefined,
+          inverse: false,
+          offset: 40,
+          position: 'left',
+        });
+      } else {
+        Object.assign(currentCfg, props.chartConfig.yAxis[props.idx]);
+      }
+      placement.value = placementMap[currentCfg.position];
     }
+  }
+  function confirm() {
+    const config = cloneDeep(props.chartConfig);
+    if (props.idx === 0) {
+      // 添加模式
+      config.yAxis.push(currentCfg);
+    } else {
+      // 修改模式
+      Object.assign(config.yAxis[idx], currentCfg);
+    }
+    emit('update', config);
   }
 </script>
 

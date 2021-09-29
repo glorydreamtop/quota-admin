@@ -1,7 +1,7 @@
 import { getQuotaData } from '/@/api/quota';
 import { getQuotaDataParams, getQuotaDataResult } from '/@/api/quota/model';
 import { Popover, Input } from 'ant-design-vue';
-import { h, ref, render } from 'vue';
+import { h, nextTick, ref, render } from 'vue';
 import { chartConfigType, normalChartConfigType } from '/#/chart';
 import { EChartsOption, GraphicComponentOption, SeriesOption } from 'echarts';
 import { last, maxBy, nth, round } from 'lodash-es';
@@ -22,9 +22,12 @@ interface chartTitlePopoverParams {
   onOk: (str: string) => void;
 }
 
+const MOUNTNODE = 'mount-node';
+
 export function createMountNode(e) {
   const { clientX, clientY } = e.event?.event as MouseEvent;
   const dom = document.createElement('span');
+  dom.className = MOUNTNODE;
   Object.assign(dom.style, {
     position: 'fixed',
     top: `${clientY}px`,
@@ -61,7 +64,9 @@ export function useChartTitlePopover({ onOk, chartConfig }: chartTitlePopoverPar
       onVisibleChange: (visible: boolean) => {
         if (!visible) {
           onOk(title.value);
-          dom.remove();
+          if (dom.className === MOUNTNODE) {
+            dom.remove();
+          }
         }
       },
     });
@@ -75,19 +80,28 @@ interface yAxixIndexEditParams {
 }
 // 支持Y轴编辑
 export function useYAxisIndexEdit({ chartConfig, onOk }: yAxixIndexEditParams) {
-  return function (dom: HTMLElement, { yAxisIndex }: any) {
+  return async function (dom: HTMLElement, { yAxisIndex }: any) {
     const idx = yAxisIndex;
+    const slotDom = document.createElement('span');
     function YAxisEditComponent() {
-      return h(YAxisEdit, {
+      console.log('render');
+
+      const editPopover = h(YAxisEdit, {
         chartConfig,
         idx,
         onUpdate: (v) => {
           onOk(v);
-          dom.remove();
+          if (dom.className === MOUNTNODE) {
+            dom.remove();
+          }
         },
+        getPopupContainer: () => dom,
       });
+      return editPopover;
     }
-    render(YAxisEditComponent(), dom);
+    await render(YAxisEditComponent(), dom);
+    await nextTick();
+    slotDom.click();
   };
 }
 

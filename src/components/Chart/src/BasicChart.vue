@@ -93,12 +93,15 @@
     });
     instance.on('dblclick', (e) => {
       console.log(e);
-      // 激活双击监听的所有事件
+      // 依次执行双击监听的所有事件
       eventBus
         .filter((event) => event.eventType === 'dblclick')
         .forEach((event) => {
-          const dom = createMountNode(e);
-          event.event(dom, e);
+          // 匹配对应类型的事件
+          if (e.componentType === event.target) {
+            const dom = createMountNode(e);
+            event.event(dom, e);
+          }
         });
     });
   });

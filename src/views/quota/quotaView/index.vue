@@ -4,7 +4,7 @@
     ref="containerRef1"
   >
     <div class="h-full w-75 relative scaleable1 border">
-      <QuotaTree :show-search="true" class="h-full w-full" @selectNode="selectNode" />
+      <QuotaTree :show-search="true" class="h-full w-full enter-y" @selectNode="selectNode" />
       <ArrowsAltOutlined
         class="absolute scale z-9 cursor-w-resize"
         :rotate="45"
@@ -12,8 +12,8 @@
       />
     </div>
     <div class="flex flex-col h-full flex-grow w-0 gap-4" ref="containerRef2">
-      <QuotaList class="scaleable2 border" />
-      <ChartGenerator />
+      <QuotaList class="scaleable2 border enter-y" />
+      <ChartGenerator class="enter-y" />
     </div>
   </div>
 </template>
