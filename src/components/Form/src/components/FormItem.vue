@@ -314,10 +314,10 @@
 
         const showSuffix = !!suffix;
         const getSuffix = isFunction(suffix) ? suffix(unref(getValues)) : suffix;
-
+        console.log(field);
         return (
           <Form.Item
-            name={field}
+            name={field.includes('.') ? field.split('.') : field}
             colon={colon}
             class={{ 'suffix-item': showSuffix }}
             {...(itemProps as Recordable)}

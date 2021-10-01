@@ -1,7 +1,7 @@
 import { getQuotaData } from '/@/api/quota';
 import { getQuotaDataParams, getQuotaDataResult } from '/@/api/quota/model';
 import { Popover, Input } from 'ant-design-vue';
-import { h, nextTick, ref, render } from 'vue';
+import { h, ref, render } from 'vue';
 import { chartConfigType, normalChartConfigType } from '/#/chart';
 import { EChartsOption, GraphicComponentOption, SeriesOption } from 'echarts';
 import { last, maxBy, nth, round } from 'lodash-es';
@@ -76,32 +76,33 @@ export function useChartTitlePopover({ onOk, chartConfig }: chartTitlePopoverPar
 
 interface yAxixIndexEditParams {
   chartConfig: normalChartConfigType;
-  onOk: (str: string) => void;
+  onOk: (v: normalChartConfigType) => void;
 }
 // 支持Y轴编辑
 export function useYAxisIndexEdit({ chartConfig, onOk }: yAxixIndexEditParams) {
-  return async function (dom: HTMLElement, { yAxisIndex }: any) {
+  return function (dom: HTMLElement, { yAxisIndex }: any) {
     const idx = yAxisIndex;
-    const slotDom = document.createElement('span');
     function YAxisEditComponent() {
-      console.log('render');
-
       const editPopover = h(YAxisEdit, {
         chartConfig,
         idx,
-        onUpdate: (v) => {
-          onOk(v);
-          if (dom.className === MOUNTNODE) {
+        onVisibleChange: (v: boolean) => {
+          // 关闭时销毁挂载点
+          if (!v && dom.className === MOUNTNODE) {
             dom.remove();
           }
+        },
+        onUpdate: (v: any) => {
+          onOk(v);
         },
         getPopupContainer: () => dom,
       });
       return editPopover;
     }
-    await render(YAxisEditComponent(), dom);
-    await nextTick();
-    slotDom.click();
+    const component = YAxisEditComponent();
+    render(component, dom);
+    // 外部触发气泡显示
+    component.component!.exposed!.setVisible(true);
   };
 }
 

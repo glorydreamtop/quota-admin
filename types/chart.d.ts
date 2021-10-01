@@ -30,6 +30,7 @@ export interface baseChartConfigType {
     afterDot: number;
     scientificNotation: boolean;
   };
+  yAxis: YAXisComponentOption[];
 }
 
 export interface reactSettingType {
@@ -44,7 +45,6 @@ export interface seasonalChartConfigType extends reactSettingType, baseChartConf
 export interface normalChartConfigType extends reactSettingType, baseChartConfigType {
   [x: string]: any;
   quotaList: Nullable<SelectedQuotaItem[]>;
-  yAxis: YAXisComponentOption[];
 }
 
 export type chartConfigType = seasonalChartConfigType | normalChartConfigType;

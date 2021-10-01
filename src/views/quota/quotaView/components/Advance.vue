@@ -39,7 +39,7 @@
     </div>
     <Divider orientation="left">{{ t('page.quotaView.advance.axisSetting.title') }}</Divider>
     <div class="pl-8">
-      <YAxisEdit :chart-config="chartConfig" :idx="0" @update="updateConfig">
+      <YAxisEdit :chart-config="chartConfig" :idx="null" @update="updateConfig">
         <Button size="small">
           <template #icon>
             <Icon icon="ant-design:plus-outlined" />

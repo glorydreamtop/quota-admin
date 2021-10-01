@@ -8,7 +8,7 @@ export default {
   resetText: '重置',
   searchText: '搜索',
   queryText: '查询',
-
+  removeText: '移除',
   inputText: '请输入',
   chooseText: '请选择',
 
@@ -18,5 +18,7 @@ export default {
   light: '亮色主题',
   dark: '黑暗主题',
 
+  unlimited: '不限',
+  auto: '自动',
   searchResEmpty: '暂无搜索结果',
 };

@@ -2,9 +2,9 @@
   <Popover
     v-bind="$attrs"
     trigger="click"
+    v-model:visible="visible"
     :placement="placement"
     destroyTooltipOnHide
-    @visibleChange="visibleChange"
   >
     <template #content>
       <div
@@ -19,7 +19,7 @@
           <div class="w-3em text-justify mr-2">
             {{ t('page.quotaView.advance.axisSetting.yAxis.index') }}
           </div>
-          <span>{{ idx + 1 }}</span>
+          <span>{{ idx ? idx + 1 : '' }}</span>
         </div>
         <div>
           <div class="min-w-3em text-justify mr-2">{{
@@ -72,10 +72,19 @@
             @input="(e) => onInputNumber(e, 'offset')"
           />
         </div>
-        <div class="mt-2">
-          <Button size="small" block type="primary" @clicl="confirm">{{
+        <div class="mt-2 flex gap-1">
+          <Button size="small" block type="primary" @click="confirm">{{
             t('common.okText')
           }}</Button>
+          <Button
+            size="small"
+            block
+            type="primary"
+            danger
+            @click="del"
+            v-show="props.idx !== null"
+            >{{ t('common.removeText') }}</Button
+          >
         </div>
       </div>
     </template>
@@ -86,11 +95,12 @@
 </template>
 
 <script lang="ts" setup>
-  import { reactive, ref } from 'vue';
+  import { reactive, ref, watch } from 'vue';
   import { Input, Switch, Radio, Popover, Button } from 'ant-design-vue';
   import { cloneDeep } from 'lodash-es';
   import { useI18n } from '/@/hooks/web/useI18n';
   import type { normalChartConfigType } from '/#/chart';
+  import type { YAXisComponentOption } from 'echarts';
   const { t } = useI18n();
 
   const RadioGroup = Radio.Group;
@@ -98,18 +108,19 @@
 
   const props = defineProps<{
     chartConfig: normalChartConfigType;
-    idx: number;
+    idx: Nullable<number>;
   }>();
   const emit = defineEmits<{
     (event: 'update', chartConfig: normalChartConfigType);
+    (event: 'visibleChange', visible: boolean);
   }>();
-  const currentCfg = reactive({});
+  const currentCfg = reactive({}) as YAXisComponentOption;
   const placementMap = {
     left: 'right',
     right: 'left',
   };
 
-  const placement = ref('right');
+  const placement = ref<'left' | 'right'>('right');
   // 数字格式化
   function onInputNumber(e, type: 'min' | 'max' | 'offset') {
     if (e.target.value === '') {
@@ -118,9 +129,15 @@
     }
     currentCfg[type] = parseFloat((e.target.value as string).replace(/[^\d|\.]/g, ''));
   }
-  function visibleChange(v: boolean) {
+  const visible = ref(false);
+  function setVisible(v) {
+    visible.value = v;
+  }
+  defineExpose({ setVisible });
+  watch(visible, (v) => {
+    console.log('change', v);
     if (v) {
-      if (props.idx === 0) {
+      if (props.idx === null) {
         Object.assign(currentCfg, {
           min: undefined,
           max: undefined,
@@ -131,19 +148,27 @@
       } else {
         Object.assign(currentCfg, props.chartConfig.yAxis[props.idx]);
       }
-      placement.value = placementMap[currentCfg.position];
+      placement.value = placementMap[currentCfg.position!];
     }
-  }
+    emit('visibleChange', v);
+  });
   function confirm() {
     const config = cloneDeep(props.chartConfig);
-    if (props.idx === 0) {
+    if (props.idx === null) {
       // 添加模式
       config.yAxis.push(currentCfg);
     } else {
       // 修改模式
-      Object.assign(config.yAxis[idx], currentCfg);
+      Object.assign(config.yAxis[props.idx], currentCfg);
     }
     emit('update', config);
+    setVisible(false);
+  }
+  function del() {
+    const config = cloneDeep(props.chartConfig);
+    config.yAxis.splice(props.idx!, 1);
+    emit('update', config);
+    setVisible(false);
   }
 </script>
 
