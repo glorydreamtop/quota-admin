@@ -16,6 +16,7 @@ import {
   PolarComponent,
   AriaComponent,
   ParallelComponent,
+  DatasetComponent,
   LegendComponent,
   RadarComponent,
   ToolboxComponent,
@@ -51,6 +52,7 @@ echarts.use([
   TimelineComponent,
   CalendarComponent,
   GraphicComponent,
+  DatasetComponent,
 ]);
 
 export default echarts;

@@ -11,7 +11,7 @@
   import { isBoolean, isFunction, isNull } from '/@/utils/is';
   import { getSlot } from '/@/utils/helper/tsxHelper';
   import { createPlaceholderMessage, setComponentRuleType } from '../helper';
-  import { upperFirst, cloneDeep } from 'lodash-es';
+  import { upperFirst, cloneDeep, get } from 'lodash-es';
   import { useItemLabelWidth } from '../hooks/useLabelWidth';
   import { useI18n } from '/@/hooks/web/useI18n';
 
@@ -256,7 +256,7 @@
         propsData.formValues = unref(getValues);
 
         const bindValue: Recordable = {
-          [valueField || (isCheck ? 'checked' : 'value')]: props.formModel[field],
+          [valueField || (isCheck ? 'checked' : 'value')]: get(props.formModel, field),
         };
 
         const compAttr: Recordable = {

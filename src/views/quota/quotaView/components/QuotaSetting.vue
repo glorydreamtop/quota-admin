@@ -16,8 +16,8 @@
             </Row>
           </FormItem>
         </template>
-      </BasicForm>
-    </div>
+      </BasicForm> </div
+    >0 0 0
   </BasicModal>
 </template>
 
@@ -84,6 +84,8 @@
 
   const [register] = useModalInner(({ record }: { record: SelectedQuotaItem; index?: number }) => {
     setFieldsValue(record);
+    console.log(record);
+
     console.log(getFieldsValue());
   });
 </script>

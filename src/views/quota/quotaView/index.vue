@@ -34,11 +34,11 @@
   } from './components/hooks';
   import type { QuotaItem } from '/#/quota';
   import type { SelectedQuotaItem } from './components/hooks';
-  import type { normalChartConfigType } from '/#/chart';
-  import { getNormalChartDefaultConfig } from './helper';
+  import { getChartDefaultConfig } from './helper';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { cloneDeep } from 'lodash-es';
+  import { chartTypeEnum } from '/@/enums/chartEnum';
 
   const { createMessage } = useMessage();
   const { t } = useI18n();
@@ -50,10 +50,9 @@
   const selectedQuotaList = ref<SelectedQuotaItem[]>([]);
   createSelectedQuotaListContext(selectedQuotaList);
   // 一份图表的配置信息
-  const def = cloneDeep(getNormalChartDefaultConfig());
-  const chartConfig: normalChartConfigType = reactive(def);
+  const def = cloneDeep(getChartDefaultConfig(chartTypeEnum.normal));
+  const chartConfig = reactive(def);
   createChartConfigContext(chartConfig);
-
   const containerRef1 = ref<HTMLDivElement>();
   const containerRef2 = ref<HTMLDivElement>();
   onMountedOrActivated(() => {

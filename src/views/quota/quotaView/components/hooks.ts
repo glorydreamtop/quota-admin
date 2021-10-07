@@ -30,8 +30,8 @@ export function useSelectedQuotaListContext() {
 
 const chartConfigKey: InjectionKey<chartConfigType> = Symbol();
 
-export function createChartConfigContext(context: chartConfigType) {
-  return createContext<chartConfigType>(context, chartConfigKey, { native: true });
+export function createChartConfigContext<T = chartConfigType>(context: T) {
+  return createContext<T>(context, chartConfigKey, { native: true });
 }
 
 export function useChartConfigContext() {

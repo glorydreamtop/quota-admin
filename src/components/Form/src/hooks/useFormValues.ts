@@ -76,10 +76,11 @@ export function useFormValues({
     schemas.forEach((item) => {
       const { defaultValue } = item;
       if (!isNullOrUnDef(defaultValue)) {
-        obj[item.field] = defaultValue;
-        formModel[item.field] = defaultValue;
+        set(formModel, item.field, defaultValue);
+        set(obj, item.field, defaultValue);
       }
     });
+    debugger;
     defaultValueRef.value = obj;
   }
 

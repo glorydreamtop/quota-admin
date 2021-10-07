@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import type {
+  DatasetComponentOption,
   EChartsOption,
   GridComponentOption,
   LegendComponentOption,
@@ -8,13 +9,20 @@ import type {
   ToolboxComponentOption,
   YAXisComponentOption,
 } from 'echarts';
-import { round } from 'lodash-es';
+import { max, omit, round } from 'lodash-es';
 import { useAddGraphicElement, useHighestQuotaData, useLastestQuotaData } from './helper';
-import { chartConfigType, normalChartConfigType, seasonalChartConfigType } from '/#/chart';
-import { getQuotaData, quotaDataExportTypeEnum } from '/@/api/quota';
+import {
+  barChartConfigType,
+  chartConfigType,
+  normalChartConfigType,
+  seasonalChartConfigType,
+} from '/#/chart';
+import { getQuotaData, quotaDataExportTypeEnum, quotaDataPastUnitTypeEnum } from '/@/api/quota';
 import { getQuotaDataParams } from '/@/api/quota/model';
+import { useI18n } from '/@/hooks/web/useI18n';
 import { formatToDate } from '/@/utils/dateUtil';
 
+const { t } = useI18n();
 function titleConfig(chartConfig: chartConfigType): TitleComponentOption {
   return {
     text: chartConfig.title,
@@ -39,16 +47,18 @@ const toolboxConfig: ToolboxComponentOption = {
 const gridConfig: GridComponentOption = {
   width: 'auto',
 };
-
+// 季节性序列
 export async function useSeasonalChart(
   chartConfig: seasonalChartConfigType
 ): Promise<EChartsOption> {
-  const fetchParams: getQuotaDataParams = {
-    startDate: chartConfig.timeConfig.startDate,
-    endDate: chartConfig.timeConfig.endDate,
-    exportPara: quotaDataExportTypeEnum.JSON,
-    rows: chartConfig.quotaList!,
-  };
+  const fetchParams: getQuotaDataParams = omit(
+    {
+      exportPara: quotaDataExportTypeEnum.JSON,
+      rows: chartConfig.quotaList!,
+      ...chartConfig.timeConfig,
+    },
+    ['type', 'timeRule']
+  );
 
   const quotaDataList = await getQuotaData(fetchParams);
   const series: SeriesOption[] = [];
@@ -112,14 +122,16 @@ export async function useSeasonalChart(
   useHighestQuotaData({ chartConfig, options, quotaDataList });
   return options;
 }
-
+// 普通数据序列
 export async function useNormalChart(chartConfig: normalChartConfigType): Promise<EChartsOption> {
-  const fetchParams: getQuotaDataParams = {
-    startDate: chartConfig.timeConfig.startDate,
-    endDate: chartConfig.timeConfig.endDate,
-    exportPara: quotaDataExportTypeEnum.JSON,
-    rows: chartConfig.quotaList!,
-  };
+  const fetchParams: getQuotaDataParams = omit(
+    {
+      exportPara: quotaDataExportTypeEnum.JSON,
+      rows: chartConfig.quotaList!,
+      ...chartConfig.timeConfig,
+    },
+    ['type', 'timeRule']
+  );
 
   const quotaDataList = await getQuotaData(fetchParams);
   const legend: LegendComponentOption = {
@@ -159,6 +171,76 @@ export async function useNormalChart(chartConfig: normalChartConfigType): Promis
     tooltip: {
       show: true,
       trigger: 'axis',
+    },
+    grid: gridConfig,
+  };
+  useAddGraphicElement({ options });
+  // 最新值模块
+  useLastestQuotaData({ chartConfig, options, quotaDataList });
+  useHighestQuotaData({ chartConfig, options, quotaDataList });
+  return options;
+}
+// 柱状图最近N期序列
+export async function useBarChart(chartConfig: barChartConfigType) {
+  const fetchParams: getQuotaDataParams = {
+    startDate: chartConfig.timeConfig.startDate,
+    endDate: chartConfig.timeConfig.endDate,
+    exportPara: quotaDataExportTypeEnum.JSON,
+    rows: chartConfig.quotaList!,
+    pastUnit: quotaDataPastUnitTypeEnum.last,
+    pastValue: chartConfig.timeConfig.pastValue,
+  };
+
+  const quotaDataList = await getQuotaData(fetchParams);
+  const series: SeriesOption[] = [];
+  const dataset: DatasetComponentOption = {
+    source: [],
+  };
+
+  let maxLength = 0;
+  for (let index = 0; index < quotaDataList.length; index++) {
+    maxLength = max([quotaDataList[index].data.length, maxLength])!;
+  }
+  const firstLine = ['qoutaName'];
+  for (let index = 0; index < maxLength; index++) {
+    firstLine.push(t('page.chart.index') + (index + 1) + t('page.chart.unit'));
+  }
+  dataset.source = [firstLine];
+  quotaDataList.forEach((quota) => {
+    const source = [
+      quota.name,
+      ...quota.data.map((item) => round(item[1], chartConfig.valueFormatter.afterDot)),
+    ];
+    (dataset.source as any[]).push(source);
+    series.push({
+      type: 'bar',
+      // seriesLayoutBy:'row',
+    });
+  });
+  const options: EChartsOption = {
+    title: titleConfig(chartConfig),
+    xAxis: {
+      type: 'category',
+    },
+    yAxis: chartConfig.yAxis?.map((y) => {
+      const base: YAXisComponentOption = {
+        type: 'value',
+        scale: true,
+        show: true,
+        triggerEvent: true,
+      };
+      Object.assign(base, y);
+      return base;
+    }),
+    dataset,
+    series,
+    toolbox: toolboxConfig,
+    tooltip: {
+      show: true,
+      trigger: 'axis',
+      axisPointer: {
+        type: 'none',
+      },
     },
     grid: gridConfig,
   };
