@@ -4,6 +4,7 @@
       <Select
         class="w-30"
         size="small"
+        @select="selectType"
         v-model:value="chartConfig.type"
         :placeholder="t('page.quotaView.toolbar.chartTypeSelectPlaceholer')"
         :options="chartTypeList"
@@ -49,6 +50,7 @@
   import Color from './Color.vue';
   import Icon from '/@/components/Icon';
   import { cloneDeep } from 'lodash-es';
+  import { getChartDefaultConfig } from '../helper';
 
   const { t } = useI18n();
   const emit = defineEmits<{
@@ -68,9 +70,14 @@
     });
   }
   function openAdvanceModal() {}
-
+  function selectType(type: chartTypeEnum) {
+    for (const key in chartConfig) {
+      Reflect.deleteProperty(chartConfig, key);
+    }
+    Object.assign(chartConfig, getChartDefaultConfig(type));
+    console.log(chartConfig);
+  }
   async function paint() {
-    console.log(selectedQuotaList.value);
     // 季节性的公历和农历均只适用一个指标，使其他指标置灰
     if ([chartTypeEnum.seasonal, chartTypeEnum.seasonalLunar].includes(chartConfig.type)) {
       const list = selectedQuotaList.value;

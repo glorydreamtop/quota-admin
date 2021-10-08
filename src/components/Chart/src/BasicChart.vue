@@ -9,7 +9,7 @@
   import type { Ref } from 'vue';
   import { useECharts } from '/@/hooks/web/useECharts';
   import { chartTypeEnum } from '/@/enums/chartEnum';
-  import { useSeasonalChart, useNormalChart } from '../tranfer';
+  import { useSeasonalChart, useNormalChart, useBarChart } from '../tranfer';
   import type { chartConfigType, normalChartConfigType } from '/#/chart';
   import { onMountedOrActivated } from '/@/hooks/core/onMountedOrActivated';
   import { useDebounceFn, useResizeObserver } from '@vueuse/core';
@@ -30,13 +30,12 @@
   const chartTypeHooks = {
     [chartTypeEnum.seasonal]: useSeasonalChart,
     [chartTypeEnum.normal]: useNormalChart,
+    [chartTypeEnum.bar]: useBarChart,
   };
   watch(
     chartConfig,
     async (v) => {
       const options = await chartTypeHooks[v.type](v);
-      console.log(options);
-
       setOptions(options);
     },
     { deep: true }

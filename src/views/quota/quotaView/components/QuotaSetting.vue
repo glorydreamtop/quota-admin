@@ -16,14 +16,14 @@
             </Row>
           </FormItem>
         </template>
-      </BasicForm>
-    </div>
+      </BasicForm> </div
+    >0 0 0
   </BasicModal>
 </template>
 
 <script lang="ts" setup>
   // import { ref } from 'vue';
-  import type { SelectedQuotaItem } from './hooks';
+  import { SelectedQuotaItem, useChartConfigContext } from './hooks';
   import { BasicModal, useModalInner } from '/@/components/Modal';
   import { BasicForm, useForm } from '/@/components/Form';
   import { useI18n } from '/@/hooks/web/useI18n';
@@ -32,6 +32,7 @@
   const { t } = useI18n();
   const FormItem = Form.Item;
   const { getThemeColor } = useRootSetting();
+  const chartConfig = useChartConfigContext();
   const [registerForm, { setFieldsValue, getFieldsValue }] = useForm({
     schemas: [
       {
@@ -52,9 +53,19 @@
         ifShow: false,
       },
       {
-        field: 'settting.yAxisIndex',
+        field: 'setting.yAxisIndex',
         label: t('page.quotaView.quotaSetting.setting.yAxisIndex'),
         component: 'Select',
+        componentProps: {
+          options: chartConfig.yAxis.map((item, index) => {
+            return {
+              label: `${index + 1}/${item.min || t('common.auto')}-${
+                item.max || t('common.auto')
+              }/${t('page.quotaView.advance.axisSetting.yAxis.' + item.position)}`,
+              value: index,
+            };
+          }),
+        },
       },
     ],
     showActionButtonGroup: false,
@@ -72,9 +83,9 @@
   });
 
   const [register] = useModalInner(({ record }: { record: SelectedQuotaItem; index?: number }) => {
+    setFieldsValue(record);
     console.log(record);
 
-    setFieldsValue(record);
     console.log(getFieldsValue());
   });
 </script>

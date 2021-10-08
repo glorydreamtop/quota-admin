@@ -72,6 +72,20 @@ export default {
           offset: '偏移',
         },
       },
+      datasourceSetting: {
+        title: '获取数据量设置',
+        tip: '设为0则是起止日期内全部',
+        past: '最近',
+        pastUnit: {
+          day: '日',
+          last: '期',
+          month: '月',
+        },
+      },
     },
+  },
+  chart: {
+    index: '第',
+    unit: '期',
   },
 };

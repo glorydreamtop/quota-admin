@@ -54,6 +54,8 @@ export function useECharts(
 
   function setOptions(options: EChartsOption, clear = true) {
     cacheOptions.value = options;
+    console.log(unref(getOptions));
+
     if (unref(elRef)?.offsetHeight === 0) {
       useTimeoutFn(() => {
         setOptions(unref(getOptions));

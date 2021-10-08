@@ -27,6 +27,8 @@ export enum quotaDataExportTypeEnum {
 
 export enum quotaDataPastUnitTypeEnum {
   day = '日',
+  last = '期',
+  month = '月',
 }
 
 /**
