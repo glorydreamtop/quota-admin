@@ -5,7 +5,7 @@ import type {
   normalQuotaSettingType,
 } from '/#/chart';
 import { today, yearsAgo } from '/@/utils/dateUtil';
-import { timeConfigEnum, chartTypeEnum } from '/@/enums/chartEnum';
+import { timeConfigEnum, chartTypeEnum, echartSeriesTypeEnum } from '/@/enums/chartEnum';
 import { quotaDataPastUnitTypeEnum } from '/@/api/quota';
 
 export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
@@ -72,6 +72,6 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
 export function getNormalQuotaDefaultSetting(): normalQuotaSettingType {
   return {
     yAxisIndex: 0,
-    type: 'line',
+    type: echartSeriesTypeEnum.line,
   };
 }

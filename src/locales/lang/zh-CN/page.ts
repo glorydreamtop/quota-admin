@@ -30,6 +30,13 @@ export default {
       endDatePicker: '选择结束日期',
       advanceDrawerTitle: '高级设置',
     },
+    seriesType: {
+      line: '折线图',
+      bar: '柱状图',
+      smoothLine: '平滑曲线图',
+      scatter: '散点图',
+      area: '面积图',
+    },
     quotaSetting: {
       modalTitle: '指标设置',
       name: '指标名称',
@@ -37,6 +44,7 @@ export default {
       sourceType: '指标来源',
       setting: {
         yAxisIndex: '适用Y轴',
+        type: '适用图形',
       },
     },
     advance: {
@@ -71,6 +79,8 @@ export default {
           right: '右',
           offset: '偏移',
           lastnotdel: '最后一个Y轴了',
+          tip: '新增的轴若最大值最小值均自动，则此轴未被使用时不显示',
+          cannotdel: '依赖于本轴，暂不可删除',
         },
       },
       datasourceSetting: {

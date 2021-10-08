@@ -97,7 +97,7 @@
 <script lang="ts" setup>
   import { reactive, ref, watch } from 'vue';
   import { Input, Switch, Radio, Popover, Button } from 'ant-design-vue';
-  import { cloneDeep } from 'lodash-es';
+  import { cloneDeep, last, partition } from 'lodash-es';
   import { useI18n } from '/@/hooks/web/useI18n';
   import type { normalChartConfigType } from '/#/chart';
   import type { YAXisComponentOption } from 'echarts';
@@ -137,15 +137,22 @@
   }
   defineExpose({ setVisible });
   watch(visible, (v) => {
-    console.log('change', v);
     if (v) {
       if (props.idx === null) {
+        // 新增的智能分配到轴比较少的一侧
+        const [leftAxis, rightAxis] = partition(props.chartConfig.yAxis!, (item) => {
+          return item.position === 'left';
+        });
+        const isLeft = leftAxis.length < rightAxis.length;
+        // 新轴的偏移量在最后一根同侧轴+40
+        const offset =
+          (isLeft ? last(rightAxis)?.offset ?? -40 : last(leftAxis)?.offset ?? -40) + 40;
         Object.assign(currentCfg, {
           min: undefined,
           max: undefined,
           inverse: false,
-          offset: 40,
-          position: 'left',
+          offset: offset,
+          position: isLeft ? 'left' : 'right',
         });
       } else {
         Object.assign(currentCfg, props.chartConfig.yAxis[props.idx]);
@@ -168,6 +175,14 @@
   }
   function del() {
     const config = cloneDeep(props.chartConfig);
+    // 检查当前轴是否被使用中
+    const hasDep = config.quotaList!.find((quota) => quota.setting.yAxisIndex === props.idx);
+    if (hasDep) {
+      createMessage.warn(
+        `[${hasDep.name}]` + t('page.quotaView.advance.axisSetting.yAxis.cannotdel')
+      );
+      return;
+    }
     if (config.yAxis.length === 1) {
       createMessage.warn(t('page.quotaView.advance.axisSetting.yAxis.lastnotdel'));
       return;

@@ -37,3 +37,11 @@ export enum timeConfigEnum {
    */
   default = 'default',
 }
+
+export enum echartSeriesTypeEnum {
+  line = 'line',
+  smoothLine = 'smoothLine',
+  bar = 'bar',
+  scatter = 'scatter',
+  area = 'area',
+}

@@ -1,6 +1,6 @@
 import { YAXisComponentOption } from 'echarts';
 import { quotaDataPastUnitTypeEnum } from '/@/api/quota';
-import { chartTypeEnum, timeConfigEnum } from '/@/enums/chartEnum';
+import { chartTypeEnum, echartSeriesTypeEnum, timeConfigEnum } from '/@/enums/chartEnum';
 import { SelectedQuotaItem } from '/@/views/quota/quotaView/components/hooks';
 
 export interface timeConfigType {
@@ -53,5 +53,5 @@ export interface barChartConfigType extends reactSettingType, baseChartConfigTyp
 export type chartConfigType = seasonalChartConfigType | normalChartConfigType | barChartConfigType;
 export interface normalQuotaSettingType {
   yAxisIndex: number;
-  type: 'line' | 'bar';
+  type: echartSeriesTypeEnum;
 }

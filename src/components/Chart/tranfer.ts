@@ -19,6 +19,7 @@ import {
 } from '/#/chart';
 import { getQuotaData, quotaDataExportTypeEnum, quotaDataPastUnitTypeEnum } from '/@/api/quota';
 import { getQuotaDataParams } from '/@/api/quota/model';
+import { echartSeriesTypeEnum } from '/@/enums/chartEnum';
 import { useI18n } from '/@/hooks/web/useI18n';
 import { formatToDate } from '/@/utils/dateUtil';
 
@@ -67,7 +68,6 @@ export async function useSeasonalChart(
     top: 'bottom',
   };
   const quota = quotaDataList[0];
-  const quotaConfig = chartConfig.quotaList!.find((q) => q.id === quota.id)!;
   quota.data.forEach((data) => {
     const time = data[0];
     const y = dayjs(time).year().toString();
@@ -79,7 +79,7 @@ export async function useSeasonalChart(
       legend.data?.push(y);
       series.push({
         name: y,
-        type: quotaConfig.setting.type,
+        type: 'line',
         symbol: 'none',
         data: [],
       });
@@ -139,15 +139,43 @@ export async function useNormalChart(chartConfig: normalChartConfigType): Promis
     top: 'bottom',
   };
   const series: SeriesOption[] = [];
+  // 选择series类型
+  function selectSeriesType(type: echartSeriesTypeEnum): SeriesOption {
+    const typeMap = {
+      [echartSeriesTypeEnum.line]: {
+        type: 'line',
+        symbol: 'none',
+      },
+      [echartSeriesTypeEnum.smoothLine]: {
+        type: 'line',
+        smooth: true,
+        symbol: 'none',
+      },
+      [echartSeriesTypeEnum.area]: {
+        type: 'line',
+        smooth: true,
+        symbol: 'none',
+        areaStyle: {},
+      },
+      [echartSeriesTypeEnum.scatter]: {
+        type: 'scatter',
+      },
+      [echartSeriesTypeEnum.bar]: {
+        type: 'bar',
+      },
+    };
+    return typeMap[type] as SeriesOption;
+  }
   quotaDataList.forEach((quota) => {
     const quotaConfig = chartConfig.quotaList!.find((q) => q.id === quota.id)!;
     legend.data!.push(quota.name);
     quota.data.forEach((item) => (item[1] = round(item[1], chartConfig.valueFormatter.afterDot)));
     series.push({
       name: quota.name,
-      type: quotaConfig.setting.type,
-      symbol: 'none',
+      ...selectSeriesType(quotaConfig.setting.type),
+
       data: quota.data,
+      yAxisIndex: quotaConfig.setting.yAxisIndex,
     });
   });
   const options: EChartsOption = {

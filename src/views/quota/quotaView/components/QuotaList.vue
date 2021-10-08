@@ -227,8 +227,6 @@
             setEditModal({
               title: t('page.quotaView.quotaSetting.modalTitle'),
               minHeight: 300,
-              showOkBtn: false,
-              showCancelBtn: false,
             });
           },
         },

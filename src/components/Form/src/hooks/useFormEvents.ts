@@ -6,7 +6,7 @@ import { isArray, isFunction, isObject, isString } from '/@/utils/is';
 import { deepMerge } from '/@/utils';
 import { dateItemType, handleInputNumberValue } from '../helper';
 import { dateUtil } from '/@/utils/dateUtil';
-import { cloneDeep, get, has, set, uniqBy } from 'lodash-es';
+import { cloneDeep, uniqBy } from 'lodash-es';
 import { error } from '/@/utils/log';
 
 interface UseFormActionContext {
@@ -55,9 +55,9 @@ export function useFormEvents({
     const validKeys: string[] = [];
     Object.keys(values).forEach((key) => {
       const schema = unref(getSchema).find((item) => item.field === key);
-      let value = get(values, key);
+      let value = values[key];
 
-      const hasKey = has(values, key);
+      const hasKey = Reflect.has(values, key);
 
       value = handleInputNumberValue(schema?.component, value);
       // 0| '' is allow
@@ -79,7 +79,7 @@ export function useFormEvents({
             formModel[key] = value ? (_props?.valueFormat ? value : dateUtil(value)) : null;
           }
         } else {
-          set(formModel, key, value);
+          formModel[key] = value;
         }
         validKeys.push(key);
       }
