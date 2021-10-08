@@ -156,7 +156,8 @@
     instance?.setExpandedKeys(uniq([key, ...instance.getExpandedKeys()]));
   }
   // 启用高亮Hooks
-  const [_, { setHighLight, clearHightLight, insertHightListNode }] = useHighLight(HIGHTLIGHT);
+  const [highLightList, { setHighLight, clearHightLight, insertHightListNode }] =
+    useHighLight(HIGHTLIGHT);
   function findParentNode(id: number, type?: QuotaType) {
     function fn(): [TreeItem | null, TreeActionType & ComponentRef] {
       return [
@@ -210,8 +211,10 @@
   // 树节点的选择，支持多选
   function handleTreeSelect(_, e: treeSelectParams) {
     const instance = getTreeInstance(treeType.value);
+    // 拿到待操作的树数据
     setTreeData(treeProps[treeType.value].treeData);
     const allowMultiSelect = !isFolder(e.node.dataRef);
+    // 执行多选
     insertMultiSelectedKey({ e, allowMultiSelect });
     clearHightLight();
     const list = getMultiList();
@@ -263,7 +266,12 @@
         {
           label: t('quota.actions.multiSelectQuota'),
           icon: '',
-          handler: () => {},
+          handler: () => {
+            console.log(highLightList);
+            highLightList.forEach((node) => {
+              emit('selectNode', node as QuotaItem);
+            });
+          },
         },
         {
           label: t('quota.actions.multiUpdateQuota'),

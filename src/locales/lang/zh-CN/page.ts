@@ -1,6 +1,6 @@
 export default {
   quotaView: {
-    uniqSelectedQuotaMessage: '这个指标选过了',
+    uniqSelectedQuotaMessage: '选过了',
     toolbar: {
       paintBtn: '绘制',
       saveBtn: '保存',
