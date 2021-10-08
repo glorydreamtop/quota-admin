@@ -203,6 +203,10 @@ export async function useBarChart(chartConfig: barChartConfigType) {
   }
   const firstLine = ['qoutaName'];
   for (let index = 0; index < maxLength; index++) {
+    series.push({
+      type: 'bar',
+      seriesLayoutBy: 'column',
+    });
     firstLine.push(t('page.chart.index') + (index + 1) + t('page.chart.unit'));
   }
   dataset.source = [firstLine];
@@ -212,10 +216,6 @@ export async function useBarChart(chartConfig: barChartConfigType) {
       ...quota.data.map((item) => round(item[1], chartConfig.valueFormatter.afterDot)),
     ];
     (dataset.source as any[]).push(source);
-    series.push({
-      type: 'bar',
-      // seriesLayoutBy:'row',
-    });
   });
   const options: EChartsOption = {
     title: titleConfig(chartConfig),
@@ -234,6 +234,9 @@ export async function useBarChart(chartConfig: barChartConfigType) {
     }),
     dataset,
     series,
+    legend: {
+      top: 'bottom',
+    },
     toolbox: toolboxConfig,
     tooltip: {
       show: true,

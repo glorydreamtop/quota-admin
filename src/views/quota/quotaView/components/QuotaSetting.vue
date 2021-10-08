@@ -16,8 +16,8 @@
             </Row>
           </FormItem>
         </template>
-      </BasicForm> </div
-    >0 0 0
+      </BasicForm>
+    </div>
   </BasicModal>
 </template>
 

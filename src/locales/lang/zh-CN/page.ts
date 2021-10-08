@@ -70,6 +70,7 @@ export default {
           left: '左',
           right: '右',
           offset: '偏移',
+          lastnotdel: '最后一个Y轴了',
         },
       },
       datasourceSetting: {

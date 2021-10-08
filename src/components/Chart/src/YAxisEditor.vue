@@ -101,11 +101,13 @@
   import { useI18n } from '/@/hooks/web/useI18n';
   import type { normalChartConfigType } from '/#/chart';
   import type { YAXisComponentOption } from 'echarts';
+  import { useMessage } from '/@/hooks/web/useMessage';
   const { t } = useI18n();
 
   const RadioGroup = Radio.Group;
   const RadioButton = Radio.Button;
 
+  const { createMessage } = useMessage();
   const props = defineProps<{
     chartConfig: normalChartConfigType;
     idx: Nullable<number>;
@@ -166,6 +168,10 @@
   }
   function del() {
     const config = cloneDeep(props.chartConfig);
+    if (config.yAxis.length === 1) {
+      createMessage.warn(t('page.quotaView.advance.axisSetting.yAxis.lastnotdel'));
+      return;
+    }
     config.yAxis.splice(props.idx!, 1);
     emit('update', config);
     setVisible(false);

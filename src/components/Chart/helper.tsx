@@ -9,7 +9,7 @@ import { chartTypeEnum } from '/@/enums/chartEnum';
 import { formatToDate } from '/@/utils/dateUtil';
 import dayjs from 'dayjs';
 import { useI18n } from '/@/hooks/web/useI18n';
-import YAxisEdit from './src/YAxisEdit.vue';
+import YAxisEdit from './src/YAxisEditor.vue';
 
 const { t } = useI18n();
 export async function fetchQuotaData(params: getQuotaDataParams) {

@@ -77,7 +77,7 @@
   import { useI18n } from '/@/hooks/web/useI18n';
   import Icon from '/@/components/Icon';
   import { useChartConfigContext } from './hooks';
-  import YAxisEdit from '/@/components/Chart/src/YAxisEdit.vue';
+  import YAxisEdit from '/@/components/Chart/src/YAxisEditor.vue';
   import { reactive, ref, toRaw, watch } from 'vue';
   import { quotaDataPastUnitTypeEnum } from '/@/api/quota';
 
