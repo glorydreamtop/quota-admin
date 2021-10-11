@@ -13,10 +13,12 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
   const defaultConfig = {
     normal: {
       title: '',
+      name: '',
       timeConfig: {
         startDate: yearsAgo(5),
         endDate: today(),
         type: timeConfigEnum.default,
+        sortMonth: [],
       },
       colorSchemeId: 0,
       selfColorScheme: '',
@@ -40,6 +42,7 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
     } as normalChartConfigType,
     bar: {
       title: '',
+      name: '',
       timeConfig: {
         startDate: yearsAgo(1),
         endDate: today(),
@@ -69,6 +72,7 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
     } as barChartConfigType,
     normalRadar: {
       title: '',
+      name: '',
       timeConfig: {
         startDate: yearsAgo(1),
         endDate: today(),

@@ -92,6 +92,8 @@ export default {
           last: '期',
           month: '月',
         },
+        sortMonth: '按月过滤',
+        sortYear: '按年过滤',
       },
     },
   },

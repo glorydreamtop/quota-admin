@@ -14,12 +14,18 @@ export interface timeConfigType {
   timeRule?: string;
   pastUnit?: quotaDataPastUnitTypeEnum;
   pastValue?: number;
+  /**
+   * 不要的月份
+   */
+  sortMonth?: number[];
 }
 
 // export interface baseQuotaSettingType {}
 export interface baseChartConfigType {
   // 图表标题
   title: string;
+  // 图表名字
+  name?: string;
   // 配色方案Id
   colorSchemeId: number;
   // 自有配色方案

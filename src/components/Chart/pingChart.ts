@@ -1,3 +1,10 @@
+// import { chartConfigType } from "/#/chart";
+
+// interface chartTemplateModel{
+//   config:chartConfigType;
+//   category_id:number;
+// }
+
 // // 图表颜色列表
 // const chart_colors_list = [
 //   {
@@ -100,16 +107,15 @@
 // };
 
 // export function transferOptions(options) {
-//   const o = {
+//   const o:chartTemplateModel = {
 //     category_id: options['category_id'],
 //     config: {
 //       name: options['template_name'],
 //       type: chart_types_map[options['option_template_type']],
 //       title: options['chart_title'],
-//       rows: options['rows'],
+//       quotaList: options['rows'],
 //       normalized: options['option_normalize'],
 //       colors: chart_colors_list[options['option_chart_color']]['colors'].join(','),
-//       xLabel: { formatter: '{yyyy}/{MM}/{dd}' },
 
 //       multiY: false,
 //       yAxis: {},
