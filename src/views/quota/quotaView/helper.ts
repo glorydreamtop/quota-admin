@@ -3,6 +3,7 @@ import type {
   chartConfigType,
   normalChartConfigType,
   normalQuotaSettingType,
+  radarChartConfigType,
 } from '/#/chart';
 import { today, yearsAgo } from '/@/utils/dateUtil';
 import { timeConfigEnum, chartTypeEnum, echartSeriesTypeEnum } from '/@/enums/chartEnum';
@@ -66,6 +67,26 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
         },
       ],
     } as barChartConfigType,
+    normalRadar: {
+      title: '',
+      timeConfig: {
+        startDate: yearsAgo(1),
+        endDate: today(),
+        type: timeConfigEnum.default,
+        pastUnit: quotaDataPastUnitTypeEnum.last,
+        pastValue: 3,
+      },
+      colorSchemeId: 0,
+      selfColorScheme: '',
+      type: chartTypeEnum.normalRadar,
+      showLastest: true,
+      showHighest: false,
+      quotaList: [],
+      valueFormatter: {
+        afterDot: 2,
+        scientificNotation: false,
+      },
+    } as radarChartConfigType,
   };
   return defaultConfig[type];
 }

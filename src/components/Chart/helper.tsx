@@ -258,7 +258,14 @@ export async function useLastestQuotaData({
           name: quotaData.name,
           date: formatToDate(l[0], 'MM-DD'),
           value: l[1],
-          diff: round(l[1] - nth(quotaData.data, -2)![1], chartConfig.valueFormatter.afterDot),
+          // 如果数据量不足无法计算差值则不显示
+          diff: (function () {
+            if (quotaData.data.length > 1) {
+              return round(l[1] - nth(quotaData.data, -2)![1], chartConfig.valueFormatter.afterDot);
+            } else {
+              return NaN;
+            }
+          })(),
         });
       });
     }

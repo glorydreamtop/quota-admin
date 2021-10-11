@@ -67,6 +67,12 @@
     chartTypeList.push({
       label: t(`page.quotaView.toolbar.chartTypeList.${v}`),
       value: v,
+      disabled: [
+        chartTypeEnum.seasonalLunar,
+        chartTypeEnum.quantileRadar,
+        chartTypeEnum.fixedbase,
+        chartTypeEnum.structural,
+      ].includes(v as chartTypeEnum),
     });
   }
   function openAdvanceModal() {}

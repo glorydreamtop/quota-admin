@@ -4,17 +4,19 @@ import type {
   EChartsOption,
   GridComponentOption,
   LegendComponentOption,
+  RadarComponentOption,
   SeriesOption,
   TitleComponentOption,
   ToolboxComponentOption,
   YAXisComponentOption,
 } from 'echarts';
-import { max, omit, round } from 'lodash-es';
+import { max, maxBy, minBy, omit, round } from 'lodash-es';
 import { useAddGraphicElement, useHighestQuotaData, useLastestQuotaData } from './helper';
 import {
   barChartConfigType,
   chartConfigType,
   normalChartConfigType,
+  radarChartConfigType,
   seasonalChartConfigType,
 } from '/#/chart';
 import { getQuotaData, quotaDataExportTypeEnum, quotaDataPastUnitTypeEnum } from '/@/api/quota';
@@ -269,6 +271,79 @@ export async function useBarChart(chartConfig: barChartConfigType) {
     tooltip: {
       show: true,
       trigger: 'axis',
+      axisPointer: {
+        type: 'none',
+      },
+    },
+    grid: gridConfig,
+  };
+  useAddGraphicElement({ options });
+  // 最新值模块
+  useLastestQuotaData({ chartConfig, options, quotaDataList });
+  useHighestQuotaData({ chartConfig, options, quotaDataList });
+  return options;
+}
+
+// 雷达图图最近N期序列
+export async function useRadarChart(chartConfig: radarChartConfigType) {
+  const fetchParams: getQuotaDataParams = {
+    startDate: chartConfig.timeConfig.startDate,
+    endDate: chartConfig.timeConfig.endDate,
+    exportPara: quotaDataExportTypeEnum.JSON,
+    rows: chartConfig.quotaList!,
+    pastUnit: quotaDataPastUnitTypeEnum.last,
+    pastValue: chartConfig.timeConfig.pastValue,
+  };
+
+  const quotaDataList = await getQuotaData(fetchParams);
+  const series: SeriesOption[] = [
+    {
+      type: 'radar',
+      data: [],
+    },
+  ];
+  for (let index = 0; index < chartConfig.timeConfig.pastValue!; index++) {
+    (series[0].data as any[]).push({
+      value: [] as number[],
+      name: t('page.chart.index') + (index + 1) + t('page.chart.unit'),
+    });
+  }
+  const radar: RadarComponentOption = {
+    indicator: [],
+    axisTick: {
+      show: true,
+    },
+    axisLabel: {
+      show: true,
+      formatter: function (value) {
+        return value > 1 ? round(value, chartConfig.valueFormatter.afterDot) : value;
+      },
+    },
+  };
+  // 创建雷达指示器，并使各个方向的最大值是数据最大值的1.05倍，最小值是数据最小值的0.9倍
+  for (let index = 0; index < quotaDataList.length; index++) {
+    const quota = quotaDataList[index];
+    radar.indicator!.push({
+      text: quota.name,
+      max: (maxBy(quota.data, (d) => d[1]) ?? [0, 0])[1] * 1.05,
+      min: (minBy(quota.data, (d) => d[1]) ?? [0, 0])[1] * 0.9,
+    });
+    for (let index = 0; index < quota.data.length; index++) {
+      const data = quota.data[index];
+      (series[0].data as any[])[index].value.push(data[1]);
+    }
+  }
+  const options: EChartsOption = {
+    title: titleConfig(chartConfig),
+    radar,
+    series,
+    legend: {
+      top: 'bottom',
+    },
+    toolbox: toolboxConfig,
+    tooltip: {
+      show: true,
+      trigger: 'item',
       axisPointer: {
         type: 'none',
       },

@@ -33,7 +33,7 @@ export interface baseChartConfigType {
     afterDot: number;
     scientificNotation: boolean;
   };
-  yAxis: YAXisComponentOption[];
+
   quotaList: Nullable<SelectedQuotaItem[]>;
 }
 
@@ -42,13 +42,20 @@ export interface reactSettingType {
   showHighest: boolean;
 }
 
-export interface seasonalChartConfigType extends reactSettingType, baseChartConfigType {}
+export interface seasonalChartConfigType extends reactSettingType, baseChartConfigType {
+  yAxis: YAXisComponentOption[];
+}
 
 export interface normalChartConfigType extends reactSettingType, baseChartConfigType {
   [x: string]: any;
+  yAxis: YAXisComponentOption[];
 }
 
-export interface barChartConfigType extends reactSettingType, baseChartConfigType {}
+export interface barChartConfigType extends reactSettingType, baseChartConfigType {
+  yAxis: YAXisComponentOption[];
+}
+
+export interface radarChartConfigType extends reactSettingType, baseChartConfigType {}
 
 export type chartConfigType = seasonalChartConfigType | normalChartConfigType | barChartConfigType;
 export interface normalQuotaSettingType {
