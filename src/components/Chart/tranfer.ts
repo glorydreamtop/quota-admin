@@ -11,7 +11,12 @@ import type {
   YAXisComponentOption,
 } from 'echarts';
 import { max, maxBy, minBy, omit, round } from 'lodash-es';
-import { useAddGraphicElement, useHighestQuotaData, useLastestQuotaData } from './helper';
+import {
+  useAddGraphicElement,
+  useHighestQuotaData,
+  useLastestQuotaData,
+  useSortMonth,
+} from './helper';
 import {
   barChartConfigType,
   chartConfigType,
@@ -64,28 +69,55 @@ export async function useSeasonalChart(
   );
 
   const quotaDataList = await getQuotaData(fetchParams);
+  useSortMonth({ chartConfig, quotaDataList });
   const series: SeriesOption[] = [];
   const legend: LegendComponentOption = {
     data: [],
     top: 'bottom',
+    icon: 'roundRect',
   };
   const quota = quotaDataList[0];
+  const startMonth = chartConfig.timeConfig.startMonth!;
+  const changeStart = startMonth > 1;
   quota.data.forEach((data) => {
     const time = data[0];
-    const y = dayjs(time).year().toString();
+    const y = dayjs(time).year();
+    const m = dayjs(time).month();
     const v = round(data[1], chartConfig.valueFormatter.afterDot);
-    if (legend.data?.includes(y)) {
-      const s = series.find((series) => series.name === y)!;
-      (s.data as [number, number][]).push([dayjs(time).year(2020).unix() * 1000, v]);
+    // 如果变更了起始月份
+    if (changeStart) {
+      const year = m < startMonth ? 2019 : 2020;
+      const name = `${y - 1}-${y}`;
+      const s = series.find((ser) => ser.name === name);
+      if (s) {
+        s.data.push([dayjs(time).year(year).unix() * 1000, v]);
+      } else {
+        legend.data?.push(name);
+        series.push({
+          name: name,
+          symbol: 'none',
+          type: 'line',
+          data: [[dayjs(time).year(year).unix() * 1000, v]],
+        });
+      }
     } else {
-      legend.data?.push(y);
-      series.push({
-        name: y,
-        type: 'line',
-        symbol: 'none',
-        data: [],
-      });
+      const name = `${y}`;
+      const s = series.find((ser) => ser.name === name);
+      if (s) {
+        s.data.push([dayjs(time).year(2020).unix() * 1000, v]);
+      } else {
+        legend.data?.push(name);
+        series.push({
+          name: name,
+          symbol: 'none',
+          type: 'line',
+          data: [[dayjs(time).year(2020).unix() * 1000, v]],
+        });
+      }
     }
+
+    // 调整过起始月份则图例名称改成 xxxx-xxxx
+    // const year =
   });
   const options: EChartsOption = {
     title: titleConfig(chartConfig),
@@ -111,7 +143,7 @@ export async function useSeasonalChart(
       axisPointer: {
         label: {
           formatter: ({ value }) => {
-            return formatToDate(value, 'MM/DD');
+            return formatToDate(value, 'YYYY/MM/DD');
           },
         },
       },
@@ -136,9 +168,11 @@ export async function useNormalChart(chartConfig: normalChartConfigType): Promis
   );
 
   const quotaDataList = await getQuotaData(fetchParams);
+  useSortMonth({ chartConfig, quotaDataList });
   const legend: LegendComponentOption = {
     data: [],
     top: 'bottom',
+    icon: 'roundRect',
   };
   const series: SeriesOption[] = [];
   // 选择series类型
@@ -266,6 +300,7 @@ export async function useBarChart(chartConfig: barChartConfigType) {
     series,
     legend: {
       top: 'bottom',
+      icon: 'roundRect',
     },
     toolbox: toolboxConfig,
     tooltip: {
@@ -320,13 +355,13 @@ export async function useRadarChart(chartConfig: radarChartConfigType) {
       },
     },
   };
-  // 创建雷达指示器，并使各个方向的最大值是数据最大值的1.05倍，最小值是数据最小值的0.9倍
+  // 创建雷达指示器，并使各个方向的最大值是数据最大值的1.02倍，最小值是数据最小值的0.95倍
   for (let index = 0; index < quotaDataList.length; index++) {
     const quota = quotaDataList[index];
     radar.indicator!.push({
       text: quota.name,
-      max: (maxBy(quota.data, (d) => d[1]) ?? [0, 0])[1] * 1.05,
-      min: (minBy(quota.data, (d) => d[1]) ?? [0, 0])[1] * 0.9,
+      max: (maxBy(quota.data, (d) => d[1]) ?? [0, 0])[1] * 1.02,
+      min: (minBy(quota.data, (d) => d[1]) ?? [0, 0])[1] * 0.95,
     });
     for (let index = 0; index < quota.data.length; index++) {
       const data = quota.data[index];
@@ -339,6 +374,7 @@ export async function useRadarChart(chartConfig: radarChartConfigType) {
     series,
     legend: {
       top: 'bottom',
+      icon: 'roundRect',
     },
     toolbox: toolboxConfig,
     tooltip: {
@@ -353,6 +389,5 @@ export async function useRadarChart(chartConfig: radarChartConfigType) {
   useAddGraphicElement({ options });
   // 最新值模块
   useLastestQuotaData({ chartConfig, options, quotaDataList });
-  useHighestQuotaData({ chartConfig, options, quotaDataList });
   return options;
 }

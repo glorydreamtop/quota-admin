@@ -93,19 +93,27 @@
             </Tooltip>
           </span>
           <div class="bg-gray-100 p-2 rounded-sm">
-            <span class="text-primary">{{
-              t('page.quotaView.advance.datasourceSetting.sortMonth')
-            }}</span>
-            <div class="grid grid-cols-6 grid-rows-2 gap-2 mt-2" @click="changeSortMonth">
+            <span class="text-primary flex items-center">
+              <span>{{ t('page.quotaView.advance.datasourceSetting.sortMonth') }}，</span>
+              <span>{{ t('page.quotaView.advance.datasourceSetting.startMonth') }}</span>
+              <Input
+                class="!w-18 ml-1"
+                size="small"
+                addon-after="月"
+                v-model:value="chartConfig.timeConfig.startMonth"
+                @change="startMonthChange"
+              />
+            </span>
+            <div class="grid grid-cols-6 grid-rows-2 gap-2 mt-2" @click="sortMonthChange">
               <div
                 :data-month="month"
                 :class="[
                   chartConfig.timeConfig.sortMonth.includes(month)
                     ? 'bg-white text-primary'
                     : 'bg-primary text-white',
-                  'w-full text-center rounded-sm month',
+                  'w-full text-center rounded-sm month cursor-pointer',
                 ]"
-                v-for="month in 12"
+                v-for="month in monthList"
                 :key="month"
                 >{{ month + t('page.quotaView.advance.datasourceSetting.pastUnit.month') }}</div
               >
@@ -118,7 +126,16 @@
 </template>
 
 <script lang="ts" setup>
-  import { Divider, Switch, Collapse, InputNumber, Button, Select, Tooltip } from 'ant-design-vue';
+  import {
+    Divider,
+    Switch,
+    Collapse,
+    Input,
+    InputNumber,
+    Button,
+    Select,
+    Tooltip,
+  } from 'ant-design-vue';
   import { useI18n } from '/@/hooks/web/useI18n';
   import Icon from '/@/components/Icon';
   import { useChartConfigContext } from './hooks';
@@ -126,6 +143,7 @@
   import { reactive, ref, toRaw, watch } from 'vue';
   import type { CSSProperties } from 'vue';
   import { quotaDataPastUnitTypeEnum } from '/@/api/quota';
+  import { useMessage } from '/@/hooks/web/useMessage';
 
   const CollapsePanel = Collapse.Panel;
   const panelTitleStyle: CSSProperties = reactive({
@@ -133,12 +151,12 @@
     border: 'none',
   });
   const { t } = useI18n();
+  const { createMessage } = useMessage();
   const chartConfig = useChartConfigContext();
-  const collapseKey = ref('rectSetting');
+  const collapseKey = ref('datasourceSetting');
   const datasourceSetting = reactive({
     pastValue: 0,
     pastUnit: quotaDataPastUnitTypeEnum.last,
-    sortMonth: [],
   });
   watch(
     () => {
@@ -179,18 +197,32 @@
   function updateConfig(config) {
     Object.assign(chartConfig, config);
   }
-  function changeSortMonth(e: PointerEvent) {
+  // 调整起始月份
+  const monthList = ref([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+  function startMonthChange({ target: { value } }: InputEvent) {
+    if (!(parseInt(value) > 0 && parseInt(value) < 13)) {
+      setTimeout(() => {
+        chartConfig.timeConfig.startMonth = 1;
+      }, 500);
+      createMessage.warn(t('page.quotaView.advance.datasourceSetting.startMonthTip'));
+      return;
+    }
+    const index = monthList.value!.indexOf(parseInt(value));
+    const [a1, a2] = [monthList.value.slice(0, index), monthList.value.slice(index)];
+    monthList.value = [...a2, ...a1];
+  }
+  // 修改不要的月份
+  function sortMonthChange(e: PointerEvent) {
     console.log(e);
     const m = parseInt(e.target.dataset.month ?? NaN);
     if (m) {
-      const idx = chartConfig.timeConfig.sortMonth?.indexOf(m);
+      const idx = chartConfig.timeConfig.sortMonth!.indexOf(m);
       if (idx !== -1) {
         chartConfig.timeConfig.sortMonth?.splice(idx, 1);
       } else {
         chartConfig.timeConfig.sortMonth?.push(m);
         chartConfig.timeConfig.sortMonth?.sort();
       }
-      console.log(chartConfig.timeConfig.sortMonth);
     }
   }
 </script>

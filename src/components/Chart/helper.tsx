@@ -202,9 +202,7 @@ function createRichText(data: lastestDataType[], options: EChartsOption, title: 
   // @ts-ignore
   options.graphic.elements.push(lastestConfig);
 }
-interface lastestQuotaDataParams {
-  quotaDataList: getQuotaDataResult[];
-  chartConfig: chartConfigType;
+interface lastestQuotaDataParams extends baseHelperParams {
   options: EChartsOption;
 }
 
@@ -319,5 +317,22 @@ export function useAddGraphicElement({ options }: addGraphicElementParams) {
   };
   Object.assign(options, {
     graphic,
+  });
+}
+
+interface baseHelperParams {
+  quotaDataList: getQuotaDataResult[];
+  chartConfig: chartConfigType;
+}
+// 月份过滤
+export function useSortMonth({ chartConfig, quotaDataList }: baseHelperParams) {
+  const sortMonth = chartConfig.timeConfig.sortMonth;
+  if (!sortMonth || sortMonth.length === 0) {
+    return;
+  }
+  quotaDataList.forEach((quota) => {
+    quota.data = quota.data.filter((data) => {
+      return !sortMonth.includes(dayjs(data[0]).month() + 1);
+    });
   });
 }

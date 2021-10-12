@@ -18,6 +18,7 @@ export interface timeConfigType {
    * 不要的月份
    */
   sortMonth?: number[];
+  startMonth?: number;
 }
 
 // export interface baseQuotaSettingType {}
@@ -63,7 +64,11 @@ export interface barChartConfigType extends reactSettingType, baseChartConfigTyp
 
 export interface radarChartConfigType extends reactSettingType, baseChartConfigType {}
 
-export type chartConfigType = seasonalChartConfigType | normalChartConfigType | barChartConfigType;
+export type chartConfigType =
+  | seasonalChartConfigType
+  | normalChartConfigType
+  | barChartConfigType
+  | radarChartConfigType;
 export interface normalQuotaSettingType {
   yAxisIndex: number;
   type: echartSeriesTypeEnum;

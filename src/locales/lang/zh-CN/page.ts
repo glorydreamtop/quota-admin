@@ -93,6 +93,8 @@ export default {
           month: '月',
         },
         sortMonth: '按月过滤',
+        startMonth: '季节性序列起点选为',
+        startMonthTip: '季节性序列起点月份设置错误',
         sortYear: '按年过滤',
       },
     },
