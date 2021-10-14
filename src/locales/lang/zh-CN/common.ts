@@ -21,4 +21,6 @@ export default {
   unlimited: '不限',
   auto: '自动',
   searchResEmpty: '暂无搜索结果',
+  natureDay: '自然日',
+  tradingDay: '交易日',
 };

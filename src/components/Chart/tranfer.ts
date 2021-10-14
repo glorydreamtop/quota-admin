@@ -23,12 +23,13 @@ import {
   normalChartConfigType,
   radarChartConfigType,
   seasonalChartConfigType,
+  structuralChartConfigType,
 } from '/#/chart';
 import { getQuotaData, quotaDataExportTypeEnum, quotaDataPastUnitTypeEnum } from '/@/api/quota';
-import { getQuotaDataParams } from '/@/api/quota/model';
-import { echartSeriesTypeEnum } from '/@/enums/chartEnum';
+import { getQuotaDataParams, getQuotaDataResult } from '/@/api/quota/model';
+import { echartSeriesTypeEnum, structuralOffsetUnitEnum } from '/@/enums/chartEnum';
 import { useI18n } from '/@/hooks/web/useI18n';
-import { formatToDate } from '/@/utils/dateUtil';
+import { daysAgo, formatToDate } from '/@/utils/dateUtil';
 
 const { t } = useI18n();
 function titleConfig(chartConfig: chartConfigType): TitleComponentOption {
@@ -389,5 +390,96 @@ export async function useRadarChart(chartConfig: radarChartConfigType) {
   useAddGraphicElement({ options });
   // 最新值模块
   useLastestQuotaData({ chartConfig, options, quotaDataList });
+  return options;
+}
+
+// 曲线结构序列
+export async function useStructuralChart(chartConfig: structuralChartConfigType) {
+  const structuralOffsetArr = chartConfig.structuralOffset.split(',');
+  const quotaDataList: getQuotaDataResult[] = [];
+  if (chartConfig.structuralOffsetUnit === structuralOffsetUnitEnum.natureDay) {
+    for (let index = 0; index < structuralOffsetArr.length; index++) {
+      const offset = parseInt(structuralOffsetArr[index]);
+      const fetchParams: getQuotaDataParams = {
+        startDate: daysAgo(offset > 0 ? offset : 1 * 2, chartConfig.timeConfig.endDate),
+        endDate: daysAgo(offset, chartConfig.timeConfig.endDate),
+        exportPara: quotaDataExportTypeEnum.JSON,
+        rows: chartConfig.quotaList!,
+        pastUnit: quotaDataPastUnitTypeEnum.last,
+        pastValue: 1,
+      };
+      const singleQuotaDataList = await getQuotaData(fetchParams);
+      singleQuotaDataList.forEach((quota) => {
+        if (quota.data.length === 1) {
+        }
+        // @ts-ignore
+        quota.data[0][0] = offset > 0 ? `-${offset}D` : 'Today';
+      });
+      if (quotaDataList.length === 0) {
+        quotaDataList.push(...singleQuotaDataList);
+      } else {
+        quotaDataList.forEach((quota, index) => {
+          quota.data.push(singleQuotaDataList[index].data[0]);
+        });
+      }
+    }
+  } else {
+  }
+
+  const series: SeriesOption[] = [];
+  const dataset: DatasetComponentOption = {
+    source: [],
+  };
+  const firstLine = ['qoutaName'];
+  for (let index = 0; index < structuralOffsetArr.length; index++) {
+    series.push({
+      type: 'line',
+      seriesLayoutBy: 'column',
+    });
+    firstLine.push(`${structuralOffsetArr[index]}D`);
+  }
+  dataset.source = [firstLine];
+  quotaDataList.forEach((quota) => {
+    const source = [
+      quota.name,
+      ...quota.data.map((item) => round(item[1], chartConfig.valueFormatter.afterDot)),
+    ];
+    (dataset.source as any[]).push(source);
+  });
+  const options: EChartsOption = {
+    title: titleConfig(chartConfig),
+    xAxis: {
+      type: 'category',
+    },
+    yAxis: chartConfig.yAxis?.map((y) => {
+      const base: YAXisComponentOption = {
+        type: 'value',
+        scale: true,
+        show: true,
+        triggerEvent: true,
+      };
+      Object.assign(base, y);
+      return base;
+    }),
+    dataset,
+    series,
+    legend: {
+      top: 'bottom',
+      icon: 'roundRect',
+    },
+    toolbox: toolboxConfig,
+    tooltip: {
+      show: true,
+      trigger: 'axis',
+      axisPointer: {
+        type: 'none',
+      },
+    },
+    grid: gridConfig,
+  };
+  useAddGraphicElement({ options });
+  // 最新值模块
+  useLastestQuotaData({ chartConfig, options, quotaDataList });
+  useHighestQuotaData({ chartConfig, options, quotaDataList });
   return options;
 }

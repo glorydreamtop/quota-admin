@@ -9,7 +9,13 @@
   import type { Ref } from 'vue';
   import { useECharts } from '/@/hooks/web/useECharts';
   import { chartTypeEnum } from '/@/enums/chartEnum';
-  import { useSeasonalChart, useNormalChart, useBarChart, useRadarChart } from '../tranfer';
+  import {
+    useSeasonalChart,
+    useNormalChart,
+    useBarChart,
+    useRadarChart,
+    useStructuralChart,
+  } from '../tranfer';
   import type { chartConfigType, normalChartConfigType } from '/#/chart';
   import { onMountedOrActivated } from '/@/hooks/core/onMountedOrActivated';
   import { useDebounceFn, useResizeObserver } from '@vueuse/core';
@@ -32,6 +38,7 @@
     [chartTypeEnum.normal]: useNormalChart,
     [chartTypeEnum.bar]: useBarChart,
     [chartTypeEnum.normalRadar]: useRadarChart,
+    [chartTypeEnum.structural]: useStructuralChart,
   };
   watch(
     chartConfig,

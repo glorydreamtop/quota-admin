@@ -6,7 +6,7 @@ import { chartConfigType, normalChartConfigType } from '/#/chart';
 import { EChartsOption, GraphicComponentOption, SeriesOption } from 'echarts';
 import { last, maxBy, nth, round } from 'lodash-es';
 import { chartTypeEnum } from '/@/enums/chartEnum';
-import { formatToDate } from '/@/utils/dateUtil';
+import { daysAgo, formatToDate } from '/@/utils/dateUtil';
 import dayjs from 'dayjs';
 import { useI18n } from '/@/hooks/web/useI18n';
 import YAxisEdit from './src/YAxisEditor.vue';
@@ -250,11 +250,21 @@ export async function useLastestQuotaData({
         }
       });
     } else {
+      function getDate(str: number | string) {
+        if (chartConfig.type === chartTypeEnum.structural) {
+          str = str === 'Today' ? 0 : parseInt(str);
+          return daysAgo(str, chartConfig.timeConfig.endDate);
+        } else {
+          return str;
+        }
+      }
       quotaDataList.forEach((quotaData) => {
         const l = last(quotaData.data)!;
+        console.log(l[0]);
+
         lastestData.push({
           name: quotaData.name,
-          date: formatToDate(l[0], 'MM-DD'),
+          date: formatToDate(getDate(l[0]), 'MM-DD'),
           value: l[1],
           // 如果数据量不足无法计算差值则不显示
           diff: (function () {

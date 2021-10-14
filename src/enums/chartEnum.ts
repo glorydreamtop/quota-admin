@@ -45,3 +45,8 @@ export enum echartSeriesTypeEnum {
   scatter = 'scatter',
   area = 'area',
 }
+
+export enum structuralOffsetUnitEnum {
+  natureDay = 'natureDay',
+  tradingDay = 'tradingDay',
+}

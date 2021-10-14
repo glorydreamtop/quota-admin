@@ -71,7 +71,6 @@
         chartTypeEnum.seasonalLunar,
         chartTypeEnum.quantileRadar,
         chartTypeEnum.fixedbase,
-        chartTypeEnum.structural,
       ].includes(v as chartTypeEnum),
     });
   }

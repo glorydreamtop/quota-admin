@@ -4,9 +4,15 @@ import type {
   normalChartConfigType,
   normalQuotaSettingType,
   radarChartConfigType,
+  structuralChartConfigType,
 } from '/#/chart';
 import { today, yearsAgo } from '/@/utils/dateUtil';
-import { timeConfigEnum, chartTypeEnum, echartSeriesTypeEnum } from '/@/enums/chartEnum';
+import {
+  timeConfigEnum,
+  chartTypeEnum,
+  echartSeriesTypeEnum,
+  structuralOffsetUnitEnum,
+} from '/@/enums/chartEnum';
 import { quotaDataPastUnitTypeEnum } from '/@/api/quota';
 
 export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
@@ -123,6 +129,39 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
         scientificNotation: false,
       },
     } as radarChartConfigType,
+    structural: {
+      title: '',
+      name: '',
+      timeConfig: {
+        startDate: yearsAgo(1),
+        endDate: today(),
+        type: timeConfigEnum.default,
+        pastUnit: quotaDataPastUnitTypeEnum.last,
+        pastValue: 3,
+        startMonth: 1,
+      },
+      colorSchemeId: 0,
+      selfColorScheme: '',
+      type: chartTypeEnum.structural,
+      showLastest: true,
+      showHighest: false,
+      quotaList: [],
+      valueFormatter: {
+        afterDot: 2,
+        scientificNotation: false,
+      },
+      structuralOffset: '30,15,7,1,0',
+      structuralOffsetUnit: structuralOffsetUnitEnum.natureDay,
+      yAxis: [
+        {
+          min: undefined,
+          max: undefined,
+          inverse: false,
+          offset: 0,
+          position: 'left',
+        },
+      ],
+    } as structuralChartConfigType,
   };
   return defaultConfig[type];
 }

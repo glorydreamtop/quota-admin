@@ -53,7 +53,12 @@
           <Divider orientation="left">{{ t('page.quotaView.advance.axisSetting.title') }}</Divider>
         </template>
         <div class="pl-8">
-          <YAxisEdit :chart-config="chartConfig" :idx="null" @update="updateConfig">
+          <YAxisEdit
+            :chart-config="chartConfig"
+            :idx="null"
+            @update="updateConfig"
+            v-if="showSettingFilter('yAxisEdit')"
+          >
             <Button size="small">
               <template #icon>
                 <Icon icon="ant-design:plus-outlined" />
@@ -92,17 +97,19 @@
               <Icon icon="ant-design:question-circle-outlined" />
             </Tooltip>
           </span>
-          <div class="bg-gray-100 p-2 rounded-sm">
+          <div class="bg-gray-100 p-2 rounded-sm" v-if="showSettingFilter('sortMonth')">
             <span class="text-primary flex items-center">
-              <span>{{ t('page.quotaView.advance.datasourceSetting.sortMonth') }}，</span>
-              <span>{{ t('page.quotaView.advance.datasourceSetting.startMonth') }}</span>
-              <Input
-                class="!w-18 ml-1"
-                size="small"
-                addon-after="月"
-                v-model:value="chartConfig.timeConfig.startMonth"
-                @change="startMonthChange"
-              />
+              <span>{{ t('page.quotaView.advance.datasourceSetting.sortMonth') }}</span>
+              <template v-if="showSettingFilter('startMonth')">
+                <span>，{{ t('page.quotaView.advance.datasourceSetting.startMonth') }}</span>
+                <Input
+                  class="!w-18 ml-1"
+                  size="small"
+                  addon-after="月"
+                  v-model:value="chartConfig.timeConfig.startMonth"
+                  @change="startMonthChange"
+                />
+              </template>
             </span>
             <div class="grid grid-cols-6 grid-rows-2 gap-2 mt-2" @click="sortMonthChange">
               <div
@@ -119,6 +126,37 @@
               >
             </div>
           </div>
+          <div
+            class="bg-gray-100 p-2 rounded-sm flex gap-2 items-center"
+            v-if="showSettingFilter('structuralOffset')"
+          >
+            <span class="text-primary">
+              {{ t('page.quotaView.advance.datasourceSetting.structuralOffset') }}
+            </span>
+            <Input
+              size="small"
+              class="!w-30 !min-w-30"
+              v-model:value="chartConfig.structuralOffset"
+            />
+            <RadioGroup
+              button-style="solid"
+              size="small"
+              v-model:value="chartConfig.structuralOffsetUnit"
+            >
+              <RadioButton :value="structuralOffsetUnitEnum.tradingDay">{{
+                t('common.tradingDay')
+              }}</RadioButton>
+              <RadioButton :value="structuralOffsetUnitEnum.natureDay">{{
+                t('common.natureDay')
+              }}</RadioButton>
+            </RadioGroup>
+            <Tooltip>
+              <template #title>
+                <span>{{ t('page.quotaView.advance.datasourceSetting.structuralOffsetTip') }}</span>
+              </template>
+              <Icon icon="ant-design:question-circle-outlined" />
+            </Tooltip>
+          </div>
         </div>
       </CollapsePanel>
     </Collapse>
@@ -134,6 +172,7 @@
     InputNumber,
     Button,
     Select,
+    Radio,
     Tooltip,
   } from 'ant-design-vue';
   import { useI18n } from '/@/hooks/web/useI18n';
@@ -144,7 +183,10 @@
   import type { CSSProperties } from 'vue';
   import { quotaDataPastUnitTypeEnum } from '/@/api/quota';
   import { useMessage } from '/@/hooks/web/useMessage';
+  import { chartTypeEnum, structuralOffsetUnitEnum } from '/@/enums/chartEnum';
 
+  const RadioGroup = Radio.Group;
+  const RadioButton = Radio.Button;
   const CollapsePanel = Collapse.Panel;
   const panelTitleStyle: CSSProperties = reactive({
     backgroundColor: 'transparent',
@@ -154,6 +196,19 @@
   const { createMessage } = useMessage();
   const chartConfig = useChartConfigContext();
   const collapseKey = ref('datasourceSetting');
+  function showSettingFilter(modelName: string) {
+    const filter = {
+      [chartTypeEnum.normal]: ['yAxisEdit', 'sortMonth'],
+      [chartTypeEnum.seasonal]: ['sortMonth', 'startMonth'],
+      [chartTypeEnum.seasonalLunar]: ['sortMonth', 'startMonth'],
+      [chartTypeEnum.normalRadar]: [''],
+      [chartTypeEnum.quantileRadar]: [''],
+      [chartTypeEnum.bar]: [''],
+      [chartTypeEnum.structural]: ['structuralOffset'],
+      [chartTypeEnum.pie]: [''],
+    };
+    return filter[chartConfig.type].includes(modelName);
+  }
   const datasourceSetting = reactive({
     pastValue: 0,
     pastUnit: quotaDataPastUnitTypeEnum.last,
@@ -213,7 +268,6 @@
   }
   // 修改不要的月份
   function sortMonthChange(e: PointerEvent) {
-    console.log(e);
     const m = parseInt(e.target.dataset.month ?? NaN);
     if (m) {
       const idx = chartConfig.timeConfig.sortMonth!.indexOf(m);
