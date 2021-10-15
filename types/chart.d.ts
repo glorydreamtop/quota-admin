@@ -75,12 +75,15 @@ export interface structuralChartConfigType extends reactSettingType, baseChartCo
   structuralOffsetUnit: structuralOffsetUnitEnum;
 }
 
+export interface pieChartConfigType extends reactSettingType, baseChartConfigType {}
+
 export type chartConfigType =
   | seasonalChartConfigType
   | normalChartConfigType
   | barChartConfigType
   | radarChartConfigType
-  | structuralChartConfigType;
+  | structuralChartConfigType
+  | pieChartConfigType;
 export interface normalQuotaSettingType {
   yAxisIndex: number;
   type: echartSeriesTypeEnum;

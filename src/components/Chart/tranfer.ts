@@ -10,17 +10,20 @@ import type {
   ToolboxComponentOption,
   YAXisComponentOption,
 } from 'echarts';
-import { max, maxBy, minBy, omit, round } from 'lodash-es';
+import { max, maxBy, min, minBy, omit, remove, round } from 'lodash-es';
 import {
   useAddGraphicElement,
   useHighestQuotaData,
   useLastestQuotaData,
+  useMultiPie,
+  useRecentLegend,
   useSortMonth,
 } from './helper';
 import {
   barChartConfigType,
   chartConfigType,
   normalChartConfigType,
+  pieChartConfigType,
   radarChartConfigType,
   seasonalChartConfigType,
   structuralChartConfigType,
@@ -28,10 +31,8 @@ import {
 import { getQuotaData, quotaDataExportTypeEnum, quotaDataPastUnitTypeEnum } from '/@/api/quota';
 import { getQuotaDataParams, getQuotaDataResult } from '/@/api/quota/model';
 import { echartSeriesTypeEnum, structuralOffsetUnitEnum } from '/@/enums/chartEnum';
-import { useI18n } from '/@/hooks/web/useI18n';
 import { daysAgo, formatToDate } from '/@/utils/dateUtil';
 
-const { t } = useI18n();
 function titleConfig(chartConfig: chartConfigType): TitleComponentOption {
   return {
     text: chartConfig.title,
@@ -91,7 +92,7 @@ export async function useSeasonalChart(
       const name = `${y - 1}-${y}`;
       const s = series.find((ser) => ser.name === name);
       if (s) {
-        s.data.push([dayjs(time).year(year).unix() * 1000, v]);
+        (s.data as [number, number][]).push([dayjs(time).year(year).unix() * 1000, v]);
       } else {
         legend.data?.push(name);
         series.push({
@@ -105,7 +106,7 @@ export async function useSeasonalChart(
       const name = `${y}`;
       const s = series.find((ser) => ser.name === name);
       if (s) {
-        s.data.push([dayjs(time).year(2020).unix() * 1000, v]);
+        (s.data as [number, number][]).push([dayjs(time).year(2020).unix() * 1000, v]);
       } else {
         legend.data?.push(name);
         series.push({
@@ -272,7 +273,7 @@ export async function useBarChart(chartConfig: barChartConfigType) {
       type: 'bar',
       seriesLayoutBy: 'column',
     });
-    firstLine.push(t('page.chart.index') + (index + 1) + t('page.chart.unit'));
+    firstLine.push(useRecentLegend(maxLength, index));
   }
   dataset.source = [firstLine];
   quotaDataList.forEach((quota) => {
@@ -286,6 +287,9 @@ export async function useBarChart(chartConfig: barChartConfigType) {
     title: titleConfig(chartConfig),
     xAxis: {
       type: 'category',
+      axisTick: {
+        alignWithLabel: true,
+      },
     },
     yAxis: chartConfig.yAxis?.map((y) => {
       const base: YAXisComponentOption = {
@@ -341,7 +345,7 @@ export async function useRadarChart(chartConfig: radarChartConfigType) {
   for (let index = 0; index < chartConfig.timeConfig.pastValue!; index++) {
     (series[0].data as any[]).push({
       value: [] as number[],
-      name: t('page.chart.index') + (index + 1) + t('page.chart.unit'),
+      name: useRecentLegend(chartConfig.timeConfig.pastValue!, index),
     });
   }
   const radar: RadarComponentOption = {
@@ -395,13 +399,13 @@ export async function useRadarChart(chartConfig: radarChartConfigType) {
 
 // 曲线结构序列
 export async function useStructuralChart(chartConfig: structuralChartConfigType) {
-  const structuralOffsetArr = chartConfig.structuralOffset.split(',');
+  const structuralOffsetArr = chartConfig.structuralOffset.split(',').map((item) => parseInt(item));
   const quotaDataList: getQuotaDataResult[] = [];
   if (chartConfig.structuralOffsetUnit === structuralOffsetUnitEnum.natureDay) {
     for (let index = 0; index < structuralOffsetArr.length; index++) {
-      const offset = parseInt(structuralOffsetArr[index]);
+      const offset = structuralOffsetArr[index];
       const fetchParams: getQuotaDataParams = {
-        startDate: daysAgo(offset > 0 ? offset : 1 * 2, chartConfig.timeConfig.endDate),
+        startDate: chartConfig.timeConfig.startDate,
         endDate: daysAgo(offset, chartConfig.timeConfig.endDate),
         exportPara: quotaDataExportTypeEnum.JSON,
         rows: chartConfig.quotaList!,
@@ -410,10 +414,8 @@ export async function useStructuralChart(chartConfig: structuralChartConfigType)
       };
       const singleQuotaDataList = await getQuotaData(fetchParams);
       singleQuotaDataList.forEach((quota) => {
-        if (quota.data.length === 1) {
-        }
         // @ts-ignore
-        quota.data[0][0] = offset > 0 ? `-${offset}D` : 'Today';
+        quota.data[0][0] = `-${offset}D`;
       });
       if (quotaDataList.length === 0) {
         quotaDataList.push(...singleQuotaDataList);
@@ -424,6 +426,26 @@ export async function useStructuralChart(chartConfig: structuralChartConfigType)
       }
     }
   } else {
+    const maxOffset = max(structuralOffsetArr)!;
+    const fetchParams: getQuotaDataParams = {
+      startDate: chartConfig.timeConfig.startDate,
+      endDate: chartConfig.timeConfig.endDate,
+      exportPara: quotaDataExportTypeEnum.JSON,
+      rows: chartConfig.quotaList!,
+      pastUnit: quotaDataPastUnitTypeEnum.last,
+      pastValue: maxOffset + 1,
+    };
+    const res = await getQuotaData(fetchParams);
+    res.forEach((quota) => {
+      remove(quota.data, (data, index) => {
+        const idx = quota.data.length - index - 1;
+        // @ts-ignore
+        data[0] = `-${idx}D`;
+        return !structuralOffsetArr.includes(idx);
+      });
+    });
+    quotaDataList.push(...res);
+    console.log(quotaDataList);
   }
 
   const series: SeriesOption[] = [];
@@ -436,7 +458,7 @@ export async function useStructuralChart(chartConfig: structuralChartConfigType)
       type: 'line',
       seriesLayoutBy: 'column',
     });
-    firstLine.push(`${structuralOffsetArr[index]}D`);
+    firstLine.push(`-${structuralOffsetArr[index]}D`);
   }
   dataset.source = [firstLine];
   quotaDataList.forEach((quota) => {
@@ -450,6 +472,9 @@ export async function useStructuralChart(chartConfig: structuralChartConfigType)
     title: titleConfig(chartConfig),
     xAxis: {
       type: 'category',
+      axisTick: {
+        alignWithLabel: true,
+      },
     },
     yAxis: chartConfig.yAxis?.map((y) => {
       const base: YAXisComponentOption = {
@@ -471,6 +496,74 @@ export async function useStructuralChart(chartConfig: structuralChartConfigType)
     tooltip: {
       show: true,
       trigger: 'axis',
+      axisPointer: {
+        type: 'none',
+      },
+    },
+    grid: gridConfig,
+  };
+  useAddGraphicElement({ options });
+  // 最新值模块
+  useLastestQuotaData({ chartConfig, options, quotaDataList });
+  useHighestQuotaData({ chartConfig, options, quotaDataList });
+  return options;
+}
+
+// 饼图最近N期序列
+export async function usePieChart(chartConfig: pieChartConfigType) {
+  const fetchParams: getQuotaDataParams = {
+    startDate: chartConfig.timeConfig.startDate,
+    endDate: chartConfig.timeConfig.endDate,
+    exportPara: quotaDataExportTypeEnum.JSON,
+    rows: chartConfig.quotaList!,
+    pastUnit: quotaDataPastUnitTypeEnum.last,
+    pastValue: chartConfig.timeConfig.pastValue,
+  };
+
+  const quotaDataList = await getQuotaData(fetchParams);
+  const series: SeriesOption[] = [];
+  const dataset: DatasetComponentOption = {
+    source: [],
+  };
+
+  let maxLength = 0;
+  for (let index = 0; index < quotaDataList.length; index++) {
+    maxLength = max([quotaDataList[index].data.length, maxLength])!;
+  }
+  const firstLine = ['qoutaName'];
+  for (let index = 0; index < maxLength; index++) {
+    series.push({
+      type: 'pie',
+      radius: `${min([90 / maxLength, 60])}%`,
+      center: [`${(100 / (maxLength + 1)) * (index + 1)}%`, '50%'],
+      encode: {
+        itemName: 'qoutaName',
+        value: useRecentLegend(maxLength, index),
+      },
+      seriesLayoutBy: 'column',
+    });
+    firstLine.push(useRecentLegend(maxLength, index));
+  }
+  dataset.source = [firstLine];
+  quotaDataList.forEach((quota) => {
+    const source = [
+      quota.name,
+      ...quota.data.map((item) => round(item[1], chartConfig.valueFormatter.afterDot)),
+    ];
+    (dataset.source as any[]).push(source);
+  });
+  const options: EChartsOption = {
+    title: useMultiPie({ chartConfig }).title,
+    dataset,
+    series,
+    legend: {
+      top: 'bottom',
+      icon: 'roundRect',
+    },
+    toolbox: toolboxConfig,
+    tooltip: {
+      show: true,
+      trigger: 'item',
       axisPointer: {
         type: 'none',
       },

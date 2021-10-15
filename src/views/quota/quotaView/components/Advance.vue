@@ -75,7 +75,7 @@
           }}</Divider>
         </template>
         <div class="pl-8 flex flex-col gap-2">
-          <span class="flex gap-1 items-center">
+          <span class="flex gap-1 items-center" v-if="showSettingFilter('pastValue')">
             <span>
               {{ t('page.quotaView.advance.datasourceSetting.past') }}
             </span>
@@ -137,6 +137,7 @@
               size="small"
               class="!w-30 !min-w-30"
               v-model:value="chartConfig.structuralOffset"
+              @change="structuralOffsetChange"
             />
             <RadioGroup
               button-style="solid"
@@ -184,6 +185,7 @@
   import { quotaDataPastUnitTypeEnum } from '/@/api/quota';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { chartTypeEnum, structuralOffsetUnitEnum } from '/@/enums/chartEnum';
+  import { uniq } from 'lodash';
 
   const RadioGroup = Radio.Group;
   const RadioButton = Radio.Button;
@@ -198,14 +200,14 @@
   const collapseKey = ref('datasourceSetting');
   function showSettingFilter(modelName: string) {
     const filter = {
-      [chartTypeEnum.normal]: ['yAxisEdit', 'sortMonth'],
+      [chartTypeEnum.normal]: ['yAxisEdit', 'sortMonth', 'pastValue'],
       [chartTypeEnum.seasonal]: ['sortMonth', 'startMonth'],
       [chartTypeEnum.seasonalLunar]: ['sortMonth', 'startMonth'],
-      [chartTypeEnum.normalRadar]: [''],
+      [chartTypeEnum.normalRadar]: ['pastValue'],
       [chartTypeEnum.quantileRadar]: [''],
-      [chartTypeEnum.bar]: [''],
+      [chartTypeEnum.bar]: ['pastValue'],
       [chartTypeEnum.structural]: ['structuralOffset'],
-      [chartTypeEnum.pie]: [''],
+      [chartTypeEnum.pie]: ['pastValue'],
     };
     return filter[chartConfig.type].includes(modelName);
   }
@@ -254,7 +256,7 @@
   }
   // 调整起始月份
   const monthList = ref([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
-  function startMonthChange({ target: { value } }: InputEvent) {
+  function startMonthChange({ target: { value } }: { target: HTMLInputElement }) {
     if (!(parseInt(value) > 0 && parseInt(value) < 13)) {
       setTimeout(() => {
         chartConfig.timeConfig.startMonth = 1;
@@ -278,6 +280,20 @@
         chartConfig.timeConfig.sortMonth?.sort();
       }
     }
+  }
+  // 校验曲线结构日期偏移量输入值
+  function structuralOffsetChange({ target }: { target: HTMLInputElement }) {
+    if (/[^(\d|,)]/g.test(target.value)) {
+      target.style.borderColor = 'red';
+      createMessage.error(t('common.invaildTextTip'));
+      return;
+    }
+    const arr = target.value.split(',');
+    if (uniq(arr).length !== arr.length) {
+      createMessage.error(t('common.notUniqTip'));
+      return;
+    }
+    target.style.borderColor = '';
   }
 </script>
 

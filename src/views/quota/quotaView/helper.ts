@@ -3,6 +3,7 @@ import type {
   chartConfigType,
   normalChartConfigType,
   normalQuotaSettingType,
+  pieChartConfigType,
   radarChartConfigType,
   structuralChartConfigType,
 } from '/#/chart';
@@ -138,7 +139,6 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
         type: timeConfigEnum.default,
         pastUnit: quotaDataPastUnitTypeEnum.last,
         pastValue: 3,
-        startMonth: 1,
       },
       colorSchemeId: 0,
       selfColorScheme: '',
@@ -162,6 +162,27 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
         },
       ],
     } as structuralChartConfigType,
+    pie: {
+      title: '',
+      name: '',
+      timeConfig: {
+        startDate: yearsAgo(1),
+        endDate: today(),
+        type: timeConfigEnum.default,
+        pastUnit: quotaDataPastUnitTypeEnum.last,
+        pastValue: 1,
+      },
+      colorSchemeId: 0,
+      selfColorScheme: '',
+      type: chartTypeEnum.pie,
+      showLastest: true,
+      showHighest: false,
+      quotaList: [],
+      valueFormatter: {
+        afterDot: 2,
+        scientificNotation: false,
+      },
+    } as pieChartConfigType,
   };
   return defaultConfig[type];
 }

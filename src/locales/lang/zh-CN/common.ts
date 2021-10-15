@@ -23,4 +23,7 @@ export default {
   searchResEmpty: '暂无搜索结果',
   natureDay: '自然日',
   tradingDay: '交易日',
+  invaildTextTip: '包含非法字符',
+  notUniqTip: '包含重复值',
+  last: '最新',
 };

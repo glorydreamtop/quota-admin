@@ -252,7 +252,7 @@ export async function useLastestQuotaData({
     } else {
       function getDate(str: number | string) {
         if (chartConfig.type === chartTypeEnum.structural) {
-          str = str === 'Today' ? 0 : parseInt(str);
+          str = parseInt(str);
           return daysAgo(str, chartConfig.timeConfig.endDate);
         } else {
           return str;
@@ -265,7 +265,7 @@ export async function useLastestQuotaData({
         lastestData.push({
           name: quotaData.name,
           date: formatToDate(getDate(l[0]), 'MM-DD'),
-          value: l[1],
+          value: round(l[1], chartConfig.valueFormatter.afterDot),
           // 如果数据量不足无法计算差值则不显示
           diff: (function () {
             if (quotaData.data.length > 1) {
@@ -345,4 +345,39 @@ export function useSortMonth({ chartConfig, quotaDataList }: baseHelperParams) {
       return !sortMonth.includes(dayjs(data[0]).month() + 1);
     });
   });
+}
+
+// 多个饼图子标题生成
+export function useMultiPie({ chartConfig }: Omit<baseHelperParams, 'quotaDataList'>) {
+  const title: any[] = [
+    {
+      text: chartConfig.title,
+      left: 'center',
+      triggerEvent: true,
+    },
+  ];
+  const maxLen = chartConfig.timeConfig.pastValue!;
+  for (let index = 0; index < maxLen; index++) {
+    const subtitle = {
+      subtext: useRecentLegend(maxLen, index),
+      left: `${(100 / (maxLen + 1)) * (index + 1)}%`,
+      top: '80%',
+      textAlign: 'center',
+    };
+    title.push(subtitle);
+  }
+  return { title };
+}
+
+// 最近N期图例文本生成
+export function useRecentLegend(len: number, index: number, inverse = true) {
+  if (inverse) {
+    const idx = len - index - 1;
+    if (idx === 0) {
+      return t('common.last');
+    }
+    return t('page.chart.inserveIndex') + idx + t('page.chart.unit');
+  } else {
+    return t('page.chart.inserveIndex') + `${index + 1}` + t('page.chart.unit');
+  }
 }

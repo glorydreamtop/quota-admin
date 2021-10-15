@@ -104,6 +104,7 @@ export default {
   },
   chart: {
     index: '第',
+    inserveIndex: '前',
     unit: '期',
   },
 };
