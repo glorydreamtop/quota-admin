@@ -24,7 +24,7 @@ const setting: ProjectConfig = {
   settingButtonPosition: SettingButtonPositionEnum.AUTO,
 
   // Permission mode
-  permissionMode: PermissionModeEnum.ROUTE_MAPPING,
+  permissionMode: PermissionModeEnum.BACK,
 
   // Permission-related cache is stored in sessionStorage or localStorage
   permissionCacheType: CacheTypeEnum.LOCAL,
@@ -97,7 +97,7 @@ const setting: ProjectConfig = {
     // Menu mode
     mode: MenuModeEnum.INLINE,
     // Menu type
-    type: MenuTypeEnum.SIDEBAR,
+    type: MenuTypeEnum.TOP_MENU,
     // Menu theme
     theme: ThemeEnum.DARK,
     // Split menu
@@ -120,7 +120,7 @@ const setting: ProjectConfig = {
   multiTabsSetting: {
     cache: false,
     // Turn on
-    show: true,
+    show: false,
     // Is it possible to drag and drop sorting tabs
     canDrag: true,
     // Turn on quick actions
