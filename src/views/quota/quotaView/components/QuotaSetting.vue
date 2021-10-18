@@ -47,6 +47,7 @@
   import { computed, reactive, ref } from 'vue';
   import Icon from '/@/components/Icon';
   import { echartSeriesTypeEnum } from '/@/enums/chartEnum';
+  import { SourceTypeEnum } from '/@/enums/quotaEnum';
 
   const SelectOption = Select.Option;
   const { t } = useI18n();
@@ -56,7 +57,7 @@
   const quotaSetting: Partial<SelectedQuotaItem> = reactive({
     name: '',
     sourceCode: '',
-    sourceType: '',
+    sourceType: SourceTypeEnum.formula,
     setting: {
       yAxisIndex: 0,
       type: 'line',

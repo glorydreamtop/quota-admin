@@ -20,7 +20,12 @@
   import type { chartConfigType, normalChartConfigType } from '/#/chart';
   import { onMountedOrActivated } from '/@/hooks/core/onMountedOrActivated';
   import { useDebounceFn, useResizeObserver } from '@vueuse/core';
-  import { createMountNode, useChartTitlePopover, useYAxisIndexEdit } from '../helper';
+  import {
+    createMountNode,
+    useChartTitlePopover,
+    useLineChartContextMenu,
+    useYAxisIndexEdit,
+  } from '../helper';
   import { cloneDeep } from 'lodash';
 
   const props = defineProps<{
@@ -56,7 +61,7 @@
   }
   interface eventBusType {
     event: any;
-    target: 'title' | 'yAxis';
+    target: 'title' | 'yAxis' | 'series';
     eventType: 'dblclick' | 'contextmenu';
   }
   // 监听事件的列表
@@ -100,11 +105,37 @@
       eventType: 'dblclick',
       target: 'yAxis',
     });
+    // 支持折线图series右键菜单
+    const lineContextMenuEvent = useLineChartContextMenu({
+      chartConfig: chartConfig.value as normalChartConfigType,
+      onOk: (config) => {
+        Object.assign(chartConfig.value, config);
+        update();
+      },
+    });
+    eventBus.push({
+      event: lineContextMenuEvent,
+      eventType: 'contextmenu',
+      target: 'series',
+    });
     instance.on('dblclick', (e) => {
       console.log(e);
       // 依次执行双击监听的所有事件
       eventBus
         .filter((event) => event.eventType === 'dblclick')
+        .forEach((event) => {
+          // 匹配对应类型的事件
+          if (e.componentType === event.target) {
+            const dom = createMountNode(e);
+            event.event(dom, e);
+          }
+        });
+    });
+    instance.on('contextmenu', (e) => {
+      console.log(e);
+      // 依次执行双击监听的所有事件
+      eventBus
+        .filter((event) => event.eventType === 'contextmenu')
         .forEach((event) => {
           // 匹配对应类型的事件
           if (e.componentType === event.target) {

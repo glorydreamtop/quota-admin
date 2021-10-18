@@ -4,7 +4,8 @@
     ref="containerRef1"
   >
     <div class="h-full w-75 relative scaleable1 border">
-      <QuotaTree :show-search="true" class="h-full w-full enter-y" @selectNode="selectNode" />
+      <!-- <QuotaTree :show-search="true" class="h-full w-full enter-y" @selectNode="selectNode" /> -->
+      <TemplateTree :show-search="true" class="h-full w-full enter-y" @selectNode="selectNode" />
       <ArrowsAltOutlined
         class="absolute scale z-9 cursor-w-resize"
         :rotate="45"
@@ -19,7 +20,8 @@
 </template>
 
 <script lang="ts" setup>
-  import { QuotaTree } from '/@/components/QuotaTree';
+  //import { QuotaTree } from '/@/components/QuotaTree';
+  import { TemplateTree } from '/@/components/TemplateTree';
   import { ArrowsAltOutlined } from '@ant-design/icons-vue';
   import QuotaList from './components/QuotaList.vue';
   import ChartGenerator from './components/ChartGenerator.vue';

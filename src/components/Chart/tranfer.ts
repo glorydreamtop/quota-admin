@@ -18,6 +18,7 @@ import {
   useMultiPie,
   useRecentLegend,
   useSortMonth,
+  useNormalized,
 } from './helper';
 import {
   barChartConfigType,
@@ -72,6 +73,7 @@ export async function useSeasonalChart(
 
   const quotaDataList = await getQuotaData(fetchParams);
   useSortMonth({ chartConfig, quotaDataList });
+  useNormalized({ chartConfig, quotaDataList });
   const series: SeriesOption[] = [];
   const legend: LegendComponentOption = {
     data: [],
@@ -92,34 +94,31 @@ export async function useSeasonalChart(
       const name = `${y - 1}-${y}`;
       const s = series.find((ser) => ser.name === name);
       if (s) {
-        (s.data as [number, number][]).push([dayjs(time).year(year).unix() * 1000, v]);
+        (s.data as [number, number][]).push([dayjs(time).year(year).hour(0).unix() * 1000, v]);
       } else {
         legend.data?.push(name);
         series.push({
           name: name,
           symbol: 'none',
           type: 'line',
-          data: [[dayjs(time).year(year).unix() * 1000, v]],
+          data: [[dayjs(time).year(year).hour(0).unix() * 1000, v]],
         });
       }
     } else {
       const name = `${y}`;
       const s = series.find((ser) => ser.name === name);
       if (s) {
-        (s.data as [number, number][]).push([dayjs(time).year(2020).unix() * 1000, v]);
+        (s.data as [number, number][]).push([dayjs(time).year(2020).hour(0).unix() * 1000, v]);
       } else {
         legend.data?.push(name);
         series.push({
           name: name,
           symbol: 'none',
           type: 'line',
-          data: [[dayjs(time).year(2020).unix() * 1000, v]],
+          data: [[dayjs(time).year(2020).hour(0).unix() * 1000, v]],
         });
       }
     }
-
-    // 调整过起始月份则图例名称改成 xxxx-xxxx
-    // const year =
   });
   const options: EChartsOption = {
     title: titleConfig(chartConfig),
@@ -171,6 +170,7 @@ export async function useNormalChart(chartConfig: normalChartConfigType): Promis
 
   const quotaDataList = await getQuotaData(fetchParams);
   useSortMonth({ chartConfig, quotaDataList });
+  useNormalized({ chartConfig, quotaDataList });
   const legend: LegendComponentOption = {
     data: [],
     top: 'bottom',
@@ -258,6 +258,7 @@ export async function useBarChart(chartConfig: barChartConfigType) {
   };
 
   const quotaDataList = await getQuotaData(fetchParams);
+  useNormalized({ chartConfig, quotaDataList });
   const series: SeriesOption[] = [];
   const dataset: DatasetComponentOption = {
     source: [],
@@ -336,6 +337,7 @@ export async function useRadarChart(chartConfig: radarChartConfigType) {
   };
 
   const quotaDataList = await getQuotaData(fetchParams);
+  useNormalized({ chartConfig, quotaDataList });
   const series: SeriesOption[] = [
     {
       type: 'radar',
@@ -445,9 +447,8 @@ export async function useStructuralChart(chartConfig: structuralChartConfigType)
       });
     });
     quotaDataList.push(...res);
-    console.log(quotaDataList);
   }
-
+  useNormalized({ chartConfig, quotaDataList });
   const series: SeriesOption[] = [];
   const dataset: DatasetComponentOption = {
     source: [],
@@ -521,6 +522,7 @@ export async function usePieChart(chartConfig: pieChartConfigType) {
   };
 
   const quotaDataList = await getQuotaData(fetchParams);
+  useNormalized({ chartConfig, quotaDataList });
   const series: SeriesOption[] = [];
   const dataset: DatasetComponentOption = {
     source: [],

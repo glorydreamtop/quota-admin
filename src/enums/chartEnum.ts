@@ -50,3 +50,9 @@ export enum structuralOffsetUnitEnum {
   natureDay = 'natureDay',
   tradingDay = 'tradingDay',
 }
+
+export enum versionEnum {
+  HUI = '2.0',
+  PING = '1.0',
+  PRO = '3.0',
+}

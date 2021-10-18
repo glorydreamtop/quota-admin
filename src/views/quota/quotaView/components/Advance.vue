@@ -30,7 +30,7 @@
             t('page.quotaView.advance.valueFormatter.title')
           }}</Divider>
         </template>
-        <div class="grid grid-cols-2 pl-8">
+        <div class="flex flex-wrap gap-2 pl-8">
           <span class="label">
             <InputNumber
               size="small"
@@ -45,6 +45,13 @@
               :checked-children="t('page.quotaView.advance.use')"
               :un-checked-children="t('page.quotaView.advance.stop')"
             /><span>{{ t('page.quotaView.advance.valueFormatter.scientificNotation') }}</span>
+          </span>
+          <span class="label">
+            <Switch
+              v-model:checked="chartConfig.valueFormatter.normalized"
+              :checked-children="t('page.quotaView.advance.use')"
+              :un-checked-children="t('page.quotaView.advance.stop')"
+            /><span>{{ t('page.quotaView.advance.valueFormatter.normalized') }}</span>
           </span>
         </div>
       </CollapsePanel>
@@ -126,37 +133,38 @@
               >
             </div>
           </div>
-          <div
-            class="bg-gray-100 p-2 rounded-sm flex gap-2 items-center"
-            v-if="showSettingFilter('structuralOffset')"
-          >
+          <div class="bg-gray-100 p-2 rounded-sm" v-if="showSettingFilter('structuralOffset')">
             <span class="text-primary">
               {{ t('page.quotaView.advance.datasourceSetting.structuralOffset') }}
             </span>
-            <Input
-              size="small"
-              class="!w-30 !min-w-30"
-              v-model:value="chartConfig.structuralOffset"
-              @change="structuralOffsetChange"
-            />
-            <RadioGroup
-              button-style="solid"
-              size="small"
-              v-model:value="chartConfig.structuralOffsetUnit"
-            >
-              <RadioButton :value="structuralOffsetUnitEnum.tradingDay">{{
-                t('common.tradingDay')
-              }}</RadioButton>
-              <RadioButton :value="structuralOffsetUnitEnum.natureDay">{{
-                t('common.natureDay')
-              }}</RadioButton>
-            </RadioGroup>
-            <Tooltip>
-              <template #title>
-                <span>{{ t('page.quotaView.advance.datasourceSetting.structuralOffsetTip') }}</span>
-              </template>
-              <Icon icon="ant-design:question-circle-outlined" />
-            </Tooltip>
+            <div class="flex gap-2 items-center">
+              <Input
+                size="small"
+                class="!w-30 !min-w-30"
+                v-model:value="chartConfig.structuralOffset"
+                @change="structuralOffsetChange"
+              />
+              <RadioGroup
+                button-style="solid"
+                size="small"
+                v-model:value="chartConfig.structuralOffsetUnit"
+              >
+                <RadioButton :value="structuralOffsetUnitEnum.tradingDay">{{
+                  t('common.tradingDay')
+                }}</RadioButton>
+                <RadioButton :value="structuralOffsetUnitEnum.natureDay">{{
+                  t('common.natureDay')
+                }}</RadioButton>
+              </RadioGroup>
+              <Tooltip>
+                <template #title>
+                  <span>{{
+                    t('page.quotaView.advance.datasourceSetting.structuralOffsetTip')
+                  }}</span>
+                </template>
+                <Icon icon="ant-design:question-circle-outlined" />
+              </Tooltip>
+            </div>
           </div>
         </div>
       </CollapsePanel>

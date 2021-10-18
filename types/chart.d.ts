@@ -44,6 +44,7 @@ export interface baseChartConfigType {
   valueFormatter: {
     afterDot: number;
     scientificNotation: boolean;
+    normalized: boolean;
   };
 
   quotaList: Nullable<SelectedQuotaItem[]>;
@@ -86,5 +87,6 @@ export type chartConfigType =
   | pieChartConfigType;
 export interface normalQuotaSettingType {
   yAxisIndex: number;
+  lineWidth: number;
   type: echartSeriesTypeEnum;
 }

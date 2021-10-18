@@ -24,12 +24,6 @@
         :placeholer="t('page.quotaView.toolbar.endDatePicker')"
         class="w-30"
       />
-      <Icon
-        class="setting-icon rotate-icon"
-        size="24"
-        @click="openAdvanceModal"
-        icon="ant-design:setting-outlined"
-      />
       <Icon class="save-icon" size="24" icon="ant-design:save-outlined" />
     </Space>
     <div class="absolute right-0 top-0 w-18 h-18 overflow-hidden" @click="paint">
@@ -74,7 +68,6 @@
       ].includes(v as chartTypeEnum),
     });
   }
-  function openAdvanceModal() {}
   function selectType(type: chartTypeEnum) {
     for (const key in chartConfig) {
       Reflect.deleteProperty(chartConfig, key);

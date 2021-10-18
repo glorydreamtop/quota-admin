@@ -37,6 +37,7 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
       valueFormatter: {
         afterDot: 2,
         scientificNotation: false,
+        normalized: false,
       },
       yAxis: [
         {
@@ -98,6 +99,7 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
       valueFormatter: {
         afterDot: 2,
         scientificNotation: false,
+        normalized: false,
       },
       yAxis: [
         {
@@ -128,6 +130,7 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
       valueFormatter: {
         afterDot: 2,
         scientificNotation: false,
+        normalized: false,
       },
     } as radarChartConfigType,
     structural: {
@@ -149,6 +152,7 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
       valueFormatter: {
         afterDot: 2,
         scientificNotation: false,
+        normalized: false,
       },
       structuralOffset: '30,15,7,1,0',
       structuralOffsetUnit: structuralOffsetUnitEnum.natureDay,
@@ -181,6 +185,7 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
       valueFormatter: {
         afterDot: 2,
         scientificNotation: false,
+        normalized: false,
       },
     } as pieChartConfigType,
   };
@@ -190,5 +195,6 @@ export function getNormalQuotaDefaultSetting(): normalQuotaSettingType {
   return {
     yAxisIndex: 0,
     type: echartSeriesTypeEnum.line,
+    lineWidth: 2,
   };
 }

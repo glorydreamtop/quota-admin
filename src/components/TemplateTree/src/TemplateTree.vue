@@ -44,7 +44,7 @@
   import type { TreeItem, TreeActionType } from '/@/components/Tree/index';
   import { Tabs } from 'ant-design-vue';
   import { getDirTemplate, getTemplateTree } from '/@/api/template';
-  import type { CategoryTreeModel, QuotaItem } from '/#/quota';
+  import type { CategoryTreeModel } from '/#/quota';
   import { CategoryTreeType } from '/@/enums/quotaEnum';
   import { useI18n } from '/@/hooks/web/useI18n';
   import Icon from '/@/components/Icon';
@@ -55,9 +55,12 @@
   import { useHighLight, useMultiSelect } from '../hooks';
   import { useCopyToClipboard } from '/@/hooks/web/useCopyToClipboard';
   import type { treeSelectParams, treePropsModel, TemplateType, searchItemType } from '../types';
+  import type { TemplateItem } from '/#/template';
+  import { versionEnum } from '/@/enums/chartEnum';
+  import { pingChart } from '/@/components/Chart';
 
   const emit = defineEmits<{
-    (event: 'selectNode', node: QuotaItem): void;
+    (event: 'selectNode', node: TemplateItem): void;
     (event: 'selectFolder', folder: CategoryTreeModel): void;
   }>();
   const props = defineProps<{
@@ -69,15 +72,19 @@
   const { t } = useI18n();
   const { createMessage } = useMessage();
   const treeType = ref<TemplateType>(CategoryTreeType.sysTemplate);
-
-  const isFolder = (node: QuotaItem | CategoryTreeModel) =>
+  const templateNameVersion = {
+    [versionEnum.HUI]: (item) => item.name,
+    [versionEnum.PING]: (item) => `[${t('template.compatible')}]${item.name}`,
+  };
+  const isFolder = (node: TemplateItem | CategoryTreeModel) =>
     Reflect.has(node, 'folder') && (node as CategoryTreeModel).folder;
 
-  function nodeFilter(item: QuotaItem | CategoryTreeModel) {
-    if (isFolder(item)) {
+  function nodeFilter(item: TemplateItem | CategoryTreeModel) {
+    if (Reflect.has(item, 'version')) {
+      return templateNameVersion[(item as TemplateItem).version].call(null, item);
+    } else {
       return item.name;
     }
-    return `[${item.id}]${(item as QuotaItem).shortName || item.name}`;
   }
   const treeProps: treePropsModel = reactive({
     [CategoryTreeType.sysTemplate]: {
@@ -146,7 +153,14 @@
     const instance = getTreeInstance(type);
     const res = await getDirTemplate({ categoryId: key, type });
     const { parentNode } = findParentNode(key, type);
-    parentNode.children = res.map((item: QuotaItem & TreeItem) => {
+    parentNode.children = res.map((item: TemplateItem & TreeItem) => {
+      const json = JSON.parse(item.options);
+      if (Reflect.has(json, 'config')) {
+        item.version = versionEnum.HUI;
+      } else if (Reflect.has(json, 'option_template_type')) {
+        item.version = versionEnum.HUI;
+        item.config = pingChart(json);
+      }
       item.icon = 'tabler:letter-q';
       item.isLeaf = true;
       item.key = item.id;
@@ -204,7 +218,7 @@
         if (!allowMultiSelect) {
           emit('selectFolder', dataRef as CategoryTreeModel);
         } else {
-          emit('selectNode', dataRef as QuotaItem);
+          emit('selectNode', dataRef as TemplateItem);
         }
       },
     });
@@ -236,7 +250,7 @@
   function beforeRightClick({
     dataRef,
   }: {
-    dataRef: QuotaItem | CategoryTreeModel;
+    dataRef: TemplateItem | CategoryTreeModel;
   }): ContextMenuItem[] {
     const list = getMultiList();
     if (!list.includes(dataRef.id)) {
@@ -269,7 +283,7 @@
           handler: () => {
             console.log(highLightList);
             highLightList.forEach((node) => {
-              emit('selectNode', node as QuotaItem);
+              emit('selectNode', node as TemplateItem);
             });
           },
         },

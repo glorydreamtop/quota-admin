@@ -61,6 +61,7 @@ export default {
         title: '数字格式设置',
         afterDot: '位小数',
         scientificNotation: '科学计数法',
+        normalized: '初值归一',
       },
       timeSeries: {
         title: '时间序列设置',

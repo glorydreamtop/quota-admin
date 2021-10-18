@@ -10,6 +10,7 @@ import { daysAgo, formatToDate } from '/@/utils/dateUtil';
 import dayjs from 'dayjs';
 import { useI18n } from '/@/hooks/web/useI18n';
 import YAxisEdit from './src/YAxisEditor.vue';
+import { useContextMenu } from '/@/hooks/web/useContextMenu';
 
 const { t } = useI18n();
 export async function fetchQuotaData(params: getQuotaDataParams) {
@@ -380,4 +381,45 @@ export function useRecentLegend(len: number, index: number, inverse = true) {
   } else {
     return t('page.chart.inserveIndex') + `${index + 1}` + t('page.chart.unit');
   }
+}
+
+// 支持折线图series右键菜单
+export function useLineChartContextMenu({ onOk, chartConfig }: chartTitlePopoverParams) {
+  if (
+    ![
+      chartTypeEnum.normal,
+      chartTypeEnum.seasonal,
+      chartTypeEnum.seasonalLunar,
+      chartTypeEnum.fixedbase,
+    ].includes(chartConfig.type)
+  )
+    return;
+  const [createContextMenu] = useContextMenu();
+  return function (_, e) {
+    createContextMenu({
+      event: e.event.event,
+      items: [
+        {
+          label: 'test',
+          handler: () => {
+            onOk('');
+          },
+        },
+      ],
+    });
+  };
+}
+// if (dom.className === MOUNTNODE) {
+//   dom.remove();
+// }
+
+export function useNormalized({ chartConfig, quotaDataList }: baseHelperParams) {
+  if (!chartConfig.valueFormatter.normalized) return;
+  const afterDot = chartConfig.valueFormatter.afterDot;
+  quotaDataList.forEach((quota) => {
+    const base = quota.data[0][1];
+    quota.data.forEach((data) => {
+      data[1] = round(data[1] / base, afterDot);
+    });
+  });
 }
