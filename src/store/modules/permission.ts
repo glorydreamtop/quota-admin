@@ -6,7 +6,11 @@ import { useI18n } from '/@/hooks/web/useI18n';
 import { useUserStore } from './user';
 import { useAppStoreWithOut } from './app';
 import { toRaw } from 'vue';
-import { transformObjToRoute, flatMultiLevelRoutes } from '/@/router/helper/routeHelper';
+import {
+  transformObjToRoute,
+  flatMultiLevelRoutes,
+  convertRoute,
+} from '/@/router/helper/routeHelper';
 import { transformRouteToMenu } from '/@/router/helper/menuHelper';
 
 import projectSetting from '/@/settings/projectSetting';
@@ -23,6 +27,7 @@ import { getMenuList } from '/@/api/sys/menu';
 
 import { useMessage } from '/@/hooks/web/useMessage';
 import { PageEnum } from '/@/enums/pageEnum';
+import { cloneDeep } from 'lodash-es';
 
 interface PermissionState {
   // Permission code list
@@ -174,7 +179,6 @@ export const usePermissionStore = defineStore({
         //  If you are sure that you do not need to do background dynamic permissions, please comment the entire judgment below
         case PermissionModeEnum.BACK:
           const { createMessage } = useMessage();
-
           createMessage.loading({
             content: t('sys.app.menuLoading'),
             duration: 1,
@@ -185,13 +189,13 @@ export const usePermissionStore = defineStore({
           let routeList: AppRouteRecordRaw[] = [];
           try {
             // this.changePermissionCode();
-            routeList = (await getMenuList()) as AppRouteRecordRaw[];
+            const { menuList } = await getMenuList();
+            const routels: AppRouteRecordRaw[] = convertRoute(cloneDeep(menuList));
+            // Dynamically introduce components
+            routeList = transformObjToRoute(routels);
           } catch (error) {
             console.error(error);
           }
-
-          // Dynamically introduce components
-          routeList = transformObjToRoute(routeList);
 
           //  Background routing to menu structure
           const backMenuList = transformRouteToMenu(routeList);

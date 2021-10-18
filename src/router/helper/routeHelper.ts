@@ -2,9 +2,11 @@ import type { AppRouteModule, AppRouteRecordRaw } from '/@/router/types';
 import type { Router, RouteRecordNormalized } from 'vue-router';
 
 import { getParentLayout, LAYOUT } from '/@/router/constant';
-import { cloneDeep, omit } from 'lodash-es';
+import { camelCase, cloneDeep, last, omit } from 'lodash-es';
 import { warn } from '/@/utils/log';
 import { createRouter, createWebHashHistory } from 'vue-router';
+import { MenuItem } from '/@/api/sys/model/menuModel';
+import { isUrl } from '/@/utils/is';
 
 export type LayoutMapKey = 'LAYOUT';
 const IFRAME = () => import('/@/views/sys/iframe/FrameBlank.vue');
@@ -155,4 +157,44 @@ function isMultipleRoute(routeModule: AppRouteModule) {
     }
   }
   return flag;
+}
+
+function makeName(url: string) {
+  const p = url.match(/#\w+/g);
+  const s = p ? p[0] : '';
+  return camelCase(last(url.match(/\/\w+/g))!.substr(1)) + s;
+}
+
+// convert the menuList to AppRouteRecordRaw
+export function convertRoute(menuList: MenuItem[]): AppRouteRecordRaw[] {
+  const routes: AppRouteRecordRaw[] = menuList.map((item) => {
+    const route = {
+      path: item.url.replace(/\#/g, '/'),
+      component:
+        item.type === 0
+          ? 'LAYOUT'
+          : `/${item.url.replace(/(\/:.*)|(^\/)|(#.*)|(\?.*)/g, '')}/index`,
+      children: [],
+      name: makeName(item.url), // 'sys/config?type=1' => 'Config'
+      meta: {
+        //   menuId: menuList[i].menuId,
+        title: item.name,
+        icon: item.icon,
+        frameSrc: '',
+      },
+    } as AppRouteRecordRaw;
+
+    if (item.list && item.list.length >= 1) {
+      const list = item.list as MenuItem[];
+      route.children = convertRoute(list);
+    }
+    // url以http[s]://开头, 通过iframe展示
+    if (isUrl(item.url)) {
+      route['component'] = 'IFrame';
+      route['path'] = '';
+      route['meta']['frameSrc'] = item.url;
+    }
+    return route;
+  });
+  return routes;
 }

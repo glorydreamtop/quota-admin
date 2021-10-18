@@ -11414,6 +11414,11 @@ vue@3.2.2:
     "@vue/runtime-dom" "3.2.2"
     "@vue/shared" "3.2.2"
 
+vxe-table@^4.0.30-beta.0:
+  version "4.0.30-beta.0"
+  resolved "https://registry.npmmirror.com/vxe-table/download/vxe-table-4.0.30-beta.0.tgz?cache=0&sync_timestamp=1634475090069&other_urls=https%3A%2F%2Fregistry.npmmirror.com%2Fvxe-table%2Fdownload%2Fvxe-table-4.0.30-beta.0.tgz#a5d4c2e61cb0408567c37c3c24760e0c9cc2d143"
+  integrity sha1-pdTC5hywQIVnw3w8JHYODJzC0UM=
+
 w3c-hr-time@^1.0.2:
   version "1.0.2"
   resolved "https://registry.npmjs.org/w3c-hr-time/-/w3c-hr-time-1.0.2.tgz#0a89cdf5cc15822df9c360543676963e0cc308cd"
@@ -11750,6 +11755,11 @@ ws@^7.4.5:
   version "7.5.0"
   resolved "https://registry.npmjs.org/ws/-/ws-7.5.0.tgz#0033bafea031fb9df041b2026fc72a571ca44691"
   integrity sha512-6ezXvzOZupqKj4jUqbQ9tXuJNo+BR2gU8fFRk3XCP3e0G6WT414u5ELe6Y0vtp7kmSJ3F7YWObSNr1ESsgi4vw==
+
+xe-utils@3:
+  version "3.4.0"
+  resolved "https://registry.npmmirror.com/xe-utils/download/xe-utils-3.4.0.tgz#b5b52990858298e815763c46bada5741ebab15ed"
+  integrity sha1-tbUpkIWCmOgVdjxGutpXQeurFe0=
 
 xml-name-validator@^3.0.0:
   version "3.0.0"

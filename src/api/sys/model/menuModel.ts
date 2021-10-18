@@ -13,4 +13,21 @@ export interface RouteItem {
 /**
  * @description: Get menu return value
  */
-export type getMenuListResultModel = RouteItem[];
+export interface MenuItem {
+  icon: string;
+  menuId: number;
+  name: string;
+  open: false;
+  orderNum: number;
+  parentId: number;
+  parentName: string;
+  perms: string;
+  type: number;
+  url: string;
+  list: MenuItem[] | null;
+}
+
+export interface MenuListResultModel {
+  menuList: MenuItem[];
+  permissions: string[];
+}

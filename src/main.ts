@@ -14,6 +14,7 @@ import { setupStore } from '/@/store';
 import { setupGlobDirectives } from '/@/directives';
 import { setupI18n } from '/@/locales/setupI18n';
 import { registerGlobComp } from '/@/components/registerGlobComp';
+import { setupVxeTable } from './utils/lib/vxetable';
 
 // Do not introduce on-demand in local development?
 // In the local development for introduce on-demand, the number of browser requests will increase by about 20%.
@@ -50,6 +51,7 @@ async function bootstrap() {
   // Configure global error handling
   setupErrorHandle(app);
 
+  setupVxeTable(app);
   // Mount when the route is ready
   // https://next.router.vuejs.org/api/#isready
   await router.isReady();

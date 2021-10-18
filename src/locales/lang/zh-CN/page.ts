@@ -108,4 +108,8 @@ export default {
     inserveIndex: '前',
     unit: '期',
   },
+  quotaTable: {
+    addCol: '添加列',
+    addRow: '添加行',
+  },
 };
