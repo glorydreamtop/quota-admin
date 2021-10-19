@@ -166,6 +166,27 @@
               </Tooltip>
             </div>
           </div>
+          <div class="bg-gray-100 p-2 rounded-sm" v-if="showSettingFilter('quantileOffset')">
+            <span class="text-primary">
+              {{ t('page.quotaView.advance.datasourceSetting.quantileOffset') }}
+            </span>
+            <div class="flex gap-2 items-center">
+              <Input
+                size="small"
+                class="!w-30 !min-w-30"
+                v-model:value="chartConfig.quantileOffset"
+                @change="quantileOffsetChange"
+              />
+              <Tooltip>
+                <template #title>
+                  <span>{{
+                    t('page.quotaView.advance.datasourceSetting.structuralOffsetTip')
+                  }}</span>
+                </template>
+                <Icon icon="ant-design:question-circle-outlined" />
+              </Tooltip>
+            </div>
+          </div>
         </div>
       </CollapsePanel>
     </Collapse>
@@ -212,7 +233,7 @@
       [chartTypeEnum.seasonal]: ['sortMonth', 'startMonth'],
       [chartTypeEnum.seasonalLunar]: ['sortMonth', 'startMonth'],
       [chartTypeEnum.normalRadar]: ['pastValue'],
-      [chartTypeEnum.quantileRadar]: [''],
+      [chartTypeEnum.quantileRadar]: ['quantileOffset'],
       [chartTypeEnum.bar]: ['pastValue'],
       [chartTypeEnum.structural]: ['structuralOffset'],
       [chartTypeEnum.pie]: ['pastValue'],
@@ -302,6 +323,9 @@
       return;
     }
     target.style.borderColor = '';
+  }
+  function quantileOffsetChange({ target }: { target: HTMLInputElement }) {
+    return structuralOffsetChange({ target });
   }
 </script>
 

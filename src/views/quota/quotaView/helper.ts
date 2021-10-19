@@ -4,6 +4,7 @@ import type {
   normalChartConfigType,
   normalQuotaSettingType,
   pieChartConfigType,
+  quantileRadarChartConfigType,
   radarChartConfigType,
   structuralChartConfigType,
 } from '/#/chart';
@@ -133,6 +134,27 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
         normalized: false,
       },
     } as radarChartConfigType,
+    quantileRadar: {
+      title: '',
+      name: '',
+      timeConfig: {
+        startDate: yearsAgo(10),
+        endDate: today(),
+        type: timeConfigEnum.default,
+      },
+      colorSchemeId: 0,
+      selfColorScheme: '',
+      type: chartTypeEnum.quantileRadar,
+      showLastest: true,
+      showHighest: false,
+      quotaList: [],
+      valueFormatter: {
+        afterDot: 2,
+        scientificNotation: false,
+        normalized: false,
+      },
+      quantileOffset: '1,2,3,5,10',
+    } as quantileRadarChartConfigType,
     structural: {
       title: '',
       name: '',

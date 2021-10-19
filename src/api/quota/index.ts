@@ -64,7 +64,7 @@ export function searchQuota(params: {
 
 export function getQuotaData(params: getQuotaDataParams) {
   const rows = params.rows.map((item) => {
-    return pick(item, ['sourceCode', 'id', 'name']);
+    return pick(item, ['sourceCode', 'id', 'name', 'sourceType']);
   });
   return defHttp.post<getQuotaDataResult[]>({
     url: Api.GetQuotaData,

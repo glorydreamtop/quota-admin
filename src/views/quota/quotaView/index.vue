@@ -4,8 +4,8 @@
     ref="containerRef1"
   >
     <div class="h-full w-75 relative scaleable1 border">
-      <!-- <QuotaTree :show-search="true" class="h-full w-full enter-y" @selectNode="selectNode" /> -->
-      <TemplateTree :show-search="true" class="h-full w-full enter-y" @selectNode="selectNode" />
+      <QuotaTree :show-search="true" class="h-full w-full enter-y" @selectNode="selectNode" />
+      <!-- <TemplateTree :show-search="true" class="h-full w-full enter-y" @selectNode="selectTemplateNode" /> -->
       <ArrowsAltOutlined
         class="absolute scale z-9 cursor-w-resize"
         :rotate="45"
@@ -20,8 +20,8 @@
 </template>
 
 <script lang="ts" setup>
-  //import { QuotaTree } from '/@/components/QuotaTree';
-  import { TemplateTree } from '/@/components/TemplateTree';
+  import { QuotaTree } from '/@/components/QuotaTree';
+  // import { TemplateTree } from '/@/components/TemplateTree';
   import { ArrowsAltOutlined } from '@ant-design/icons-vue';
   import QuotaList from './components/QuotaList.vue';
   import ChartGenerator from './components/ChartGenerator.vue';
@@ -41,6 +41,7 @@
   import { useI18n } from '/@/hooks/web/useI18n';
   import { cloneDeep } from 'lodash-es';
   import { chartTypeEnum } from '/@/enums/chartEnum';
+  // import { TemplateItem } from '/#/template';
 
   const { createMessage } = useMessage();
   const { t } = useI18n();
@@ -78,6 +79,9 @@
     sq.selected = true;
     selectedQuotaList.value.push(sq);
   }
+  // function selectTemplateNode(template:TemplateItem){
+
+  // }
 </script>
 
 <style lang="less" scoped>

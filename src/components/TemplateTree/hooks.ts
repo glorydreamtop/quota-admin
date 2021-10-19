@@ -1,6 +1,5 @@
 import { cloneDeep, remove } from 'lodash-es';
 import { TreeItem } from '../Tree';
-import { QuotaItem } from '/#/quota';
 import { findNode } from '/@/utils/helper/treeHelper';
 import type {
   multiSelectHooksParams,
@@ -9,6 +8,11 @@ import type {
   multiSelectHooksType,
   treeSelectParams,
 } from './types';
+import { versionEnum } from '/@/enums/chartEnum';
+import { TemplateItem } from '/#/template';
+import { useI18n } from '/@/hooks/web/useI18n';
+
+const { t } = useI18n();
 
 export function useHighLight(HIGHTLIGHT: string): hightlightHooksType {
   const hightlightList: TreeItem[] = [];
@@ -68,7 +72,7 @@ export function useMultiSelect({ onSingleSelect }: multiSelectHooksParams): mult
       let maxIndex = 0;
       const list = findNode<TreeItem>(
         treeData!,
-        (node) => node.id === (dataRef as QuotaItem).categoryId
+        (node) => node.id === (dataRef as TemplateItem).categoryId
       )!.children!;
       for (let i = 0; i < multiSelectedList.length; i++) {
         minIndex = Math.min(
@@ -104,4 +108,24 @@ export function useMultiSelect({ onSingleSelect }: multiSelectHooksParams): mult
     multiSelectedList,
     { insertMultiSelectedKey, setTreeData, clearMultiSelected, getMultiList },
   ];
+}
+
+export function useTemplateVersion() {
+  const templateNameVersion = {
+    [versionEnum.HUIChart]: (item) => item.name,
+    [versionEnum.PROChart]: (item) => item.name,
+    [versionEnum.PINGChart]: (item) => `[${t('template.compatible')}]${item.name}`,
+  };
+  function getTemplateName(item: TemplateItem) {
+    return templateNameVersion[item.version].call(null, item);
+  }
+  const templateIconVersion = {
+    [versionEnum.HUIChart]: 'ant-design:line-chart-outlined',
+    [versionEnum.PINGChart]: 'ant-design:area-chart-outlined',
+    [versionEnum.PROChart]: 'mdi:chart-areaspline',
+  };
+  function getTemplateIcon(item: TemplateItem) {
+    return templateIconVersion[item.version];
+  }
+  return { getTemplateIcon, getTemplateName };
 }

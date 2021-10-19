@@ -70,6 +70,10 @@ export interface barChartConfigType extends reactSettingType, baseChartConfigTyp
 
 export interface radarChartConfigType extends reactSettingType, baseChartConfigType {}
 
+export interface quantileRadarChartConfigType extends radarChartConfigType {
+  quantileOffset: string;
+}
+
 export interface structuralChartConfigType extends reactSettingType, baseChartConfigType {
   yAxis: YAXisComponentOption[];
   structuralOffset: string;

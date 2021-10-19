@@ -16,6 +16,7 @@
     useRadarChart,
     useStructuralChart,
     usePieChart,
+    useQuantileRadarChart,
   } from '../tranfer';
   import type { chartConfigType, normalChartConfigType } from '/#/chart';
   import { onMountedOrActivated } from '/@/hooks/core/onMountedOrActivated';
@@ -46,6 +47,7 @@
     [chartTypeEnum.normalRadar]: useRadarChart,
     [chartTypeEnum.structural]: useStructuralChart,
     [chartTypeEnum.pie]: usePieChart,
+    [chartTypeEnum.quantileRadar]: useQuantileRadarChart,
   };
   watch(
     chartConfig,

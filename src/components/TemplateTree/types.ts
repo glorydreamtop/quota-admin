@@ -1,5 +1,6 @@
 import type { ContextMenuItem, ReplaceFields, TreeItem } from '../Tree';
-import type { CategoryTreeModel, QuotaItem } from '/#/quota';
+import type { CategoryTreeModel } from '/#/quota';
+import type { TemplateItem } from '/#/template';
 import { CategoryTreeType } from '/@/enums/quotaEnum';
 
 export type hightlightHooksType = [
@@ -9,7 +10,7 @@ export type hightlightHooksType = [
 
 export interface treeSelectParams {
   nativeEvent: PointerEvent;
-  node: { eventKey: number; dataRef: QuotaItem | CategoryTreeModel };
+  node: { eventKey: number; dataRef: TemplateItem | CategoryTreeModel };
 }
 export interface insertMultiSelectHooksParams<T = treeSelectParams> {
   e: T;
@@ -28,7 +29,7 @@ export type multiSelectHooksType = [
 
 export interface multiSelectHooksParams {
   onSingleSelect?: ({}: {
-    dataRef: QuotaItem | CategoryTreeModel;
+    dataRef: TemplateItem | CategoryTreeModel;
     allowMultiSelect: boolean;
   }) => void;
 }

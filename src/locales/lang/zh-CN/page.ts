@@ -100,6 +100,7 @@ export default {
         structuralOffset: '曲线结构日期偏移量',
         structuralOffsetUnit: '曲线结构日期偏移单位',
         structuralOffsetTip: '使用英文逗号分隔，数量不限',
+        quantileOffset: '多年分位数',
       },
     },
   },
@@ -107,6 +108,7 @@ export default {
     index: '第',
     inserveIndex: '前',
     unit: '期',
+    quantile: '年分位数',
   },
   quotaTable: {
     addCol: '添加列',

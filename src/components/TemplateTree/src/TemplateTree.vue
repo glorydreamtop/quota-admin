@@ -52,12 +52,12 @@
   import { useMessage } from '/@/hooks/web/useMessage';
   import { uniq } from 'lodash-es';
   import { useTimeoutFn } from '/@/hooks/core/useTimeout';
-  import { useHighLight, useMultiSelect } from '../hooks';
+  import { useHighLight, useMultiSelect, useTemplateVersion } from '../hooks';
   import { useCopyToClipboard } from '/@/hooks/web/useCopyToClipboard';
   import type { treeSelectParams, treePropsModel, TemplateType, searchItemType } from '../types';
   import type { TemplateItem } from '/#/template';
   import { versionEnum } from '/@/enums/chartEnum';
-  import { pingChart } from '/@/components/Chart';
+  import { useVersionTransfer } from '/@/utils/helper/versionTransfer';
 
   const emit = defineEmits<{
     (event: 'selectNode', node: TemplateItem): void;
@@ -72,16 +72,20 @@
   const { t } = useI18n();
   const { createMessage } = useMessage();
   const treeType = ref<TemplateType>(CategoryTreeType.sysTemplate);
-  const templateNameVersion = {
-    [versionEnum.HUI]: (item) => item.name,
-    [versionEnum.PING]: (item) => `[${t('template.compatible')}]${item.name}`,
-  };
+
+  const { getTemplateIcon, getTemplateName } = useTemplateVersion();
+  const { pingChart, huiChart } = useVersionTransfer();
   const isFolder = (node: TemplateItem | CategoryTreeModel) =>
     Reflect.has(node, 'folder') && (node as CategoryTreeModel).folder;
-
+  function iconFilter(node: TemplateItem | CategoryTreeModel) {
+    const folderIcon = 'ant-design:folder-outlined';
+    return isFolder(node) ? folderIcon : getTemplateIcon(node as TemplateItem);
+  }
   function nodeFilter(item: TemplateItem | CategoryTreeModel) {
     if (Reflect.has(item, 'version')) {
-      return templateNameVersion[(item as TemplateItem).version].call(null, item);
+      console.log(item);
+
+      return getTemplateName(item as TemplateItem);
     } else {
       return item.name;
     }
@@ -119,7 +123,7 @@
       const res = (await getTemplateTree({ type })) as Partial<CategoryTreeModel & TreeItem>[];
       forEach(res, (item) => {
         item.isLeaf = !item.folder;
-        item.icon = item.folder ? 'ant-design:folder-outlined' : 'tabler:letter-q';
+        item.icon = 'ant-design:folder-outlined';
         if (expandedKeys && expandedKeys.includes(item.key!) && !item.children) {
           loadData(item.key!);
         }
@@ -156,12 +160,16 @@
     parentNode.children = res.map((item: TemplateItem & TreeItem) => {
       const json = JSON.parse(item.options);
       if (Reflect.has(json, 'config')) {
-        item.version = versionEnum.HUI;
+        item.version = versionEnum.HUIChart;
+        item.config = huiChart(json);
+        item.name = item.config.name;
       } else if (Reflect.has(json, 'option_template_type')) {
-        item.version = versionEnum.HUI;
+        item.version = versionEnum.PINGChart;
         item.config = pingChart(json);
+      } else {
+        item.version = versionEnum.PROChart;
       }
-      item.icon = 'tabler:letter-q';
+      item.icon = iconFilter(item);
       item.isLeaf = true;
       item.key = item.id;
       item.categoryId = key;

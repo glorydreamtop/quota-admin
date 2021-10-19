@@ -51,7 +51,6 @@
     (event: 'paint'): void;
   }>();
   const chartConfig = useChartConfigContext();
-  console.log(chartConfig);
 
   const quotaList = useQuotaListContext();
   const selectedQuotaList = useSelectedQuotaListContext();
@@ -61,11 +60,7 @@
     chartTypeList.push({
       label: t(`page.quotaView.toolbar.chartTypeList.${v}`),
       value: v,
-      disabled: [
-        chartTypeEnum.seasonalLunar,
-        chartTypeEnum.quantileRadar,
-        chartTypeEnum.fixedbase,
-      ].includes(v as chartTypeEnum),
+      disabled: [chartTypeEnum.seasonalLunar, chartTypeEnum.fixedbase].includes(v as chartTypeEnum),
     });
   }
   function selectType(type: chartTypeEnum) {
@@ -73,7 +68,6 @@
       Reflect.deleteProperty(chartConfig, key);
     }
     Object.assign(chartConfig, getChartDefaultConfig(type));
-    console.log(chartConfig);
   }
   async function paint() {
     // 季节性的公历和农历均只适用一个指标，使其他指标置灰

@@ -10,7 +10,7 @@ import type {
   ToolboxComponentOption,
   YAXisComponentOption,
 } from 'echarts';
-import { max, maxBy, min, minBy, omit, remove, round } from 'lodash-es';
+import { cloneDeep, max, maxBy, min, minBy, omit, remove, round } from 'lodash-es';
 import {
   useAddGraphicElement,
   useHighestQuotaData,
@@ -25,6 +25,7 @@ import {
   chartConfigType,
   normalChartConfigType,
   pieChartConfigType,
+  quantileRadarChartConfigType,
   radarChartConfigType,
   seasonalChartConfigType,
   structuralChartConfigType,
@@ -32,8 +33,12 @@ import {
 import { getQuotaData, quotaDataExportTypeEnum, quotaDataPastUnitTypeEnum } from '/@/api/quota';
 import { getQuotaDataParams, getQuotaDataResult } from '/@/api/quota/model';
 import { echartSeriesTypeEnum, structuralOffsetUnitEnum } from '/@/enums/chartEnum';
+import { SourceTypeEnum } from '/@/enums/quotaEnum';
+import { useI18n } from '/@/hooks/web/useI18n';
 import { daysAgo, formatToDate } from '/@/utils/dateUtil';
+import { SelectedQuotaItem } from '/@/views/quota/quotaView/components/hooks';
 
+const { t } = useI18n();
 function titleConfig(chartConfig: chartConfigType): TitleComponentOption {
   return {
     text: chartConfig.title,
@@ -576,5 +581,104 @@ export async function usePieChart(chartConfig: pieChartConfigType) {
   // 最新值模块
   useLastestQuotaData({ chartConfig, options, quotaDataList });
   useHighestQuotaData({ chartConfig, options, quotaDataList });
+  return options;
+}
+
+// 分位数雷达图图最近N期序列
+export async function useQuantileRadarChart(chartConfig: quantileRadarChartConfigType) {
+  const quotaList: SelectedQuotaItem[] = [];
+  const quantileOffset = chartConfig.quantileOffset.split(',');
+  for (let index = 0; index < chartConfig.quotaList!.length; index++) {
+    const quota = chartConfig.quotaList![index];
+    quantileOffset.forEach((offset) => {
+      const formulaQuota = cloneDeep(quota);
+      formulaQuota.sourceType = SourceTypeEnum.formula;
+      formulaQuota.sourceCode = `pct(idx(${quota.id}),${parseInt(offset) * 250})`;
+      Reflect.deleteProperty(formulaQuota, 'id');
+      quotaList.push(formulaQuota);
+    });
+  }
+  const fetchParams: getQuotaDataParams = {
+    startDate: chartConfig.timeConfig.startDate,
+    endDate: chartConfig.timeConfig.endDate,
+    exportPara: quotaDataExportTypeEnum.JSON,
+    rows: quotaList,
+    lastFlag: true,
+  };
+
+  const quotaDataList = await getQuotaData(fetchParams);
+  quotaDataList.forEach((quota) => {
+    quota.data.forEach((item) => round(item[1], chartConfig.valueFormatter.afterDot));
+  });
+  useNormalized({ chartConfig, quotaDataList });
+  const series: SeriesOption[] = [
+    {
+      type: 'radar',
+      data: [],
+    },
+  ];
+  for (let index = 0; index < quantileOffset.length; index++) {
+    (series[0].data as any[]).push({
+      value: [] as number[],
+      name: `${quantileOffset[index]}${t('page.chart.quantile')}`,
+    });
+  }
+  const radar: RadarComponentOption = {
+    indicator: [],
+    axisTick: {
+      show: true,
+    },
+    axisLabel: {
+      show: true,
+      formatter: function (value) {
+        return value > 1 ? round(value, chartConfig.valueFormatter.afterDot) : value;
+      },
+    },
+  };
+  // 创建雷达指示器，并使各个方向的最大值是数据最大值的1.02倍，最小值是数据最小值的0.95倍
+  let maxVal = 0;
+  let minVal = 0;
+  for (let index = 0; index < quotaDataList.length; index++) {
+    const quota = quotaDataList[index];
+
+    if ((index + 1) % quantileOffset.length === 0) {
+      radar.indicator!.push({
+        text: quota.name,
+        max: max([(maxBy(quota.data, (d) => d[1]) ?? [0, 0])[1] * 1.02, maxVal]),
+        min: min([(minBy(quota.data, (d) => d[1]) ?? [0, 0])[1] * 0.95, minVal]),
+      });
+      maxVal = 0;
+      minVal = 0;
+    } else {
+      maxVal = (maxBy(quota.data, (d) => d[1]) ?? [0, 0])[1] * 1.02;
+      minVal = (minBy(quota.data, (d) => d[1]) ?? [0, 0])[1] * 0.95;
+    }
+
+    for (let index = 0; index < quota.data.length; index++) {
+      const data = quota.data[index];
+      (series[0].data as any[])[index].value.push(data[1]);
+    }
+  }
+  const options: EChartsOption = {
+    title: titleConfig(chartConfig),
+    radar,
+    series,
+    legend: {
+      top: 'bottom',
+      icon: 'roundRect',
+    },
+    toolbox: toolboxConfig,
+    tooltip: {
+      show: true,
+      trigger: 'item',
+      axisPointer: {
+        type: 'none',
+      },
+    },
+    grid: gridConfig,
+  };
+  useAddGraphicElement({ options });
+  // 最新值模块
+  useLastestQuotaData({ chartConfig, options, quotaDataList });
   return options;
 }

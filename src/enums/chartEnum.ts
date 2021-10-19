@@ -52,7 +52,10 @@ export enum structuralOffsetUnitEnum {
 }
 
 export enum versionEnum {
-  HUI = '2.0',
-  PING = '1.0',
-  PRO = '3.0',
+  PINGChart,
+  HUIChart,
+  PROChart,
+  HUITable,
+  SQLTable,
+  SQLChart,
 }
