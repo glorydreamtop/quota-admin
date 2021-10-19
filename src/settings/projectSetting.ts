@@ -95,11 +95,11 @@ const setting: ProjectConfig = {
     // Menu width
     menuWidth: 210,
     // Menu mode
-    mode: MenuModeEnum.INLINE,
+    mode: MenuModeEnum.HORIZONTAL,
     // Menu type
     type: MenuTypeEnum.TOP_MENU,
     // Menu theme
-    theme: ThemeEnum.DARK,
+    theme: ThemeEnum.LIGHT,
     // Split menu
     split: false,
     // Top menu layout
@@ -120,7 +120,7 @@ const setting: ProjectConfig = {
   multiTabsSetting: {
     cache: false,
     // Turn on
-    show: false,
+    show: true,
     // Is it possible to drag and drop sorting tabs
     canDrag: true,
     // Turn on quick actions

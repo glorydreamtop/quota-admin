@@ -12,6 +12,13 @@ export function useAddCol(
   const col: VxeTableDefines.ColumnOptions = reactive({
     field: '',
     title: '',
+    editRender: {
+      name: 'input',
+    },
+    slots: {
+      default: 'normal-text',
+      edit: 'normal-text-editor',
+    },
   });
   const { getUniqueField } = useUniqueField();
   function addCol() {
@@ -36,7 +43,7 @@ export function useAddRow(
     console.log(tableConfig.columns);
 
     tableConfig.columns.forEach((column) => {
-      row[column.field!] = '';
+      row[column.field!] = '-';
     });
     const $grid = xGrid.value;
     $grid.insertAt(row, -1);

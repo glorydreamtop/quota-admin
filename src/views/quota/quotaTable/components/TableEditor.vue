@@ -3,7 +3,7 @@
     <vxe-grid v-bind="gridOptions" ref="xGrid">
       <template #toolbar-buttons>
         <div class="flex gap-2">
-          <Popover>
+          <Popover trigger="click">
             <template #content>
               <div class="flex gap-1">
                 <Input size="small" v-model:value="colValue.title" />
@@ -17,6 +17,12 @@
 
           <Button size="small" @click="addSpaceRow">{{ t('page.quotaTable.addRow') }}</Button>
         </div>
+      </template>
+      <template #normal-text="{ row, column }">
+        <span>{{ row[column.property] }}</span>
+      </template>
+      <template #normal-text-editor="{ row, column }">
+        <Input v-model:value="row[column.property]" />
       </template>
     </vxe-grid>
   </div>
@@ -42,6 +48,10 @@
       slots: {
         buttons: 'toolbar-buttons',
       },
+    },
+    editConfig: {
+      trigger: 'click',
+      mode: 'cell',
     },
     data: [],
   });
