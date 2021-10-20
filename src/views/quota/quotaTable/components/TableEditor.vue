@@ -1,6 +1,6 @@
 <template>
   <div class="p-4 bg-white">
-    <vxe-grid v-bind="gridOptions" ref="xGrid">
+    <VxeGrid v-bind="gridOptions" ref="xGrid">
       <template #toolbar-buttons>
         <div class="flex gap-2">
           <Popover trigger="click">
@@ -24,7 +24,7 @@
       <template #normal-text-editor="{ row, column }">
         <Input v-model:value="row[column.property]" />
       </template>
-    </vxe-grid>
+    </VxeGrid>
   </div>
 </template>
 

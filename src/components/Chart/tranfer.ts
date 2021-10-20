@@ -636,28 +636,26 @@ export async function useQuantileRadarChart(chartConfig: quantileRadarChartConfi
     },
   };
   // 创建雷达指示器，并使各个方向的最大值是数据最大值的1.02倍，最小值是数据最小值的0.95倍
-  let maxVal = 0;
-  let minVal = 0;
+  const len = chartConfig.quotaList!.length;
+  const maxVal: number[] = new Array(len).fill(-1);
+  const minVal: number[] = new Array(len).fill(Infinity);
   for (let index = 0; index < quotaDataList.length; index++) {
     const quota = quotaDataList[index];
+    const idx = index % len;
 
-    if ((index + 1) % quantileOffset.length === 0) {
+    if (idx === quantileOffset.length - 1) {
       radar.indicator!.push({
         text: quota.name,
-        max: max([(maxBy(quota.data, (d) => d[1]) ?? [0, 0])[1] * 1.02, maxVal]),
-        min: min([(minBy(quota.data, (d) => d[1]) ?? [0, 0])[1] * 0.95, minVal]),
+        max: max([(quota.data[0] ?? [0, 0])[1] * 1.02, maxVal[idx]]),
+        min: min([(quota.data[0] ?? [0, 0])[1] * 0.95, minVal[idx]]),
       });
-      maxVal = 0;
-      minVal = 0;
     } else {
-      maxVal = (maxBy(quota.data, (d) => d[1]) ?? [0, 0])[1] * 1.02;
-      minVal = (minBy(quota.data, (d) => d[1]) ?? [0, 0])[1] * 0.95;
+      maxVal[idx] = max([(quota.data[0] ?? [0, 0])[1] * 1.02, maxVal[idx]])!;
+      minVal[idx] = min([(quota.data[0] ?? [0, 0])[1] * 0.95, minVal[idx]])!;
     }
 
-    for (let index = 0; index < quota.data.length; index++) {
-      const data = quota.data[index];
-      (series[0].data as any[])[index].value.push(data[1]);
-    }
+    const data = quota.data[0];
+    (series[0].data as any[])[index].value.push(data[1]);
   }
   const options: EChartsOption = {
     title: titleConfig(chartConfig),

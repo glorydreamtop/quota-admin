@@ -70,7 +70,7 @@ export interface barChartConfigType extends reactSettingType, baseChartConfigTyp
 
 export interface radarChartConfigType extends reactSettingType, baseChartConfigType {}
 
-export interface quantileRadarChartConfigType extends radarChartConfigType {
+export interface quantileRadarChartConfigType extends reactSettingType, baseChartConfigType {
   quantileOffset: string;
 }
 
