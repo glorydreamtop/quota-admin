@@ -138,14 +138,14 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
       title: '',
       name: '',
       timeConfig: {
-        startDate: yearsAgo(10),
+        startDate: yearsAgo(5),
         endDate: today(),
         type: timeConfigEnum.default,
       },
       colorSchemeId: 0,
       selfColorScheme: '',
       type: chartTypeEnum.quantileRadar,
-      showLastest: true,
+      showLastest: false,
       showHighest: false,
       quotaList: [],
       valueFormatter: {
@@ -153,7 +153,7 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
         scientificNotation: false,
         normalized: false,
       },
-      quantileOffset: '1,2,3,5,10',
+      quantileOffset: '1,2,3,5',
     } as quantileRadarChartConfigType,
     structural: {
       title: '',

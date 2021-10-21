@@ -11,7 +11,7 @@
       </Tooltip>
       <Tooltip placement="left">
         <template #title>删除选中</template>
-        <Button @click="clear" ref="rubbish" data-type="delete">
+        <Button @click="clear" data-type="delete">
           <template #icon>
             <Icon icon="ant-design:delete-outlined" size="24" />
           </template>
@@ -118,7 +118,6 @@
   import type { QuotaItem } from '/#/quota';
   import { Button, Tooltip } from 'ant-design-vue';
   import { useModal } from '/@/components/Modal';
-  import moment from 'moment';
   import { useWatchArray, typeFomatter } from '/@/utils/helper/commonHelper';
   import { cloneDeep, last, remove } from 'lodash-es';
   import { Icon } from '/@/components/Icon';
@@ -131,13 +130,14 @@
   import { useContextMenu } from '/@/hooks/web/useContextMenu';
   import vRipple from '/@/directives/ripple';
   import { onMountedOrActivated } from '/@/hooks/core/onMountedOrActivated';
-  import { usePointerSlideIn, useDropRemove } from '/@/hooks/web/useAnimation';
+  import { usePointerSlideIn } from '/@/hooks/web/useAnimation';
   import { useQuotaListContext, useSelectedQuotaListContext } from './hooks';
   import type { SelectedQuotaItem } from './hooks';
   import { domForeach } from '/@/utils/domUtils';
   import QuotaSetting from './QuotaSetting.vue';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { getNormalQuotaDefaultSetting } from '../helper';
+  import { formatToDate } from '/@/utils/dateUtil';
 
   let animationFlag = false;
   // 交付给绘图的指标列表
@@ -175,8 +175,8 @@
     quotaList.value = cur.filter((item) => item.selected);
   });
   function dateFomatter(str: string) {
-    if (str === null) return '暂无数据';
-    return moment(str).format('YYYY/MM/DD');
+    if (str === null) return t('common.noData');
+    return formatToDate(str);
   }
 
   const [registerEdit, { openModal: openEditModal, setModalProps: setEditModal }] = useModal();
@@ -184,14 +184,14 @@
   function addFormula() {
     openEditModal(true, {});
     setEditModal({
-      title: '公式编辑',
+      title: t('page.quotaView.quotaSetting.formulaModalTitle'),
       minHeight: 300,
-      width: '50%',
+      width: '400px',
     });
   }
   function clear() {
     remove(selectedQuota.value, (quota) => quota.selected === true);
-    createMessage.success('都扔掉了');
+    createMessage.success(t('page.quotaCard.alldel'));
   }
   function handleIcon(item: QuotaItem, type: string) {
     const handler = {
@@ -203,10 +203,10 @@
   }
   function copy(text: string, type) {
     const textType = {
-      name: '指标全称',
-      id: '指标ID',
-      sourceCode: '指标代码',
-      shortName: '指标简称',
+      name: t('page.quotaCard.name'),
+      id: t('page.quotaCard.id'),
+      sourceCode: t('page.quotaCard.sourceCode'),
+      shortName: t('page.quotaCard.shortName'),
     };
     const { isSuccessRef } = useCopyToClipboard(text);
     unref(isSuccessRef) && createMessage.success(`${textType[type]}已复制到剪贴板`);
@@ -217,7 +217,7 @@
       event: e,
       items: [
         {
-          label: '编辑指标',
+          label: t('page.quotaCard.contextMenu.edit'),
           icon: 'ant-design:edit-outlined',
           handler: () => {
             openEditModal(true, {
@@ -231,25 +231,25 @@
           },
         },
         {
-          label: '拷贝指标ID',
+          label: t('page.quotaCard.contextMenu.copyId'),
           icon: 'ant-design:copy-outlined',
           handler: () => {
             copy(item.id.toString(), 'id');
           },
         },
         {
-          label: '拷贝指标简称',
+          label: t('page.quotaCard.contextMenu.copyShortName'),
           icon: 'ant-design:copy-outlined',
           handler: () => {
             if (item.shortName) {
               copy(item.shortName.toString(), 'shortName');
             } else {
-              createMessage.warning('该指标没有录入简称');
+              createMessage.warning(t('page.quotaCard.contextMenu.noShortName'));
             }
           },
         },
         {
-          label: '保存到个人',
+          label: t('page.quotaCard.contextMenu.saveInMyFolder'),
           icon: 'ant-design:folder-add-outlined',
           handler: () => {
             // setQuotaSave({
@@ -265,7 +265,6 @@
     });
   }
   const quotaBox = ref<ComponentRef>();
-  const rubbish = ref();
   // 飞入动画的监听器
   async function listener(event: MouseEvent) {
     const boxdom: HTMLDivElement = unref(quotaBox)!.$el;
@@ -284,20 +283,6 @@
   onMountedOrActivated(async () => {
     await nextTick();
     const boxdom: HTMLDivElement = unref(quotaBox)!.$el;
-    const rubbishdom: HTMLDivElement = unref(rubbish)!.$el;
-    const { setDragStart, setRemoveFn, initDropRemove } = useDropRemove(boxdom, rubbishdom);
-    setDragStart(() => {
-      instance.doms = instance.toArray();
-    });
-
-    setRemoveFn((event) => {
-      remove(quotaList.value, (item) => {
-        return item.id === parseInt(event.target.dataset.quotaid);
-      });
-
-      instance.sort(instance.doms);
-    });
-    initDropRemove();
     // 支持拖动排序
     const { initSortable } = useSortable(boxdom, {
       handle: '.drag-handler',
@@ -332,7 +317,7 @@
         }
       },
     });
-    const instance = (await initSortable())!;
+    initSortable();
     window.addEventListener('click', listener);
   });
   onBeforeUnmount(() => {

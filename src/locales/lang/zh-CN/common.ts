@@ -25,5 +25,6 @@ export default {
   tradingDay: '交易日',
   invaildTextTip: '包含非法字符',
   notUniqTip: '包含重复值',
+  noData: '暂无数据',
   last: '最新',
 };

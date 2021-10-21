@@ -38,10 +38,12 @@ export default {
       area: '面积图',
     },
     quotaSetting: {
+      formulaModalTitle: '公式编辑',
       modalTitle: '指标设置',
       name: '指标名称',
       sourceCode: '指标代码',
       sourceType: '指标来源',
+      formula: '公式编辑',
       setting: {
         yAxisIndex: '适用Y轴',
         type: '适用图形',
@@ -109,6 +111,21 @@ export default {
     inserveIndex: '前',
     unit: '期',
     quantile: '年分位数',
+  },
+
+  quotaCard: {
+    alldel: '都扔掉了~',
+    name: '指标全称',
+    id: '指标ID',
+    sourceCode: '指标代码',
+    shortName: '指标简称',
+    contextMenu: {
+      edit: '编辑指标',
+      copyId: '拷贝指标ID',
+      copyShortName: '拷贝指标简称',
+      saveInMyFolder: '保存到个人',
+      noShortName: '该指标没有录入简称',
+    },
   },
   quotaTable: {
     addCol: '添加列',

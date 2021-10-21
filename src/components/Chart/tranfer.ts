@@ -588,9 +588,9 @@ export async function usePieChart(chartConfig: pieChartConfigType) {
 export async function useQuantileRadarChart(chartConfig: quantileRadarChartConfigType) {
   const quotaList: SelectedQuotaItem[] = [];
   const quantileOffset = chartConfig.quantileOffset.split(',');
-  for (let index = 0; index < chartConfig.quotaList!.length; index++) {
-    const quota = chartConfig.quotaList![index];
-    quantileOffset.forEach((offset) => {
+  for (let index = 0; index < quantileOffset.length; index++) {
+    const offset = quantileOffset[index];
+    chartConfig.quotaList!.forEach((quota) => {
       const formulaQuota = cloneDeep(quota);
       formulaQuota.sourceType = SourceTypeEnum.formula;
       formulaQuota.sourceCode = `pct(idx(${quota.id}),${parseInt(offset) * 250})`;
@@ -639,23 +639,28 @@ export async function useQuantileRadarChart(chartConfig: quantileRadarChartConfi
   const len = chartConfig.quotaList!.length;
   const maxVal: number[] = new Array(len).fill(-1);
   const minVal: number[] = new Array(len).fill(Infinity);
+  const arr = series[0].data as any[];
   for (let index = 0; index < quotaDataList.length; index++) {
     const quota = quotaDataList[index];
-    const idx = index % len;
-
-    if (idx === quantileOffset.length - 1) {
-      radar.indicator!.push({
-        text: quota.name,
-        max: max([(quota.data[0] ?? [0, 0])[1] * 1.02, maxVal[idx]]),
-        min: min([(quota.data[0] ?? [0, 0])[1] * 0.95, minVal[idx]]),
-      });
-    } else {
-      maxVal[idx] = max([(quota.data[0] ?? [0, 0])[1] * 1.02, maxVal[idx]])!;
-      minVal[idx] = min([(quota.data[0] ?? [0, 0])[1] * 0.95, minVal[idx]])!;
-    }
-
     const data = quota.data[0];
-    (series[0].data as any[])[index].value.push(data[1]);
+    data[1] = round(data[1], chartConfig.valueFormatter.afterDot);
+    const idx = index % len;
+    maxVal[idx] = max([(data ?? [0, 0])[1] * 1.02, maxVal[idx]])!;
+    minVal[idx] = min([(data ?? [0, 0])[1] * 0.95, minVal[idx]])!;
+
+    for (let i = 0; arr.length; i++) {
+      if (arr[i].value.length < len) {
+        arr[i].value.push(data[1]);
+        break;
+      }
+    }
+  }
+  for (let index = 0; index < len; index++) {
+    radar.indicator!.push({
+      text: chartConfig.quotaList![index].name,
+      max: maxVal[index],
+      min: minVal[index],
+    });
   }
   const options: EChartsOption = {
     title: titleConfig(chartConfig),

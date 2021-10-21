@@ -4,6 +4,7 @@ import {
   barChartConfigType,
   chartConfigType,
   normalChartConfigType,
+  quantileRadarChartConfigType,
   seasonalChartConfigType,
   structuralChartConfigType,
 } from '/#/chart';
@@ -158,16 +159,11 @@ export function pingChart() {
         structuralOffsetUnitEnum.natureDay;
     } else if (o.config.type == 'quantileRadar') {
       // 分位数
-      // let l =
-      //   options['quantile_years'] && options['quantile_years'].length > 0
-      //     ? options['quantile_years']
-      //     : [1, 3, 5, 10];
-      // o.config.quantile = {
-      //   ifQuantile: true,
-      //   list: l.map((v, i) => {
-      //     return { name: v + '年', value: v };
-      //   }),
-      // };
+      const l =
+        options['quantile_years'] && options['quantile_years'].length > 0
+          ? options['quantile_years']
+          : [1, 3, 5, 10];
+      (o.config as quantileRadarChartConfigType).quantileOffset = l.join(',');
     } else if (['radar', 'bar'].includes(o.config.type)) {
       o.config.timeConfig.pastValue = 3;
       o.config.timeConfig.pastUnit = quotaDataPastUnitTypeEnum.last;
@@ -272,6 +268,11 @@ export function huiChart() {
       const all = new Array(12).map((_, i) => i + 1);
       const l = o.sortMonth.list;
       config.timeConfig.sortMonth = difference(all, l);
+    }
+    if (o.quantile.ifQuantile) {
+      (o.config as quantileRadarChartConfigType).quantileOffset = o.quantile.list
+        .map((item) => item.value)
+        .join(',');
     }
     config.quotaList = o.rows.map((row) => {
       const r = omit(row, ['show', 'seriesCfg']) as SelectedQuotaItem;
