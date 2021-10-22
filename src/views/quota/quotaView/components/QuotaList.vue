@@ -182,7 +182,7 @@
   const [registerEdit, { openModal: openEditModal, setModalProps: setEditModal }] = useModal();
 
   function addFormula() {
-    openEditModal(true, {});
+    openEditModal(true);
     setEditModal({
       title: t('page.quotaView.quotaSetting.formulaModalTitle'),
       minHeight: 300,

@@ -5,7 +5,7 @@
         <span class="min-w-4em">{{ t('page.quotaView.quotaSetting.name') }}</span>
         <Input class="!w-80" v-model:value="quotaSetting.name" />
       </div>
-      <div>
+      <div v-show="quotaSetting.sourceType !== 'formula'">
         <span class="min-w-4em">{{ t('page.quotaView.quotaSetting.sourceCode') }}</span>
         <Input class="!w-80" v-model:value="quotaSetting.sourceCode">
           <template #suffix>
@@ -15,13 +15,9 @@
           </template>
         </Input>
       </div>
-      <div>
+      <div v-show="quotaSetting.sourceType === 'formula'">
         <span class="min-w-4em">{{ t('page.quotaView.quotaSetting.formula') }}</span>
-        <pre class="language-javascript" ref="formulaRef">
-          <code>
-            yoy(idx(123)])
-          </code>
-        </pre>
+        <Editor class="w-80" v-model:formula="quotaSetting.sourceCode" />
       </div>
       <div>
         <span class="min-w-4em">{{ t('page.quotaView.quotaSetting.setting.yAxisIndex') }}</span>
@@ -47,7 +43,7 @@
 </template>
 
 <script lang="ts" setup>
-  import type { SelectedQuotaItem } from './hooks';
+  import { SelectedQuotaItem, useQuotaListContext } from './hooks';
   import { useChartConfigContext } from './hooks';
   import { BasicModal, useModalInner } from '/@/components/Modal';
   import { useI18n } from '/@/hooks/web/useI18n';
@@ -58,18 +54,14 @@
   import { echartSeriesTypeEnum } from '/@/enums/chartEnum';
   import { SourceTypeEnum } from '/@/enums/quotaEnum';
   import { cloneDeep } from 'lodash-es';
-  import hljs from 'highlight.js/lib/core';
-  import javascript from 'highlight.js/lib/languages/javascript';
-  import 'highlight.js/styles/lioshi.css';
-
-  hljs.registerLanguage('javascript', javascript);
+  import { Editor } from '/@/components/FormulaEditor';
 
   const Option = Select.Option;
   const { t } = useI18n();
   const { getThemeColor } = useRootSetting();
   const chartConfig = useChartConfigContext();
+  const quotaList = useQuotaListContext();
   const quotaIndex = ref(0);
-  const formulaRef = ref();
   const defaultSetting = {
     name: '',
     sourceCode: '',
@@ -80,7 +72,8 @@
       lineWidth: 2,
     },
   };
-  const quotaSetting: Partial<SelectedQuotaItem> = reactive(cloneDeep(defaultSetting));
+  const quotaSetting: Pick<SelectedQuotaItem, 'name' | 'sourceCode' | 'sourceType' | 'setting'> =
+    reactive(cloneDeep(defaultSetting));
   // Y轴选择器
   const yAxisIndexList = computed(() => {
     return chartConfig.yAxis.map((item, index) => {
@@ -123,9 +116,8 @@
   ]);
   const [register, { closeModal }] = useModalInner(
     ({ record, index }: { record: SelectedQuotaItem; index?: number }) => {
-      quotaIndex.value = index ?? chartConfig.quotaList!.length;
+      quotaIndex.value = index ?? quotaList.value.length;
       Object.assign(quotaSetting, record);
-      hljs.highlightBlock(formulaRef.value);
     }
   );
   function close() {
@@ -133,7 +125,7 @@
     closeModal();
   }
   function ok() {
-    Object.assign(chartConfig.quotaList![quotaIndex.value], quotaSetting);
+    Object.assign(quotaList.value[quotaIndex.value], quotaSetting);
     close();
   }
 </script>
