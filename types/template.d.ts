@@ -6,4 +6,5 @@ export interface TemplateItem {
   version: versionEnum;
   config: chartConfigType;
   categoryId: number;
+  id: number;
 }

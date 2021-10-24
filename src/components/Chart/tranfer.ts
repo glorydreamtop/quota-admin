@@ -631,7 +631,7 @@ export async function useQuantileRadarChart(chartConfig: quantileRadarChartConfi
     axisLabel: {
       show: true,
       formatter: function (value) {
-        return value > 1 ? round(value, chartConfig.valueFormatter.afterDot) : value;
+        return round(value, chartConfig.valueFormatter.afterDot).toString();
       },
     },
   };

@@ -50,7 +50,7 @@
   import Icon from '/@/components/Icon';
   import { findNode, findPath, forEach } from '/@/utils/helper/treeHelper';
   import { useMessage } from '/@/hooks/web/useMessage';
-  import { uniq } from 'lodash-es';
+  import { uniq, pick } from 'lodash-es';
   import { useTimeoutFn } from '/@/hooks/core/useTimeout';
   import { useHighLight, useMultiSelect, useTemplateVersion } from '../hooks';
   import { useCopyToClipboard } from '/@/hooks/web/useCopyToClipboard';
@@ -83,8 +83,6 @@
   }
   function nodeFilter(item: TemplateItem | CategoryTreeModel) {
     if (Reflect.has(item, 'version')) {
-      console.log(item);
-
       return getTemplateName(item as TemplateItem);
     } else {
       return item.name;
@@ -226,7 +224,10 @@
         if (!allowMultiSelect) {
           emit('selectFolder', dataRef as CategoryTreeModel);
         } else {
-          emit('selectNode', dataRef as TemplateItem);
+          emit(
+            'selectNode',
+            pick(dataRef, ['config', 'id', 'categoryId', 'version ']) as TemplateItem
+          );
         }
       },
     });

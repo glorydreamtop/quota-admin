@@ -30,13 +30,13 @@
   import { cloneDeep } from 'lodash';
 
   const props = defineProps<{
-    chartConfig: chartConfigType;
+    config: chartConfigType;
   }>();
   const emit = defineEmits<{
     (event: 'updateConfig', chartConfig: chartConfigType): void;
   }>();
 
-  const { chartConfig } = toRefs(props);
+  const { config: chartConfig } = toRefs(props);
   const chartElRef = ref<HTMLDivElement>();
   const { setOptions, resize, getInstance } = useECharts(chartElRef as Ref<HTMLDivElement>);
 

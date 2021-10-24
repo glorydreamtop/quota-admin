@@ -1,34 +1,47 @@
 <template>
   <div class="relative overflow-visible">
     <div
-      class="formula-editor w-full h-29 absolute z-9 resize-y overflow-hidden"
+      class="formula-editor focus:outline-blue-600 rounded-md"
       ref="formulaEditorRef"
       contenteditable
       @input="formulaChange"
       @blur="updateFormula"
     ></div>
-    <pre
-      class="language-javascript w-full text-left code pointer-events-none"
-      ref="formulaCodeRef"
-    ></pre>
+    <pre class="language-javascript code rounded-sm" ref="formulaCodeRef"></pre>
     <div
-      class="fixed z-19 flex flex-col h-22 bg-white overflow-y-scroll divide-y divide-gray-300"
-      :style="{ left: `${rect.left}px`, top: `${rect.top}px` }"
+      ref="suggestionsRef"
+      class="
+        fixed
+        z-19
+        flex flex-col
+        min-w-16
+        max-h-17
+        bg-white
+        rounded-sm
+        overflow-y-scroll
+        divide-y divide-gray-300
+      "
     >
-      <span v-for="item in fnList" :key="item">{{ item }}</span>
+      <span
+        v-for="item in fnList"
+        :key="item"
+        :data-suggestion="item"
+        tabIndex="0"
+        class="pl-1 focus:bg-primary focus:text-white leading-4 text-gray-500"
+        >{{ item }}</span
+      >
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-  import { computed, reactive, ref, unref, watch } from 'vue';
+  import { ref, unref, watch } from 'vue';
   import hljs from 'highlight.js/lib/core';
   import javascript from 'highlight.js/lib/languages/javascript';
   import 'highlight.js/styles/lioshi.css';
   import { onMountedOrActivated } from '/@/hooks/core/onMountedOrActivated';
   import { useResizeObserver } from '@vueuse/core';
-  import { fnMap } from './token';
-  import { parseInt } from 'lodash';
+  import { useShowSuggestions } from './helper';
   const props = defineProps({
     formula: {
       type: String,
@@ -42,42 +55,30 @@
   hljs.registerLanguage('javascript', javascript);
   const formulaCodeRef = ref<HTMLPreElement>();
   const formulaEditorRef = ref<HTMLDivElement>();
-
+  const suggestionsRef = ref<HTMLElement>();
+  const { setSuggestions, setSuggestionsDOM, fnList } = useShowSuggestions(formulaEditorRef);
   // 文本变化时重新渲染高亮
   function formulaChange(e: InputEvent) {
-    const { x, y } = (e.target as HTMLDivElement)!.getBoundingClientRect();
-    const endOffset = window.getSelection()!.getRangeAt(0).endOffset;
-    rect.left = (endOffset % colNum.value) * 8.8 + 14 + x;
-    rect.top = (parseInt(endOffset / colNum.value) + 1) * 24 + y;
     const el = formulaCodeRef.value!;
     const text = (e.target as HTMLDivElement)!.innerText;
     el.innerHTML = `<code>${text}</code>`;
-    hljs.highlightBlock(el);
+    hljs.highlightElement(el);
+    setSuggestions(e);
   }
   // 失去焦点时向外传递结果
   function updateFormula(e: FocusEvent) {
     emit('update:formula', (e.target as HTMLDivElement)!.innerText);
   }
-  const rect = reactive({
-    width: 0,
-    height: 0,
-    left: 0,
-    top: 1,
-  });
-  const colNum = computed(() => {
-    return parseInt(rect.width / 8.8);
-  });
   // 允许拖拽编辑器大小
   onMountedOrActivated(() => {
     const el = formulaCodeRef.value!;
     useResizeObserver(unref(formulaEditorRef), (e) => {
       const target = e[0].target as HTMLDivElement;
-      rect.width = e[0].contentRect.width;
-      rect.height = e[0].contentRect.height;
       el.style.height = target.offsetHeight + 'px';
       el.style.width = target.offsetWidth + 'px';
       el.parentElement!.style.height = target.offsetHeight + 'px';
     });
+    setSuggestionsDOM(suggestionsRef);
     hljs.highlightElement(el);
   });
   watch(
@@ -87,17 +88,21 @@
       const el = formulaCodeRef.value!;
       formulaEditorRef.value!.innerText = v.formula;
       el.innerHTML = `<code>${v.formula}</code>`;
-      hljs.highlightBlock(el);
+      hljs.highlightElement(el);
     },
     { deep: true }
   );
-
-  const fnList = ref(Object.keys(fnMap));
 </script>
 
 <style lang="less" scoped>
   .formula-editor {
     caret-color: #b8b8b8;
+    position: absolute;
+    overflow: hidden;
+    resize: vertical;
+    width: 100%;
+    height: 7.5rem;
+    z-index: 9;
     padding: 4px 11px;
     font-size: 16px;
     line-height: 24px;
@@ -117,5 +122,8 @@
     font-size: 16px;
     line-height: 24px;
     top: 0;
+    text-align: left;
+    width: 100%;
+    pointer-events: none;
   }
 </style>
