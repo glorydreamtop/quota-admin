@@ -22,15 +22,30 @@
         <div>{{ column.title }}</div>
       </template>
       <template #normal-title-text-editor="{ column, columnIndex }">
-        <Input
-          class="text-center"
-          v-model:value="column.title"
-          @blur="() => (column.slots.header = 'normal-title-text')"
-        />
-        <Select v-model:value="tableConfig.columns[columnIndex].headerType">
-          <SelectOption :key="0">{{ t('table.headerCell.normal') }}</SelectOption>
-          <SelectOption :key="1">{{ t('table.headerCell.date') }}</SelectOption>
-        </Select>
+        <div class="flex items-center justify-center">
+          <Input
+            v-if="tableConfig.columns[columnIndex].headerType === 0"
+            class="text-center flex-grow"
+            size="small"
+            v-model:value="column.title"
+          />
+          <DatePicker
+            v-if="tableConfig.columns[columnIndex].headerType === 1"
+            v-model:value="column.title"
+            size="small"
+            valueFormat="YYYY-MM-DD"
+          />
+          <div class="w-1/3 gap-1 border border-gray-300 header-icons-box pl-1">
+            <Icon
+              icon="ant-design:setting-outlined"
+              @click="showHeaderCellModal({ column, columnIndex })"
+            />
+            <Icon
+              icon="ant-design:check-outlined"
+              @click="closeTitleEditor({ column, columnIndex })"
+            />
+          </div>
+        </div>
       </template>
       <template #normal-cell-text="{ row, column }">
         <div class="select-none">{{ row[column.property] }}</div>
@@ -39,19 +54,29 @@
         <Input class="text-center" v-model:value="row[column.property]" />
       </template>
     </VxeGrid>
+    <HeaderCellSetting @register="registerHeaderCellSettingModal" />
   </div>
 </template>
 
 <script lang="ts" setup>
   import { ref, reactive, nextTick } from 'vue';
-  import { VxeGridProps, VxeGridInstance, VxeGridEventProps, VxeTableDefines } from 'vxe-table';
-  import { Button, Popover, Input, Select } from 'ant-design-vue';
+  import type {
+    VxeGridProps,
+    VxeGridInstance,
+    VxeGridEventProps,
+    VxeTableDefines,
+    VxeGridDefines,
+  } from 'vxe-table';
+  import { Button, Popover, Input, DatePicker } from 'ant-design-vue';
   import { useI18n } from '/@/hooks/web/useI18n';
-  import { useAddCol, useAddRow, useAreaSelect } from './helper';
-  import { tableConfigType } from '/#/table';
+  import { createTableConfigContext, useAddCol, useAddRow, useAreaSelect } from './helper';
+  import type { TableConfigType } from '/#/table';
   import { maxBy, minBy } from 'lodash';
+  import { useModal } from '/@/components/Modal';
+  import HeaderCellSetting from './HeaderCellSetting.vue';
+  import Icon from '/@/components/Icon';
 
-  const SelectOption = Select.Option;
+  const [registerHeaderCellSettingModal, { openModal: openHeaderCellSettingModal }] = useModal();
   const { t } = useI18n();
   const xGrid = ref({} as VxeGridInstance);
   const gridOptions = reactive<VxeGridProps & VxeGridEventProps>({
@@ -205,11 +230,11 @@
       const headerCellDOM = ($event.target as HTMLElement).parentNode!;
       column.slots.header = 'normal-title-text-editor';
       await nextTick();
-      (headerCellDOM.firstChild as HTMLInputElement).focus();
+      (headerCellDOM.querySelector('input') as HTMLInputElement).focus();
     },
   });
 
-  const tableConfig: tableConfigType = reactive({
+  const tableConfig: TableConfigType = reactive({
     title: '',
     columns: [
       { title: '测试1', field: 'a', headerType: 0 },
@@ -217,16 +242,34 @@
     ],
     mergeCells: [],
   });
+  createTableConfigContext(tableConfig);
   const [colValue, { addCol }] = useAddCol(xGrid, tableConfig);
   const { addSpaceRow } = useAddRow(xGrid, tableConfig);
   const { getAreaCells } = useAreaSelect(xGrid, (cells) => {
     selectedCells.value = cells;
   });
   const selectedCells = ref<any[]>([]);
+  function showHeaderCellModal({
+    column,
+    columnIndex,
+  }: Partial<VxeGridDefines.HeaderCellClickEventParams>) {
+    openHeaderCellSettingModal(true, { column, columnIndex });
+  }
+  function closeTitleEditor({ column }: Partial<VxeGridDefines.HeaderCellClickEventParams>) {
+    column.slots.header = 'normal-title-text';
+  }
 </script>
 
 <style lang="less" scoped>
   ::v-deep(.area-cells) {
     background-color: rgba(64, 158, 255, 0.3);
+  }
+
+  .header-icons-box {
+    height: 23.6px;
+    border-left: none;
+    display: flex;
+    align-items: center;
+    margin-left: -1px;
   }
 </style>

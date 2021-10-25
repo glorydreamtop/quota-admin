@@ -1,14 +1,27 @@
 import { cloneDeep, remove } from 'lodash-es';
 import { CSSProperties, reactive, ref, Ref } from 'vue';
 import { VxeGridInstance, VxeTableDefines } from 'vxe-table';
-import { tableConfigType } from '/#/table';
+import { TableConfigType } from '/#/table';
 import { onMountedOrActivated } from '/@/hooks/core/onMountedOrActivated';
+
+import type { InjectionKey, Ref } from 'vue';
+import { createContext, useContext } from '/@/hooks/core/useContext';
+
+const tableConfigKey: InjectionKey<TableConfigType> = Symbol();
+
+export function createTableConfigContext(context: TableConfigType) {
+  return createContext<TableConfigType>(context, tableConfigKey, { native: true });
+}
+
+export function useTableConfigContext() {
+  return useContext<TableConfigType>(tableConfigKey);
+}
 
 type useAddColMethods = [VxeTableDefines.ColumnOptions, { addCol: () => void }];
 
 export function useAddCol(
   xGrid: Ref<VxeGridInstance>,
-  tableConfig: tableConfigType
+  tableConfig: TableConfigType
 ): useAddColMethods {
   const col: VxeTableDefines.ColumnOptions = reactive({
     field: '',
@@ -38,7 +51,7 @@ type useAddSpaceRowMethods = { addSpaceRow: () => void };
 
 export function useAddRow(
   xGrid: Ref<VxeGridInstance>,
-  tableConfig: tableConfigType
+  tableConfig: TableConfigType
 ): useAddSpaceRowMethods {
   function addSpaceRow() {
     const row = {};

@@ -5,7 +5,7 @@ export enum headerCellType {
   date,
 }
 
-export interface tableConfigType {
+export interface TableConfigType {
   title: string;
   columns: (VxeTableDefines.ColumnOptions & { headerType: headerCellType })[];
   mergeCells?: VxeTablePropTypes.MergeCell[];
