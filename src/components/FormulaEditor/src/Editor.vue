@@ -61,7 +61,7 @@
   function formulaChange(e: InputEvent) {
     const el = formulaCodeRef.value!;
     const text = (e.target as HTMLDivElement)!.innerText;
-    el.innerHTML = `<code>${text}</code>`;
+    el.innerHTML = text;
     hljs.highlightElement(el);
     setSuggestions(e);
   }
@@ -87,7 +87,7 @@
       // 外部传入公式代码时渲染高亮
       const el = formulaCodeRef.value!;
       formulaEditorRef.value!.innerText = v.formula;
-      el.innerHTML = `<code>${v.formula}</code>`;
+      el.innerHTML = v.formula;
       hljs.highlightElement(el);
     },
     { deep: true }

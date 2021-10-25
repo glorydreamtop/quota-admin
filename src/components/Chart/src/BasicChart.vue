@@ -33,10 +33,10 @@
     config: chartConfigType;
   }>();
   const emit = defineEmits<{
-    (event: 'updateConfig', chartConfig: chartConfigType): void;
+    (event: 'updateConfig', config: chartConfigType): void;
   }>();
 
-  const { config: chartConfig } = toRefs(props);
+  const { config } = toRefs(props);
   const chartElRef = ref<HTMLDivElement>();
   const { setOptions, resize, getInstance } = useECharts(chartElRef as Ref<HTMLDivElement>);
 
@@ -50,7 +50,7 @@
     [chartTypeEnum.quantileRadar]: useQuantileRadarChart,
   };
   watch(
-    chartConfig,
+    config,
     async (v) => {
       const options = await chartTypeHooks[v.type](v);
       setOptions(options);
@@ -59,7 +59,7 @@
   );
 
   function update() {
-    emit('updateConfig', cloneDeep(unref(chartConfig)));
+    emit('updateConfig', cloneDeep(unref(config)));
   }
   interface eventBusType {
     event: any;
@@ -83,9 +83,9 @@
     });
     // 编辑标题
     const titleClickEvent = useChartTitlePopover({
-      chartConfig: chartConfig.value,
+      chartConfig: config.value,
       onOk: (title) => {
-        chartConfig.value.title = title;
+        config.value.title = title;
         update();
       },
     });
@@ -96,9 +96,9 @@
     });
     // 编辑Y轴
     const yAxisClickEvent = useYAxisIndexEdit({
-      chartConfig: chartConfig.value as normalChartConfigType,
+      chartConfig: config.value as normalChartConfigType,
       onOk: (config) => {
-        Object.assign(chartConfig.value, config);
+        Object.assign(config.value, config);
         update();
       },
     });
@@ -107,11 +107,12 @@
       eventType: 'dblclick',
       target: 'yAxis',
     });
+
     // 支持折线图series右键菜单
     const lineContextMenuEvent = useLineChartContextMenu({
-      chartConfig: chartConfig.value as normalChartConfigType,
-      onOk: (config) => {
-        Object.assign(chartConfig.value, config);
+      chartConfig: config.value as normalChartConfigType,
+      onOk: (cfg) => {
+        Object.assign(config.value, cfg);
         update();
       },
     });

@@ -3,7 +3,7 @@
     <div class="w-3/5 relative top-0 bottom-0 left-0 right-0">
       <ToolBar @paint="paint" class="" />
       <div class="absolute top-12 bottom-0 left-0 right-2">
-        <BasicChart :chart-config="config" @update-config="updateConfig" />
+        <BasicChart :config="config" @update-config="updateConfig" />
       </div>
     </div>
     <Advance class="w-2/5" />

@@ -1,6 +1,12 @@
-import { VxeGridPropTypes } from 'vxe-table';
+import { VxeTableDefines, VxeTablePropTypes } from 'vxe-table';
+
+export enum headerCellType {
+  normal,
+  date,
+}
 
 export interface tableConfigType {
   title: string;
-  columns: VxeGridPropTypes.Columns;
+  columns: (VxeTableDefines.ColumnOptions & { headerType: headerCellType })[];
+  mergeCells?: VxeTablePropTypes.MergeCell[];
 }
