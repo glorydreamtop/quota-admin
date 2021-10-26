@@ -18,8 +18,18 @@
           <Button size="small" @click="addSpaceRow">{{ t('page.quotaTable.addRow') }}</Button>
         </div>
       </template>
-      <template #normal-title-text="{ column }">
-        <div>{{ column.title }}</div>
+      <template #normal-title-text="{ column, columnIndex }">
+        <div class="flex items-center justify-center gap-1">
+          <span>{{ column.title }}</span>
+          <Icon
+            class="ml-1 !text-primary"
+            :icon="
+              ['fluent:text-field-24-regular', 'ant-design:field-time-outlined'][
+                tableConfig.columns[columnIndex].headerType
+              ]
+            "
+          />
+        </div>
       </template>
       <template #normal-title-text-editor="{ column, columnIndex }">
         <div class="flex items-center justify-center">
@@ -28,6 +38,7 @@
             class="text-center flex-grow"
             size="small"
             v-model:value="column.title"
+            @blur="titleChange(columnIndex, $event)"
           />
           <DatePicker
             v-if="tableConfig.columns[columnIndex].headerType === 1"
@@ -56,15 +67,19 @@
         <div v-if="tableConfig.data[rowIndex][column.property].type === 0" class="select-none">{{
           row[column.property]
         }}</div>
-        <div v-else class="select-none">{{
-          tableConfig.data[rowIndex][column.property].qData
-        }}</div>
+        <div v-else class="select-none flex items-center justify-center gap-1">
+          <span>{{ tableConfig.data[rowIndex][column.property].qData }}</span
+          ><Icon class="!text-primary" icon="tabler:letter-q" />
+        </div>
       </template>
-      <template #normal-cell-text-editor="{ row, column, rowIndex }">
+      <template #normal-cell-text-editor="{ row, column, rowIndex, columnIndex }">
         <div class="flex items-center justify-center">
           <Input class="text-center" v-model:value="row[column.property]" />
           <div class="gap-1 border-gray-300 header-icons-box pl-1">
-            <Icon icon="ant-design:setting-outlined" @click="showCellModal({ column, rowIndex })" />
+            <Icon
+              icon="ant-design:setting-outlined"
+              @click="showCellModal({ column, rowIndex, row, columnIndex })"
+            />
           </div>
         </div>
       </template>
@@ -86,18 +101,23 @@
   import { Button, Popover, Input, DatePicker } from 'ant-design-vue';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { createTableConfigContext, useAddCol, useAddRow, useAreaSelect } from './helper';
-  import { TableConfigType } from '/#/table';
-  import { maxBy, minBy, parseInt } from 'lodash';
+  import type { TableConfigType } from '/#/table';
+  import { maxBy, minBy, parseInt, remove } from 'lodash';
   import { useModal } from '/@/components/Modal';
   import HeaderCellSetting from './HeaderCellSetting.vue';
   import CellSetting from './CellSetting.vue';
   import Icon from '/@/components/Icon';
   import { getSingleQuotaData } from '/@/api/quota';
-  import { CellTypeEnum } from '/@/enums/tableEnum';
+  import { CellTypeEnum, HeaderCellTypeEnum } from '/@/enums/tableEnum';
+  import { useMessage } from '/@/hooks/web/useMessage';
 
   const [registerHeaderCellSettingModal, { openModal: openHeaderCellSettingModal }] = useModal();
-  const [registerCellSettingModal, { openModal: openCellSettingModal }] = useModal();
+  const [
+    registerCellSettingModal,
+    { openModal: openCellSettingModal, setModalProps: setCellSettingModalProps },
+  ] = useModal();
   const { t } = useI18n();
+  const { createMessage } = useMessage();
   const xGrid = ref({} as VxeGridInstance);
   const gridOptions = reactive<VxeGridProps & VxeGridEventProps>({
     border: true,
@@ -221,7 +241,22 @@
         ],
       },
     },
-    onMenuClick: ({ menu, rowIndex, columnIndex }) => {
+    onCellMenu: ({ rowIndex, column }) => {
+      const menuList = gridOptions.menuConfig!.body!.options![0];
+      const updateCellDataMenu = {
+        code: 'updateCellData',
+        name: t('table.contextmenu.updateCellData'),
+        disabled: false,
+      };
+      // 如果是指标数据单元格，添加“刷新数据”的右键菜单
+      if (menuList.find((menu) => menu.code === updateCellDataMenu.code)) {
+        remove(menuList, (menu) => menu.code === updateCellDataMenu.code);
+        if (tableConfig.data[rowIndex!][column.property].type === CellTypeEnum.quota) {
+          menuList.push(updateCellDataMenu);
+        }
+      }
+    },
+    onMenuClick: ({ menu, rowIndex, columnIndex, column, row }) => {
       const $table = xGrid.value;
       switch (menu.code) {
         case 'mergeCells':
@@ -244,6 +279,9 @@
             col: columnIndex,
           } as VxeTableDefines.MergeOptions);
           break;
+        case 'updateCellData':
+          getSingleData({ rowIndex, columnIndex, column, row });
+          break;
       }
     },
     onHeaderCellDblclick: async ({ column, $event }) => {
@@ -252,13 +290,7 @@
       await nextTick();
       (headerCellDOM.querySelector('input') as HTMLInputElement).focus();
     },
-    onEditClosed: ({ column, rowIndex, row }) => {
-      console.log('ajax');
-      tableConfig.data[rowIndex];
-      if (tableConfig.data[rowIndex][column.property].type === CellTypeEnum.quota) {
-        getSingleData({ column, rowIndex, row });
-      }
-    },
+    onEditClosed: updateCellData,
   });
 
   const tableConfig: TableConfigType = reactive({
@@ -474,20 +506,54 @@
   function closeTitleEditor({ column }: Partial<VxeGridDefines.HeaderCellClickEventParams>) {
     column!.slots.header = 'normal-title-text';
   }
-
-  function showCellModal({ column, rowIndex }: Partial<VxeGridDefines.CellClickEventParams>) {
+  // 单元格高级设置
+  function showCellModal({
+    column,
+    rowIndex,
+    row,
+    columnIndex,
+  }: Partial<VxeGridDefines.CellClickEventParams>) {
     openCellSettingModal(true, { rowIndex, column });
+    setCellSettingModalProps({
+      afterClose: updateCellData.bind(null, { column, rowIndex, row, columnIndex }),
+    });
   }
+  // 更新单元格内容
+  function updateCellData({
+    column,
+    rowIndex,
+    row,
+    columnIndex,
+  }: Partial<VxeGridDefines.EditClosedEventParams>) {
+    const key = column!.property;
+    tableConfig.data[rowIndex!][key].val = row[key];
+    if (tableConfig.data[rowIndex!][key].type === CellTypeEnum.quota) {
+      getSingleData({ column, rowIndex, row, columnIndex });
+    }
+  }
+  // 请求单个指标数据
   async function getSingleData({
     row,
     column,
     rowIndex,
+    columnIndex,
   }: Partial<VxeGridDefines.EditClosedEventParams>) {
+    if (tableConfig.columns[columnIndex!].headerType !== HeaderCellTypeEnum.date) {
+      createMessage.warn(t('table.headerCell.isNotDateTip'));
+      return;
+    }
     const data = await getSingleQuotaData({
       id: parseInt(row[column!.property]),
       date: column!.title,
     });
-    tableConfig.data[rowIndex!][column!.property].qData = data[0].data[0][1].toString();
+    tableConfig.data[rowIndex!][column!.property].qData = (data[0].data[0] ?? [
+      0,
+      t('common.noData'),
+    ])[1].toString();
+  }
+  // 监听表头文本变化
+  function titleChange(columnIndex: number, e: FocusEvent) {
+    tableConfig.columns[columnIndex].title = (e.target as HTMLInputElement).value;
   }
 </script>
 

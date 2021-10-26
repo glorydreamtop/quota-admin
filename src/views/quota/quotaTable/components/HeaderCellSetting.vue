@@ -18,7 +18,7 @@
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useTableConfigContext } from './helper';
   import { BasicModal, useModalInner } from '/@/components/Modal';
-  import { VxeGridDefines } from 'vxe-table';
+  import type { VxeGridDefines } from 'vxe-table';
 
   const SelectOption = Select.Option;
   const { t } = useI18n();
