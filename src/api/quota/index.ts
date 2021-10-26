@@ -74,3 +74,15 @@ export function getQuotaData(params: getQuotaDataParams) {
     },
   });
 }
+
+export function getSingleQuotaData({ id, date }: { id: number; date: string }) {
+  const rows = [{ id }];
+  return defHttp.post<getQuotaDataResult[]>({
+    url: Api.GetQuotaData,
+    params: {
+      endDate: date,
+      lastFlag: true,
+      rows,
+    },
+  });
+}

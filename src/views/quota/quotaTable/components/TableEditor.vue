@@ -34,8 +34,13 @@
             v-model:value="column.title"
             size="small"
             valueFormat="YYYY-MM-DD"
-          />
-          <div class="w-1/3 gap-1 border border-gray-300 header-icons-box pl-1">
+          >
+            <div class="border border-gray-300 flex items-center cursor-pointer"
+              ><span class="mr-1 ml-2">{{ column.title }}</span
+              ><Icon class="mr-1" icon="ant-design:caret-down-filled"
+            /></div>
+          </DatePicker>
+          <div class="w-50px gap-1 border border-gray-300 header-icons-box pl-1">
             <Icon
               icon="ant-design:setting-outlined"
               @click="showHeaderCellModal({ column, columnIndex })"
@@ -47,14 +52,25 @@
           </div>
         </div>
       </template>
-      <template #normal-cell-text="{ row, column }">
-        <div class="select-none">{{ row[column.property] }}</div>
+      <template #normal-cell-text="{ row, column, rowIndex }">
+        <div v-if="tableConfig.data[rowIndex][column.property].type === 0" class="select-none">{{
+          row[column.property]
+        }}</div>
+        <div v-else class="select-none">{{
+          tableConfig.data[rowIndex][column.property].qData
+        }}</div>
       </template>
-      <template #normal-cell-text-editor="{ row, column }">
-        <Input class="text-center" v-model:value="row[column.property]" />
+      <template #normal-cell-text-editor="{ row, column, rowIndex }">
+        <div class="flex items-center justify-center">
+          <Input class="text-center" v-model:value="row[column.property]" />
+          <div class="gap-1 border-gray-300 header-icons-box pl-1">
+            <Icon icon="ant-design:setting-outlined" @click="showCellModal({ column, rowIndex })" />
+          </div>
+        </div>
       </template>
     </VxeGrid>
     <HeaderCellSetting @register="registerHeaderCellSettingModal" />
+    <CellSetting @register="registerCellSettingModal" />
   </div>
 </template>
 
@@ -70,13 +86,17 @@
   import { Button, Popover, Input, DatePicker } from 'ant-design-vue';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { createTableConfigContext, useAddCol, useAddRow, useAreaSelect } from './helper';
-  import type { TableConfigType } from '/#/table';
-  import { maxBy, minBy } from 'lodash';
+  import { TableConfigType } from '/#/table';
+  import { maxBy, minBy, parseInt } from 'lodash';
   import { useModal } from '/@/components/Modal';
   import HeaderCellSetting from './HeaderCellSetting.vue';
+  import CellSetting from './CellSetting.vue';
   import Icon from '/@/components/Icon';
+  import { getSingleQuotaData } from '/@/api/quota';
+  import { CellTypeEnum } from '/@/enums/tableEnum';
 
   const [registerHeaderCellSettingModal, { openModal: openHeaderCellSettingModal }] = useModal();
+  const [registerCellSettingModal, { openModal: openCellSettingModal }] = useModal();
   const { t } = useI18n();
   const xGrid = ref({} as VxeGridInstance);
   const gridOptions = reactive<VxeGridProps & VxeGridEventProps>({
@@ -232,6 +252,13 @@
       await nextTick();
       (headerCellDOM.querySelector('input') as HTMLInputElement).focus();
     },
+    onEditClosed: ({ column, rowIndex, row }) => {
+      console.log('ajax');
+      tableConfig.data[rowIndex];
+      if (tableConfig.data[rowIndex][column.property].type === CellTypeEnum.quota) {
+        getSingleData({ column, rowIndex, row });
+      }
+    },
   });
 
   const tableConfig: TableConfigType = reactive({
@@ -239,8 +266,196 @@
     columns: [
       { title: '测试1', field: 'a', headerType: 0 },
       { title: '测试2', field: 'b', headerType: 0 },
+      { title: '测试3', field: 'c', headerType: 0 },
+      { title: '测试4', field: 'd', headerType: 0 },
+      { title: '测试5', field: 'e', headerType: 0 },
+      { title: '测试6', field: 'f', headerType: 0 },
     ],
     mergeCells: [],
+    data: [
+      {
+        a: {
+          val: 'a1',
+          type: 0,
+        },
+        b: {
+          val: 'b1',
+          type: 0,
+        },
+        c: {
+          val: 'c1',
+          type: 0,
+        },
+        d: {
+          val: 'd1',
+          type: 0,
+        },
+        e: {
+          val: 'e1',
+          type: 0,
+        },
+        f: {
+          val: 'f1',
+          type: 0,
+        },
+      },
+      {
+        a: {
+          val: 'a2',
+          type: 0,
+        },
+        b: {
+          val: 'b2',
+          type: 0,
+        },
+        c: {
+          val: 'c2',
+          type: 0,
+        },
+        d: {
+          val: 'd2',
+          type: 0,
+        },
+        e: {
+          val: 'e2',
+          type: 0,
+        },
+        f: {
+          val: 'f2',
+          type: 0,
+        },
+      },
+      {
+        a: {
+          val: 'a3',
+          type: 0,
+        },
+        b: {
+          val: 'b3',
+          type: 0,
+        },
+        c: {
+          val: 'c3',
+          type: 0,
+        },
+        d: {
+          val: 'd3',
+          type: 0,
+        },
+        e: {
+          val: 'e3',
+          type: 0,
+        },
+        f: {
+          val: 'f3',
+          type: 0,
+        },
+      },
+      {
+        a: {
+          val: 'a4',
+          type: 0,
+        },
+        b: {
+          val: 'b4',
+          type: 0,
+        },
+        c: {
+          val: 'c4',
+          type: 0,
+        },
+        d: {
+          val: 'd4',
+          type: 0,
+        },
+        e: {
+          val: 'e4',
+          type: 0,
+        },
+        f: {
+          val: 'f4',
+          type: 0,
+        },
+      },
+      {
+        a: {
+          val: 'a5',
+          type: 0,
+        },
+        b: {
+          val: 'b5',
+          type: 0,
+        },
+        c: {
+          val: 'c5',
+          type: 0,
+        },
+        d: {
+          val: 'd5',
+          type: 0,
+        },
+        e: {
+          val: 'e5',
+          type: 0,
+        },
+        f: {
+          val: 'f5',
+          type: 0,
+        },
+      },
+      {
+        a: {
+          val: 'a6',
+          type: 0,
+        },
+        b: {
+          val: 'b6',
+          type: 0,
+        },
+        c: {
+          val: 'c6',
+          type: 0,
+        },
+        d: {
+          val: 'd6',
+          type: 0,
+        },
+        e: {
+          val: 'e6',
+          type: 0,
+        },
+        f: {
+          val: 'f6',
+          type: 0,
+        },
+      },
+      {
+        a: {
+          val: 'a7',
+          type: 0,
+        },
+        b: {
+          val: 'b7',
+          type: 0,
+        },
+        c: {
+          val: 'c7',
+          type: 0,
+        },
+        d: {
+          val: 'd7',
+          type: 0,
+        },
+        e: {
+          val: 'e7',
+          type: 0,
+        },
+        f: {
+          val: 'f7',
+          type: 0,
+        },
+      },
+    ],
   });
   createTableConfigContext(tableConfig);
   const [colValue, { addCol }] = useAddCol(xGrid, tableConfig);
@@ -255,8 +470,24 @@
   }: Partial<VxeGridDefines.HeaderCellClickEventParams>) {
     openHeaderCellSettingModal(true, { column, columnIndex });
   }
+  // 关掉表头编辑
   function closeTitleEditor({ column }: Partial<VxeGridDefines.HeaderCellClickEventParams>) {
-    column.slots.header = 'normal-title-text';
+    column!.slots.header = 'normal-title-text';
+  }
+
+  function showCellModal({ column, rowIndex }: Partial<VxeGridDefines.CellClickEventParams>) {
+    openCellSettingModal(true, { rowIndex, column });
+  }
+  async function getSingleData({
+    row,
+    column,
+    rowIndex,
+  }: Partial<VxeGridDefines.EditClosedEventParams>) {
+    const data = await getSingleQuotaData({
+      id: parseInt(row[column!.property]),
+      date: column!.title,
+    });
+    tableConfig.data[rowIndex!][column!.property].qData = data[0].data[0][1].toString();
   }
 </script>
 

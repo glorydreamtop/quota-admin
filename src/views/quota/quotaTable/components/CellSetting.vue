@@ -2,10 +2,10 @@
   <BasicModal @register="registerModal" v-bind="modalConfig">
     <div class="flex flex-col items-center">
       <div>
-        <span class="mr-2">{{ t('table.headerCell.type') }}</span>
-        <Select v-model:value="tableConfig.columns[info.columnIndex].headerType">
-          <SelectOption :key="0">{{ t('table.headerCell.normal') }}</SelectOption>
-          <SelectOption :key="1">{{ t('table.headerCell.date') }}</SelectOption>
+        <span class="mr-2">{{ t('table.cell.type') }}</span>
+        <Select v-model:value="tableConfig.data[info.rowIndex][info.column.property].type">
+          <SelectOption :key="0">{{ t('table.cell.normal') }}</SelectOption>
+          <SelectOption :key="1">{{ t('table.cell.quota') }}</SelectOption>
         </Select>
       </div>
     </div>
@@ -23,17 +23,17 @@
   const SelectOption = Select.Option;
   const { t } = useI18n();
   const tableConfig = useTableConfigContext();
-  const info: Partial<VxeGridDefines.HeaderCellClickEventParams> = reactive({
-    column: undefined,
-    columnIndex: 0,
+  const info: Partial<VxeGridDefines.CellClickEventParams> = reactive({
+    column: { property: 'a' },
+    rowIndex: 0,
   });
   const [registerModal] = useModalInner(
-    ({ column, columnIndex }: VxeGridDefines.HeaderCellClickEventParams) => {
-      Object.assign(info, { column, columnIndex });
+    ({ column, rowIndex }: VxeGridDefines.CellClickEventParams) => {
+      Object.assign(info, { column, rowIndex });
     }
   );
   const modalConfig: Partial<ModalProps> = reactive({
-    title: t('table.headerCell.modalTitle'),
+    title: t('table.cell.modalTitle'),
     showOkBtn: false,
     showCancelBtn: false,
     width: 300,
