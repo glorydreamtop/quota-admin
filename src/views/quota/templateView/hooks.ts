@@ -1,7 +1,8 @@
-import { InjectionKey, ref, Ref } from 'vue';
+import { InjectionKey, ref, Ref, watchEffect } from 'vue';
 import { createContext, useContext } from '/@/hooks/core/useContext';
 import type { TemplateDOM, TemplateItem } from '/#/template';
 import { remove } from 'lodash-es';
+import { useMagicKeys } from '@vueuse/core';
 
 const templateKey: InjectionKey<Ref<Array<TemplateItem & { uniqId: string }>>> = Symbol();
 
@@ -24,12 +25,26 @@ export function usePageConfigContext() {
 }
 
 type useMultiSelectRes = [
-  string[],
+  Ref<string[]>,
   { insertSelectKey: (temp: TemplateDOM, nativeEvent: PointerEvent) => void }
 ];
 
 export function useMultiSelect(templateList: Ref<TemplateDOM[]>): useMultiSelectRes {
+  const { Ctrl_A } = useMagicKeys({
+    passive: false,
+    onEventFired(e) {
+      if (e.ctrlKey && e.key === 'a' && e.type === 'keydown') {
+        e.preventDefault();
+      }
+    },
+  });
+
+  watchEffect(() => {
+    if (Ctrl_A.value) selectTemplateList.value = templateList.value.map((temp) => temp.uniqId);
+  });
+
   const selectTemplateList = ref<string[]>([]);
+
   function insertSelectKey(temp: TemplateDOM, nativeEvent: PointerEvent) {
     const list = selectTemplateList.value;
     if (nativeEvent.ctrlKey) {
@@ -72,4 +87,8 @@ export function useMultiSelect(templateList: Ref<TemplateDOM[]>): useMultiSelect
     }
   }
   return [selectTemplateList, { insertSelectKey }];
+}
+
+export interface TemplateListMapType {
+  [key: string]: TemplateDOM;
 }

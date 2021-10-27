@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center gap-4 p-2">
+  <div class="flex items-center gap-4 p-2 flex-wrap">
     <div class="flex items-center gap-1">
       <span>{{ t('templateView.toolbar.sameTimeRange') }}</span>
       <Switch v-model:checked="pageConfig.sameTimeRange" />

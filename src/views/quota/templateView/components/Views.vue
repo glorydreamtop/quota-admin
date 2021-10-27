@@ -5,37 +5,72 @@
       v-for="temp in templateList"
       :key="temp.uniqId"
       :class="[
-        'w-1/2 h-500px border border-gray-100 resize overflow-hidden sortable',
+        'w-1/2 h-500px border border-gray-100 resize overflow-hidden sortable relative',
         selectTemplateList.includes(temp.uniqId) ? 'selected' : '',
       ]"
     >
-      <Icon
-        icon="akar-icons:drag-horizontal"
-        class="drag-handler cursor-move pl-1 pt-1 !text-primary"
-      />
+      <Popover placement="rightTop">
+        <template #title>
+          <span>{{ t('templateView.view.tempInfoTitle') }}</span>
+        </template>
+        <Icon
+          icon="akar-icons:drag-horizontal"
+          class="drag-handler cursor-move pl-1 pt-1 !text-primary"
+        />
+      </Popover>
       <component :is="compTypeMap[temp.version]" :config="temp.config" class="w-full" />
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-  import { ref, unref } from 'vue';
-  import { useMultiSelect, useTemplateListContext } from '../hooks';
-  import { TemplateDOM } from '/#/template';
+  import { ref, unref, watchEffect, watch } from 'vue';
+  import { Popover } from 'ant-design-vue';
+  import {
+    useMultiSelect,
+    useTemplateListContext,
+    TemplateListMapType,
+    usePageConfigContext,
+  } from '../hooks';
+  import type { TemplateDOM } from '/#/template';
   import { BasicChart } from '/@/components/Chart';
   import Icon from '/@/components/Icon';
   import { onMountedOrActivated } from '/@/hooks/core/onMountedOrActivated';
   import { useSortable } from '/@/hooks/web/useSortable';
   import { isNullAndUnDef } from '/@/utils/is';
+  import { useI18n } from '/@/hooks/web/useI18n';
+  const { t } = useI18n();
   const templateList = useTemplateListContext();
-
-  const compTypeMap = [BasicChart, BasicChart];
+  const templateMap: TemplateListMapType = {};
+  const compTypeMap = [BasicChart, BasicChart, BasicChart];
   const viewBox = ref<HTMLDivElement>();
-
+  const pageConfig = usePageConfigContext();
+  watch(templateList, (v) => {
+    v.forEach((t) => {
+      templateMap[t.uniqId] = t;
+    });
+  });
   const [selectTemplateList, { insertSelectKey }] = useMultiSelect(templateList);
   function selectTemplate(temp: TemplateDOM, nativeEvent: PointerEvent) {
     insertSelectKey(temp, nativeEvent);
   }
+  watchEffect(() => {
+    selectTemplateList.value.forEach((uniqId) => {
+      const temp = templateMap[uniqId];
+      let showLastest = true;
+      let sameTimeRange = true;
+      if (temp.version < 3) {
+        if (showLastest) {
+          showLastest = temp.config.showLastest;
+        }
+        if (sameTimeRange) {
+          sameTimeRange =
+            temp.config.timeConfig.startDate === pageConfig.date[0] &&
+            temp.config.timeConfig.startDate === pageConfig.date[1];
+        }
+      }
+    });
+  });
   onMountedOrActivated(() => {
     const boxdom: HTMLDivElement = unref(viewBox.value)!;
     // 支持拖动排序
