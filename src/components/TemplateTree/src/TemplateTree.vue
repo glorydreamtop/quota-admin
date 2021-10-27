@@ -226,7 +226,7 @@
         } else {
           emit(
             'selectNode',
-            pick(dataRef, ['config', 'id', 'categoryId', 'version ']) as TemplateItem
+            pick(dataRef, ['config', 'id', 'categoryId', 'version']) as TemplateItem
           );
         }
       },

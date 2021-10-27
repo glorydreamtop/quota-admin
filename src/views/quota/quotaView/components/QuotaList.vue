@@ -187,6 +187,8 @@
       title: t('page.quotaView.quotaSetting.formulaModalTitle'),
       minHeight: 300,
       width: '400px',
+      showCancelBtn: false,
+      showOkBtn: false,
     });
   }
   function clear() {
@@ -227,6 +229,8 @@
             setEditModal({
               title: t('page.quotaView.quotaSetting.modalTitle'),
               minHeight: 300,
+              showCancelBtn: false,
+              showOkBtn: false,
             });
           },
         },

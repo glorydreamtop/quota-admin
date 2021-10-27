@@ -24,6 +24,7 @@ export interface timeConfigType {
    */
   sortMonth?: number[];
   startMonth?: number;
+  sortYear?: string[];
 }
 
 // export interface baseQuotaSettingType {}
@@ -33,9 +34,9 @@ export interface baseChartConfigType {
   // 图表名字
   name?: string;
   // 配色方案Id
-  colorSchemeId: number;
+  colorSchemeId?: number;
   // 自有配色方案
-  selfColorScheme?: string;
+  selfColorScheme: string;
   // 图表类型
   type: chartTypeEnum;
   // 时间相关配置

@@ -6,6 +6,7 @@ import type {
   pieChartConfigType,
   quantileRadarChartConfigType,
   radarChartConfigType,
+  seasonalChartConfigType,
   structuralChartConfigType,
 } from '/#/chart';
 import { today, yearsAgo } from '/@/utils/dateUtil';
@@ -28,6 +29,7 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
         type: timeConfigEnum.default,
         sortMonth: [],
         startMonth: 1,
+        sortYear: [],
       },
       colorSchemeId: 0,
       selfColorScheme: '',
@@ -59,6 +61,7 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
         type: timeConfigEnum.default,
         sortMonth: [],
         startMonth: 1,
+        sortYear: [],
       },
       colorSchemeId: 0,
       selfColorScheme: '',
@@ -69,6 +72,7 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
       valueFormatter: {
         afterDot: 2,
         scientificNotation: false,
+        normalized: false,
       },
       yAxis: [
         {
@@ -79,7 +83,7 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
           position: 'left',
         },
       ],
-    },
+    } as seasonalChartConfigType,
     bar: {
       title: '',
       name: '',

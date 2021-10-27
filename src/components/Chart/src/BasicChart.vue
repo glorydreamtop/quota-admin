@@ -1,6 +1,7 @@
 <template>
-  <div class="h-full overflow-hidden">
+  <div class="h-full overflow-hidden pt-4 relative">
     <div ref="chartElRef" class="w-full h-full"></div>
+    <img v-if="noChart" src="../../../assets/svg/no-chart.svg" class="no-chart" />
   </div>
 </template>
 
@@ -8,6 +9,7 @@
   import { onBeforeUnmount, onDeactivated, ref, toRefs, unref, watch } from 'vue';
   import type { Ref } from 'vue';
   import { useECharts } from '/@/hooks/web/useECharts';
+  import { useI18n } from '/@/hooks/web/useI18n';
   import { chartTypeEnum } from '/@/enums/chartEnum';
   import {
     useSeasonalChart,
@@ -28,6 +30,7 @@
     useYAxisIndexEdit,
   } from '../helper';
   import { cloneDeep } from 'lodash';
+  import { useMessage } from '/@/hooks/web/useMessage';
 
   const props = defineProps<{
     config: chartConfigType;
@@ -39,7 +42,9 @@
   const { config } = toRefs(props);
   const chartElRef = ref<HTMLDivElement>();
   const { setOptions, resize, getInstance } = useECharts(chartElRef as Ref<HTMLDivElement>);
-
+  const { createMessage } = useMessage();
+  const { t } = useI18n();
+  const noChart = ref(true);
   const chartTypeHooks = {
     [chartTypeEnum.seasonal]: useSeasonalChart,
     [chartTypeEnum.normal]: useNormalChart,
@@ -52,10 +57,18 @@
   watch(
     config,
     async (v) => {
-      const options = await chartTypeHooks[v.type](v);
-      setOptions(options);
+      console.log(!Reflect.has(v, 'quotaList'));
+      if (!Reflect.has(v, 'quotaList') || v.quotaList?.length === 0) return;
+      try {
+        const options = await chartTypeHooks[v.type](v);
+        setOptions(options);
+        noChart.value = false;
+      } catch (error) {
+        noChart.value = true;
+        createMessage.warn(t('common.renderError'));
+      }
     },
-    { deep: true }
+    { deep: true, immediate: true }
   );
 
   function update() {
@@ -97,8 +110,8 @@
     // 编辑Y轴
     const yAxisClickEvent = useYAxisIndexEdit({
       chartConfig: config.value as normalChartConfigType,
-      onOk: (config) => {
-        Object.assign(config.value, config);
+      onOk: (cfg) => {
+        Object.assign(config.value, cfg);
         update();
       },
     });
@@ -122,7 +135,6 @@
       target: 'series',
     });
     instance.on('dblclick', (e) => {
-      console.log(e);
       // 依次执行双击监听的所有事件
       eventBus
         .filter((event) => event.eventType === 'dblclick')
@@ -135,8 +147,7 @@
         });
     });
     instance.on('contextmenu', (e) => {
-      console.log(e);
-      // 依次执行双击监听的所有事件
+      // 依次执行右键监听的所有事件
       eventBus
         .filter((event) => event.eventType === 'contextmenu')
         .forEach((event) => {
@@ -150,4 +161,12 @@
   });
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+  .no-chart {
+    position: absolute;
+    width: 20%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+</style>

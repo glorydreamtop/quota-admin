@@ -27,4 +27,5 @@ export default {
   notUniqTip: '包含重复值',
   noData: '暂无数据',
   last: '最新',
+  renderError: '配置或数据有错，无法渲染',
 };

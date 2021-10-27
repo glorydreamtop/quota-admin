@@ -123,8 +123,8 @@ export function pingChart() {
         type: chart_types_map[options['option_template_type']],
         title: options['chart_title'],
         quotaList: [],
-        colorSchemeId: 0,
-        colors: chart_colors_list[options['option_chart_color']]['colors'].join(','),
+        colorSchemeId: 22,
+        selfColorScheme: chart_colors_list[options['option_chart_color']]['colors'].join(','),
         valueFormatter: {
           normalized: options['option_normalize'],
           afterDot: 2,
@@ -193,6 +193,9 @@ export function pingChart() {
           inverse: row['yaxis'] == 2,
         });
       }
+      if (row.id && row.id > 100000000) {
+        Reflect.deleteProperty(row, 'id');
+      }
       o.config.quotaList?.push({
         name: row['name'],
         sourceCode: row['source_code'],
@@ -209,16 +212,19 @@ export function pingChart() {
           lineWidth: 2,
         },
       });
-      if (row.id && row.id > 100000000) {
-        Reflect.deleteProperty(row, 'id');
-      }
     }
 
     //Y轴设置
-    if (yaxis_list.length > 0) {
-      (o.config as normalChartConfigType | seasonalChartConfigType | barChartConfigType).yAxis =
-        yaxis_list;
-    }
+    (o.config as normalChartConfigType | seasonalChartConfigType | barChartConfigType).yAxis =
+      yaxis_list.length > 0
+        ? yaxis_list
+        : [
+            {
+              inverse: false,
+              offset: 0,
+              position: 'left',
+            },
+          ];
     return o.config;
   };
 }

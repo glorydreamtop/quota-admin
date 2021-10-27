@@ -114,7 +114,7 @@
                   size="small"
                   addon-after="月"
                   v-model:value="chartConfig.timeConfig.startMonth"
-                  @change="startMonthChange"
+                  @blur="startMonthChange"
                 />
               </template>
             </span>
@@ -130,6 +130,24 @@
                 v-for="month in monthList"
                 :key="month"
                 >{{ month + t('page.quotaView.advance.datasourceSetting.pastUnit.month') }}</div
+              >
+            </div>
+            <div
+              v-if="showSettingFilter('sortYear')"
+              class="flex flex-wrap gap-2 mt-2 pt-2 border-t border-t-gray-400"
+              @click="sortYearChange"
+            >
+              <div
+                :data-year="year"
+                :class="[
+                  chartConfig.timeConfig.sortYear.includes(year)
+                    ? 'bg-white text-primary'
+                    : 'bg-primary text-white',
+                  'flex-grow min-w-40px max-w-80px text-center rounded-sm month cursor-pointer',
+                ]"
+                v-for="year in yearList"
+                :key="year"
+                >{{ year }}</div
               >
             </div>
           </div>
@@ -215,6 +233,7 @@
   import { useMessage } from '/@/hooks/web/useMessage';
   import { chartTypeEnum, structuralOffsetUnitEnum } from '/@/enums/chartEnum';
   import { uniq } from 'lodash';
+  import dayjs from 'dayjs';
 
   const RadioGroup = Radio.Group;
   const RadioButton = Radio.Button;
@@ -230,7 +249,7 @@
   function showSettingFilter(modelName: string) {
     const filter = {
       [chartTypeEnum.normal]: ['yAxisEdit', 'sortMonth', 'pastValue'],
-      [chartTypeEnum.seasonal]: ['sortMonth', 'startMonth'],
+      [chartTypeEnum.seasonal]: ['sortMonth', 'startMonth', 'sortYear'],
       [chartTypeEnum.seasonalLunar]: ['sortMonth', 'startMonth'],
       [chartTypeEnum.normalRadar]: ['pastValue'],
       [chartTypeEnum.quantileRadar]: ['quantileOffset'],
@@ -252,6 +271,10 @@
       if (v.pastValue) {
         datasourceSetting.pastValue = v.pastValue;
       }
+      updateYears();
+    },
+    {
+      deep: true,
     }
   );
   watch(
@@ -293,10 +316,24 @@
       createMessage.warn(t('page.quotaView.advance.datasourceSetting.startMonthTip'));
       return;
     }
+    chartConfig.timeConfig.startMonth = parseInt(value);
     const index = monthList.value!.indexOf(parseInt(value));
     const [a1, a2] = [monthList.value.slice(0, index), monthList.value.slice(index)];
     monthList.value = [...a2, ...a1];
+    updateYears();
   }
+  function updateYears() {
+    const startYear = dayjs(chartConfig.timeConfig.startDate).year();
+    const endYear = dayjs(chartConfig.timeConfig.endDate).year();
+    yearList.value = [];
+    const startMonth = chartConfig.timeConfig.startMonth;
+    console.log(startMonth);
+
+    for (let i = startYear; i <= endYear + 1; i++) {
+      yearList.value.push(startMonth !== 1 ? `${i - 1}-${i}` : `${i}`);
+    }
+  }
+
   // 修改不要的月份
   function sortMonthChange(e: PointerEvent) {
     const m = parseInt(e.target.dataset.month ?? NaN);
@@ -307,6 +344,20 @@
       } else {
         chartConfig.timeConfig.sortMonth?.push(m);
         chartConfig.timeConfig.sortMonth?.sort();
+      }
+    }
+  }
+  const yearList = ref<string[]>([]);
+  updateYears();
+  // 修改不要的年份
+  function sortYearChange(e: PointerEvent) {
+    const y = e.target.dataset.year;
+    if (y) {
+      const idx = chartConfig.timeConfig.sortYear!.indexOf(y);
+      if (idx !== -1) {
+        chartConfig.timeConfig.sortYear?.splice(idx, 1);
+      } else {
+        chartConfig.timeConfig.sortYear?.push(y);
       }
     }
   }

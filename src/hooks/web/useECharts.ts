@@ -2,17 +2,14 @@ import type { EChartsOption } from 'echarts';
 import type { Ref } from 'vue';
 import { useTimeoutFn } from '/@/hooks/core/useTimeout';
 import { tryOnUnmounted } from '@vueuse/core';
-import { unref, nextTick, watch, computed, ref } from 'vue';
+import { unref, nextTick, computed, ref } from 'vue';
 import { useDebounceFn } from '@vueuse/core';
 import { useEventListener } from '/@/hooks/event/useEventListener';
 import { useBreakpoint } from '/@/hooks/event/useBreakpoint';
 import echarts from '/@/utils/lib/echarts';
 import { useRootSetting } from '/@/hooks/setting/useRootSetting';
 
-export function useECharts(
-  elRef: Ref<HTMLDivElement>,
-  theme: 'light' | 'dark' | 'default' = 'light'
-) {
+export function useECharts(elRef: Ref<HTMLDivElement>) {
   const { getDarkMode } = useRootSetting();
   let chartInstance: echarts.EChartsType | null = null;
   let resizeFn: Fn = resize;
@@ -31,13 +28,13 @@ export function useECharts(
     } as EChartsOption;
   });
 
-  function initCharts(t = theme) {
+  function initCharts() {
     const el = unref(elRef);
     if (!el || !unref(el)) {
       return;
     }
 
-    chartInstance = echarts.init(el, t);
+    chartInstance = echarts.init(el);
     const { removeEvent } = useEventListener({
       el: window,
       name: 'resize',
@@ -65,7 +62,7 @@ export function useECharts(
     nextTick(() => {
       useTimeoutFn(() => {
         if (!chartInstance) {
-          initCharts(getDarkMode.value as 'default');
+          initCharts();
 
           if (!chartInstance) return;
         }
@@ -80,17 +77,6 @@ export function useECharts(
     chartInstance?.resize();
   }
 
-  watch(
-    () => getDarkMode.value,
-    (theme) => {
-      if (chartInstance) {
-        chartInstance.dispose();
-        initCharts(theme as 'default');
-        setOptions(cacheOptions.value);
-      }
-    }
-  );
-
   tryOnUnmounted(() => {
     if (!chartInstance) return;
     removeResizeFn();
@@ -100,7 +86,7 @@ export function useECharts(
 
   function getInstance(): echarts.ECharts | null {
     if (!chartInstance) {
-      initCharts(getDarkMode.value as 'default');
+      initCharts();
     }
     return chartInstance;
   }

@@ -1,8 +1,8 @@
 import { defHttp } from '/@/utils/http/axios';
 
-import { colorsSchemeModel } from './model';
+import { ColorsSchemeModel } from './model';
 import { ResultEnum } from '/@/enums/httpEnum';
-import { BasicFetchResult, BasicPageParams } from '../model/baseModel';
+import { BasicFetchResult, BasicPageParams, BasicIdParams } from '../model/baseModel';
 
 enum Api {
   GetAllColorScheme = '/sys/colors/list',
@@ -16,7 +16,7 @@ enum Api {
  * @description: Get all colorScheme
  */
 export function getAllColorScheme(params?: BasicPageParams) {
-  return defHttp.request<BasicFetchResult<colorsSchemeModel>>({
+  return defHttp.request<BasicFetchResult<ColorsSchemeModel>>({
     url: Api.GetAllColorScheme,
     method: 'GET',
     params,

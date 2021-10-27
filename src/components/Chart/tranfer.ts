@@ -19,6 +19,8 @@ import {
   useRecentLegend,
   useSortMonth,
   useNormalized,
+  useSortYear,
+  useColor,
 } from './helper';
 import {
   barChartConfigType,
@@ -77,6 +79,7 @@ export async function useSeasonalChart(
   );
 
   const quotaDataList = await getQuotaData(fetchParams);
+  // 移除不展示的月份
   useSortMonth({ chartConfig, quotaDataList });
   useNormalized({ chartConfig, quotaDataList });
   const series: SeriesOption[] = [];
@@ -93,38 +96,36 @@ export async function useSeasonalChart(
     const y = dayjs(time).year();
     const m = dayjs(time).month();
     const v = round(data[1], chartConfig.valueFormatter.afterDot);
+    let year: number, name: string;
     // 如果变更了起始月份
     if (changeStart) {
-      const year = m < startMonth ? 2019 : 2020;
-      const name = `${y - 1}-${y}`;
-      const s = series.find((ser) => ser.name === name);
-      if (s) {
-        (s.data as [number, number][]).push([dayjs(time).year(year).hour(0).unix() * 1000, v]);
+      if (m < startMonth - 1) {
+        year = 2020;
+        name = `${y - 1}-${y}`;
       } else {
-        legend.data?.push(name);
-        series.push({
-          name: name,
-          symbol: 'none',
-          type: 'line',
-          data: [[dayjs(time).year(year).hour(0).unix() * 1000, v]],
-        });
+        year = 2019;
+        name = `${y}-${y + 1}`;
       }
     } else {
-      const name = `${y}`;
-      const s = series.find((ser) => ser.name === name);
-      if (s) {
-        (s.data as [number, number][]).push([dayjs(time).year(2020).hour(0).unix() * 1000, v]);
-      } else {
-        legend.data?.push(name);
-        series.push({
-          name: name,
-          symbol: 'none',
-          type: 'line',
-          data: [[dayjs(time).year(2020).hour(0).unix() * 1000, v]],
-        });
-      }
+      name = `${y}`;
+      year = 2020;
+    }
+    const s = series.find((ser) => ser.name === name);
+    if (s) {
+      (s.data as [number, number][]).push([dayjs(time).year(year).hour(0).unix() * 1000, v]);
+    } else {
+      legend.data?.push(name);
+      series.push({
+        name: name,
+        symbol: 'none',
+        type: 'line',
+        connectNulls: false,
+        data: [[dayjs(time).year(year).hour(0).unix() * 1000, v]],
+      });
     }
   });
+  useSortYear({ chartConfig, series, legend });
+  const color = await useColor({ chartConfig });
   const options: EChartsOption = {
     title: titleConfig(chartConfig),
     xAxis: {
@@ -141,6 +142,7 @@ export async function useSeasonalChart(
       },
     ],
     legend,
+    color,
     series,
     toolbox: toolboxConfig,
     tooltip: {
@@ -149,7 +151,7 @@ export async function useSeasonalChart(
       axisPointer: {
         label: {
           formatter: ({ value }) => {
-            return formatToDate(value, 'YYYY/MM/DD');
+            return formatToDate(value, 'MM/DD');
           },
         },
       },
@@ -209,8 +211,8 @@ export async function useNormalChart(chartConfig: normalChartConfigType): Promis
     };
     return typeMap[type] as SeriesOption;
   }
-  quotaDataList.forEach((quota) => {
-    const quotaConfig = chartConfig.quotaList!.find((q) => q.id === quota.id)!;
+  quotaDataList.forEach((quota, index) => {
+    const quotaConfig = chartConfig.quotaList![index];
     legend.data!.push(quota.name);
     quota.data.forEach((item) => (item[1] = round(item[1], chartConfig.valueFormatter.afterDot)));
     series.push({
@@ -221,6 +223,7 @@ export async function useNormalChart(chartConfig: normalChartConfigType): Promis
       yAxisIndex: quotaConfig.setting.yAxisIndex,
     });
   });
+  const color = await useColor({ chartConfig });
   const options: EChartsOption = {
     title: titleConfig(chartConfig),
     xAxis: {
@@ -236,6 +239,7 @@ export async function useNormalChart(chartConfig: normalChartConfigType): Promis
       Object.assign(base, y);
       return base;
     }),
+    color,
     legend,
     series,
     toolbox: toolboxConfig,

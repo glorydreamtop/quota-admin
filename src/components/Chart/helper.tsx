@@ -3,14 +3,20 @@ import { getQuotaDataParams, getQuotaDataResult } from '/@/api/quota/model';
 import { Popover, Input } from 'ant-design-vue';
 import { h, ref, render } from 'vue';
 import { chartConfigType, normalChartConfigType } from '/#/chart';
-import { EChartsOption, GraphicComponentOption, SeriesOption } from 'echarts';
-import { last, maxBy, nth, round } from 'lodash-es';
+import {
+  EChartsOption,
+  GraphicComponentOption,
+  LegendComponentOption,
+  SeriesOption,
+} from 'echarts';
+import { last, maxBy, nth, remove, round } from 'lodash-es';
 import { chartTypeEnum } from '/@/enums/chartEnum';
 import { daysAgo, formatToDate } from '/@/utils/dateUtil';
 import dayjs from 'dayjs';
 import { useI18n } from '/@/hooks/web/useI18n';
 import YAxisEdit from './src/YAxisEditor.vue';
 import { useContextMenu } from '/@/hooks/web/useContextMenu';
+import { getColorScheme } from '/@/api/color';
 
 const { t } = useI18n();
 export async function fetchQuotaData(params: getQuotaDataParams) {
@@ -348,6 +354,21 @@ export function useSortMonth({ chartConfig, quotaDataList }: baseHelperParams) {
   });
 }
 
+interface useSortYearParams {
+  series: SeriesOption[];
+  chartConfig: chartConfigType;
+  legend: LegendComponentOption;
+}
+// 年份过滤
+export function useSortYear({ chartConfig, series, legend }: useSortYearParams) {
+  const sortYear = chartConfig.timeConfig.sortYear;
+  if (!sortYear || sortYear.length === 0) {
+    return;
+  }
+  remove(series, (s) => sortYear.includes(s.name as string));
+  remove(legend.data!, (l) => sortYear.includes(l as string));
+}
+
 // 多个饼图子标题生成
 export function useMultiPie({ chartConfig }: Omit<baseHelperParams, 'quotaDataList'>) {
   const title: any[] = [
@@ -422,4 +443,20 @@ export function useNormalized({ chartConfig, quotaDataList }: baseHelperParams) 
       data[1] = round(data[1] / base, afterDot);
     });
   });
+}
+
+// 合成颜色方案
+export async function useColor({ chartConfig }: { chartConfig: chartConfigType }) {
+  const id = chartConfig.colorSchemeId;
+  const selfColors = chartConfig.selfColorScheme.split(',');
+  if (id) {
+    const { colors } = await getColorScheme({ id: id });
+    // merge一下自有颜色和方案颜色，得到最终颜色
+    return colors.split(',').map((v, idx) => {
+      const bool = selfColors[idx] === undefined || !selfColors[idx].includes('#');
+      return bool ? v : selfColors[idx];
+    });
+  } else {
+    return selfColors;
+  }
 }

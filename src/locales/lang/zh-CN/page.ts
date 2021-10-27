@@ -94,6 +94,7 @@ export default {
           day: '日',
           last: '期',
           month: '月',
+          year: '年',
         },
         sortMonth: '按月过滤',
         startMonth: '季节性序列起点选为',
