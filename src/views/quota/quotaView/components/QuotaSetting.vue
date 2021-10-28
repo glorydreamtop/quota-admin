@@ -43,7 +43,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { SelectedQuotaItem, useQuotaListContext } from './hooks';
+  import { SelectedQuotaItem, useSelectedQuotaListContext } from './hooks';
   import { useChartConfigContext } from './hooks';
   import { BasicModal, useModalInner } from '/@/components/Modal';
   import { useI18n } from '/@/hooks/web/useI18n';
@@ -60,7 +60,7 @@
   const { t } = useI18n();
   const { getThemeColor } = useRootSetting();
   const chartConfig = useChartConfigContext();
-  const quotaList = useQuotaListContext();
+  const quotaList = useSelectedQuotaListContext();
   const quotaIndex = ref(0);
   const defaultSetting = {
     name: '',
@@ -125,7 +125,12 @@
     closeModal();
   }
   function ok() {
-    Object.assign(quotaList.value[quotaIndex.value], quotaSetting);
+    if (quotaIndex.value === quotaList.value.length) {
+      quotaList.value.push(cloneDeep(quotaSetting) as SelectedQuotaItem);
+    } else {
+      Object.assign(quotaList.value[quotaIndex.value], quotaSetting);
+    }
+
     close();
   }
 </script>

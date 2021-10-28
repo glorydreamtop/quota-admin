@@ -1,27 +1,17 @@
 import { InjectionKey, ref, Ref, watchEffect } from 'vue';
 import { createContext, useContext } from '/@/hooks/core/useContext';
-import type { TemplateDOM, TemplateItem } from '/#/template';
+import type { TemplateDOM } from '/#/template';
 import { remove } from 'lodash-es';
 import { useMagicKeys } from '@vueuse/core';
 
-const templateKey: InjectionKey<Ref<Array<TemplateItem & { uniqId: string }>>> = Symbol();
+const templateKey: InjectionKey<Ref<TemplateDOM[]>> = Symbol();
 
 export function createTemplateListContext(context: Ref<TemplateDOM[]>) {
-  return createContext<Ref<Array<TemplateDOM>>>(context, templateKey, { native: true });
+  return createContext<Ref<TemplateDOM[]>>(context, templateKey, { native: true });
 }
 
 export function useTemplateListContext() {
   return useContext<Ref<Array<TemplateDOM>>>(templateKey);
-}
-
-const pageConfigKey: InjectionKey<any> = Symbol();
-
-export function createPageConfigContext(context: any) {
-  return createContext<any>(context, pageConfigKey, { native: true });
-}
-
-export function usePageConfigContext() {
-  return useContext<any>(pageConfigKey);
 }
 
 type useMultiSelectRes = [

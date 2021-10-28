@@ -1,13 +1,15 @@
 <template>
-  <div class="w-full overflow-y-scroll flex flex-wrap no-scrollbar" ref="viewBox">
+  <div class="w-full overflow-y-scroll flex flex-wrap no-scrollbar p-2 content-start" ref="viewBox">
     <div
       @click="selectTemplate(temp, $event)"
       v-for="temp in templateList"
       :key="temp.uniqId"
+      :data-uniqid="temp.uniqId"
       :class="[
-        'w-1/2 h-500px border border-gray-100 resize overflow-hidden sortable relative',
+        'border border-gray-100 resize overflow-hidden sortable relative',
         selectTemplateList.includes(temp.uniqId) ? 'selected' : '',
       ]"
+      :style="{ width: temp.pageConfig.width, height: temp.pageConfig.height }"
     >
       <Popover placement="rightTop">
         <template #title>
@@ -24,14 +26,9 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, unref, watchEffect, watch } from 'vue';
+  import { ref, unref, watch, watchEffect } from 'vue';
   import { Popover } from 'ant-design-vue';
-  import {
-    useMultiSelect,
-    useTemplateListContext,
-    TemplateListMapType,
-    usePageConfigContext,
-  } from '../hooks';
+  import { useMultiSelect, useTemplateListContext, TemplateListMapType } from '../hooks';
   import type { TemplateDOM } from '/#/template';
   import { BasicChart } from '/@/components/Chart';
   import Icon from '/@/components/Icon';
@@ -39,13 +36,24 @@
   import { useSortable } from '/@/hooks/web/useSortable';
   import { isNullAndUnDef } from '/@/utils/is';
   import { useI18n } from '/@/hooks/web/useI18n';
+  import { useMutationObserver, useResizeObserver } from '@vueuse/core';
+  import { last } from 'lodash';
+
+  const emit = defineEmits<{
+    (event: 'selectTemplate', uniqIds: string[]): void;
+  }>();
+
   const { t } = useI18n();
   const templateList = useTemplateListContext();
   const templateMap: TemplateListMapType = {};
   const compTypeMap = [BasicChart, BasicChart, BasicChart];
   const viewBox = ref<HTMLDivElement>();
-  const pageConfig = usePageConfigContext();
   watch(templateList, (v) => {
+    console.log(v);
+
+    for (let k in templateMap) {
+      Reflect.deleteProperty(templateMap, k);
+    }
     v.forEach((t) => {
       templateMap[t.uniqId] = t;
     });
@@ -55,21 +63,7 @@
     insertSelectKey(temp, nativeEvent);
   }
   watchEffect(() => {
-    selectTemplateList.value.forEach((uniqId) => {
-      const temp = templateMap[uniqId];
-      let showLastest = true;
-      let sameTimeRange = true;
-      if (temp.version < 3) {
-        if (showLastest) {
-          showLastest = temp.config.showLastest;
-        }
-        if (sameTimeRange) {
-          sameTimeRange =
-            temp.config.timeConfig.startDate === pageConfig.date[0] &&
-            temp.config.timeConfig.startDate === pageConfig.date[1];
-        }
-      }
-    });
+    emit('selectTemplate', selectTemplateList.value);
   });
   onMountedOrActivated(() => {
     const boxdom: HTMLDivElement = unref(viewBox.value)!;
@@ -94,6 +88,32 @@
       },
     });
     initSortable();
+    // 允许每个子元素缩放大小，并收集尺寸信息
+    useMutationObserver(
+      boxdom,
+      (mutation) => {
+        last(mutation[0].addedNodes as HTMLElement[])!.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center',
+        });
+        mutation[0].addedNodes.forEach((node) => {
+          useResizeObserver(node, (e) => {
+            const target = e[0].target as HTMLElement;
+            const dom = templateList.value.find(
+              (temp) => temp.uniqId === target.dataset['uniqid']
+            )!;
+            dom.pageConfig.width = `${target.style.width}px`;
+            dom.pageConfig.height = `${target.style.height}px`;
+          });
+        });
+      },
+      {
+        childList: true,
+      }
+    );
+    // useResizeObserver(boxdom.getElementsByClassName('sortable')[0], (e) => {
+    //   console.log(e);
+    // });
   });
 </script>
 

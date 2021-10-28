@@ -16,4 +16,8 @@ export interface TemplateDOM {
   categoryId: number;
   id: number;
   uniqId: string;
+  pageConfig: {
+    width: string;
+    height: string;
+  };
 }
