@@ -14,6 +14,16 @@ export function useTemplateListContext() {
   return useContext<Ref<Array<TemplateDOM>>>(templateKey);
 }
 
+const selectTemplateKey: InjectionKey<Ref<TemplateDOM[]>> = Symbol();
+
+export function createSelectTemplateListContext(context: Ref<TemplateDOM[]>) {
+  return createContext<Ref<TemplateDOM[]>>(context, selectTemplateKey, { native: true });
+}
+
+export function useSelectTemplateListContext() {
+  return useContext<Ref<TemplateDOM[]>>(selectTemplateKey);
+}
+
 type useMultiSelectRes = [
   Ref<string[]>,
   { insertSelectKey: (temp: TemplateDOM, nativeEvent: PointerEvent) => void }

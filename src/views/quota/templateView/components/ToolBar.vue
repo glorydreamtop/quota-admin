@@ -46,7 +46,9 @@
         />
       </template>
     </Popover>
-    <Button size="small">{{ t('templateView.toolbar.insertText.btn') }}</Button>
+    <Button size="small" @click="dispatch('insertText')">{{
+      t('templateView.toolbar.insertText.btn')
+    }}</Button>
     <Button size="small">{{ t('templateView.toolbar.insertImg.btn') }}</Button>
     <Button size="small">{{ t('templateView.toolbar.removeNode.btn') }}</Button>
   </div>
@@ -55,15 +57,18 @@
 <script lang="ts" setup>
   import { DatePicker, Button, Switch, Input, Tooltip, Popover } from 'ant-design-vue';
   import { reactive } from 'vue';
+  import { useSelectTemplateListContext } from '../hooks';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { yearsAgo, formatToDate } from '/@/utils/dateUtil';
 
   const emit = defineEmits<{
     (event: 'update', param: { name: string; param: any }): void;
+    (event: 'dispatch', param: { name: string; param: any }): void;
   }>();
 
   const RangePicker = DatePicker.RangePicker;
   const { t } = useI18n();
+  const selectedTemplateList = useSelectTemplateListContext();
   const pageConfig = reactive({
     date: [yearsAgo(5), formatToDate()],
     sameTimeRange: false,
@@ -75,7 +80,47 @@
   });
   function updateConfig(configName: string, visible: boolean) {
     if (visible) return;
-    emit('update', { name: configName, param: pageConfig[configName] });
+    const param = pageConfig[configName];
+    switch (configName) {
+      case 'baseSize':
+        let { width, height } = param;
+        if (/\%/i.test(width)) {
+          width = width;
+        } else if (parseInt(width).toString() === width) {
+          width = `${width}px`;
+        } else {
+          width = '33.3%';
+        }
+        if (parseInt(height).toString() === height) {
+          height = `${height}px`;
+        } else {
+          height = '300px';
+        }
+        selectedTemplateList.value.forEach((temp) => {
+          temp.pageConfig.width = width;
+          temp.pageConfig.height = height;
+        });
+        break;
+      case 'date':
+        selectedTemplateList.value.forEach((temp) => {
+          if (temp.version < 3) {
+            [temp.config.timeConfig.startDate, temp.config.timeConfig.endDate] = [...param];
+          }
+        });
+        break;
+      case 'showLastest':
+        selectedTemplateList.value.forEach((temp) => {
+          if (temp.version < 3) {
+            temp.config.showLastest = param;
+          }
+        });
+        break;
+      default:
+        break;
+    }
+  }
+  function dispatch(eventName: string) {
+    emit('update', { name: eventName, param: '' });
   }
 </script>
 

@@ -40,7 +40,7 @@
   import { last } from 'lodash';
 
   const emit = defineEmits<{
-    (event: 'selectTemplate', uniqIds: string[]): void;
+    (event: 'selectTemplate', arr: TemplateDOM[]): void;
   }>();
 
   const { t } = useI18n();
@@ -49,8 +49,6 @@
   const compTypeMap = [BasicChart, BasicChart, BasicChart];
   const viewBox = ref<HTMLDivElement>();
   watch(templateList, (v) => {
-    console.log(v);
-
     for (let k in templateMap) {
       Reflect.deleteProperty(templateMap, k);
     }
@@ -63,7 +61,10 @@
     insertSelectKey(temp, nativeEvent);
   }
   watchEffect(() => {
-    emit('selectTemplate', selectTemplateList.value);
+    emit(
+      'selectTemplate',
+      selectTemplateList.value.map((uniqId) => templateMap[uniqId])
+    );
   });
   onMountedOrActivated(() => {
     const boxdom: HTMLDivElement = unref(viewBox.value)!;
