@@ -143,8 +143,8 @@
   const rememberMe = ref(false);
 
   const formData = reactive({
-    account: '超管2号',
-    password: 'admin',
+    account: '',
+    password: '',
     captcha: '',
   });
 
