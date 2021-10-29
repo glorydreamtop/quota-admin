@@ -49,26 +49,44 @@
     <Button size="small" @click="dispatch('insertText')">{{
       t('templateView.toolbar.insertText.btn')
     }}</Button>
-    <Button size="small">{{ t('templateView.toolbar.insertImg.btn') }}</Button>
-    <Button size="small">{{ t('templateView.toolbar.removeNode.btn') }}</Button>
+    <Button size="small" disabled>{{ t('templateView.toolbar.insertImg.btn') }}</Button>
+    <Button size="small" @click="dispatch('remove')">{{
+      t('templateView.toolbar.removeNode.btn')
+    }}</Button>
+    <div class="ml-auto flex gap-1 items-center">
+      <Button size="small" type="primary" :loading="saveImgLoading" @click="dispatch('saveImg')">{{
+        t('templateView.toolbar.save.img')
+      }}</Button>
+      <Button size="small" disabled @click="dispatch('savePdf')">{{
+        t('templateView.toolbar.save.pdf')
+      }}</Button>
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
   import { DatePicker, Button, Switch, Input, Tooltip, Popover } from 'ant-design-vue';
-  import { reactive } from 'vue';
-  import { useSelectTemplateListContext } from '../hooks';
+  import { cloneDeep, remove } from 'lodash-es';
+  import { reactive, ref } from 'vue';
+  import { useUniqueField } from '../../quotaTable/components/helper';
+  import {
+    textTemplate,
+    useSelectTemplateListContext,
+    useTemplateListContext,
+    useUniqIdContext,
+  } from '../hooks';
+  import { chartConfigType } from '/#/chart';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { yearsAgo, formatToDate } from '/@/utils/dateUtil';
-
-  const emit = defineEmits<{
-    (event: 'update', param: { name: string; param: any }): void;
-    (event: 'dispatch', param: { name: string; param: any }): void;
-  }>();
+  import { dom2imgFile, fileType } from '/@/utils/domUtils';
+  import { downloadByData } from '/@/utils/file/download';
 
   const RangePicker = DatePicker.RangePicker;
   const { t } = useI18n();
   const selectedTemplateList = useSelectTemplateListContext();
+  const templateList = useTemplateListContext();
+  const usedUniqId = useUniqIdContext();
+  const { getUniqueField } = useUniqueField(usedUniqId.value);
   const pageConfig = reactive({
     date: [yearsAgo(5), formatToDate()],
     sameTimeRange: false,
@@ -78,6 +96,7 @@
       height: '300',
     },
   });
+  const saveImgLoading = ref(false);
   function updateConfig(configName: string, visible: boolean) {
     if (visible) return;
     const param = pageConfig[configName];
@@ -103,15 +122,18 @@
         break;
       case 'date':
         selectedTemplateList.value.forEach((temp) => {
-          if (temp.version < 3) {
-            [temp.config.timeConfig.startDate, temp.config.timeConfig.endDate] = [...param];
+          if (temp.version! < 3) {
+            [
+              (temp.config as chartConfigType).timeConfig.startDate,
+              (temp.config as chartConfigType).timeConfig.endDate,
+            ] = [...param];
           }
         });
         break;
       case 'showLastest':
         selectedTemplateList.value.forEach((temp) => {
-          if (temp.version < 3) {
-            temp.config.showLastest = param;
+          if (temp.version! < 3) {
+            (temp.config as chartConfigType).showLastest = param;
           }
         });
         break;
@@ -119,8 +141,40 @@
         break;
     }
   }
-  function dispatch(eventName: string) {
-    emit('update', { name: eventName, param: '' });
+  async function dispatch(eventName: string) {
+    switch (eventName) {
+      case 'insertText':
+        const text = cloneDeep(textTemplate);
+        text.uniqId = getUniqueField();
+        if (selectedTemplateList.value && selectedTemplateList.value.length === 1) {
+          templateList.value.splice(
+            templateList.value.findIndex((t) => t.uniqId === selectedTemplateList.value[0].uniqId) +
+              1,
+            0,
+            text
+          );
+        } else {
+          templateList.value.push(text);
+        }
+        break;
+      case 'remove':
+        remove(templateList.value, (t) => {
+          return selectedTemplateList.value.some((temp) => t.uniqId === temp.uniqId);
+        });
+        break;
+      case 'saveImg':
+        saveImgLoading.value = true;
+        const blobObj = await dom2imgFile({
+          dom: document.getElementById('view-box')!,
+          type: fileType.BLOB,
+          scale: 4,
+        });
+        downloadByData(blobObj, 'report.jpg');
+        saveImgLoading.value = false;
+        break;
+      default:
+        break;
+    }
   }
 </script>
 

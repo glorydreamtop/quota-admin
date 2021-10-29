@@ -17,6 +17,10 @@ export default {
     removeNode: {
       btn: '移除模块',
     },
+    save: {
+      img: '保存长图',
+      pdf: '保存PDF',
+    },
   },
   view: {
     tempInfoTitle: '模板信息',

@@ -8,7 +8,7 @@
       v-show="editorRef"
       :disabled="disabled"
     />
-    <textarea :id="tinymceId" ref="elRef" :style="{ visibility: 'hidden' }"></textarea>
+    <div :id="tinymceId" ref="elRef" :style="{ visibility: 'hidden' }"></div>
   </div>
 </template>
 
@@ -46,6 +46,7 @@
   import 'tinymce/plugins/visualblocks';
   import 'tinymce/plugins/visualchars';
   import 'tinymce/plugins/wordcount';
+  import 'tinymce/plugins/quickbars';
 
   import {
     defineComponent,

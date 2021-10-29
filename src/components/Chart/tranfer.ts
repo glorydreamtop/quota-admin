@@ -134,13 +134,16 @@ export async function useSeasonalChart(
         formatter: '{MM}/{dd}',
       },
     },
-    yAxis: [
-      {
+    yAxis: chartConfig.yAxis?.map((y) => {
+      const base: YAXisComponentOption = {
         type: 'value',
         scale: true,
+        show: true,
         triggerEvent: true,
-      },
-    ],
+      };
+      Object.assign(base, y);
+      return base;
+    }),
     legend,
     color,
     series,

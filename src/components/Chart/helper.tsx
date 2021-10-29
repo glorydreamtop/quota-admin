@@ -89,6 +89,9 @@ interface yAxixIndexEditParams {
 export function useYAxisIndexEdit({ chartConfig, onOk }: yAxixIndexEditParams) {
   return function (dom: HTMLElement, { yAxisIndex }: any) {
     const idx = yAxisIndex;
+    console.log(idx);
+    console.log(chartConfig);
+
     function YAxisEditComponent() {
       const editPopover = h(YAxisEdit, {
         chartConfig,

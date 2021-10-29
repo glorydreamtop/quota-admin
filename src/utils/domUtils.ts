@@ -209,7 +209,7 @@ export async function dom2imgFile({
   const canvas = document.createElement('canvas');
   canvas.width = width * scale;
   canvas.height = height * scale;
-  // canvas.getContext('2d')!.scale(scale, scale);
+  canvas.getContext('2d')!.scale(scale, scale);
   const canvasRes: HTMLCanvasElement = await html2canvas(dom, {
     canvas,
     width,

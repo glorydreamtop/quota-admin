@@ -19,7 +19,7 @@
           <div class="w-3em text-justify mr-2">
             {{ t('page.quotaView.advance.axisSetting.yAxis.index') }}
           </div>
-          <span>{{ idx ? idx + 1 : '' }}</span>
+          <span>{{ idx > -1 ? idx + 1 : '' }}</span>
         </div>
         <div>
           <div class="min-w-3em text-justify mr-2">{{

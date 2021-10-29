@@ -41,6 +41,7 @@
           </span>
           <span class="label">
             <Switch
+              disabled
               v-model:checked="chartConfig.valueFormatter.scientificNotation"
               :checked-children="t('page.quotaView.advance.use')"
               :un-checked-children="t('page.quotaView.advance.stop')"

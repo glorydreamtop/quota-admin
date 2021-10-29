@@ -1,26 +1,28 @@
 <template>
-  <div class="w-full overflow-y-scroll flex flex-wrap no-scrollbar p-2 content-start" ref="viewBox">
-    <div
-      @click="selectTemplate(temp, $event)"
-      v-for="temp in templateList"
-      :key="temp.uniqId"
-      :data-uniqid="temp.uniqId"
-      :class="[
-        'border border-gray-100 resize overflow-hidden sortable relative',
-        selectTemplateList.includes(temp.uniqId) ? 'selected' : '',
-      ]"
-      :style="{ width: temp.pageConfig.width, height: temp.pageConfig.height }"
-    >
-      <Popover placement="rightTop">
-        <template #title>
-          <span>{{ t('templateView.view.tempInfoTitle') }}</span>
-        </template>
-        <Icon
-          icon="akar-icons:drag-horizontal"
-          class="drag-handler cursor-move pl-1 pt-1 !text-primary"
-        />
-      </Popover>
-      <component :is="compTypeMap[temp.version]" :config="temp.config" class="w-full" />
+  <div class="w-full overflow-y-scroll no-scrollbar p-2">
+    <div class="w-full min-h-full flex flex-wrap content-start" id="view-box" ref="viewBox">
+      <div
+        @click="selectTemplate(temp, $event)"
+        v-for="temp in templateList"
+        :key="temp.uniqId"
+        :data-uniqid="temp.uniqId"
+        :class="[
+          'border border-gray-100 resize overflow-hidden sortable relative',
+          selectTemplateList.includes(temp.uniqId) ? 'selected' : '',
+        ]"
+        :style="{ width: temp.pageConfig.width, height: temp.pageConfig.height }"
+      >
+        <Popover placement="rightTop">
+          <template #title>
+            <span>{{ t('templateView.view.tempInfoTitle') }}</span>
+          </template>
+          <Icon
+            icon="akar-icons:drag-horizontal"
+            class="drag-handler cursor-move pl-1 pt-1 !text-primary"
+          />
+        </Popover>
+        <component :is="compTypeMap[temp.type]" :config="temp.config" class="w-full" />
+      </div>
     </div>
   </div>
 </template>
@@ -31,6 +33,7 @@
   import { useMultiSelect, useTemplateListContext, TemplateListMapType } from '../hooks';
   import type { TemplateDOM } from '/#/template';
   import { BasicChart } from '/@/components/Chart';
+  import BasicText from './Text.vue';
   import Icon from '/@/components/Icon';
   import { onMountedOrActivated } from '/@/hooks/core/onMountedOrActivated';
   import { useSortable } from '/@/hooks/web/useSortable';
@@ -46,7 +49,10 @@
   const { t } = useI18n();
   const templateList = useTemplateListContext();
   const templateMap: TemplateListMapType = {};
-  const compTypeMap = [BasicChart, BasicChart, BasicChart];
+  const compTypeMap = {
+    Chart: BasicChart,
+    Text: BasicText,
+  };
   const viewBox = ref<HTMLDivElement>();
   watch(
     templateList,
@@ -99,10 +105,12 @@
     useMutationObserver(
       boxdom,
       (mutation) => {
+        if (mutation[0].addedNodes.length === 0) return;
         last(mutation[0].addedNodes as HTMLElement[])!.scrollIntoView({
           behavior: 'smooth',
           block: 'center',
         });
+
         mutation[0].addedNodes.forEach((node) => {
           useResizeObserver(node, (e) => {
             const target = e[0].target as HTMLElement;

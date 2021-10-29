@@ -1,7 +1,10 @@
 <template>
   <div class="h-full overflow-hidden pt-4 relative" v-loading="loading">
     <div ref="chartElRef" class="w-full h-full"></div>
-    <img v-if="noChart" src="../../../assets/svg/no-chart.svg" class="no-chart" />
+    <div v-if="noChart" class="no-chart flex flex-col items-center">
+      <img src="../../../assets/svg/no-chart.svg" />
+      <span class="whitespace-nowrap mt-2 text-gray-400">{{ config.title }}</span>
+    </div>
   </div>
 </template>
 

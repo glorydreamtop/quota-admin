@@ -11,7 +11,7 @@ export function createTemplateListContext(context: Ref<TemplateDOM[]>) {
 }
 
 export function useTemplateListContext() {
-  return useContext<Ref<Array<TemplateDOM>>>(templateKey);
+  return useContext<Ref<TemplateDOM[]>>(templateKey);
 }
 
 const selectTemplateKey: InjectionKey<Ref<TemplateDOM[]>> = Symbol();
@@ -22,6 +22,16 @@ export function createSelectTemplateListContext(context: Ref<TemplateDOM[]>) {
 
 export function useSelectTemplateListContext() {
   return useContext<Ref<TemplateDOM[]>>(selectTemplateKey);
+}
+
+const uniqIdKey: InjectionKey<Ref<string[]>> = Symbol();
+
+export function createUniqIdContext(context: Ref<string[]>) {
+  return createContext<Ref<string[]>>(context, uniqIdKey, { native: true });
+}
+
+export function useUniqIdContext() {
+  return useContext<Ref<string[]>>(uniqIdKey);
 }
 
 type useMultiSelectRes = [
@@ -92,3 +102,16 @@ export function useMultiSelect(templateList: Ref<TemplateDOM[]>): useMultiSelect
 export interface TemplateListMapType {
   [key: string]: TemplateDOM;
 }
+
+export const textTemplate: TemplateDOM = {
+  uniqId: 'z',
+  type: 'Text',
+  pageConfig: {
+    width: '33.3%',
+    height: '400px',
+  },
+  config: {
+    text: '这里你可以随意书写，并为其添加丰富的样式',
+    html: '<span style="font-weight="600"">这里你可以随意书写，并为其添加丰富的<em>样式</em></span>',
+  },
+};

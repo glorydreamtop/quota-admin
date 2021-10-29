@@ -70,8 +70,8 @@ type useUniqueFieldMethods = { getUniqueField: () => string };
 /**
  * @description:生成唯一字段
  */
-export function useUniqueField(): useUniqueFieldMethods {
-  const usedStr: string[] = [];
+export function useUniqueField(_usedStr?: string[]): useUniqueFieldMethods {
+  const usedStr: string[] = _usedStr || [];
   // 可用字段
   const fieldStr = 'abcdefghijklmnopqrstuvwxyz';
   function getUniqueField(): string {

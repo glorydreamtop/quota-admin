@@ -11,6 +11,7 @@ export default {
   removeText: '移除',
   inputText: '请输入',
   chooseText: '请选择',
+  editText: '编辑',
 
   redo: '刷新',
   back: '返回',
