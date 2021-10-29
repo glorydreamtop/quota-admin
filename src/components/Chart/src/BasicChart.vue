@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full overflow-hidden pt-4 relative">
+  <div class="h-full overflow-hidden pt-4 relative" v-loading="loading">
     <div ref="chartElRef" class="w-full h-full"></div>
     <img v-if="noChart" src="../../../assets/svg/no-chart.svg" class="no-chart" />
   </div>
@@ -54,18 +54,21 @@
     [chartTypeEnum.pie]: usePieChart,
     [chartTypeEnum.quantileRadar]: useQuantileRadarChart,
   };
+  const loading = ref(false);
   watch(
     config,
     async (v) => {
-      console.log(!Reflect.has(v, 'quotaList'));
       if (!Reflect.has(v, 'quotaList') || v.quotaList?.length === 0) return;
       try {
+        loading.value = true;
         const options = await chartTypeHooks[v.type](v);
         setOptions(options);
         noChart.value = false;
       } catch (error) {
         noChart.value = true;
         createMessage.warn(t('common.renderError'));
+      } finally {
+        loading.value = false;
       }
     },
     { deep: true, immediate: true }

@@ -293,6 +293,7 @@ export async function useBarChart(chartConfig: barChartConfigType) {
     ];
     (dataset.source as any[]).push(source);
   });
+  const color = await useColor({ chartConfig });
   const options: EChartsOption = {
     title: titleConfig(chartConfig),
     xAxis: {
@@ -312,6 +313,7 @@ export async function useBarChart(chartConfig: barChartConfigType) {
       return base;
     }),
     dataset,
+    color,
     series,
     legend: {
       top: 'bottom',
@@ -384,10 +386,12 @@ export async function useRadarChart(chartConfig: radarChartConfigType) {
       (series[0].data as any[])[index].value.push(data[1]);
     }
   }
+  const color = await useColor({ chartConfig });
   const options: EChartsOption = {
     title: titleConfig(chartConfig),
     radar,
     series,
+    color,
     legend: {
       top: 'bottom',
       icon: 'roundRect',
@@ -478,6 +482,7 @@ export async function useStructuralChart(chartConfig: structuralChartConfigType)
     ];
     (dataset.source as any[]).push(source);
   });
+  const color = await useColor({ chartConfig });
   const options: EChartsOption = {
     title: titleConfig(chartConfig),
     xAxis: {
@@ -497,6 +502,7 @@ export async function useStructuralChart(chartConfig: structuralChartConfigType)
       return base;
     }),
     dataset,
+    color,
     series,
     legend: {
       top: 'bottom',
@@ -563,9 +569,11 @@ export async function usePieChart(chartConfig: pieChartConfigType) {
     ];
     (dataset.source as any[]).push(source);
   });
+  const color = await useColor({ chartConfig });
   const options: EChartsOption = {
     title: useMultiPie({ chartConfig }).title,
     dataset,
+    color,
     series,
     legend: {
       top: 'bottom',
@@ -666,9 +674,11 @@ export async function useQuantileRadarChart(chartConfig: quantileRadarChartConfi
       min: minVal[index],
     });
   }
+  const color = await useColor({ chartConfig });
   const options: EChartsOption = {
     title: titleConfig(chartConfig),
     radar,
+    color,
     series,
     legend: {
       top: 'bottom',

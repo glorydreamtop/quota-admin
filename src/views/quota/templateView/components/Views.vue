@@ -48,14 +48,20 @@
   const templateMap: TemplateListMapType = {};
   const compTypeMap = [BasicChart, BasicChart, BasicChart];
   const viewBox = ref<HTMLDivElement>();
-  watch(templateList, (v) => {
-    for (let k in templateMap) {
-      Reflect.deleteProperty(templateMap, k);
+  watch(
+    templateList,
+    (v) => {
+      for (let k in templateMap) {
+        Reflect.deleteProperty(templateMap, k);
+      }
+      v.forEach((t) => {
+        templateMap[t.uniqId] = t;
+      });
+    },
+    {
+      deep: true,
     }
-    v.forEach((t) => {
-      templateMap[t.uniqId] = t;
-    });
-  });
+  );
   const [selectTemplateList, { insertSelectKey }] = useMultiSelect(templateList);
   function selectTemplate(temp: TemplateDOM, nativeEvent: PointerEvent) {
     insertSelectKey(temp, nativeEvent);

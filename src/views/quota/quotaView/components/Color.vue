@@ -1,7 +1,12 @@
 <template>
   <div>
-    <Select class="min-w-26" size="small" label-in-value v-model:value="colorScheme">
-      <SelectOption v-for="item in colorSchemeList" :key="item.id" :value="item.value">
+    <Select class="min-w-26" size="small" optionLabelProp="label" v-model:value="colorScheme.id">
+      <SelectOption
+        v-for="item in colorSchemeList"
+        :key="item.id"
+        :value="item.id"
+        :label="item.label"
+      >
         <Popover placement="right">
           <template #content>
             <div class="flex color-popover">
@@ -21,7 +26,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref } from 'vue';
+  import { ref, watch } from 'vue';
   import { Select, Popover } from 'ant-design-vue';
   import { useChartConfigContext } from './hooks';
   import { getAllColorScheme } from '/@/api/color';
@@ -51,7 +56,16 @@
     });
     colorScheme.value = cloneDeep(colorSchemeList.value[0]);
   }
-
+  watch(
+    colorScheme,
+    (v) => {
+      chartConfig.colorSchemeId = v.id;
+    },
+    {
+      deep: true,
+      immediate: true,
+    }
+  );
   getColorSchemeList();
 </script>
 

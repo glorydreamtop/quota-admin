@@ -327,8 +327,6 @@
     const endYear = dayjs(chartConfig.timeConfig.endDate).year();
     yearList.value = [];
     const startMonth = chartConfig.timeConfig.startMonth;
-    console.log(startMonth);
-
     for (let i = startYear; i <= endYear + 1; i++) {
       yearList.value.push(startMonth !== 1 ? `${i - 1}-${i}` : `${i}`);
     }

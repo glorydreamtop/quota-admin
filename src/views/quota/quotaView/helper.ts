@@ -31,7 +31,7 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
         startMonth: 1,
         sortYear: [],
       },
-      colorSchemeId: 0,
+
       selfColorScheme: '',
       type: chartTypeEnum.normal,
       showLastest: true,
@@ -63,7 +63,7 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
         startMonth: 1,
         sortYear: [],
       },
-      colorSchemeId: 0,
+
       selfColorScheme: '',
       type: chartTypeEnum.seasonal,
       showLastest: true,
@@ -95,7 +95,7 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
         pastValue: 3,
         startMonth: 1,
       },
-      colorSchemeId: 0,
+
       selfColorScheme: '',
       type: chartTypeEnum.bar,
       showLastest: true,
@@ -126,7 +126,7 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
         pastUnit: quotaDataPastUnitTypeEnum.last,
         pastValue: 3,
       },
-      colorSchemeId: 0,
+
       selfColorScheme: '',
       type: chartTypeEnum.normalRadar,
       showLastest: true,
@@ -146,7 +146,7 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
         endDate: today(),
         type: timeConfigEnum.default,
       },
-      colorSchemeId: 0,
+
       selfColorScheme: '',
       type: chartTypeEnum.quantileRadar,
       showLastest: false,
@@ -169,7 +169,7 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
         pastUnit: quotaDataPastUnitTypeEnum.last,
         pastValue: 3,
       },
-      colorSchemeId: 0,
+
       selfColorScheme: '',
       type: chartTypeEnum.structural,
       showLastest: true,
@@ -202,7 +202,7 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
         pastUnit: quotaDataPastUnitTypeEnum.last,
         pastValue: 1,
       },
-      colorSchemeId: 0,
+
       selfColorScheme: '',
       type: chartTypeEnum.pie,
       showLastest: true,

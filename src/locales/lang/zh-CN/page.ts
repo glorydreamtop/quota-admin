@@ -8,7 +8,7 @@ export default {
       chartTypeSelectPlaceholer: '图表类型',
       chartTypeList: {
         // 单指标季节性序列
-        seasonal: '季节性',
+        seasonal: '单指标季节性',
         // 单指标季节性农历序列
         seasonalLunar: '季节性农历',
         // 多指标定基序列
