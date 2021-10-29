@@ -268,14 +268,14 @@
     }
     const commonActions: ContextMenuItem[] = [
       {
-        label: t('quota.actions.copyID'),
+        label: t('template.actions.copyID'),
         icon: '',
         handler: () => {
           copy(dataRef.id.toString());
         },
       },
       {
-        label: t('quota.actions.copyName'),
+        label: t('template.actions.copyName'),
         icon: '',
         handler: () => copy(dataRef.name),
       },
@@ -287,19 +287,16 @@
       return [
         ...commonActions,
         {
-          label: t('quota.actions.multiSelectQuota'),
+          label: t('template.actions.multiSelectQuota'),
           icon: '',
           handler: () => {
             console.log(highLightList);
-            highLightList.forEach((node) => {
-              emit('selectNode', node as TemplateItem);
+            highLightList.forEach((node, index) => {
+              if (index > 0) {
+                emit('selectNode', node as TemplateItem);
+              }
             });
           },
-        },
-        {
-          label: t('quota.actions.multiUpdateQuota'),
-          icon: '',
-          handler: () => {},
         },
       ];
     }

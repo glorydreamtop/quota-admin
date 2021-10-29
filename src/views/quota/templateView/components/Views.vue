@@ -105,20 +105,21 @@
     useMutationObserver(
       boxdom,
       (mutation) => {
-        if (mutation[0].addedNodes.length === 0) return;
-        last(mutation[0].addedNodes as HTMLElement[])!.scrollIntoView({
-          behavior: 'smooth',
-          block: 'center',
-        });
-
-        mutation[0].addedNodes.forEach((node) => {
-          useResizeObserver(node, (e) => {
-            const target = e[0].target as HTMLElement;
-            const dom = templateList.value.find(
-              (temp) => temp.uniqId === target.dataset['uniqid']
-            )!;
-            dom.pageConfig.width = `${target.style.width}px`;
-            dom.pageConfig.height = `${target.style.height}px`;
+        mutation.forEach((m) => {
+          if (m.addedNodes.length === 0) return;
+          last(m.addedNodes as HTMLElement[])!.scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+          });
+          m.addedNodes.forEach((node) => {
+            useResizeObserver(node, (e) => {
+              const target = e[0].target as HTMLElement;
+              const dom = templateList.value.find(
+                (temp) => temp.uniqId === target.dataset['uniqid']
+              )!;
+              dom.pageConfig.width = `${target.style.width}px`;
+              dom.pageConfig.height = `${target.style.height}px`;
+            });
           });
         });
       },

@@ -183,8 +183,6 @@
         });
       }
     } catch (error) {
-      console.log(error);
-
       createErrorModal({
         title: t('sys.api.errorTip'),
         content: error.message || t('sys.api.networkExceptionMsg'),
