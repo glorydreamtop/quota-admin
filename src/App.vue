@@ -21,9 +21,10 @@
 <style>
   @font-face {
     font-family: '思源黑体';
-    src: url('./assets/cn2.otf');
 
-    /* src:url('https://imgs.zixinco.com/pingfang.otf') */
+    /* src: url('./assets/cn2.otf'); */
+
+    src: url('http://zqsws.oss-cn-shanghai.aliyuncs.com/20211030/256d7a0e059f9.otf');
   }
 
   body {

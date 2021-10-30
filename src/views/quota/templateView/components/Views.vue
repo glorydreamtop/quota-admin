@@ -40,7 +40,7 @@
   import { isNullAndUnDef } from '/@/utils/is';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useMutationObserver, useResizeObserver } from '@vueuse/core';
-  import { last } from 'lodash';
+  import { last } from 'lodash-es';
 
   const emit = defineEmits<{
     (event: 'selectTemplate', arr: TemplateDOM[]): void;

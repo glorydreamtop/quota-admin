@@ -102,7 +102,7 @@
   import { useI18n } from '/@/hooks/web/useI18n';
   import { createTableConfigContext, useAddCol, useAddRow, useAreaSelect } from './helper';
   import type { TableConfigType } from '/#/table';
-  import { maxBy, minBy, parseInt, remove } from 'lodash';
+  import { maxBy, minBy, parseInt, remove } from 'lodash-es';
   import { useModal } from '/@/components/Modal';
   import HeaderCellSetting from './HeaderCellSetting.vue';
   import CellSetting from './CellSetting.vue';

@@ -64,7 +64,7 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       proxy: createProxy(VITE_PROXY),
     },
     build: {
-      target: 'es2015',
+      target: 'modules',
       outDir: OUTPUT_DIR,
       terserOptions: {
         compress: {
@@ -99,10 +99,10 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       // @iconify/iconify: The dependency is dynamically and virtually loaded by @purge-icons/generated, so it needs to be specified explicitly
       include: [
         '@iconify/iconify',
-        'ant-design-vue/es/locale/zh_CN',
-        'moment/dist/locale/zh-cn',
-        'ant-design-vue/es/locale/en_US',
-        'moment/dist/locale/eu',
+        // 'ant-design-vue/locale/zh_CN.js',
+        // 'moment/dist/locale/zh-cn',
+        // 'ant-design-vue/locale/en_US.js',
+        // 'moment/dist/locale/eu',
       ],
       exclude: ['vue-demi', 'consolidate'],
     },

@@ -32,7 +32,7 @@
     useLineChartContextMenu,
     useYAxisIndexEdit,
   } from '../helper';
-  import { cloneDeep } from 'lodash';
+  import { cloneDeep } from 'lodash-es';
   import { useMessage } from '/@/hooks/web/useMessage';
 
   const props = defineProps<{

@@ -16,7 +16,7 @@
   import { useChartConfigContext } from './hooks';
   import { reactive } from 'vue';
   import type { chartConfigType } from '/#/chart';
-  import { cloneDeep } from 'lodash';
+  import { cloneDeep } from 'lodash-es';
 
   const chartConfig = useChartConfigContext();
   const config = reactive({}) as chartConfigType;

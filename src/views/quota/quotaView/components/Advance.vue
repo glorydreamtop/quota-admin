@@ -233,7 +233,7 @@
   import { quotaDataPastUnitTypeEnum } from '/@/api/quota';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { chartTypeEnum, structuralOffsetUnitEnum } from '/@/enums/chartEnum';
-  import { uniq } from 'lodash';
+  import { uniq } from 'lodash-es';
   import dayjs from 'dayjs';
 
   const RadioGroup = Radio.Group;
