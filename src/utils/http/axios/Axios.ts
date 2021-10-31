@@ -5,7 +5,7 @@ import axios from 'axios';
 import qs from 'qs';
 import { AxiosCanceler } from './axiosCancel';
 import { isFunction } from '/@/utils/is';
-import { cloneDeep, omit } from 'lodash-es';
+import { cloneDeep } from 'lodash-es';
 import { ContentTypeEnum } from '/@/enums/httpEnum';
 import { RequestEnum } from '/@/enums/httpEnum';
 
@@ -128,20 +128,23 @@ export class VAxios {
         const value = params.data[key];
         if (Array.isArray(value)) {
           value.forEach((item) => {
-            formData.append(`${key}[]`, item);
+            formData.append(key, item);
           });
           return;
         }
-
         formData.append(key, params.data[key]);
       });
     }
-    formData.append(params.name || 'file', params.file, params.filename);
-    const customParams = omit(params, 'file', 'filename', 'file');
 
-    Object.keys(customParams).forEach((key) => {
-      formData.append(key, customParams[key]);
-    });
+    if (params.file) {
+      if (Array.isArray(params.file)) {
+        params.file.forEach((file) => {
+          formData.append(params.name || 'files', file, params.filename);
+        });
+      } else {
+        formData.append(params.name || 'files', params.file, params.filename);
+      }
+    }
 
     return this.axiosInstance.request<T>({
       ...config,

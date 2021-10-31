@@ -24,5 +24,13 @@ export default {
   },
   view: {
     tempInfoTitle: '模板信息',
+    img: {
+      contextMenu: {
+        fill: '拉伸填充',
+        contain: '等比缩放',
+        cover: '等比填满',
+        none: '原图尺寸',
+      },
+    },
   },
 };

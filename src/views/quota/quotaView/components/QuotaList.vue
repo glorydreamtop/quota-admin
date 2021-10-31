@@ -58,7 +58,7 @@
         @contextmenu="handleContext($event, item)"
         v-ripple
         :class="[
-          item.selected ? 'bg-card' : 'bg-gray-500',
+          item.selected ? 'bg-card-blue1' : 'bg-gray-500',
           cardUI ? 'card-theme' : 'list-theme',
           'text-xs rounded-md flex sortable quota-list-item',
         ]"
@@ -417,9 +417,5 @@
     .del-icon {
       @apply ml-8;
     }
-  }
-
-  .bg-card {
-    background: linear-gradient(135deg, #2980b9, #2c3e50);
   }
 </style>

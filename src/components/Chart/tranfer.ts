@@ -50,16 +50,16 @@ function titleConfig(chartConfig: chartConfigType): TitleComponentOption {
 }
 
 const toolboxConfig: ToolboxComponentOption = {
-  feature: {
-    saveAsImage: {
-      show: true,
-      type: 'jpg',
-    },
-    dataZoom: {
-      show: true,
-    },
-  },
-  right: '5%',
+  // feature: {
+  //   saveAsImage: {
+  //     show: true,
+  //     type: 'jpg',
+  //   },
+  //   dataZoom: {
+  //     show: true,
+  //   },
+  // },
+  // right: '5%',
 };
 
 const gridConfig: GridComponentOption = {
@@ -95,7 +95,9 @@ export async function useSeasonalChart(
     const time = data[0];
     const y = dayjs(time).year();
     const m = dayjs(time).month();
-    const v = round(data[1], chartConfig.valueFormatter.afterDot);
+    const v =
+      round(data[1], chartConfig.valueFormatter.afterDot) /
+      Math.pow(10, chartConfig.valueFormatter.scientificNotation);
     let year: number, name: string;
     // 如果变更了起始月份
     if (changeStart) {
@@ -217,7 +219,12 @@ export async function useNormalChart(chartConfig: normalChartConfigType): Promis
   quotaDataList.forEach((quota, index) => {
     const quotaConfig = chartConfig.quotaList![index];
     legend.data!.push(quota.name);
-    quota.data.forEach((item) => (item[1] = round(item[1], chartConfig.valueFormatter.afterDot)));
+    quota.data.forEach(
+      (item) =>
+        (item[1] =
+          round(item[1], chartConfig.valueFormatter.afterDot) /
+          Math.pow(10, chartConfig.valueFormatter.scientificNotation))
+    );
     series.push({
       name: quota.name,
       ...selectSeriesType(quotaConfig.setting.type),
@@ -292,7 +299,11 @@ export async function useBarChart(chartConfig: barChartConfigType) {
   quotaDataList.forEach((quota) => {
     const source = [
       quota.name,
-      ...quota.data.map((item) => round(item[1], chartConfig.valueFormatter.afterDot)),
+      ...quota.data.map(
+        (item) =>
+          round(item[1], chartConfig.valueFormatter.afterDot) /
+          Math.pow(10, chartConfig.valueFormatter.scientificNotation)
+      ),
     ];
     (dataset.source as any[]).push(source);
   });
@@ -372,7 +383,7 @@ export async function useRadarChart(chartConfig: radarChartConfigType) {
     axisLabel: {
       show: true,
       formatter: function (value) {
-        return value > 1 ? round(value, chartConfig.valueFormatter.afterDot) : value;
+        return round(value, chartConfig.valueFormatter.afterDot).toString();
       },
     },
   };
@@ -481,7 +492,11 @@ export async function useStructuralChart(chartConfig: structuralChartConfigType)
   quotaDataList.forEach((quota) => {
     const source = [
       quota.name,
-      ...quota.data.map((item) => round(item[1], chartConfig.valueFormatter.afterDot)),
+      ...quota.data.map(
+        (item) =>
+          round(item[1], chartConfig.valueFormatter.afterDot) /
+          Math.pow(10, chartConfig.valueFormatter.scientificNotation)
+      ),
     ];
     (dataset.source as any[]).push(source);
   });
@@ -568,7 +583,11 @@ export async function usePieChart(chartConfig: pieChartConfigType) {
   quotaDataList.forEach((quota) => {
     const source = [
       quota.name,
-      ...quota.data.map((item) => round(item[1], chartConfig.valueFormatter.afterDot)),
+      ...quota.data.map(
+        (item) =>
+          round(item[1], chartConfig.valueFormatter.afterDot) /
+          Math.pow(10, chartConfig.valueFormatter.scientificNotation)
+      ),
     ];
     (dataset.source as any[]).push(source);
   });
@@ -623,7 +642,11 @@ export async function useQuantileRadarChart(chartConfig: quantileRadarChartConfi
 
   const quotaDataList = await getQuotaData(fetchParams);
   quotaDataList.forEach((quota) => {
-    quota.data.forEach((item) => round(item[1], chartConfig.valueFormatter.afterDot));
+    quota.data.forEach(
+      (item) =>
+        round(item[1], chartConfig.valueFormatter.afterDot) /
+        Math.pow(10, chartConfig.valueFormatter.scientificNotation)
+    );
   });
   useNormalized({ chartConfig, quotaDataList });
   const series: SeriesOption[] = [
@@ -658,7 +681,9 @@ export async function useQuantileRadarChart(chartConfig: quantileRadarChartConfi
   for (let index = 0; index < quotaDataList.length; index++) {
     const quota = quotaDataList[index];
     const data = quota.data[0];
-    data[1] = round(data[1], chartConfig.valueFormatter.afterDot);
+    data[1] =
+      round(data[1], chartConfig.valueFormatter.afterDot) /
+      Math.pow(10, chartConfig.valueFormatter.scientificNotation);
     const idx = index % len;
     maxVal[idx] = max([(data ?? [0, 0])[1] * 1.02, maxVal[idx]])!;
     minVal[idx] = min([(data ?? [0, 0])[1] * 0.95, minVal[idx]])!;

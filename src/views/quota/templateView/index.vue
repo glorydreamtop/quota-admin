@@ -18,6 +18,7 @@
     createSelectTemplateListContext,
     createTemplateListContext,
     createUniqIdContext,
+    insertDOM,
   } from './hooks';
   import { ref } from 'vue';
   import type { TemplateDOM } from '/#/template';
@@ -38,7 +39,7 @@
       height: '400px',
     };
     console.log(node);
-    templateList.value.push(node);
+    insertDOM(templateList, selectedTemplateList, node);
   }
   function selectTemplate(arr: TemplateDOM[]) {
     selectedTemplateList.value = arr;

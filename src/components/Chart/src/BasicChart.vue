@@ -3,7 +3,10 @@
     <div ref="chartElRef" class="w-full h-full"></div>
     <div v-if="noChart" class="no-chart flex flex-col items-center">
       <img src="../../../assets/svg/no-chart.svg" />
-      <span class="whitespace-nowrap mt-2 text-gray-400">{{ config.title }}</span>
+      <span v-if="config.title" class="whitespace-nowrap mt-2 text-gray-400">{{
+        config.title
+      }}</span>
+      <span v-else>{{}}</span>
     </div>
   </div>
 </template>

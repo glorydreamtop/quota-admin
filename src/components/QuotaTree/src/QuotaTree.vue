@@ -43,7 +43,7 @@
   import type { ContextMenuItem } from '/@/components/Tree/index';
   import type { TreeItem, TreeActionType } from '/@/components/Tree/index';
   import { Tabs } from 'ant-design-vue';
-  import { getQuotaTree, getDirQuota } from '/@/api/quota';
+  import { getQuotaTree, getDirQuota, requestUpdateQuotaData } from '/@/api/quota';
   import type { CategoryTreeModel, QuotaItem } from '/#/quota';
   import { CategoryTreeType } from '/@/enums/quotaEnum';
   import { useI18n } from '/@/hooks/web/useI18n';
@@ -276,7 +276,17 @@
         {
           label: t('quota.actions.multiUpdateQuota'),
           icon: '',
-          handler: () => {},
+          handler: async () => {
+            try {
+              const { msg } = await requestUpdateQuotaData({
+                categoryId: (dataRef as QuotaItem).categoryId!,
+                indexIdList: list,
+              });
+              createMessage.success(msg);
+            } catch (error) {
+              createMessage.error(error);
+            }
+          },
         },
       ];
     }

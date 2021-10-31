@@ -12,3 +12,8 @@ export interface getQuotaDataParams {
 }
 
 export type getQuotaDataResult = { id: number; name: string; data: Array<[number, number]> };
+
+export interface requestUpdateParams {
+  categoryId: number;
+  indexIdList: number[];
+}

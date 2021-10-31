@@ -1,8 +1,9 @@
 import { defHttp } from '/@/utils/http/axios';
 import type { CategoryTreeModel, QuotaItem } from '/#/quota';
 import { CategoryTreeType, SourceTypeEnum } from '/@/enums/quotaEnum';
-import { getQuotaDataParams, getQuotaDataResult } from './model';
+import { getQuotaDataParams, getQuotaDataResult, requestUpdateParams } from './model';
 import { pick } from 'lodash-es';
+import { ResultEnum } from '/@/enums/httpEnum';
 
 enum Api {
   GetCategoryTree = '/updatemonitor/dict-index/categoryTree',
@@ -11,6 +12,7 @@ enum Api {
   GetDirQuota = '/index/index',
   SearchQuota = '/updatemonitor/dict-index/searchIndex',
   GetQuotaData = '/updatemonitor/dict-index/exportData',
+  RequestUpdateQuotaData = '/dataUpdater/updateIndex',
 }
 
 export enum searchType {
@@ -85,4 +87,16 @@ export function getSingleQuotaData({ id, date }: { id: number; date: string }) {
       rows,
     },
   });
+}
+
+export function requestUpdateQuotaData(params: requestUpdateParams) {
+  return defHttp.post<ResultEnum.TYPE>(
+    {
+      url: Api.RequestUpdateQuotaData,
+      params,
+    },
+    {
+      isTransformResponse: false,
+    }
+  );
 }

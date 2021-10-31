@@ -34,6 +34,10 @@ export const basicProps = {
     default: null,
     required: true,
   },
+  size: {
+    type: String as PropType<string>,
+    default: '',
+  },
 };
 
 export const uploadContainerProps = {

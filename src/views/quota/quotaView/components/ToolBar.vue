@@ -24,10 +24,10 @@
         :placeholer="t('page.quotaView.toolbar.endDatePicker')"
         class="w-30"
       />
-      <Icon class="save-icon" size="24" icon="ant-design:save-outlined" />
+      <Icon title="暂不开放保存功能" class="save-icon" size="24" icon="ant-design:save-outlined" />
     </Space>
     <div class="absolute right-0 top-0 w-18 h-18 overflow-hidden" @click="paint">
-      <div v-ripple class="w-36 h-36 !absolute -right-18 -top-18 bg-primary rounded-1">
+      <div v-ripple class="w-36 h-36 !absolute -right-18 -top-18 bg-card-blue1 rounded-1">
         <Icon class="absolute left-7 bottom-7" size="32" color="#fff" icon="ph:paint-brush-light" />
       </div>
     </div>

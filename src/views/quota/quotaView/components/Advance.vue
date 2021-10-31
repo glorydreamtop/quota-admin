@@ -40,12 +40,13 @@
             /><span>{{ t('page.quotaView.advance.valueFormatter.afterDot') }}</span>
           </span>
           <span class="label">
-            <Switch
-              disabled
-              v-model:checked="chartConfig.valueFormatter.scientificNotation"
-              :checked-children="t('page.quotaView.advance.use')"
-              :un-checked-children="t('page.quotaView.advance.stop')"
-            /><span>{{ t('page.quotaView.advance.valueFormatter.scientificNotation') }}</span>
+            <InputNumber
+              size="small"
+              class="!w-12 min-w-12"
+              :min="0"
+              v-model:value="chartConfig.valueFormatter.scientificNotation"
+            />
+            <span>{{ t('page.quotaView.advance.valueFormatter.scientificNotation') }}</span>
           </span>
           <span class="label">
             <Switch
@@ -125,7 +126,7 @@
                 :class="[
                   chartConfig.timeConfig.sortMonth.includes(month)
                     ? 'bg-white text-primary'
-                    : 'bg-primary text-white',
+                    : 'bg-card-blue1 text-white',
                   'w-full text-center rounded-sm month cursor-pointer',
                 ]"
                 v-for="month in monthList"

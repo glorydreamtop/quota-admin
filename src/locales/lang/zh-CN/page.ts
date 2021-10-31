@@ -62,7 +62,7 @@ export default {
       valueFormatter: {
         title: '数字格式设置',
         afterDot: '位小数',
-        scientificNotation: '科学计数法',
+        scientificNotation: '数量级',
         normalized: '初值归一',
       },
       timeSeries: {

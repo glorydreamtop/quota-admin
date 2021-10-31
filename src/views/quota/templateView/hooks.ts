@@ -99,6 +99,22 @@ export function useMultiSelect(templateList: Ref<TemplateDOM[]>): useMultiSelect
   return [selectTemplateList, { insertSelectKey }];
 }
 
+export function insertDOM(
+  templateList: Ref<TemplateDOM[]>,
+  selectedTemplateList: Ref<TemplateDOM[]>,
+  cfg: TemplateDOM
+) {
+  if (selectedTemplateList.value.length === 1) {
+    templateList.value.splice(
+      templateList.value.findIndex((t) => t.uniqId === selectedTemplateList.value[0].uniqId) + 1,
+      0,
+      cfg
+    );
+  } else {
+    templateList.value.push(cfg);
+  }
+}
+
 export interface TemplateListMapType {
   [key: string]: TemplateDOM;
 }
@@ -113,5 +129,18 @@ export const textTemplate: TemplateDOM = {
   config: {
     text: '这里你可以随意书写，并为其添加丰富的样式',
     html: '<span style="font-weight="600"">这里你可以随意书写，并为其添加丰富的<em>样式</em></span>',
+  },
+};
+
+export const imgTemplate: TemplateDOM = {
+  uniqId: 'z',
+  type: 'Img',
+  pageConfig: {
+    width: '33.3%',
+    height: '400px',
+  },
+  config: {
+    url: '',
+    mode: 'fill',
   },
 };

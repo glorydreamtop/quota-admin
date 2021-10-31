@@ -49,7 +49,18 @@
     <Button size="small" @click="dispatch('insertText')">{{
       t('templateView.toolbar.insertText.btn')
     }}</Button>
-    <Button size="small" disabled>{{ t('templateView.toolbar.insertImg.btn') }}</Button>
+    <BasicUpload
+      :maxSize="6"
+      :maxNumber="12"
+      @change="uploadFileChange"
+      :api="uploadApi"
+      size="small"
+      v-model:value="imgList"
+    >
+      <template #btn="{ onClick }">
+        <Button size="small" @click="onClick">{{ t('templateView.toolbar.insertImg.btn') }}</Button>
+      </template>
+    </BasicUpload>
     <Button size="small" @click="dispatch('remove')">{{
       t('templateView.toolbar.removeNode.btn')
     }}</Button>
@@ -71,15 +82,20 @@
   import { useUniqueField } from '../../quotaTable/components/helper';
   import {
     textTemplate,
+    imgTemplate,
     useSelectTemplateListContext,
     useTemplateListContext,
     useUniqIdContext,
+    insertDOM,
   } from '../hooks';
-  import { chartConfigType } from '/#/chart';
+  import type { chartConfigType } from '/#/chart';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { yearsAgo, formatToDate } from '/@/utils/dateUtil';
   import { dom2imgFile, fileType } from '/@/utils/domUtils';
   import { downloadByData } from '/@/utils/file/download';
+  import { BasicUpload } from '/@/components/Upload';
+  import { uploadApi } from '/@/api/sys/upload';
+  import { ImgConfig } from '/#/template';
 
   const RangePicker = DatePicker.RangePicker;
   const { t } = useI18n();
@@ -146,19 +162,15 @@
       case 'insertText':
         const text = cloneDeep(textTemplate);
         text.uniqId = getUniqueField();
-        if (selectedTemplateList.value && selectedTemplateList.value.length === 1) {
-          templateList.value.splice(
-            templateList.value.findIndex((t) => t.uniqId === selectedTemplateList.value[0].uniqId) +
-              1,
-            0,
-            text
-          );
-        } else {
-          templateList.value.push(text);
-        }
+        insertDOM(templateList, selectedTemplateList, text);
         break;
       case 'remove':
         remove(templateList.value, (t) => {
+          console.log(imgList.value);
+
+          if (t.type === 'Img') {
+            remove(imgList.value, (url) => url === t.config.url);
+          }
           return selectedTemplateList.value.some((temp) => t.uniqId === temp.uniqId);
         });
         break;
@@ -175,6 +187,15 @@
       default:
         break;
     }
+  }
+  const imgList = ref<string[]>([]);
+  function uploadFileChange(fileList: string[]) {
+    fileList.forEach((url) => {
+      const img = cloneDeep(imgTemplate);
+      (img.config as ImgConfig).url = url;
+      img.uniqId = getUniqueField();
+      insertDOM(templateList, selectedTemplateList, img);
+    });
   }
 </script>
 

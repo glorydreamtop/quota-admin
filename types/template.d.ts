@@ -13,7 +13,7 @@ export interface TemplateDOM {
   [key: string]: any;
   type: 'Chart' | 'Table' | 'Text' | 'Img';
   version?: versionEnum;
-  config: chartConfigType | TextConfig;
+  config: chartConfigType | TextConfig | ImgConfig;
   categoryId?: number;
   id?: number;
   uniqId: string;
@@ -26,4 +26,9 @@ export interface TemplateDOM {
 export interface TextConfig {
   text: string;
   html: string;
+}
+
+export interface ImgConfig {
+  url: string;
+  mode: string;
 }

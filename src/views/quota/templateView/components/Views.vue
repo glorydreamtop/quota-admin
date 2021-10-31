@@ -21,7 +21,7 @@
             class="drag-handler cursor-move pl-1 pt-1 !text-primary"
           />
         </Popover>
-        <component :is="compTypeMap[temp.type]" :config="temp.config" class="w-full" />
+        <component :is="compTypeMap[temp.type]" :config="temp.config" class="w-full h-full" />
       </div>
     </div>
   </div>
@@ -34,6 +34,7 @@
   import type { TemplateDOM } from '/#/template';
   import { BasicChart } from '/@/components/Chart';
   import BasicText from './Text.vue';
+  import BasicImg from './Image.vue';
   import Icon from '/@/components/Icon';
   import { onMountedOrActivated } from '/@/hooks/core/onMountedOrActivated';
   import { useSortable } from '/@/hooks/web/useSortable';
@@ -52,6 +53,7 @@
   const compTypeMap = {
     Chart: BasicChart,
     Text: BasicText,
+    Img: BasicImg,
   };
   const viewBox = ref<HTMLDivElement>();
   watch(

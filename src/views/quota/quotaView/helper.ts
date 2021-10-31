@@ -39,7 +39,7 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
       quotaList: [],
       valueFormatter: {
         afterDot: 2,
-        scientificNotation: false,
+        scientificNotation: 0,
         normalized: false,
       },
       yAxis: [
@@ -71,7 +71,7 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
       quotaList: [],
       valueFormatter: {
         afterDot: 2,
-        scientificNotation: false,
+        scientificNotation: 0,
         normalized: false,
       },
       yAxis: [
@@ -103,7 +103,7 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
       quotaList: [],
       valueFormatter: {
         afterDot: 2,
-        scientificNotation: false,
+        scientificNotation: 0,
         normalized: false,
       },
       yAxis: [
@@ -134,7 +134,7 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
       quotaList: [],
       valueFormatter: {
         afterDot: 2,
-        scientificNotation: false,
+        scientificNotation: 0,
         normalized: false,
       },
     } as radarChartConfigType,
@@ -154,7 +154,7 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
       quotaList: [],
       valueFormatter: {
         afterDot: 2,
-        scientificNotation: false,
+        scientificNotation: 0,
         normalized: false,
       },
       quantileOffset: '1,2,3,5',
@@ -177,7 +177,7 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
       quotaList: [],
       valueFormatter: {
         afterDot: 2,
-        scientificNotation: false,
+        scientificNotation: 0,
         normalized: false,
       },
       structuralOffset: '30,15,7,1,0',
@@ -210,7 +210,7 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
       quotaList: [],
       valueFormatter: {
         afterDot: 2,
-        scientificNotation: false,
+        scientificNotation: 0,
         normalized: false,
       },
     } as pieChartConfigType,

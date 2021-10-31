@@ -44,7 +44,7 @@ export interface baseChartConfigType {
   // 数据格式化方式
   valueFormatter: {
     afterDot: number;
-    scientificNotation: boolean;
+    scientificNotation: number;
     normalized: boolean;
   };
 

@@ -1,9 +1,11 @@
 <template>
   <div>
     <a-button-group>
-      <a-button type="primary" @click="openUploadModal" preIcon="carbon:cloud-upload">
-        {{ t('component.upload.upload') }}
-      </a-button>
+      <slot name="btn" :onClick="openUploadModal">
+        <a-button type="primary" @click="openUploadModal" preIcon="carbon:cloud-upload">
+          {{ t('component.upload.upload') }}
+        </a-button>
+      </slot>
       <Tooltip placement="bottom" v-if="showPreview">
         <template #title>
           {{ t('component.upload.uploaded') }}
@@ -11,7 +13,7 @@
             {{ fileList.length }}
           </template>
         </template>
-        <a-button @click="openPreviewModal">
+        <a-button :size="size" @click="openPreviewModal">
           <Icon icon="bi:eye" />
           <template v-if="fileList.length && showPreviewNumber">
             {{ fileList.length }}
@@ -118,6 +120,7 @@
         handleDelete,
         handlePreviewDelete,
         t,
+        size: props.size,
       };
     },
   });
