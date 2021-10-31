@@ -34,10 +34,10 @@
         </Button>
       </Tooltip>
       <Tooltip placement="left">
-        <template #title>双击标题或代码可直接复制到剪贴板</template>
-        <Button>
+        <template #title>更新选中指标</template>
+        <Button @click="updateQuota">
           <template #icon>
-            <Icon icon="ant-design:question-outlined" size="24" />
+            <Icon icon="ant-design:sync-outlined" size="24" />
           </template>
         </Button>
       </Tooltip>
@@ -104,17 +104,11 @@
     </transition-group>
 
     <QuotaSetting @register="registerEdit" />
-    <ArrowsAltOutlined
-      class="absolute scale z-9 cursor-n-resize"
-      :rotate="135"
-      :style="{ fontSize: '18px' }"
-    />
   </div>
 </template>
 
 <script lang="ts" setup>
   import { nextTick, onBeforeUnmount, onDeactivated, ref, unref } from 'vue';
-  import { ArrowsAltOutlined } from '@ant-design/icons-vue';
   import type { QuotaItem } from '/#/quota';
   import { Button, Tooltip } from 'ant-design-vue';
   import { useModal } from '/@/components/Modal';
@@ -138,6 +132,7 @@
   import { useI18n } from '/@/hooks/web/useI18n';
   import { getNormalQuotaDefaultSetting } from '../helper';
   import { formatToDate } from '/@/utils/dateUtil';
+  import { requestUpdateQuotaData } from '/@/api/quota';
 
   let animationFlag = false;
   // 交付给绘图的指标列表
@@ -158,6 +153,31 @@
     selectedQuota.value.forEach((q) => {
       q.selected = !b;
     });
+  }
+  async function updateQuota() {
+    const obj = {};
+    // 按目录分组
+    selectedQuota.value.forEach((quota) => {
+      if (quota.selected && !!quota.id) {
+        if (Reflect.has(obj, quota.categoryId!)) {
+          obj[quota.categoryId!].push(quota.id);
+        } else {
+          obj[quota.categoryId!] = [quota.id];
+        }
+      }
+    });
+    const arr: Promise<any>[] = [];
+    for (let key in obj) {
+      arr.push(requestUpdateQuotaData({ categoryId: parseInt(key), indexIdList: obj[key] }));
+    }
+    try {
+      const res = await Promise.allSettled(arr);
+      createMessage.success(res[0].value.msg);
+    } catch (error) {
+      createMessage.error(error);
+    }
+
+    console.log(res);
   }
   // 监听数组，新加入的指标默认被选中
   useWatchArray(selectedQuota, (cur, pre) => {
@@ -216,55 +236,56 @@
   }
   const [createContextMenu] = useContextMenu();
   function handleContext(e: MouseEvent, item: SelectedQuotaItem) {
+    const menuList = [
+      {
+        label: t('page.quotaCard.contextMenu.edit'),
+        icon: 'ant-design:edit-outlined',
+        handler: () => {
+          openEditModal(true, {
+            record: item,
+            index: selectedQuota.value.findIndex((_item) => item.id === _item.id),
+          });
+          setEditModal({
+            title: t('page.quotaView.quotaSetting.modalTitle'),
+            minHeight: 300,
+          });
+        },
+      },
+      {
+        label: t('page.quotaCard.contextMenu.copyId'),
+        icon: 'ant-design:copy-outlined',
+        handler: () => {
+          copy(item.id.toString(), 'id');
+        },
+      },
+      {
+        label: t('page.quotaCard.contextMenu.copyShortName'),
+        icon: 'ant-design:copy-outlined',
+        handler: () => {
+          if (item.shortName) {
+            copy(item.shortName.toString(), 'shortName');
+          } else {
+            createMessage.warning(t('page.quotaCard.contextMenu.noShortName'));
+          }
+        },
+      },
+      {
+        label: t('page.quotaCard.contextMenu.saveInMyFolder'),
+        icon: 'ant-design:folder-add-outlined',
+        handler: () => {
+          // setQuotaSave({
+          //   title: '添加到我的指标',
+          // });
+          const clone = cloneDeep(item);
+          Reflect.deleteProperty(clone, 'id');
+          clone.categoryIdList = [];
+          // openQuotaSave(true, clone);
+        },
+      },
+    ];
     createContextMenu({
       event: e,
-      items: [
-        {
-          label: t('page.quotaCard.contextMenu.edit'),
-          icon: 'ant-design:edit-outlined',
-          handler: () => {
-            openEditModal(true, {
-              record: item,
-              index: selectedQuota.value.findIndex((_item) => item.id === _item.id),
-            });
-            setEditModal({
-              title: t('page.quotaView.quotaSetting.modalTitle'),
-              minHeight: 300,
-            });
-          },
-        },
-        {
-          label: t('page.quotaCard.contextMenu.copyId'),
-          icon: 'ant-design:copy-outlined',
-          handler: () => {
-            copy(item.id.toString(), 'id');
-          },
-        },
-        {
-          label: t('page.quotaCard.contextMenu.copyShortName'),
-          icon: 'ant-design:copy-outlined',
-          handler: () => {
-            if (item.shortName) {
-              copy(item.shortName.toString(), 'shortName');
-            } else {
-              createMessage.warning(t('page.quotaCard.contextMenu.noShortName'));
-            }
-          },
-        },
-        {
-          label: t('page.quotaCard.contextMenu.saveInMyFolder'),
-          icon: 'ant-design:folder-add-outlined',
-          handler: () => {
-            // setQuotaSave({
-            //   title: '添加到我的指标',
-            // });
-            const clone = cloneDeep(item);
-            Reflect.deleteProperty(clone, 'id');
-            clone.categoryIdList = [];
-            // openQuotaSave(true, clone);
-          },
-        },
-      ],
+      items: menuList,
     });
   }
   const quotaBox = ref<ComponentRef>();
