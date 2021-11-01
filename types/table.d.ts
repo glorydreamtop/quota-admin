@@ -3,6 +3,7 @@ import { CellTypeEnum, HeaderCellTypeEnum } from '/@/enums/tableEnum';
 
 interface TableCol extends VxeTableDefines.ColumnOptions {
   headerType: HeaderCellTypeEnum;
+  timeStr?: string;
 }
 
 interface TableCellData {
@@ -17,6 +18,10 @@ interface RowData {
 
 export interface TableConfigType {
   title: string;
+  timeConfig: {
+    endDate: string;
+    timeOffset: string;
+  };
   columns: TableCol[];
   mergeCells?: VxeTablePropTypes.MergeCell[];
   data: RowData[];

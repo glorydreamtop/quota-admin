@@ -2,7 +2,7 @@
   <div class="p-4 bg-white">
     <VxeGrid v-bind="gridOptions" ref="xGrid">
       <template #toolbar-buttons>
-        <div class="flex gap-2">
+        <div class="flex gap-2 items-center">
           <Popover trigger="click">
             <template #content>
               <div class="flex gap-1">
@@ -14,8 +14,19 @@
             </template>
             <Button size="small">{{ t('page.quotaTable.addCol') }}</Button>
           </Popover>
-
           <Button size="small" @click="addSpaceRow">{{ t('page.quotaTable.addRow') }}</Button>
+          <div class="flex items-center gap-1">
+            <span>{{ t('page.quotaTable.endDate') }}</span>
+            <DatePicker
+              size="small"
+              class="!w-30"
+              v-model:value="tableConfig.timeConfig.endDate"
+              valueFormat="YYYY-MM-DD"
+            >
+              <span>{{ tableConfig.timeConfig.endDate }}</span>
+              <Icon class="!text-primary" icon="ant-design:field-time-outlined" />
+            </DatePicker>
+          </div>
         </div>
       </template>
       <template #normal-title-text="{ column, columnIndex }">
@@ -34,29 +45,39 @@
       <template #normal-title-text-editor="{ column, columnIndex }">
         <div class="flex items-center justify-center">
           <Input
-            v-if="tableConfig.columns[columnIndex].headerType === 0"
             class="text-center flex-grow"
             size="small"
             v-model:value="column.title"
             @blur="titleChange(columnIndex, $event)"
           />
-          <DatePicker
-            v-if="tableConfig.columns[columnIndex].headerType === 1"
-            v-model:value="column.title"
-            size="small"
-            valueFormat="YYYY-MM-DD"
+
+          <div
+            class="
+              w-auto
+              flex
+              items-center
+              justify-between
+              gap-1
+              border border-gray-300
+              header-icons-box
+              pl-1
+            "
           >
-            <div class="border border-gray-300 flex items-center cursor-pointer"
-              ><span class="mr-1 ml-2">{{ column.title }}</span
-              ><Icon class="mr-1" icon="ant-design:caret-down-filled"
-            /></div>
-          </DatePicker>
-          <div class="w-50px gap-1 border border-gray-300 header-icons-box pl-1">
+            <DatePicker
+              v-if="tableConfig.columns[columnIndex].headerType === 1"
+              v-model:value="column.timeStr"
+              size="small"
+              valueFormat="YYYY-MM-DD"
+            >
+              <Icon class="cursor-pointer" icon="ant-design:field-time-outlined" />
+            </DatePicker>
             <Icon
+              class="cursor-pointer"
               icon="ant-design:setting-outlined"
               @click="showHeaderCellModal({ column, columnIndex })"
             />
             <Icon
+              class="cursor-pointer"
               icon="ant-design:check-outlined"
               @click="closeTitleEditor({ column, columnIndex })"
             />
@@ -110,6 +131,7 @@
   import { getSingleQuotaData } from '/@/api/quota';
   import { CellTypeEnum, HeaderCellTypeEnum } from '/@/enums/tableEnum';
   import { useMessage } from '/@/hooks/web/useMessage';
+  import { formatToDate } from '/@/utils/dateUtil';
 
   const [registerHeaderCellSettingModal, { openModal: openHeaderCellSettingModal }] = useModal();
   const [
@@ -295,6 +317,10 @@
 
   const tableConfig: TableConfigType = reactive({
     title: '',
+    timeConfig: {
+      endDate: formatToDate(),
+      timeOffset: '-2',
+    },
     columns: [
       { title: '测试1', field: 'a', headerType: 0 },
       { title: '测试2', field: 'b', headerType: 0 },
@@ -531,6 +557,13 @@
       getSingleData({ column, rowIndex, row, columnIndex });
     }
   }
+  // function timeStrFilter(str: string) {
+  //   if (/\d{4}-\d{2}-\d{2}/i.test(str)) {
+  //     return str;
+  //   } else if (/-\d+/g.test(str)) {
+  //     return tableConfig.timeConfig.endDate
+  //   }
+  // }
   // 请求单个指标数据
   async function getSingleData({
     row,
@@ -544,7 +577,7 @@
     }
     const data = await getSingleQuotaData({
       id: parseInt(row[column!.property]),
-      date: column!.title,
+      date: tableConfig.columns[columnIndex!].timeStr,
     });
     tableConfig.data[rowIndex!][column!.property].qData = (data[0].data[0] ?? [
       0,
