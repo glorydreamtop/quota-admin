@@ -271,6 +271,7 @@
             highLightList.forEach((node) => {
               emit('selectNode', node as QuotaItem);
             });
+            clearHightLight();
           },
         },
         {

@@ -4,6 +4,11 @@ export const fnMap = {
     endOffset: 4,
     tip: '指标',
   },
+  _idx: {
+    value: 'idx(#id#)',
+    endOffset: 4,
+    tip: '指标',
+  },
   grow: {
     value: 'grow()',
     endOffset: 5,

@@ -95,6 +95,7 @@ export function useShowSuggestions(inputDOM: Ref<HTMLElement | undefined>): useS
         display: suggestionsDOMDisplay,
       });
       show.value = true;
+
       window.addEventListener('keypress', keyboardListener);
     } else {
       sugDomStlye.display = 'none';

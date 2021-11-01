@@ -44,6 +44,9 @@ export default {
       sourceCode: '指标代码',
       sourceType: '指标来源',
       formula: '公式编辑',
+      autofill: '快捷填充',
+      autofillTip: '公式指标点击左半区可获取公式内容',
+      formulaWithoutId: '新创建的公式没有ID',
       setting: {
         yAxisIndex: '适用Y轴',
         type: '适用图形',

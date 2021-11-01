@@ -27,15 +27,16 @@
         :key="item"
         :data-suggestion="item"
         tabIndex="0"
-        class="pl-1 focus:bg-primary focus:text-white leading-4 text-gray-500"
-        >{{ item }}</span
+        class="pl-1 focus:bg-primary focus:text-white leading-4 text-gray-500 relative"
       >
+        <span>{{ item }}</span>
+      </span>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-  import { ref, unref, watch } from 'vue';
+  import { ref, unref, watch, nextTick } from 'vue';
   import hljs from 'highlight.js/lib/core';
   import javascript from 'highlight.js/lib/languages/javascript';
   import 'highlight.js/styles/lioshi.css';
@@ -50,6 +51,7 @@
   });
   const emit = defineEmits<{
     (event: 'update:formula', formula: string): void;
+    (event: 'updateEndOffset', endOffset: number): void;
   }>();
   // 按照javascript语法高亮
   hljs.registerLanguage('javascript', javascript);
@@ -64,9 +66,12 @@
     el.innerHTML = text;
     hljs.highlightElement(el);
     setSuggestions(e);
+    nextTick();
+    emit('updateEndOffset', window.getSelection()!.getRangeAt(0).endOffset);
   }
   // 失去焦点时向外传递结果
   function updateFormula(e: FocusEvent) {
+    emit('updateEndOffset', window.getSelection()!.getRangeAt(0).endOffset);
     emit('update:formula', (e.target as HTMLDivElement)!.innerText);
   }
   // 允许拖拽编辑器大小

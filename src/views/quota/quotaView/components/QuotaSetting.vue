@@ -15,10 +15,55 @@
           </template>
         </Input>
       </div>
-      <div v-show="quotaSetting.sourceType === 'formula'">
-        <span class="min-w-4em">{{ t('page.quotaView.quotaSetting.formula') }}</span>
-        <Editor class="w-80" v-model:formula="quotaSetting.sourceCode" />
-      </div>
+      <template v-if="quotaSetting.sourceType === 'formula'">
+        <div>
+          <span class="min-w-4em">{{ t('page.quotaView.quotaSetting.formula') }}</span>
+          <Editor
+            class="w-80"
+            v-model:formula="quotaSetting.sourceCode"
+            @updateEndOffset="updateEndOffset"
+          />
+        </div>
+        <div>
+          <span>{{ t('page.quotaView.quotaSetting.autofill') }}</span>
+          <div class="flex flex-wrap items-center gap-1 w-74">
+            <span
+              v-for="item in quotaList"
+              :key="item.id"
+              class="
+                rounded-sm
+                overflow-hidden
+                cursor-pointer
+                bg-purple-400
+                text-white
+                px-1
+                relative
+              "
+            >
+              <span @click="fillFormula(item, 'id')">{{ item.shortName || item.name }}</span>
+              <span
+                v-show="item.sourceType === 'formula'"
+                @click="fillFormula(item, 'sourceCode')"
+                class="
+                  absolute
+                  -left-1/5
+                  top-0
+                  w-7/10
+                  bg-gray-100
+                  h-full
+                  opacity-45
+                  skew-x-165
+                  transform
+                "
+              ></span>
+            </span>
+            <Tooltip :title="t('page.quotaView.quotaSetting.autofillTip')">
+              <Icon class="!text-gray-500" icon="ant-design:question-circle-outlined" />
+            </Tooltip>
+          </div>
+        </div>
+      </template>
+
       <div>
         <span class="min-w-4em">{{ t('page.quotaView.quotaSetting.setting.yAxisIndex') }}</span>
         <Select
@@ -47,14 +92,16 @@
   import { useChartConfigContext } from './hooks';
   import { BasicModal, useModalInner } from '/@/components/Modal';
   import { useI18n } from '/@/hooks/web/useI18n';
-  import { Input, Select } from 'ant-design-vue';
+  import { Input, Select, Tooltip } from 'ant-design-vue';
   import { useRootSetting } from '/@/hooks/setting/useRootSetting';
-  import { computed, reactive, ref } from 'vue';
+  import { computed, reactive, ref, nextTick } from 'vue';
   import Icon from '/@/components/Icon';
   import { echartSeriesTypeEnum } from '/@/enums/chartEnum';
   import { SourceTypeEnum } from '/@/enums/quotaEnum';
   import { cloneDeep } from 'lodash-es';
   import { Editor } from '/@/components/FormulaEditor';
+  import { useMessage } from '/@/hooks/web/useMessage';
+  import { QuotaItem } from '/#/quota';
 
   const Option = Select.Option;
   const { t } = useI18n();
@@ -72,6 +119,7 @@
       lineWidth: 2,
     },
   };
+  const { createMessage } = useMessage();
   const quotaSetting: Pick<SelectedQuotaItem, 'name' | 'sourceCode' | 'sourceType' | 'setting'> =
     reactive(cloneDeep(defaultSetting));
   // Y轴选择器
@@ -130,8 +178,34 @@
     } else {
       Object.assign(quotaList.value[quotaIndex.value], quotaSetting);
     }
-
     close();
+  }
+  const endOffset = ref(0);
+  function updateEndOffset(v) {
+    endOffset.value = v;
+  }
+  async function fillFormula(item: QuotaItem, key: 'id' | 'sourceCode') {
+    let str = '';
+    if (key === 'id') {
+      if (!!item.id) {
+        str = `idx(${item.id})`;
+      } else {
+        createMessage.warn(t('page.quotaView.quotaSetting.formulaWithoutId'));
+      }
+    } else {
+      str = item.sourceCode;
+    }
+    quotaSetting.sourceCode =
+      quotaSetting.sourceCode.slice(0, endOffset.value) +
+      str +
+      quotaSetting.sourceCode.slice(endOffset.value);
+    await nextTick();
+    const dom = document.getElementsByClassName('formula-editor')[0] as HTMLInputElement;
+    dom.focus();
+    const focusDOM = window.getSelection()!.getRangeAt(0)!;
+    // 设置光标位置
+    focusDOM.setStart(dom.childNodes[0], endOffset.value + str.length);
+    focusDOM.collapse(true);
   }
 </script>
 
