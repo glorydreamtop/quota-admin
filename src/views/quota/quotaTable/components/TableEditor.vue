@@ -557,13 +557,8 @@
       getSingleData({ column, rowIndex, row, columnIndex });
     }
   }
-  // function timeStrFilter(str: string) {
-  //   if (/\d{4}-\d{2}-\d{2}/i.test(str)) {
-  //     return str;
-  //   } else if (/-\d+/g.test(str)) {
-  //     return tableConfig.timeConfig.endDate
-  //   }
-  // }
+  //
+
   // 请求单个指标数据
   async function getSingleData({
     row,
