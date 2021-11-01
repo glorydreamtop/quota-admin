@@ -13,6 +13,9 @@ enum Api {
   SearchQuota = '/updatemonitor/dict-index/searchIndex',
   GetQuotaData = '/updatemonitor/dict-index/exportData',
   RequestUpdateQuotaData = '/dataUpdater/updateIndex',
+  MoveQuota = '/category/indexMove',
+  SortQuota = '/category/categorySorting',
+  UpdateCategory = '/updatemonitor/dict-index/categorySaveOrUpdate',
 }
 
 export enum searchType {
@@ -99,4 +102,41 @@ export function requestUpdateQuotaData(params: requestUpdateParams) {
       isTransformResponse: false,
     }
   );
+}
+
+export function moveQuota(params: requestUpdateParams) {
+  return defHttp.post<ResultEnum.TYPE>({
+    url: Api.MoveQuota,
+    params,
+  });
+}
+
+export function sortQuota(params: {
+  type: CategoryTreeType;
+  categorySortingList: { id: number; sorting: number }[];
+}) {
+  const types = {
+    [CategoryTreeType.sysQuota]: 1,
+    [CategoryTreeType.userQuota]: 1,
+    [CategoryTreeType.sysTemplate]: 2,
+    [CategoryTreeType.userTemplate]: 2,
+    [CategoryTreeType.folder]: 0,
+  };
+  params.type = types[params.type];
+  return defHttp.post<ResultEnum.TYPE>({
+    url: Api.SortQuota,
+    params,
+  });
+}
+
+export function updateCategory(params: {
+  id?: number;
+  name: string;
+  parentId: number;
+  parentName: string;
+}) {
+  return defHttp.post<ResultEnum.TYPE>({
+    url: Api.UpdateCategory,
+    params,
+  });
 }

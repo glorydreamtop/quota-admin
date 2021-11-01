@@ -4,6 +4,7 @@ export enum CategoryTreeType {
   sysTemplate = 'template',
   userTemplate = 'templ_user',
   product = 'product',
+  folder = 'folder',
 }
 
 export enum SourceTypeEnum {

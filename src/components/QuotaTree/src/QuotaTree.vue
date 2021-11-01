@@ -13,16 +13,20 @@
           v-loading="loading[CategoryTreeType.sysQuota]"
           v-bind="treeProps[CategoryTreeType.sysQuota]"
           ref="sysTree"
+          draggable
+          @dragstart="dragStart"
+          @drop="drop"
           @select="handleTreeSelect"
         >
           <template #title="item">
-            <Icon :icon="item.icon" />
             <span
-              class="select-none tree-node w-full"
+              class="w-full"
               :data-folderId="item.folder ? item.key : undefined"
               :data-LeafId="!item.folder ? item.key : undefined"
-              >{{ nodeFilter(item) }}</span
             >
+              <Icon :icon="item.icon" />
+              <span class="select-none tree-node w-full">{{ nodeFilter(item) }}</span>
+            </span>
           </template>
         </BasicTree>
       </TabPane>
@@ -30,8 +34,23 @@
         <BasicTree
           v-bind="treeProps[CategoryTreeType.userQuota]"
           ref="userTree"
+          draggable
+          @dragstart="dragStart"
+          @drop="drop"
           @select="handleTreeSelect"
-      /></TabPane>
+        >
+          <template #title="item">
+            <span
+              class="w-full"
+              :data-folderId="item.folder ? item.key : undefined"
+              :data-LeafId="!item.folder ? item.key : undefined"
+            >
+              <Icon :icon="item.icon" />
+              <span class="select-none tree-node w-full">{{ nodeFilter(item) }}</span>
+            </span>
+          </template>
+        </BasicTree></TabPane
+      >
     </Tabs>
   </div>
 </template>
@@ -43,7 +62,14 @@
   import type { ContextMenuItem } from '/@/components/Tree/index';
   import type { TreeItem, TreeActionType } from '/@/components/Tree/index';
   import { Tabs } from 'ant-design-vue';
-  import { getQuotaTree, getDirQuota, requestUpdateQuotaData } from '/@/api/quota';
+  import {
+    getQuotaTree,
+    getDirQuota,
+    requestUpdateQuotaData,
+    moveQuota,
+    sortQuota,
+    updateCategory,
+  } from '/@/api/quota';
   import type { CategoryTreeModel, QuotaItem } from '/#/quota';
   import { CategoryTreeType } from '/@/enums/quotaEnum';
   import { useI18n } from '/@/hooks/web/useI18n';
@@ -146,13 +172,19 @@
     const instance = getTreeInstance(type);
     const res = await getDirQuota({ categoryId: key });
     const { parentNode } = findParentNode(key, type);
-    parentNode.children = res.map((item: QuotaItem & TreeItem) => {
+    const list = res.map((item: QuotaItem & TreeItem) => {
       item.icon = 'tabler:letter-q';
       item.isLeaf = true;
       item.key = item.id;
       item.categoryId = key;
       return item;
     });
+    if (parentNode.children) {
+      parentNode.children.push(...list);
+    } else {
+      parentNode.children = list;
+    }
+
     instance?.setExpandedKeys(uniq([key, ...instance.getExpandedKeys()]));
   }
   // 启用高亮Hooks
@@ -209,7 +241,17 @@
       },
     });
   // 树节点的选择，支持多选
-  function handleTreeSelect(_, e: treeSelectParams) {
+  async function handleTreeSelect(_, e: treeSelectParams) {
+    console.log(e.node.expanded);
+    if (
+      (e.node.dataRef as CategoryTreeModel).children?.every((item) => item.folder) &&
+      e.node.expanded
+    ) {
+      try {
+        await loadData(e.node.eventKey);
+      } catch (error) {}
+      return;
+    }
     const instance = getTreeInstance(treeType.value);
     // 拿到待操作的树数据
     setTreeData(treeProps[treeType.value].treeData);
@@ -272,6 +314,7 @@
               emit('selectNode', node as QuotaItem);
             });
             clearHightLight();
+            getTreeInstance(treeType.value)?.setSelectedKeys([]);
           },
         },
         {
@@ -279,6 +322,7 @@
           icon: '',
           handler: async () => {
             try {
+              // @ts-ignore
               const { msg } = await requestUpdateQuotaData({
                 categoryId: (dataRef as QuotaItem).categoryId!,
                 indexIdList: list,
@@ -286,11 +330,59 @@
               createMessage.success(msg);
             } catch (error) {
               createMessage.error(error);
+            } finally {
+              clearHightLight();
+              getTreeInstance(treeType.value)?.setSelectedKeys([]);
             }
           },
         },
       ];
     }
+  }
+  function dragStart({ node }: { node: TreeItem }) {
+    // 移动非高亮项目则重置高亮数组
+    if (!highLightList.some((item) => item.key === node.dataRef.id)) {
+      clearHightLight();
+      forEach(treeProps[treeType.value].treeData!, (item) => {
+        if (item.key === node.dataRef.id) {
+          insertHightListNode(item);
+        }
+      });
+    }
+  }
+  async function drop({ event, node }: { event: DragEvent; node: TreeItem }) {
+    // 移动指标
+    if (highLightList.every((item) => !item.folder)) {
+      if (node.dataRef.folder) {
+        // 更换所在目录
+        const indexIdList = highLightList.map((item) => item.id);
+        await moveQuota({ categoryId: node.dataRef.id, indexIdList });
+      } else {
+        // 重新排序
+        const { top, bottom } = (event.toElement as HTMLElement).getBoundingClientRect();
+        // 落点是否在在目标之前
+        const before = event.pageY < (bottom + top) / 2;
+        const { parentNode } = findParentNode(node.dataRef.categoryId);
+        const indexList: number[] = parentNode.children!.map((q) => q.id);
+        const idx = indexList!.findIndex((idx) => idx === node.dataRef.id);
+        indexList?.splice(before ? idx : idx + 1, 0, ...highLightList.map((q) => q.id));
+        await sortQuota({
+          categorySortingList: indexList.map((id, sorting) => ({ id, sorting: sorting + 1 })),
+          type: treeType.value,
+        });
+      }
+    } else {
+      // 移动目录
+      if (!node.dataRef.folder) return;
+      const { parentNode } = findParentNode(node.dataRef.id);
+      await updateCategory({
+        id: highLightList[0].id,
+        name: highLightList[0].name,
+        parentId: parentNode.id,
+        parentName: parentNode.name,
+      });
+    }
+    getData();
   }
   onMounted(() => {
     getData(CategoryTreeType.sysQuota);
