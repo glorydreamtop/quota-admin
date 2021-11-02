@@ -3,6 +3,12 @@ export default {
     mergeCells: '合并单元格',
     splitCells: '拆分单元格',
     updateCellData: '刷新数据',
+    insertRowBefore: '上方插入行',
+    insertRowAfter: '下方插入行',
+    insertColLeft: '左侧插入列',
+    insertColRight: '右侧插入列',
+    removeRow: '移除行及数据',
+    removeCol: '移除列及数据',
   },
   headerCell: {
     type: '表头内容类型',
@@ -10,6 +16,10 @@ export default {
     date: '日期文本',
     modalTitle: '表头高级设置',
     isNotDateTip: '表头不是日期文本',
+    timeStrTip: '偏移量(eg:-1)或固定日期(eg:2021-02-01)',
+    isOffset: '格式正确，偏移量',
+    isDate: '格式正确，固定日期',
+    isError: '请输入正确格式',
   },
   cell: {
     modalTitle: '单元格高级设置',

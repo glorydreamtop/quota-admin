@@ -132,6 +132,7 @@ export default {
     },
   },
   quotaTable: {
+    create: '创建表格',
     addCol: '添加列',
     addRow: '添加行',
     endDate: '最新数据日期',

@@ -1,5 +1,6 @@
 <template>
   <div class="flex items-center gap-4 h-14 p-2 flex-wrap border hover:shadow mb-2 toolbar bg-white">
+    <Button size="small">{{ t('templateView.toolbar.paperSize') }}</Button>
     <Popover placement="bottom" trigger="click" @visibleChange="updateConfig('baseSize', $event)">
       <Button size="small">{{ t('templateView.toolbar.baseSize') }}</Button>
       <template #content>

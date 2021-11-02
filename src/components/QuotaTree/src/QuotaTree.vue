@@ -25,7 +25,12 @@
               :data-LeafId="!item.folder ? item.key : undefined"
             >
               <Icon :icon="item.icon" />
-              <span class="select-none tree-node w-full">{{ nodeFilter(item) }}</span>
+              <span
+                :data-folderId="item.folder ? item.key : undefined"
+                :data-LeafId="!item.folder ? item.key : undefined"
+                class="select-none tree-node w-full"
+                >{{ nodeFilter(item) }}</span
+              >
             </span>
           </template>
         </BasicTree>
@@ -46,7 +51,12 @@
               :data-LeafId="!item.folder ? item.key : undefined"
             >
               <Icon :icon="item.icon" />
-              <span class="select-none tree-node w-full">{{ nodeFilter(item) }}</span>
+              <span
+                :data-folderId="item.folder ? item.key : undefined"
+                :data-LeafId="!item.folder ? item.key : undefined"
+                class="select-none tree-node w-full"
+                >{{ nodeFilter(item) }}</span
+              >
             </span>
           </template>
         </BasicTree></TabPane

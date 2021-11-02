@@ -7,26 +7,31 @@
             <template #content>
               <div class="flex gap-1">
                 <Input size="small" v-model:value="colValue.title" />
-                <Button size="small" type="primary" @click="addCol">{{
+                <Button size="small" type="primary" @click="addCol(tableConfig.columns.length)">{{
                   t('common.okText')
                 }}</Button>
               </div>
             </template>
             <Button size="small">{{ t('page.quotaTable.addCol') }}</Button>
           </Popover>
-          <Button size="small" @click="addSpaceRow">{{ t('page.quotaTable.addRow') }}</Button>
-          <div class="flex items-center gap-1">
-            <span>{{ t('page.quotaTable.endDate') }}</span>
-            <DatePicker
-              size="small"
-              class="!w-30"
-              v-model:value="tableConfig.timeConfig.endDate"
-              valueFormat="YYYY-MM-DD"
-            >
-              <span>{{ tableConfig.timeConfig.endDate }}</span>
-              <Icon class="!text-primary" icon="ant-design:field-time-outlined" />
-            </DatePicker>
-          </div>
+          <Button size="small" @click="addSpaceRow(tableConfig.data.length)">{{
+            t('page.quotaTable.addRow')
+          }}</Button>
+          <DatePicker
+            size="small"
+            class="!w-auto"
+            v-model:value="tableConfig.timeConfig.endDate"
+            valueFormat="YYYY-MM-DD"
+          >
+            <Button class="flex items-center gap-1" size="small">
+              <span>{{ t('page.quotaTable.endDate') }}：</span>
+              <span class="flex items-center gap-1 cursor-pointer">
+                <span>{{ tableConfig.timeConfig.endDate }}</span>
+                <Icon class="!text-primary" icon="ant-design:field-time-outlined" />
+              </span>
+            </Button>
+          </DatePicker>
+          <Button size="small" type="primary" @click="saveTable">{{ t('common.saveText') }}</Button>
         </div>
       </template>
       <template #normal-title-text="{ column, columnIndex }">
@@ -51,26 +56,34 @@
             @blur="titleChange(columnIndex, $event)"
           />
 
-          <div
-            class="
-              w-auto
-              flex
-              items-center
-              justify-between
-              gap-1
-              border border-gray-300
-              header-icons-box
-              pl-1
-            "
-          >
-            <DatePicker
-              v-if="tableConfig.columns[columnIndex].headerType === 1"
-              v-model:value="column.timeStr"
-              size="small"
-              valueFormat="YYYY-MM-DD"
-            >
-              <Icon class="cursor-pointer" icon="ant-design:field-time-outlined" />
-            </DatePicker>
+          <div class="w-auto flex items-center gap-1 border border-gray-300 header-icons-box pl-1">
+            <Popover trigger="click">
+              <template #content>
+                <Input
+                  size="small"
+                  class="!w-34 !text-center"
+                  v-model:value="column.timeStr"
+                  @input="timeStrChange(columnIndex, $event)"
+                >
+                  <template #addonAfter>
+                    <Tooltip>
+                      <Icon icon="ant-design:question-circle-outlined" />
+                      <template #title>
+                        <span>{{ t('table.headerCell.timeStrTip') }}</span>
+                      </template>
+                    </Tooltip>
+                  </template>
+                </Input>
+                <div class="text-sm text-red-500">
+                  {{ timeStrTip }}
+                </div>
+              </template>
+              <Icon
+                v-if="tableConfig.columns[columnIndex].headerType === 1"
+                class="cursor-pointer"
+                icon="ant-design:field-time-outlined"
+              />
+            </Popover>
             <Icon
               class="cursor-pointer"
               icon="ant-design:setting-outlined"
@@ -111,7 +124,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, reactive, nextTick } from 'vue';
+  import { ref, reactive, nextTick, toRaw } from 'vue';
   import type {
     VxeGridProps,
     VxeGridInstance,
@@ -119,11 +132,17 @@
     VxeTableDefines,
     VxeGridDefines,
   } from 'vxe-table';
-  import { Button, Popover, Input, DatePicker } from 'ant-design-vue';
+  import { Button, Popover, Input, DatePicker, Tooltip } from 'ant-design-vue';
   import { useI18n } from '/@/hooks/web/useI18n';
-  import { createTableConfigContext, useAddCol, useAddRow, useAreaSelect } from './helper';
+  import {
+    createTableConfigContext,
+    useAddCol,
+    useAddRow,
+    useAreaSelect,
+    useTimeStrFilter,
+  } from './helper';
   import type { TableConfigType } from '/#/table';
-  import { maxBy, minBy, parseInt, remove } from 'lodash-es';
+  import { cloneDeep, maxBy, minBy, parseInt, remove } from 'lodash-es';
   import { useModal } from '/@/components/Modal';
   import HeaderCellSetting from './HeaderCellSetting.vue';
   import CellSetting from './CellSetting.vue';
@@ -148,7 +167,7 @@
     align: 'center',
     columns: [
       {
-        title: '测试1',
+        title: '列a',
         field: 'a',
         editRender: {
           name: 'input',
@@ -160,7 +179,7 @@
         },
       },
       {
-        title: '测试2',
+        title: '列b',
         field: 'b',
         editRender: {
           name: 'input',
@@ -172,7 +191,7 @@
         },
       },
       {
-        title: '测试3',
+        title: '列b',
         field: 'c',
         editRender: {
           name: 'input',
@@ -184,31 +203,8 @@
         },
       },
       {
-        title: '测试4',
+        title: '列d',
         field: 'd',
-        editRender: {
-          name: 'input',
-        },
-        slots: {
-          header: 'normal-title-text',
-          edit: 'normal-cell-text-editor',
-        },
-      },
-      {
-        title: '测试5',
-        field: 'e',
-        editRender: {
-          name: 'input',
-        },
-        slots: {
-          header: 'normal-title-text',
-          default: 'normal-cell-text',
-          edit: 'normal-cell-text-editor',
-        },
-      },
-      {
-        title: '测试6',
-        field: 'f',
         editRender: {
           name: 'input',
         },
@@ -230,13 +226,9 @@
       showIcon: false,
     },
     data: [
-      { a: 'a1', b: 'b1', c: 'c1', d: 'd1', e: 'e1', f: 'f1' },
-      { a: 'a2', b: 'b2', c: 'c2', d: 'd2', e: 'e2', f: 'f2' },
-      { a: 'a3', b: 'b3', c: 'c3', d: 'd3', e: 'e3', f: 'f3' },
-      { a: 'a4', b: 'b4', c: 'c4', d: 'd4', e: 'e4', f: 'f4' },
-      { a: 'a5', b: 'b5', c: 'c5', d: 'd5', e: 'e5', f: 'f5' },
-      { a: 'a6', b: 'b6', c: 'c6', d: 'd6', e: 'e6', f: 'f6' },
-      { a: 'a7', b: 'b7', c: 'c7', d: 'd7', e: 'e7', f: 'f7' },
+      { a: 'a1', b: 'b1', c: 'c1', d: 'd1' },
+      { a: 'a2', b: 'b2', c: 'c2', d: 'd2' },
+      { a: 'a3', b: 'b3', c: 'c3', d: 'd3' },
     ],
     mergeCells: [],
     cellClassName: ({ rowIndex, columnIndex }) => {
@@ -257,6 +249,36 @@
             {
               code: 'splitCells',
               name: t('table.contextmenu.splitCells'),
+              disabled: false,
+            },
+            {
+              code: 'insertRowBefore',
+              name: t('table.contextmenu.insertRowBefore'),
+              disabled: false,
+            },
+            {
+              code: 'insertRowAfter',
+              name: t('table.contextmenu.insertRowAfter'),
+              disabled: false,
+            },
+            {
+              code: 'insertColLeft',
+              name: t('table.contextmenu.insertColLeft'),
+              disabled: false,
+            },
+            {
+              code: 'insertColRight',
+              name: t('table.contextmenu.insertColRight'),
+              disabled: false,
+            },
+            {
+              code: 'removeCol',
+              name: t('table.contextmenu.removeCol'),
+              disabled: false,
+            },
+            {
+              code: 'removeRow',
+              name: t('table.contextmenu.removeRow'),
               disabled: false,
             },
           ],
@@ -294,6 +316,16 @@
             colspan: maxCol - minCol + 1,
           };
           $table.setMergeCells([info]);
+          const oldMerge = gridOptions.mergeCells?.find((cellInfo) => {
+            cellInfo.col === info.col;
+            cellInfo.row === info.row;
+          });
+          if (oldMerge) {
+            oldMerge.colspan = info.colspan;
+            oldMerge.rowspan = info.rowspan;
+          } else {
+            gridOptions.mergeCells?.push(info);
+          }
           break;
         case 'splitCells':
           $table.removeMergeCells({
@@ -303,6 +335,32 @@
           break;
         case 'updateCellData':
           getSingleData({ rowIndex, columnIndex, column, row });
+          break;
+        case 'insertRowBefore':
+          addSpaceRow(rowIndex);
+          break;
+        case 'insertRowAfter':
+          const mergedRow = $table
+            .getMergeCells()
+            .find((cell) => cell.row === rowIndex && cell.rowspan > 1);
+          const rowNum = mergedRow ? rowIndex + mergedRow.rowspan : rowIndex + 1;
+          addSpaceRow(rowNum);
+          break;
+        case 'insertColLeft':
+          addCol(columnIndex);
+          break;
+        case 'insertColRight':
+          const mergedCol = $table
+            .getMergeCells()
+            .find((cell) => cell.row === columnIndex && cell.colspan > 1);
+          const colNum = mergedCol ? columnIndex + mergedCol.colspan : columnIndex + 1;
+          addCol(colNum);
+          break;
+        case 'removeCol':
+          removeCol(columnIndex);
+          break;
+        case 'removeRow':
+          removeRow(rowIndex);
           break;
       }
     },
@@ -322,12 +380,10 @@
       timeOffset: '-2',
     },
     columns: [
-      { title: '测试1', field: 'a', headerType: 0 },
-      { title: '测试2', field: 'b', headerType: 0 },
-      { title: '测试3', field: 'c', headerType: 0 },
-      { title: '测试4', field: 'd', headerType: 0 },
-      { title: '测试5', field: 'e', headerType: 0 },
-      { title: '测试6', field: 'f', headerType: 0 },
+      { title: '列a', field: 'a', headerType: 0, timeStr: '0' },
+      { title: '列b', field: 'b', headerType: 0, timeStr: '0' },
+      { title: '列c', field: 'c', headerType: 0, timeStr: '0' },
+      { title: '列d', field: 'd', headerType: 0, timeStr: '0' },
     ],
     mergeCells: [],
     data: [
@@ -348,14 +404,6 @@
           val: 'd1',
           type: 0,
         },
-        e: {
-          val: 'e1',
-          type: 0,
-        },
-        f: {
-          val: 'f1',
-          type: 0,
-        },
       },
       {
         a: {
@@ -372,14 +420,6 @@
         },
         d: {
           val: 'd2',
-          type: 0,
-        },
-        e: {
-          val: 'e2',
-          type: 0,
-        },
-        f: {
-          val: 'f2',
           type: 0,
         },
       },
@@ -400,124 +440,13 @@
           val: 'd3',
           type: 0,
         },
-        e: {
-          val: 'e3',
-          type: 0,
-        },
-        f: {
-          val: 'f3',
-          type: 0,
-        },
-      },
-      {
-        a: {
-          val: 'a4',
-          type: 0,
-        },
-        b: {
-          val: 'b4',
-          type: 0,
-        },
-        c: {
-          val: 'c4',
-          type: 0,
-        },
-        d: {
-          val: 'd4',
-          type: 0,
-        },
-        e: {
-          val: 'e4',
-          type: 0,
-        },
-        f: {
-          val: 'f4',
-          type: 0,
-        },
-      },
-      {
-        a: {
-          val: 'a5',
-          type: 0,
-        },
-        b: {
-          val: 'b5',
-          type: 0,
-        },
-        c: {
-          val: 'c5',
-          type: 0,
-        },
-        d: {
-          val: 'd5',
-          type: 0,
-        },
-        e: {
-          val: 'e5',
-          type: 0,
-        },
-        f: {
-          val: 'f5',
-          type: 0,
-        },
-      },
-      {
-        a: {
-          val: 'a6',
-          type: 0,
-        },
-        b: {
-          val: 'b6',
-          type: 0,
-        },
-        c: {
-          val: 'c6',
-          type: 0,
-        },
-        d: {
-          val: 'd6',
-          type: 0,
-        },
-        e: {
-          val: 'e6',
-          type: 0,
-        },
-        f: {
-          val: 'f6',
-          type: 0,
-        },
-      },
-      {
-        a: {
-          val: 'a7',
-          type: 0,
-        },
-        b: {
-          val: 'b7',
-          type: 0,
-        },
-        c: {
-          val: 'c7',
-          type: 0,
-        },
-        d: {
-          val: 'd7',
-          type: 0,
-        },
-        e: {
-          val: 'e7',
-          type: 0,
-        },
-        f: {
-          val: 'f7',
-          type: 0,
-        },
       },
     ],
   });
   createTableConfigContext(tableConfig);
-  const [colValue, { addCol }] = useAddCol(xGrid, tableConfig);
-  const { addSpaceRow } = useAddRow(xGrid, tableConfig);
+  const [colValue, { addCol, removeCol }] = useAddCol(xGrid, tableConfig);
+  const { addSpaceRow, removeRow } = useAddRow(xGrid, tableConfig);
+  const [timeStrTip, { timeStrFilter, vaildTimeStr }] = useTimeStrFilter(tableConfig);
   const { getAreaCells } = useAreaSelect(xGrid, (cells) => {
     selectedCells.value = cells;
   });
@@ -526,11 +455,22 @@
     column,
     columnIndex,
   }: Partial<VxeGridDefines.HeaderCellClickEventParams>) {
+    console.log(tableConfig, columnIndex);
+
     openHeaderCellSettingModal(true, { column, columnIndex });
   }
   // 关掉表头编辑
-  function closeTitleEditor({ column }: Partial<VxeGridDefines.HeaderCellClickEventParams>) {
+  function closeTitleEditor({
+    column,
+    columnIndex,
+  }: Partial<VxeGridDefines.HeaderCellClickEventParams>) {
     column!.slots.header = 'normal-title-text';
+    const col = tableConfig.columns[columnIndex!];
+    if (col.headerType === 1) {
+      tableConfig.data.forEach((data) => {
+        data[col.field!].type = 1;
+      });
+    }
   }
   // 单元格高级设置
   function showCellModal({
@@ -572,9 +512,9 @@
     }
     const data = await getSingleQuotaData({
       id: parseInt(row[column!.property]),
-      date: tableConfig.columns[columnIndex!].timeStr,
+      date: timeStrFilter(tableConfig.columns[columnIndex!].timeStr!),
     });
-    tableConfig.data[rowIndex!][column!.property].qData = (data[0].data[0] ?? [
+    tableConfig.data[rowIndex!][column!.property].qData = (data[0]?.data[0] ?? [
       0,
       t('common.noData'),
     ])[1].toString();
@@ -582,6 +522,16 @@
   // 监听表头文本变化
   function titleChange(columnIndex: number, e: FocusEvent) {
     tableConfig.columns[columnIndex].title = (e.target as HTMLInputElement).value;
+  }
+  function timeStrChange(columnIndex: number, e: InputEvent) {
+    tableConfig.columns[columnIndex].timeStr = (e.target as HTMLInputElement).value;
+    vaildTimeStr(e);
+  }
+  function saveTable() {
+    const $table = xGrid.value;
+    const mergeCells = $table.getMergeCells();
+    tableConfig.mergeCells = cloneDeep(toRaw(mergeCells));
+    console.log(tableConfig);
   }
 </script>
 

@@ -1,5 +1,6 @@
 export default {
   toolbar: {
+    paperSize: '纸张大小',
     sameTimeRange: '修改起止日期',
     showLastest: {
       btn: '修改最新值模块',

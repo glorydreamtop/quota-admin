@@ -1,12 +1,15 @@
 import { cloneDeep, remove } from 'lodash-es';
-import { CSSProperties, reactive, ref, Ref } from 'vue';
+import { CSSProperties, reactive, ref, Ref, toRaw } from 'vue';
 import { VxeGridInstance, VxeTableDefines } from 'vxe-table';
 import { TableConfigType } from '/#/table';
 import { onMountedOrActivated } from '/@/hooks/core/onMountedOrActivated';
 
 import type { InjectionKey, Ref } from 'vue';
 import { createContext, useContext } from '/@/hooks/core/useContext';
+import { daysAgo } from '/@/utils/dateUtil';
+import { useI18n } from '/@/hooks/web/useI18n';
 
+const { t } = useI18n();
 const tableConfigKey: InjectionKey<TableConfigType> = Symbol();
 
 export function createTableConfigContext(context: TableConfigType) {
@@ -17,7 +20,10 @@ export function useTableConfigContext() {
   return useContext<TableConfigType>(tableConfigKey);
 }
 
-type useAddColMethods = [VxeTableDefines.ColumnOptions, { addCol: () => void }];
+type useAddColMethods = [
+  VxeTableDefines.ColumnOptions,
+  { addCol: (columnIndex: number) => void; removeCol: (columnIndex: number) => void }
+];
 
 export function useAddCol(
   xGrid: Ref<VxeGridInstance>,
@@ -25,7 +31,7 @@ export function useAddCol(
 ): useAddColMethods {
   const col: VxeTableDefines.ColumnOptions = reactive({
     field: '',
-    title: '',
+    title: '新列',
     editRender: {
       name: 'input',
     },
@@ -35,35 +41,94 @@ export function useAddCol(
       edit: 'normal-cell-text-editor',
     },
   });
-  const { getUniqueField } = useUniqueField();
-  function addCol() {
+  const usedStr = ['a', 'b', 'c', 'd'];
+  const { getUniqueField } = useUniqueField(usedStr);
+  function addCol(columnIndex = tableConfig.columns.length) {
     col.field = getUniqueField();
-    tableConfig.columns.push(cloneDeep(col));
+    tableConfig.columns.splice(columnIndex, 0, {
+      title: col.title,
+      field: col.field,
+      headerType: 0,
+    });
+    const colInfoArr = tableConfig.columns.map((_col) => {
+      const colCfg = cloneDeep(toRaw(col));
+      colCfg.title = _col.title;
+      colCfg.field = _col.field;
+      return colCfg;
+    });
+    tableConfig.data.forEach((data) => {
+      data[col.field!] = {
+        val: '-',
+        qData: '',
+        type: 0,
+      };
+    });
+    console.log(colInfoArr);
+
     const $grid = xGrid.value;
-    $grid.loadColumn(tableConfig.columns);
+    $grid.loadColumn(colInfoArr);
     col.field = '';
-    col.title = '';
+    col.title = '新列';
   }
-  return [col, { addCol }];
+  function removeCol(columnIndex: number) {
+    tableConfig.data.forEach((data) => {
+      Reflect.deleteProperty(data, tableConfig.columns[columnIndex].field!);
+    });
+
+    const $grid = xGrid.value;
+    const { fullData } = $grid.getTableData();
+    // console.log({ fullData, tableData, d: tableConfig.data });
+    fullData.forEach((item) => {
+      Reflect.deleteProperty(item, tableConfig.columns[columnIndex].field!);
+    });
+    tableConfig.columns.splice(columnIndex, 1);
+    const colInfoArr = tableConfig.columns.map((_col) => {
+      const colCfg = cloneDeep(toRaw(col));
+      colCfg.title = _col.title;
+      colCfg.field = _col.field;
+      return colCfg;
+    });
+    $grid.loadColumn(colInfoArr);
+    $grid.loadData(fullData);
+  }
+  return [col, { addCol, removeCol }];
 }
 
-type useAddSpaceRowMethods = { addSpaceRow: () => void };
+type useAddSpaceRowMethods = {
+  addSpaceRow: (rowIndex: number) => void;
+  removeRow: (rowIndex: number) => void;
+};
 
 export function useAddRow(
   xGrid: Ref<VxeGridInstance>,
   tableConfig: TableConfigType
 ): useAddSpaceRowMethods {
-  function addSpaceRow() {
+  function addSpaceRow(rowIndex = tableConfig.data.length) {
     const row = {};
-    console.log(tableConfig.columns);
-
+    const dataRow = {};
     tableConfig.columns.forEach((column) => {
       row[column.field!] = '-';
+      dataRow[column.field!] = {
+        type: 0,
+        val: '-',
+      };
     });
+    tableConfig.data.splice(rowIndex, 0, dataRow);
     const $grid = xGrid.value;
-    $grid.insertAt(row, -1);
+    const { fullData } = $grid.getTableData();
+    // console.log({ fullData, tableData, d: tableConfig.data });
+    fullData.splice(rowIndex, 0, row);
+    $grid.loadData(fullData);
   }
-  return { addSpaceRow };
+  function removeRow(rowIndex: number) {
+    tableConfig.data.splice(rowIndex, 1);
+    const $grid = xGrid.value;
+    const { fullData } = $grid.getTableData();
+    // console.log({ fullData, tableData, d: tableConfig.data });
+    fullData.splice(rowIndex, 1);
+    $grid.loadData(fullData);
+  }
+  return { addSpaceRow, removeRow };
 }
 
 type useUniqueFieldMethods = { getUniqueField: () => string };
@@ -195,4 +260,33 @@ export function useAreaSelect(
     areaCells.value.push(...cells);
   }
   return { getAreaCells, setAreaCells };
+}
+
+type useTimeStrFilterMethods = [
+  Ref<string>,
+  { timeStrFilter: (str: string) => string; vaildTimeStr: (e: InputEvent) => void }
+];
+
+export function useTimeStrFilter(tableConfig: TableConfigType): useTimeStrFilterMethods {
+  const tip = ref('');
+  function timeStrFilter(str: string) {
+    if (/^\d{4}-\d{2}-\d{2}$/i.test(str)) {
+      return str;
+    } else if (/^-?\d+$/i.test(str)) {
+      return daysAgo(Math.abs(parseInt(str)), tableConfig.timeConfig.endDate);
+    } else {
+      return tableConfig.timeConfig.endDate;
+    }
+  }
+  function vaildTimeStr(e: InputEvent) {
+    const str = (e.target as HTMLInputElement).value;
+    if (/^\d{4}-\d{2}-\d{2}$/i.test(str)) {
+      tip.value = t('table.headerCell.isDate');
+    } else if (/^-?\d+$/i.test(str)) {
+      tip.value = t('table.headerCell.isOffset');
+    } else {
+      tip.value = t('table.headerCell.isError');
+    }
+  }
+  return [tip, { timeStrFilter, vaildTimeStr }];
 }
