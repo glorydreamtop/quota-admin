@@ -1,6 +1,10 @@
 <template>
-  <div class="w-full overflow-y-scroll no-scrollbar p-2">
-    <div class="w-full min-h-full flex flex-wrap content-start" id="view-box" ref="viewBox">
+  <div class="w-full overflow-y-scroll p-2">
+    <div
+      class="flex flex-wrap content-start p-8 pages bg-white overflow-hidden shadow shadow-gray-700"
+      id="view-box"
+      :ref="(el) => viewBoxs.push(el)"
+    >
       <div
         @click="selectTemplate(temp, $event)"
         v-for="temp in templateList"
@@ -28,7 +32,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, unref, watch, watchEffect } from 'vue';
+  import { reactive, ref, unref, watchEffect, computed, ComputedRef } from 'vue';
   import { Popover } from 'ant-design-vue';
   import { useMultiSelect, useTemplateListContext, TemplateListMapType } from '../hooks';
   import type { TemplateDOM } from '/#/template';
@@ -42,6 +46,7 @@
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useMutationObserver, useResizeObserver } from '@vueuse/core';
   import { last } from 'lodash-es';
+  import { useWatchArray } from '/@/utils/helper/commonHelper';
 
   const emit = defineEmits<{
     (event: 'selectTemplate', arr: TemplateDOM[]): void;
@@ -49,27 +54,19 @@
 
   const { t } = useI18n();
   const templateList = useTemplateListContext();
-  const templateMap: TemplateListMapType = {};
+  const templateMap: ComputedRef<TemplateListMapType> = computed(() => {
+    const obj = {};
+    templateList.value.forEach((t) => {
+      obj[t.uniqId] = t;
+    });
+    return obj;
+  });
   const compTypeMap = {
     Chart: BasicChart,
     Text: BasicText,
     Img: BasicImg,
   };
-  const viewBox = ref<HTMLDivElement>();
-  watch(
-    templateList,
-    (v) => {
-      for (let k in templateMap) {
-        Reflect.deleteProperty(templateMap, k);
-      }
-      v.forEach((t) => {
-        templateMap[t.uniqId] = t;
-      });
-    },
-    {
-      deep: true,
-    }
-  );
+  const viewBoxs = ref<HTMLDivElement[]>([]);
   const [selectTemplateList, { insertSelectKey }] = useMultiSelect(templateList);
   function selectTemplate(temp: TemplateDOM, nativeEvent: PointerEvent) {
     insertSelectKey(temp, nativeEvent);
@@ -77,58 +74,89 @@
   watchEffect(() => {
     emit(
       'selectTemplate',
-      selectTemplateList.value.map((uniqId) => templateMap[uniqId])
+      selectTemplateList.value.map((uniqId) => templateMap.value[uniqId])
     );
   });
+
+  const paginationInfo = reactive({
+    pages: [[]],
+    totalPage: 1,
+  });
+  useWatchArray(templateList, (v, pre) => {
+    if (pre.length < v.length) {
+      last(paginationInfo.pages)!.push(v[0]);
+    }
+  });
+  function checkOverflow(boxdom: HTMLDivElement) {
+    for (let i = 0; i < boxdom.childElementCount; i++) {
+      const child = boxdom.children[i] as HTMLElement;
+      if (
+        child.offsetTop + child.offsetHeight > boxdom.offsetTop + boxdom.offsetHeight ||
+        child.offsetLeft + child.offsetWidth > boxdom.offsetLeft + boxdom.offsetWidth
+      )
+        return i;
+    }
+    return false;
+  }
   onMountedOrActivated(() => {
-    const boxdom: HTMLDivElement = unref(viewBox.value)!;
+    const boxdom: HTMLDivElement[] = unref(viewBoxs.value)!;
     // 支持拖动排序
-    const { initSortable } = useSortable(boxdom, {
-      handle: '.drag-handler',
-      draggable: '.sortable',
-      onEnd: (evt) => {
-        const { oldIndex, newIndex } = evt;
-        if (isNullAndUnDef(oldIndex) || isNullAndUnDef(newIndex) || oldIndex === newIndex) {
-          return;
-        }
-        // Sort column
-        const columns = templateList.value;
-        if (oldIndex > newIndex) {
-          columns.splice(newIndex, 0, columns[oldIndex]);
-          columns.splice(oldIndex + 1, 1);
-        } else {
-          columns.splice(newIndex + 1, 0, columns[oldIndex]);
-          columns.splice(oldIndex, 1);
-        }
-      },
-    });
-    initSortable();
-    // 允许每个子元素缩放大小，并收集尺寸信息
-    useMutationObserver(
-      boxdom,
-      (mutation) => {
-        mutation.forEach((m) => {
-          if (m.addedNodes.length === 0) return;
-          last(m.addedNodes as HTMLElement[])!.scrollIntoView({
-            behavior: 'smooth',
-            block: 'center',
-          });
-          m.addedNodes.forEach((node) => {
-            useResizeObserver(node, (e) => {
-              const target = e[0].target as HTMLElement;
-              const dom = templateList.value.find(
-                (temp) => temp.uniqId === target.dataset['uniqid']
-              )!;
-              dom.pageConfig.width = `${target.style.width}px`;
-              dom.pageConfig.height = `${target.style.height}px`;
+    boxdom.forEach((dom) => {
+      const { initSortable } = useSortable(dom, {
+        handle: '.drag-handler',
+        draggable: '.sortable',
+        onEnd: (evt) => {
+          const { oldIndex, newIndex } = evt;
+          if (isNullAndUnDef(oldIndex) || isNullAndUnDef(newIndex) || oldIndex === newIndex) {
+            return;
+          }
+          // Sort column
+          const columns = templateList.value;
+          if (oldIndex > newIndex) {
+            columns.splice(newIndex, 0, columns[oldIndex]);
+            columns.splice(oldIndex + 1, 1);
+          } else {
+            columns.splice(newIndex + 1, 0, columns[oldIndex]);
+            columns.splice(oldIndex, 1);
+          }
+        },
+      });
+      initSortable();
+      // 允许每个子元素缩放大小，并收集尺寸信息
+      useMutationObserver(
+        dom,
+        (mutation) => {
+          mutation.forEach((m) => {
+            if (m.addedNodes.length === 0) return;
+            last(m.addedNodes as HTMLElement[])!.scrollIntoView({
+              behavior: 'smooth',
+              block: 'center',
+            });
+            m.addedNodes.forEach((node) => {
+              useResizeObserver(node, (e) => {
+                const target = e[0].target as HTMLElement;
+                const _dom = templateList.value.find(
+                  (temp) => temp.uniqId === target.dataset['uniqid']
+                )!;
+                if (_dom) {
+                  _dom.pageConfig.width = `${target.style.width}px`;
+                  _dom.pageConfig.height = `${target.style.height}px`;
+                  const overflow = checkOverflow(target.parentElement!);
+                  if (overflow) {
+                    dom.removeChild(target);
+                  } else {
+                  }
+                }
+              });
             });
           });
-        });
-      },
-      {
-        childList: true,
-      }
-    );
+        },
+        {
+          childList: true,
+        }
+      );
+    });
+
     // useResizeObserver(boxdom.getElementsByClassName('sortable')[0], (e) => {
     //   console.log(e);
     // });
@@ -158,5 +186,11 @@
       background-color: @primary-color;
       opacity: 0.5;
     }
+  }
+
+  .pages {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 210/297;
   }
 </style>

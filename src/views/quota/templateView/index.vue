@@ -5,7 +5,7 @@
     </div>
     <div class="flex-grow h-full enter-y bg-gray-100 flex flex-col">
       <ToolBar />
-      <Views class="views-box bg-white border" @selectTemplate="selectTemplate" />
+      <Views class="views-box" @selectTemplate="selectTemplate" />
     </div>
   </div>
 </template>
@@ -23,6 +23,7 @@
   import { ref } from 'vue';
   import type { TemplateDOM } from '/#/template';
   import { useUniqueField } from '../quotaTable/components/helper';
+  import { useTimeoutFn } from '/@/hooks/core/useTimeout';
 
   const templateList = ref<TemplateDOM[]>([]);
   const selectedTemplateList = ref<TemplateDOM[]>([]);
@@ -38,8 +39,11 @@
       width: '33.3%',
       height: '400px',
     };
+    // 创建一个宏任务，让数组的watch阶段性触发
+    useTimeoutFn(() => {
+      insertDOM(templateList, selectedTemplateList, node);
+    }, 100);
     console.log(node);
-    insertDOM(templateList, selectedTemplateList, node);
   }
   function selectTemplate(arr: TemplateDOM[]) {
     selectedTemplateList.value = arr;
