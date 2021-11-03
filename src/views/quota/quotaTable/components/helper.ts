@@ -56,9 +56,9 @@ export function useAddCol(
       colCfg.field = _col.field;
       return colCfg;
     });
-    tableConfig.data.forEach((data) => {
+    tableConfig.data.forEach((data, index) => {
       data[col.field!] = {
-        val: '-',
+        val: `${col.field!}${index}`,
         qData: '',
         type: 0,
       };

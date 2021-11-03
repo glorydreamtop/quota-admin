@@ -5,4 +5,5 @@ export enum HeaderCellTypeEnum {
 export enum CellTypeEnum {
   normal,
   quota,
+  formula,
 }

@@ -26,5 +26,6 @@ export default {
     type: '单元格内容类型',
     normal: '普通文本',
     quota: '指标数据',
+    formula: '公式文本',
   },
 };

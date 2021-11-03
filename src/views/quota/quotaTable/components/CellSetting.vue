@@ -6,6 +6,7 @@
         <Select v-model:value="tableConfig.data[info.rowIndex][info.column.property].type">
           <SelectOption :key="0">{{ t('table.cell.normal') }}</SelectOption>
           <SelectOption :key="1">{{ t('table.cell.quota') }}</SelectOption>
+          <SelectOption :key="2">{{ t('table.cell.formula') }}</SelectOption>
         </Select>
       </div>
     </div>

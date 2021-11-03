@@ -45,6 +45,7 @@
               ]
             "
           />
+          <span class="text-gray-300">{{ column.property }}</span>
         </div>
       </template>
       <template #normal-title-text-editor="{ column, columnIndex }">
@@ -98,12 +99,22 @@
         </div>
       </template>
       <template #normal-cell-text="{ row, column, rowIndex }">
-        <div v-if="tableConfig.data[rowIndex][column.property].type === 0" class="select-none">{{
-          row[column.property]
-        }}</div>
-        <div v-else class="select-none flex items-center justify-center gap-1">
-          <span>{{ tableConfig.data[rowIndex][column.property].qData }}</span
-          ><Icon class="!text-primary" icon="tabler:letter-q" />
+        <div class="relative">
+          <span v-if="tableConfig.data[rowIndex][column.property].type === 0" class="select-none">{{
+            row[column.property]
+          }}</span>
+          <span v-else class="select-none flex items-center justify-center gap-1">
+            <span>{{ tableConfig.data[rowIndex][column.property].qData }}</span
+            ><Icon
+              class="!text-primary"
+              :icon="
+                ['tabler:letter-q', 'carbon:function-math'][
+                  tableConfig.data[rowIndex][column.property].type - 1
+                ]
+              "
+            />
+          </span>
+          <span class="text-gray-300 leading-4 absolute right-0 top-0">{{ rowIndex + 1 }}</span>
         </div>
       </template>
       <template #normal-cell-text-editor="{ row, column, rowIndex, columnIndex }">
@@ -221,7 +232,7 @@
       },
     },
     editConfig: {
-      trigger: 'dblclick',
+      trigger: 'click',
       mode: 'cell',
       showIcon: false,
     },
@@ -493,7 +504,7 @@
   }: Partial<VxeGridDefines.EditClosedEventParams>) {
     const key = column!.property;
     tableConfig.data[rowIndex!][key].val = row[key];
-    if (tableConfig.data[rowIndex!][key].type === CellTypeEnum.quota) {
+    if (tableConfig.data[rowIndex!][key].type !== CellTypeEnum.normal) {
       getSingleData({ column, rowIndex, row, columnIndex });
     }
   }
@@ -506,18 +517,28 @@
     rowIndex,
     columnIndex,
   }: Partial<VxeGridDefines.EditClosedEventParams>) {
-    if (tableConfig.columns[columnIndex!].headerType !== HeaderCellTypeEnum.date) {
-      createMessage.warn(t('table.headerCell.isNotDateTip'));
-      return;
+    const cell = tableConfig.data[rowIndex!][column!.property];
+    if (cell.type === CellTypeEnum.formula) {
+      // 四则运算公式解析
+      const str: string = row[column!.property];
+      const exp = str.replace(/([a-z])(\d+)/g, function (m) {
+        const [field, rowIdx] = m.match(/([a-z]+)|(\d+)/g);
+        return tableConfig.data[rowIdx - 1][field].qData;
+      });
+
+      cell.qData = eval(exp);
+      console.log(cell.qData);
+    } else if (cell.type === CellTypeEnum.quota) {
+      if (tableConfig.columns[columnIndex!].headerType !== HeaderCellTypeEnum.date) {
+        createMessage.warn(t('table.headerCell.isNotDateTip'));
+        return;
+      }
+      const data = await getSingleQuotaData({
+        id: parseInt(row[column!.property]),
+        date: timeStrFilter(tableConfig.columns[columnIndex!].timeStr!),
+      });
+      cell.qData = (data[0]?.data[0] ?? [0, t('common.noData')])[1].toString();
     }
-    const data = await getSingleQuotaData({
-      id: parseInt(row[column!.property]),
-      date: timeStrFilter(tableConfig.columns[columnIndex!].timeStr!),
-    });
-    tableConfig.data[rowIndex!][column!.property].qData = (data[0]?.data[0] ?? [
-      0,
-      t('common.noData'),
-    ])[1].toString();
   }
   // 监听表头文本变化
   function titleChange(columnIndex: number, e: FocusEvent) {
