@@ -35,8 +35,8 @@
     node.uniqId = getUniqueField();
     node.type = node.version! < 3 ? 'Chart' : 'Table';
     node.pageConfig = {
-      width: '50%',
-      height: '1000px',
+      width: '33%',
+      height: '400px',
     };
     insertDOM(templateList, selectedTemplateList, node);
     console.log(node);
