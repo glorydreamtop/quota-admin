@@ -291,11 +291,14 @@
           icon: '',
           handler: () => {
             console.log(highLightList);
-            highLightList.forEach((node, index) => {
-              if (index > 0) {
+
+            for (let i = 0; i < highLightList.length; i++) {
+              const node = highLightList[i];
+              // 创建一个宏任务，让数组的watch阶段性触发
+              useTimeoutFn(() => {
                 emit('selectNode', node as TemplateItem);
-              }
-            });
+              }, 300 * i);
+            }
           },
         },
       ];

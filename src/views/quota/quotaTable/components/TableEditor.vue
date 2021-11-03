@@ -237,9 +237,9 @@
       showIcon: false,
     },
     data: [
-      { a: 'a1', b: 'b1', c: 'c1', d: 'd1' },
-      { a: 'a2', b: 'b2', c: 'c2', d: 'd2' },
-      { a: 'a3', b: 'b3', c: 'c3', d: 'd3' },
+      { a: '-', b: '-', c: '-', d: '-' },
+      { a: '-', b: '-', c: '-', d: '-' },
+      { a: '-', b: '-', c: '-', d: '-' },
     ],
     mergeCells: [],
     cellClassName: ({ rowIndex, columnIndex }) => {
@@ -400,55 +400,55 @@
     data: [
       {
         a: {
-          val: 'a1',
+          val: '-',
           type: 0,
         },
         b: {
-          val: 'b1',
+          val: '-',
           type: 0,
         },
         c: {
-          val: 'c1',
+          val: '-',
           type: 0,
         },
         d: {
-          val: 'd1',
+          val: '-',
           type: 0,
         },
       },
       {
         a: {
-          val: 'a2',
+          val: '-',
           type: 0,
         },
         b: {
-          val: 'b2',
+          val: '-',
           type: 0,
         },
         c: {
-          val: 'c2',
+          val: '-',
           type: 0,
         },
         d: {
-          val: 'd2',
+          val: '-',
           type: 0,
         },
       },
       {
         a: {
-          val: 'a3',
+          val: '-',
           type: 0,
         },
         b: {
-          val: 'b3',
+          val: '-',
           type: 0,
         },
         c: {
-          val: 'c3',
+          val: '-',
           type: 0,
         },
         d: {
-          val: 'd3',
+          val: '-',
           type: 0,
         },
       },

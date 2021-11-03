@@ -29,7 +29,7 @@
   });
   const [registerModal] = useModalInner(
     ({ column, columnIndex }: VxeGridDefines.HeaderCellClickEventParams) => {
-      console.log(1);
+      console.log();
 
       Object.assign(info, { column, columnIndex });
     }

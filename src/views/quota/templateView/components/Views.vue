@@ -1,13 +1,23 @@
 <template>
   <div class="w-full overflow-y-scroll p-2">
     <div
-      class="flex flex-wrap content-start p-8 pages bg-white overflow-hidden shadow shadow-gray-700"
-      id="view-box"
+      class="
+        flex flex-wrap
+        content-start
+        mb-8
+        p-8
+        pages
+        bg-white
+        overflow-hidden
+        shadow shadow-gray-700
+      "
+      v-for="(page, idx) in paginationInfo.pages"
+      :key="idx"
       :ref="(el) => viewBoxs.push(el)"
     >
       <div
         @click="selectTemplate(temp, $event)"
-        v-for="temp in templateList"
+        v-for="temp in page"
         :key="temp.uniqId"
         :data-uniqid="temp.uniqId"
         :class="[
@@ -78,13 +88,30 @@
     );
   });
 
-  const paginationInfo = reactive({
+  const paginationInfo: { pages: TemplateDOM[][]; totalPage: number } = reactive({
     pages: [[]],
     totalPage: 1,
   });
   useWatchArray(templateList, (v, pre) => {
     if (pre.length < v.length) {
-      last(paginationInfo.pages)!.push(v[0]);
+      // const diffNode = differenceBy(v, pre, (node) => node.uniqId);
+      // const beforNode = v[findIndex(v, (node) => node.uniqId === diffNode[0].uniqId) - 1];
+      // for (let i = 0; i < paginationInfo.pages.length; i++) {
+      //   const nodeList = paginationInfo.pages[i];
+      //   const idx = nodeList.findIndex((node) => node.uniqId === beforNode.uniqId);
+      //   nodeList.splice(idx + 1, 0, diffNode[0]);
+      // }
+
+      for (let i = 0; i < paginationInfo.pages.length; i++) {
+        const arr = paginationInfo.pages[i];
+        if (arr.length < 4) {
+          arr.push(last(v)!);
+          break;
+        }
+        if (i === paginationInfo.pages.length - 1 && arr.length === 4) {
+          paginationInfo.pages.push([]);
+        }
+      }
     }
   });
   function checkOverflow(boxdom: HTMLDivElement) {
@@ -128,10 +155,10 @@
         (mutation) => {
           mutation.forEach((m) => {
             if (m.addedNodes.length === 0) return;
-            last(m.addedNodes as HTMLElement[])!.scrollIntoView({
-              behavior: 'smooth',
-              block: 'center',
-            });
+            // last(m.addedNodes as HTMLElement[])!.scrollIntoView({
+            //   behavior: 'smooth',
+            //   block: 'center',
+            // });
             m.addedNodes.forEach((node) => {
               useResizeObserver(node, (e) => {
                 const target = e[0].target as HTMLElement;
@@ -143,7 +170,6 @@
                   _dom.pageConfig.height = `${target.style.height}px`;
                   const overflow = checkOverflow(target.parentElement!);
                   if (overflow) {
-                    dom.removeChild(target);
                   } else {
                   }
                 }

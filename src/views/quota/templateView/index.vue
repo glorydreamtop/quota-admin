@@ -23,7 +23,6 @@
   import { ref } from 'vue';
   import type { TemplateDOM } from '/#/template';
   import { useUniqueField } from '../quotaTable/components/helper';
-  import { useTimeoutFn } from '/@/hooks/core/useTimeout';
 
   const templateList = ref<TemplateDOM[]>([]);
   const selectedTemplateList = ref<TemplateDOM[]>([]);
@@ -36,13 +35,10 @@
     node.uniqId = getUniqueField();
     node.type = node.version! < 3 ? 'Chart' : 'Table';
     node.pageConfig = {
-      width: '33.3%',
-      height: '400px',
+      width: '50%',
+      height: '1000px',
     };
-    // 创建一个宏任务，让数组的watch阶段性触发
-    useTimeoutFn(() => {
-      insertDOM(templateList, selectedTemplateList, node);
-    }, 100);
+    insertDOM(templateList, selectedTemplateList, node);
     console.log(node);
   }
   function selectTemplate(arr: TemplateDOM[]) {

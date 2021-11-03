@@ -30,7 +30,7 @@
   });
   const [registerModal] = useModalInner(
     ({ column, rowIndex }: VxeGridDefines.CellClickEventParams) => {
-      // console.log({ column, rowIndex });
+      console.log({ column, rowIndex });
 
       Object.assign(info, { column, rowIndex });
     }
