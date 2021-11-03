@@ -523,7 +523,8 @@
       const str: string = row[column!.property];
       const exp = str.replace(/([a-z])(\d+)/g, function (m) {
         const [field, rowIdx] = m.match(/([a-z]+)|(\d+)/g);
-        return tableConfig.data[rowIdx - 1][field].qData;
+        const cell = tableConfig.data[rowIdx - 1][field];
+        return cell.type === 0 ? cell.val : cell.qData;
       });
 
       cell.qData = eval(exp);
