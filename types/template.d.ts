@@ -31,3 +31,12 @@ export interface ImgConfig {
   url: string;
   mode: string;
 }
+
+export interface pageSettingType {
+  pageType?: string;
+  pagination: boolean;
+  paddingTop: number;
+  paddingBottom: number;
+  paddingLeft: number;
+  paddingRight: number;
+}

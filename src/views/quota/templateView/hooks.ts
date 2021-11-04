@@ -1,6 +1,6 @@
 import { InjectionKey, ref, Ref, watchEffect } from 'vue';
 import { createContext, useContext } from '/@/hooks/core/useContext';
-import type { TemplateDOM } from '/#/template';
+import type { pageSettingType, TemplateDOM } from '/#/template';
 import { remove } from 'lodash-es';
 import { useMagicKeys } from '@vueuse/core';
 
@@ -32,6 +32,16 @@ export function createUniqIdContext(context: Ref<string[]>) {
 
 export function useUniqIdContext() {
   return useContext<Ref<string[]>>(uniqIdKey);
+}
+
+const pageSettingKey: InjectionKey<pageSettingType> = Symbol();
+
+export function createPageSettingContext(context: pageSettingType) {
+  return createContext<pageSettingType>(context, pageSettingKey, { native: true });
+}
+
+export function usePageSettingContext() {
+  return useContext<pageSettingType>(pageSettingKey);
 }
 
 type useMultiSelectRes = [

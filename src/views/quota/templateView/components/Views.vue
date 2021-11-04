@@ -1,26 +1,19 @@
 <template>
   <div class="w-full overflow-y-scroll p-2" id="page-box">
     <Draggable
-      class="
-        flex flex-wrap
-        content-start
-        mb-8
-        p-8
-        pages
-        bg-white
-        overflow-hidden
-        shadow-lg shadow-gray-700
-        list-group
-      "
+      :class="[
+        'flex flex-wrap content-start pages bg-white overflow-hidden shadow-lg shadow-gray-700 list-group',
+        pageSetting.pagination ? 'mb-8' : '',
+      ]"
       v-for="page in paginationInfo.pages"
       :key="page.id"
-      :ref="(el) => viewBoxs.push(el)"
       :data-pageid="page.id"
       :list="page.list"
       group="page"
       handle=".drag-handler"
       :animation="200"
       itemKey="uniqId"
+      :style="pageStyle"
     >
       <template #item="{ element }">
         <div
@@ -48,8 +41,21 @@
 </template>
 
 <script lang="ts" setup>
-  import { reactive, ref, watchEffect, computed, ComputedRef, watch, nextTick } from 'vue';
-  import { useMultiSelect, useTemplateListContext, TemplateListMapType } from '../hooks';
+  import {
+    reactive,
+    watchEffect,
+    computed,
+    ComputedRef,
+    watch,
+    nextTick,
+    CSSProperties,
+  } from 'vue';
+  import {
+    useMultiSelect,
+    useTemplateListContext,
+    TemplateListMapType,
+    usePageSettingContext,
+  } from '../hooks';
   import type { TemplateDOM } from '/#/template';
   import { BasicChart } from '/@/components/Chart';
   import BasicText from './Text.vue';
@@ -58,7 +64,7 @@
   import { onMountedOrActivated } from '/@/hooks/core/onMountedOrActivated';
   // import { useI18n } from '/@/hooks/web/useI18n';
   import { useMutationObserver, useResizeObserver, useTimeoutFn } from '@vueuse/core';
-  import { differenceBy, findIndex, isNull, remove } from 'lodash-es';
+  import { cloneDeep, differenceBy, findIndex, isNull, remove } from 'lodash-es';
   import { useWatchArray } from '/@/utils/helper/commonHelper';
   import { useUniqueField } from '../../quotaTable/components/helper';
   import Draggable from 'vuedraggable';
@@ -68,6 +74,28 @@
   }>();
 
   // const { t } = useI18n();
+  const pageSetting = usePageSettingContext();
+  const pageStyle: ComputedRef<CSSProperties> = computed(() => {
+    return {
+      paddingTop: `${pageSetting.paddingTop}px`,
+      paddingBottom: `${pageSetting.paddingBottom}px`,
+      paddingLeft: `${pageSetting.paddingLeft}px`,
+      paddingRight: `${pageSetting.paddingRight}px`,
+      aspectRatio: pageSetting.pagination ? '210/297' : 'unset',
+    };
+  });
+  watch(
+    () => pageSetting.pagination,
+    () => {
+      const clone = cloneDeep(templateList.value);
+      templateList.value = [];
+      for (let i = 0; i < clone.length; i++) {
+        useTimeoutFn(() => {
+          templateList.value.push(clone[i]);
+        }, 300);
+      }
+    }
+  );
   const templateList = useTemplateListContext();
   const templateMap: ComputedRef<TemplateListMapType> = computed(() => {
     const obj = {};
@@ -81,7 +109,6 @@
     Text: BasicText,
     Img: BasicImg,
   };
-  const viewBoxs = ref<HTMLDivElement[]>([]);
   const [selectTemplateList, { insertSelectKey }] = useMultiSelect(templateList);
   function selectTemplate(temp: TemplateDOM, nativeEvent: PointerEvent) {
     insertSelectKey(temp, nativeEvent);
@@ -250,6 +277,5 @@
   .pages {
     width: 100%;
     height: auto;
-    aspect-ratio: 210/297;
   }
 </style>

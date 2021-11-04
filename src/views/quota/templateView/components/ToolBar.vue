@@ -1,6 +1,53 @@
 <template>
   <div class="flex items-center gap-4 h-14 p-2 flex-wrap border hover:shadow mb-2 toolbar bg-white">
-    <!-- <Button size="small">{{ t('templateView.toolbar.paperSize') }}</Button> -->
+    <Popover
+      placement="bottom"
+      trigger="click"
+      @visibleChange="updateConfig('pageSetting', $event)"
+    >
+      <Button size="small">{{ t('templateView.toolbar.paperSize.btn') }}</Button>
+      <template #content>
+        <div class="flex gap-1 items-center flex-col">
+          <span>{{ t('templateView.toolbar.paperSize.paddingTop') }}</span>
+          <Input
+            :disabled="!pageConfig.pagination"
+            size="small"
+            suffix="px"
+            v-model:value="pageConfig.paddingTop"
+            class="!w-16 text-center"
+          />
+          <span>{{ t('templateView.toolbar.paperSize.paddingBottom') }}</span>
+          <Input
+            :disabled="!pageConfig.pagination"
+            size="small"
+            suffix="px"
+            v-model:value="pageConfig.paddingBottom"
+            class="!w-16 text-center"
+          />
+          <span>{{ t('templateView.toolbar.paperSize.paddingLeft') }}</span>
+          <Input
+            size="small"
+            suffix="px"
+            v-model:value="pageConfig.paddingLeft"
+            class="!w-16 text-center"
+          />
+          <span>{{ t('templateView.toolbar.paperSize.paddingRight') }}</span>
+          <Input
+            size="small"
+            suffix="px"
+            v-model:value="pageConfig.paddingRight"
+            class="!w-16 text-center"
+          />
+          <Tooltip>
+            <template #title>
+              {{ t('templateView.toolbar.paperSize.tip') }}
+            </template>
+            <Icon icon="ant-design:question-circle-outlined" />
+          </Tooltip>
+        </div>
+      </template>
+    </Popover>
+
     <Popover placement="bottom" trigger="click" @visibleChange="updateConfig('baseSize', $event)">
       <Button size="small">{{ t('templateView.toolbar.baseSize') }}</Button>
       <template #content>
@@ -66,6 +113,12 @@
       t('templateView.toolbar.removeNode.btn')
     }}</Button>
     <div class="ml-auto flex gap-1 items-center">
+      <Switch
+        :checked-children="t('templateView.toolbar.pagination.t')"
+        :un-checked-children="t('templateView.toolbar.pagination.f')"
+        v-model:checked="pageConfig.pagination"
+        @change="dispatch('pagination')"
+      />
       <Button size="small" type="primary" :loading="saveImgLoading" @click="dispatch('saveImg')">{{
         t('templateView.toolbar.save.img')
       }}</Button>
@@ -79,7 +132,7 @@
 <script lang="ts" setup>
   import { DatePicker, Button, Switch, Input, Tooltip, Popover } from 'ant-design-vue';
   import { cloneDeep, remove } from 'lodash-es';
-  import { reactive, ref } from 'vue';
+  import { reactive, ref, toRaw, watch } from 'vue';
   import { useUniqueField } from '../../quotaTable/components/helper';
   import {
     textTemplate,
@@ -88,6 +141,7 @@
     useTemplateListContext,
     useUniqIdContext,
     insertDOM,
+    usePageSettingContext,
   } from '../hooks';
   import type { chartConfigType } from '/#/chart';
   import { useI18n } from '/@/hooks/web/useI18n';
@@ -104,6 +158,7 @@
   const templateList = useTemplateListContext();
   const usedUniqId = useUniqIdContext();
   const { getUniqueField } = useUniqueField(usedUniqId.value);
+  const pageSetting = usePageSettingContext();
   const pageConfig = reactive({
     date: [yearsAgo(5), formatToDate()],
     sameTimeRange: false,
@@ -112,7 +167,20 @@
       width: '50%',
       height: '300',
     },
+    ...toRaw(pageSetting),
   });
+  watch(
+    () => pageConfig.pagination,
+    (v) => {
+      if (v) {
+        pageConfig.paddingTop = 32;
+        pageConfig.paddingBottom = 32;
+      } else {
+        pageConfig.paddingTop = 0;
+        pageConfig.paddingBottom = 0;
+      }
+    }
+  );
   const saveImgLoading = ref(false);
   function updateConfig(configName: string, visible: boolean) {
     if (visible) return;
@@ -154,6 +222,9 @@
           }
         });
         break;
+      case 'pageSetting':
+        Object.assign(pageSetting, pageConfig);
+        break;
       default:
         break;
     }
@@ -176,13 +247,15 @@
       case 'saveImg':
         saveImgLoading.value = true;
         const blobObj = await dom2imgFile({
-          dom: document.getElementById('view-box')!,
+          dom: document.getElementById('page-box')!,
           type: fileType.BLOB,
           scale: 4,
         });
         downloadByData(blobObj, 'report.jpg');
         saveImgLoading.value = false;
         break;
+      case 'pagination':
+        pageSetting.pagination = pageConfig.pagination;
       default:
         break;
     }

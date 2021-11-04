@@ -15,13 +15,14 @@
   import Views from './components/Views.vue';
   import ToolBar from './components/ToolBar.vue';
   import {
+    createPageSettingContext,
     createSelectTemplateListContext,
     createTemplateListContext,
     createUniqIdContext,
     insertDOM,
   } from './hooks';
-  import { ref } from 'vue';
-  import type { TemplateDOM } from '/#/template';
+  import { reactive, ref } from 'vue';
+  import type { pageSettingType, TemplateDOM } from '/#/template';
   import { useUniqueField } from '../quotaTable/components/helper';
   import { onMountedOrActivated } from '/@/hooks/core/onMountedOrActivated';
   import { useResizeObserver } from '@vueuse/core';
@@ -29,9 +30,17 @@
   const templateList = ref<TemplateDOM[]>([]);
   const selectedTemplateList = ref<TemplateDOM[]>([]);
   const usedUniqId = ref<string[]>([]);
+  const pageSetting: pageSettingType = reactive({
+    paddingBottom: 32,
+    paddingTop: 32,
+    paddingLeft: 32,
+    paddingRight: 32,
+    pagination: true,
+  });
   createTemplateListContext(templateList);
   createSelectTemplateListContext(selectedTemplateList);
   createUniqIdContext(usedUniqId);
+  createPageSettingContext(pageSetting);
   const { getUniqueField } = useUniqueField(usedUniqId.value);
   function selectNode(node: TemplateDOM) {
     node.uniqId = getUniqueField();
