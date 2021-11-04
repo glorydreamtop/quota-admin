@@ -15,6 +15,17 @@
       itemKey="uniqId"
       :style="pageStyle"
     >
+      <template #header>
+        <div class="w-full h-12 border-b border-gray-200 mb-6">
+          <span class="float-left italic leading-4 mt-7 ml-2 text-gray-400">笃初诚美 慎终宜令</span>
+          <span class="float-right italic leading-4 mt-7 mr-2 text-gray-400 flex gap-1"
+            ><img class="w-3.5 h-3.5" src="http://121.4.186.36:23587/favicon.ico" /><span
+              >上海笃诚投资管理有限公司</span
+            ></span
+          >
+        </div>
+      </template>
+
       <template #item="{ element }">
         <div
           @click="selectTemplate(element, $event)"
@@ -45,6 +56,7 @@
     reactive,
     watchEffect,
     computed,
+    ref,
     ComputedRef,
     watch,
     nextTick,
@@ -84,15 +96,19 @@
       aspectRatio: pageSetting.pagination ? '210/297' : 'unset',
     };
   });
+  const reload = ref(false);
   watch(
     () => pageSetting.pagination,
     () => {
       const clone = cloneDeep(templateList.value);
+      reload.value = true;
       templateList.value = [];
+      paginationInfo.pages = [{ list: [], id: getUniqueField() }];
+      reload.value = false;
       for (let i = 0; i < clone.length; i++) {
         useTimeoutFn(() => {
           templateList.value.push(clone[i]);
-        }, 300);
+        }, 30 * i);
       }
     }
   );
@@ -127,6 +143,7 @@
     });
   const { getUniqueField } = useUniqueField();
   useWatchArray(templateList, (v, pre) => {
+    if (reload.value) return;
     if (pre.length < v.length) {
       const diffNode = differenceBy(v, pre, (node) => node.uniqId);
       const nodeIndex = findIndex(v, (node) => node.uniqId === diffNode[0].uniqId);
@@ -148,6 +165,10 @@
       for (let i = 0; i < paginationInfo.pages.length; i++) {
         const page = paginationInfo.pages[i];
         remove(page.list, (node) => diffNodeUniqId.includes(node.uniqId));
+      }
+      remove(paginationInfo.pages, (page) => page.list.length === 0);
+      if (paginationInfo.pages.length === 0) {
+        paginationInfo.pages = [{ list: [], id: getUniqueField() }];
       }
     }
   });
@@ -277,5 +298,6 @@
   .pages {
     width: 100%;
     height: auto;
+    min-height: 800px;
   }
 </style>

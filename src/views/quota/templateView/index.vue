@@ -31,8 +31,8 @@
   const selectedTemplateList = ref<TemplateDOM[]>([]);
   const usedUniqId = ref<string[]>([]);
   const pageSetting: pageSettingType = reactive({
-    paddingBottom: 32,
-    paddingTop: 32,
+    paddingBottom: 24,
+    paddingTop: 24,
     paddingLeft: 32,
     paddingRight: 32,
     pagination: true,

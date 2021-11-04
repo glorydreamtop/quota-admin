@@ -1,119 +1,128 @@
 <template>
-  <div class="flex items-center gap-4 h-14 p-2 flex-wrap border hover:shadow mb-2 toolbar bg-white">
-    <Popover
-      placement="bottom"
-      trigger="click"
-      @visibleChange="updateConfig('pageSetting', $event)"
-    >
-      <Button size="small">{{ t('templateView.toolbar.paperSize.btn') }}</Button>
-      <template #content>
-        <div class="flex gap-1 items-center flex-col">
-          <span>{{ t('templateView.toolbar.paperSize.paddingTop') }}</span>
-          <Input
-            :disabled="!pageConfig.pagination"
-            size="small"
-            suffix="px"
-            v-model:value="pageConfig.paddingTop"
-            class="!w-16 text-center"
-          />
-          <span>{{ t('templateView.toolbar.paperSize.paddingBottom') }}</span>
-          <Input
-            :disabled="!pageConfig.pagination"
-            size="small"
-            suffix="px"
-            v-model:value="pageConfig.paddingBottom"
-            class="!w-16 text-center"
-          />
-          <span>{{ t('templateView.toolbar.paperSize.paddingLeft') }}</span>
-          <Input
-            size="small"
-            suffix="px"
-            v-model:value="pageConfig.paddingLeft"
-            class="!w-16 text-center"
-          />
-          <span>{{ t('templateView.toolbar.paperSize.paddingRight') }}</span>
-          <Input
-            size="small"
-            suffix="px"
-            v-model:value="pageConfig.paddingRight"
-            class="!w-16 text-center"
-          />
-          <Tooltip>
-            <template #title>
-              {{ t('templateView.toolbar.paperSize.tip') }}
-            </template>
-            <Icon icon="ant-design:question-circle-outlined" />
-          </Tooltip>
-        </div>
-      </template>
-    </Popover>
+  <div class="flex items-center justify-between border p-2 hover:shadow mb-2 toolbar bg-white">
+    <div class="flex flex-wrap flex-grow gap-1">
+      <Popover
+        placement="bottom"
+        trigger="click"
+        @visibleChange="updateConfig('pageSetting', $event)"
+      >
+        <Button size="small">{{ t('templateView.toolbar.paperSize.btn') }}</Button>
+        <template #content>
+          <div class="flex gap-1 items-center flex-col">
+            <span>{{ t('templateView.toolbar.paperSize.paddingTop') }}</span>
+            <Input
+              :disabled="!pageConfig.pagination"
+              size="small"
+              suffix="px"
+              v-model:value="pageConfig.paddingTop"
+              class="!w-16 text-center"
+            />
+            <span>{{ t('templateView.toolbar.paperSize.paddingBottom') }}</span>
+            <Input
+              :disabled="!pageConfig.pagination"
+              size="small"
+              suffix="px"
+              v-model:value="pageConfig.paddingBottom"
+              class="!w-16 text-center"
+            />
+            <span>{{ t('templateView.toolbar.paperSize.paddingLeft') }}</span>
+            <Input
+              size="small"
+              suffix="px"
+              v-model:value="pageConfig.paddingLeft"
+              class="!w-16 text-center"
+            />
+            <span>{{ t('templateView.toolbar.paperSize.paddingRight') }}</span>
+            <Input
+              size="small"
+              suffix="px"
+              v-model:value="pageConfig.paddingRight"
+              class="!w-16 text-center"
+            />
+            <Tooltip>
+              <template #title>
+                {{ t('templateView.toolbar.paperSize.tip') }}
+              </template>
+              <Icon icon="ant-design:question-circle-outlined" />
+            </Tooltip>
+          </div>
+        </template>
+      </Popover>
 
-    <Popover placement="bottom" trigger="click" @visibleChange="updateConfig('baseSize', $event)">
-      <Button size="small">{{ t('templateView.toolbar.baseSize') }}</Button>
-      <template #content>
-        <div class="flex gap-1 items-center">
-          <Icon icon="ant-design:column-width-outlined" />
-          <Input size="small" v-model:value="pageConfig.baseSize.width" class="!w-16 text-center" />
-          <Icon icon="ant-design:column-height-outlined" />
-          <Input
+      <Popover placement="bottom" trigger="click" @visibleChange="updateConfig('baseSize', $event)">
+        <Button size="small">{{ t('templateView.toolbar.baseSize') }}</Button>
+        <template #content>
+          <div class="flex gap-1 items-center">
+            <Icon icon="ant-design:column-width-outlined" />
+            <Input
+              size="small"
+              v-model:value="pageConfig.baseSize.width"
+              class="!w-16 text-center"
+            />
+            <Icon icon="ant-design:column-height-outlined" />
+            <Input
+              size="small"
+              v-model:value="pageConfig.baseSize.height"
+              class="!w-16 text-center"
+            />
+            <Tooltip>
+              <template #title>
+                {{ t('templateView.toolbar.baseSizeTip') }}
+              </template>
+              <Icon icon="ant-design:question-circle-outlined" />
+            </Tooltip>
+          </div>
+        </template>
+      </Popover>
+      <Popover placement="bottom" trigger="click" @visibleChange="updateConfig('date', $event)">
+        <Button size="small">{{ t('templateView.toolbar.sameTimeRange') }}</Button>
+        <template #content>
+          <RangePicker
             size="small"
-            v-model:value="pageConfig.baseSize.height"
-            class="!w-16 text-center"
+            class="w-200px"
+            value-format="YYYY-MM-DD"
+            v-model:value="pageConfig.date"
           />
-          <Tooltip>
-            <template #title>
-              {{ t('templateView.toolbar.baseSizeTip') }}
-            </template>
-            <Icon icon="ant-design:question-circle-outlined" />
-          </Tooltip>
-        </div>
-      </template>
-    </Popover>
-    <Popover placement="bottom" trigger="click" @visibleChange="updateConfig('date', $event)">
-      <Button size="small">{{ t('templateView.toolbar.sameTimeRange') }}</Button>
-      <template #content>
-        <RangePicker
-          size="small"
-          class="w-200px"
-          value-format="YYYY-MM-DD"
-          v-model:value="pageConfig.date"
-        />
-      </template>
-    </Popover>
-    <Popover
-      placement="bottom"
-      trigger="click"
-      @visibleChange="updateConfig('showLastest', $event)"
-    >
-      <Button size="small">{{ t('templateView.toolbar.showLastest.btn') }}</Button>
-      <template #content>
-        <Switch
-          :checked-children="t('templateView.toolbar.showLastest.t')"
-          :un-checked-children="t('templateView.toolbar.showLastest.f')"
-          v-model:checked="pageConfig.showLastest"
-        />
-      </template>
-    </Popover>
-    <Button size="small" @click="dispatch('insertText')">{{
-      t('templateView.toolbar.insertText.btn')
-    }}</Button>
-    <BasicUpload
-      :maxSize="6"
-      :maxNumber="12"
-      @change="uploadFileChange"
-      :api="uploadApi"
-      size="small"
-      v-model:value="imgList"
-    >
-      <template #btn="{ onClick }">
-        <Button size="small" @click="onClick">{{ t('templateView.toolbar.insertImg.btn') }}</Button>
-      </template>
-    </BasicUpload>
-    <Button size="small" @click="dispatch('remove')">{{
-      t('templateView.toolbar.removeNode.btn')
-    }}</Button>
-    <div class="ml-auto flex gap-1 items-center">
+        </template>
+      </Popover>
+      <Popover
+        placement="bottom"
+        trigger="click"
+        @visibleChange="updateConfig('showLastest', $event)"
+      >
+        <Button size="small">{{ t('templateView.toolbar.showLastest.btn') }}</Button>
+        <template #content>
+          <Switch
+            :checked-children="t('templateView.toolbar.showLastest.t')"
+            :un-checked-children="t('templateView.toolbar.showLastest.f')"
+            v-model:checked="pageConfig.showLastest"
+          />
+        </template>
+      </Popover>
+      <Button size="small" @click="dispatch('insertText')">{{
+        t('templateView.toolbar.insertText.btn')
+      }}</Button>
+      <BasicUpload
+        :maxSize="6"
+        :maxNumber="12"
+        @change="uploadFileChange"
+        :api="uploadApi"
+        size="small"
+        v-model:value="imgList"
+      >
+        <template #btn="{ onClick }">
+          <Button size="small" @click="onClick">{{
+            t('templateView.toolbar.insertImg.btn')
+          }}</Button>
+        </template>
+      </BasicUpload>
+      <Button size="small" @click="dispatch('remove')">{{
+        t('templateView.toolbar.removeNode.btn')
+      }}</Button>
+    </div>
+    <div class="flex justify-between items-center gap-1">
       <Switch
+        class="!min-w-58px !w-58px"
         :checked-children="t('templateView.toolbar.pagination.t')"
         :un-checked-children="t('templateView.toolbar.pagination.f')"
         v-model:checked="pageConfig.pagination"
