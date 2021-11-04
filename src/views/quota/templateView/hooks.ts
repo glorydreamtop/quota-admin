@@ -128,7 +128,6 @@ export const textTemplate: TemplateDOM = {
   },
   config: {
     text: '这里你可以随意书写，并为其添加丰富的样式',
-    html: '<span style="font-weight="600"">这里你可以随意书写，并为其添加丰富的<em>样式</em></span>',
   },
 };
 

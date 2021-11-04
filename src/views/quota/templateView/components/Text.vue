@@ -11,13 +11,16 @@
 </template>
 
 <script lang="ts" setup>
-  import { reactive, ref } from 'vue';
+  import { reactive, ref, toRefs } from 'vue';
   import { TextConfig } from '/#/template';
   // import { useI18n } from '/@/hooks/web/useI18n';
   import { Tinymce } from '/@/components/Tinymce/index';
 
   const props = defineProps<{
     config: TextConfig;
+  }>();
+  const emit = defineEmits<{
+    (event: 'update:config', config: TextConfig): void;
   }>();
   // const { t } = useI18n();
   const options = reactive({
@@ -31,9 +34,14 @@
     quickbars_selection_toolbar:
       'bold italic underline lineheight alignleft aligncenter alignright fontsizeselect indent outdent removeformat',
   });
-  const htmlStr = ref(props.config.text);
+  const { config } = toRefs(props);
+  const htmlStr = ref(config.value.text);
   // function edit() {}
-  // function handleChange(s: string) {}
+  function handleChange(s: string) {
+    console.log(s);
+
+    emit('update:config', { text: s });
+  }
 </script>
 
 <style lang="less" scoped></style>

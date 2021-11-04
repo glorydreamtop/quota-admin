@@ -23,6 +23,8 @@
   import { ref } from 'vue';
   import type { TemplateDOM } from '/#/template';
   import { useUniqueField } from '../quotaTable/components/helper';
+  import { onMountedOrActivated } from '/@/hooks/core/onMountedOrActivated';
+  import { useResizeObserver } from '@vueuse/core';
 
   const templateList = ref<TemplateDOM[]>([]);
   const selectedTemplateList = ref<TemplateDOM[]>([]);
@@ -35,8 +37,8 @@
     node.uniqId = getUniqueField();
     node.type = node.version! < 3 ? 'Chart' : 'Table';
     node.pageConfig = {
-      width: '33%',
-      height: '400px',
+      width: '50%',
+      height: '300px',
     };
     insertDOM(templateList, selectedTemplateList, node);
     console.log(node);
@@ -44,11 +46,20 @@
   function selectTemplate(arr: TemplateDOM[]) {
     selectedTemplateList.value = arr;
   }
+  onMountedOrActivated(() => {
+    const viewBox = document.getElementsByClassName('views-box')[0];
+    const parentEle = viewBox.parentElement;
+    useResizeObserver(parentEle, (e) => {
+      viewBox.style.maxWidth = `${(e[0].target as HTMLElement).offsetWidth}px`;
+    });
+  });
 </script>
 
 <style lang="less" scoped>
   .views-box {
     // height: calc(100% - 4rem);
     flex-grow: 1;
+    // width: auto;
+    // max-width: 1571px;
   }
 </style>

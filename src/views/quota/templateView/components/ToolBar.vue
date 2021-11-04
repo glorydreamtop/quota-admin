@@ -167,8 +167,6 @@
         break;
       case 'remove':
         remove(templateList.value, (t) => {
-          console.log(imgList.value);
-
           if (t.type === 'Img') {
             remove(imgList.value, (url) => url === t.config.url);
           }

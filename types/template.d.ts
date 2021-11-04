@@ -25,7 +25,6 @@ export interface TemplateDOM {
 
 export interface TextConfig {
   text: string;
-  html: string;
 }
 
 export interface ImgConfig {
