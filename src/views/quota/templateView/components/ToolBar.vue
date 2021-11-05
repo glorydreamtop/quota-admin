@@ -131,7 +131,7 @@
       <Button size="small" type="primary" :loading="saveImgLoading" @click="dispatch('saveImg')">{{
         t('templateView.toolbar.save.img')
       }}</Button>
-      <Button size="small" disabled @click="dispatch('savePdf')">{{
+      <Button size="small" @click="dispatch('savePdf')">{{
         t('templateView.toolbar.save.pdf')
       }}</Button>
     </div>
@@ -139,6 +139,7 @@
 </template>
 
 <script lang="ts" setup>
+  import { jsPDF } from 'jspdf';
   import { DatePicker, Button, Switch, Input, Tooltip, Popover } from 'ant-design-vue';
   import { cloneDeep, remove } from 'lodash-es';
   import { reactive, ref, toRaw, watch } from 'vue';
@@ -254,6 +255,7 @@
         });
         break;
       case 'saveImg':
+        selectedTemplateList.value = [];
         saveImgLoading.value = true;
         const blobObj = await dom2imgFile({
           dom: document.getElementById('page-box')!,
@@ -263,8 +265,16 @@
         downloadByData(blobObj, 'report.jpg');
         saveImgLoading.value = false;
         break;
+      case 'savePdf':
+        const doc = new jsPDF();
+        doc.html(document.getElementById('page-box')!, {
+          callback: (doc) => doc.save(),
+        });
+        break;
       case 'pagination':
         pageSetting.pagination = pageConfig.pagination;
+      case 'header':
+        pageSetting.header = pageConfig.header;
       default:
         break;
     }

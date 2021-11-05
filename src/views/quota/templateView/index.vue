@@ -36,6 +36,19 @@
     paddingLeft: 32,
     paddingRight: 32,
     pagination: true,
+    header: {
+      show: true,
+      left: '笃初诚美 慎终宜令',
+      center: '',
+      right: '上海笃诚投资管理有限公司',
+    },
+    footer: {
+      show: true,
+      left: '内部资料 禁止分发',
+      center: '',
+      right: '上海笃诚投资管理有限公司',
+      pageNum: true,
+    },
   });
   createTemplateListContext(templateList);
   createSelectTemplateListContext(selectedTemplateList);

@@ -39,4 +39,17 @@ export interface pageSettingType {
   paddingBottom: number;
   paddingLeft: number;
   paddingRight: number;
+  header: {
+    show: boolean;
+    left: string;
+    center: string;
+    right: string;
+  };
+  footer: {
+    show: true;
+    left: string;
+    center: string;
+    right: string;
+    pageNum: boolean;
+  };
 }

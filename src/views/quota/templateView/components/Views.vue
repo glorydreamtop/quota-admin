@@ -1,53 +1,61 @@
 <template>
   <div class="w-full overflow-y-scroll p-2" id="page-box">
-    <Draggable
+    <div
       :class="[
-        'flex flex-wrap content-start pages bg-white overflow-hidden shadow-lg shadow-gray-700 list-group',
+        'pages bg-white overflow-hidden shadow-lg shadow-gray-700 flex flex-col items-center gap-4',
         pageSetting.pagination ? 'mb-8' : '',
       ]"
-      v-for="page in paginationInfo.pages"
+      v-for="(page, pageIdx) in paginationInfo.pages"
       :key="page.id"
       :data-pageid="page.id"
-      :list="page.list"
-      group="page"
-      handle=".drag-handler"
-      :animation="200"
-      itemKey="uniqId"
       :style="pageStyle"
     >
-      <template #header>
-        <div class="w-full h-12 border-b border-gray-200 mb-6">
-          <span class="float-left italic leading-4 mt-7 ml-2 text-gray-400">笃初诚美 慎终宜令</span>
-          <span class="float-right italic leading-4 mt-7 mr-2 text-gray-400 flex gap-1"
-            ><img class="w-3.5 h-3.5" src="http://121.4.186.36:23587/favicon.ico" /><span
-              >上海笃诚投资管理有限公司</span
-            ></span
+      <div class="pb-1 border-b page-header">
+        <input v-model="pageSetting.header.left" />
+        <span class="flex gap-1"
+          ><img class="w-3.5 h-3.5" src="http://121.4.186.36:23587/favicon.ico" /><input
+            v-model="pageSetting.header.right"
+        /></span>
+      </div>
+      <Draggable
+        class="flex flex-wrap content-start flex-grow w-full overflow-hidden"
+        :list="page.list"
+        group="page"
+        handle=".drag-handler"
+        :animation="200"
+        itemKey="uniqId"
+      >
+        <template #item="{ element }">
+          <div
+            @click="selectTemplate(element, $event)"
+            :data-uniqid="element.uniqId"
+            :class="[
+              'border border-gray-100 resize overflow-hidden sortable relative',
+              selectTemplateList.includes(element.uniqId) ? 'selected' : '',
+            ]"
+            :style="{ width: element.pageConfig.width, height: element.pageConfig.height }"
           >
-        </div>
-      </template>
-
-      <template #item="{ element }">
-        <div
-          @click="selectTemplate(element, $event)"
-          :data-uniqid="element.uniqId"
-          :class="[
-            'border border-gray-100 resize overflow-hidden sortable relative',
-            selectTemplateList.includes(element.uniqId) ? 'selected' : '',
-          ]"
-          :style="{ width: element.pageConfig.width, height: element.pageConfig.height }"
-        >
-          <Icon
-            icon="akar-icons:drag-horizontal"
-            class="drag-handler cursor-move pl-1 pt-1 !text-primary"
-          />
-          <component
-            :is="compTypeMap[element.type]"
-            v-model:config="element.config"
-            class="w-full h-full"
-          />
-        </div>
-      </template>
-    </Draggable>
+            <Icon
+              icon="akar-icons:drag-horizontal"
+              class="drag-handler cursor-move pl-1 pt-1 !text-primary"
+            />
+            <component
+              :is="compTypeMap[element.type]"
+              v-model:config="element.config"
+              class="w-full h-full text-base"
+            />
+          </div>
+        </template>
+      </Draggable>
+      <div class="pt-1 border-t page-footer">
+        <input v-model="pageSetting.footer.left" />
+        <span v-show="pageSetting.footer.pageNum">{{ pageIdx + 1 }}</span>
+        <span class="flex gap-1"
+          ><img class="w-3.5 h-3.5" src="http://121.4.186.36:23587/favicon.ico" /><input
+            v-model="pageSetting.footer.right"
+        /></span>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -200,7 +208,7 @@
           // 监听单页面内部新节点加入，并使其可拖拽，可拖拽缩放，并收集尺寸信息
           m.addedNodes.forEach((pagedom: HTMLElement) => {
             useMutationObserver(
-              pagedom,
+              pagedom.children[1],
               (mutation2) => {
                 mutation2.forEach((m2) => {
                   if (m2.addedNodes.length === 0) return;
@@ -275,11 +283,6 @@
     width: 0;
   }
 
-  .drag-handler {
-    position: absolute;
-    z-index: 9;
-  }
-
   .selected {
     position: relative;
     border-color: @primary-color;
@@ -299,5 +302,43 @@
     width: 100%;
     height: auto;
     min-height: 800px;
+    font-size: 0;
+  }
+
+  .sortable {
+    box-sizing: border-box;
+    width: 50%;
+
+    &:hover {
+      .drag-handler {
+        display: inline-flex !important;
+      }
+    }
+
+    .drag-handler {
+      display: none !important;
+      position: absolute;
+      z-index: 9;
+    }
+  }
+
+  .page-header,
+  .page-footer {
+    @apply border-gray-200;
+    @apply text-sm;
+    @apply leading-4;
+    @apply px-1;
+    @apply text-gray-400;
+
+    width: 100%;
+    height: 1.25rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    input {
+      font-style: italic;
+      outline: none;
+    }
   }
 </style>

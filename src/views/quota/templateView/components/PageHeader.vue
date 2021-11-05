@@ -27,13 +27,12 @@
     elementpath: false,
     toolbar: false,
     menubar: false,
-    plugins: ['quickbars', 'codesample', 'insertdatetime', 'lists', 'advlist', 'table'],
+    plugins: ['quickbars'],
     resize: false,
     inline: true,
     statusbar: false,
-    quickbars_insert_toolbar: 'codesample table insertdatetime',
     quickbars_selection_toolbar:
-      'fontsizeselect bold italic underline lineheight alignleft aligncenter alignright indent outdent bullist numlist removeformat',
+      'bold italic underline lineheight alignleft aligncenter alignright fontsizeselect indent outdent removeformat',
   });
   const { config } = toRefs(props);
   const htmlStr = ref(config.value.text);
