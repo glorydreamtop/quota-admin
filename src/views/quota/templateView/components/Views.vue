@@ -10,12 +10,18 @@
       :data-pageid="page.id"
       :style="pageStyle"
     >
-      <div class="pb-1 border-b page-header">
-        <input v-model="pageSetting.header.left" />
+      <div class="pb-1 border-b page-header" v-show="pageSetting.header.show">
+        <span contenteditable @input="pageHeaderChange('left', $event)">{{
+          pageSetting.header.left
+        }}</span>
         <span class="flex gap-1"
-          ><img class="w-3.5 h-3.5" src="http://121.4.186.36:23587/favicon.ico" /><input
-            v-model="pageSetting.header.right"
-        /></span>
+          ><img class="w-3.5 h-3.5" src="http://121.4.186.36:23587/favicon.ico" /><span
+            contenteditable
+            @input="pageHeaderChange('right', $event)"
+            class="text-right"
+            >{{ pageSetting.header.right }}</span
+          ></span
+        >
       </div>
       <Draggable
         class="flex flex-wrap content-start flex-grow w-full overflow-hidden"
@@ -31,7 +37,9 @@
             :data-uniqid="element.uniqId"
             :class="[
               'border border-gray-100 resize overflow-hidden sortable relative',
-              selectTemplateList.includes(element.uniqId) ? 'selected' : '',
+              selectedTemplateDOMList.find((node) => node.uniqId === element.uniqId)
+                ? 'selected'
+                : '',
             ]"
             :style="{ width: element.pageConfig.width, height: element.pageConfig.height }"
           >
@@ -48,12 +56,20 @@
         </template>
       </Draggable>
       <div class="pt-1 border-t page-footer">
-        <input v-model="pageSetting.footer.left" />
-        <span v-show="pageSetting.footer.pageNum">{{ pageIdx + 1 }}</span>
-        <span class="flex gap-1"
-          ><img class="w-3.5 h-3.5" src="http://121.4.186.36:23587/favicon.ico" /><input
-            v-model="pageSetting.footer.right"
-        /></span>
+        <span
+          contenteditable
+          v-show="pageSetting.footer.show"
+          @input="pageFooterChange('left', $event)"
+          >{{ pageSetting.footer.left }}</span
+        >
+        <span class="footer-page-num" v-show="pageSetting.footer.pageNum">{{ pageIdx + 1 }}</span>
+        <span v-show="pageSetting.footer.show" class="flex gap-1"
+          ><img class="w-3.5 h-3.5" src="http://121.4.186.36:23587/favicon.ico" /><span
+            contenteditable
+            @input="pageFooterChange('right', $event)"
+            >{{ pageSetting.footer.right }}</span
+          ></span
+        >
       </div>
     </div>
   </div>
@@ -73,6 +89,7 @@
   import {
     useMultiSelect,
     useTemplateListContext,
+    useSelectTemplateListContext,
     TemplateListMapType,
     usePageSettingContext,
   } from '../hooks';
@@ -89,19 +106,20 @@
   import { useUniqueField } from '../../quotaTable/components/helper';
   import Draggable from 'vuedraggable';
 
-  const emit = defineEmits<{
-    (event: 'selectTemplate', arr: TemplateDOM[]): void;
-  }>();
-
   // const { t } = useI18n();
   const pageSetting = usePageSettingContext();
+  const selectedTemplateDOMList = useSelectTemplateListContext();
   const pageStyle: ComputedRef<CSSProperties> = computed(() => {
     return {
       paddingTop: `${pageSetting.paddingTop}px`,
       paddingBottom: `${pageSetting.paddingBottom}px`,
       paddingLeft: `${pageSetting.paddingLeft}px`,
       paddingRight: `${pageSetting.paddingRight}px`,
-      aspectRatio: pageSetting.pagination ? '210/297' : 'unset',
+      aspectRatio: pageSetting.pagination
+        ? pageSetting.horizontal
+          ? '297/210'
+          : '210/297'
+        : 'unset',
     };
   });
   const reload = ref(false);
@@ -133,14 +151,13 @@
     Text: BasicText,
     Img: BasicImg,
   };
-  const [selectTemplateList, { insertSelectKey }] = useMultiSelect(templateList);
+  const [selectTemplateIdList, { insertSelectKey }] = useMultiSelect(templateList);
   function selectTemplate(temp: TemplateDOM, nativeEvent: PointerEvent) {
     insertSelectKey(temp, nativeEvent);
   }
   watchEffect(() => {
-    emit(
-      'selectTemplate',
-      selectTemplateList.value.map((uniqId) => templateMap.value[uniqId])
+    selectedTemplateDOMList.value = selectTemplateIdList.value.map(
+      (uniqId) => templateMap.value[uniqId]
     );
   });
 
@@ -154,17 +171,19 @@
     if (reload.value) return;
     if (pre.length < v.length) {
       const diffNode = differenceBy(v, pre, (node) => node.uniqId);
-      const nodeIndex = findIndex(v, (node) => node.uniqId === diffNode[0].uniqId);
-      if (nodeIndex === 0) {
-        paginationInfo.pages[0].list.unshift(diffNode[0]);
-      } else {
-        const beforNode = v[nodeIndex - 1];
-        for (let i = 0; i < paginationInfo.pages.length; i++) {
-          const page = paginationInfo.pages[i];
-          const idx = page.list.findIndex((node) => node.uniqId === beforNode.uniqId);
-          if (idx > -1) {
-            page.list.splice(idx + 1, 0, diffNode[0]);
-            break;
+      for (let i = 0; i < diffNode.length; i++) {
+        const nodeIndex = findIndex(v, (node) => node.uniqId === diffNode[i].uniqId);
+        if (nodeIndex === 0) {
+          paginationInfo.pages[0].list.unshift(diffNode[i]);
+        } else {
+          const beforNode = v[nodeIndex - 1];
+          for (let j = 0; j < paginationInfo.pages.length; j++) {
+            const page = paginationInfo.pages[j];
+            const idx = page.list.findIndex((node) => node.uniqId === beforNode.uniqId);
+            if (idx > -1) {
+              page.list.splice(idx + 1, 0, diffNode[i]);
+              break;
+            }
           }
         }
       }
@@ -197,6 +216,12 @@
       await nextTick();
     }
   );
+  function pageHeaderChange(pos: 'left' | 'right', e: InputEvent) {
+    pageSetting.header[pos] = (e.target as HTMLSpanElement).innerText;
+  }
+  function pageFooterChange(pos: 'left' | 'right', e: InputEvent) {
+    pageSetting.footer[pos] = (e.target as HTMLSpanElement).innerText;
+  }
   onMountedOrActivated(() => {
     const boxdom = document.getElementById('page-box') as HTMLDivElement;
     // 监听有新页面加入
@@ -207,6 +232,7 @@
           if (m.addedNodes.length === 0) return;
           // 监听单页面内部新节点加入，并使其可拖拽，可拖拽缩放，并收集尺寸信息
           m.addedNodes.forEach((pagedom: HTMLElement) => {
+            pagedom.style.height = `${pagedom.offsetHeight}px`;
             useMutationObserver(
               pagedom.children[1],
               (mutation2) => {
@@ -302,7 +328,6 @@
     width: 100%;
     height: auto;
     min-height: 800px;
-    font-size: 0;
   }
 
   .sortable {
@@ -330,15 +355,24 @@
     @apply px-1;
     @apply text-gray-400;
 
+    position: relative;
     width: 100%;
     height: 1.25rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
 
-    input {
+    span {
+      width: fit-content;
       font-style: italic;
       outline: none;
+      overflow: visible;
     }
+  }
+
+  .footer-page-num {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
   }
 </style>

@@ -5,7 +5,7 @@
     </div>
     <div class="flex-grow h-full enter-y bg-gray-100 flex flex-col">
       <ToolBar />
-      <Views class="views-box" @selectTemplate="selectTemplate" />
+      <Views class="views-box" />
     </div>
   </div>
 </template>
@@ -31,11 +31,12 @@
   const selectedTemplateList = ref<TemplateDOM[]>([]);
   const usedUniqId = ref<string[]>([]);
   const pageSetting: pageSettingType = reactive({
-    paddingBottom: 24,
-    paddingTop: 24,
+    paddingBottom: 32,
+    paddingTop: 32,
     paddingLeft: 32,
     paddingRight: 32,
-    pagination: true,
+    pagination: false,
+    horizontal: false,
     header: {
       show: true,
       left: '笃初诚美 慎终宜令',
@@ -64,9 +65,6 @@
     };
     insertDOM(templateList, selectedTemplateList, node);
     console.log(node);
-  }
-  function selectTemplate(arr: TemplateDOM[]) {
-    selectedTemplateList.value = arr;
   }
   onMountedOrActivated(() => {
     const viewBox = document.getElementsByClassName('views-box')[0];

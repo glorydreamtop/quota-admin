@@ -1,12 +1,17 @@
 export default {
   toolbar: {
     paperSize: {
-      btn: '纸张大小',
+      btn: '页面设置',
       paddingTop: '上边距',
       paddingBottom: '下边距',
       paddingLeft: '左边距',
       paddingRight: '右边距',
-      tip: '页面长宽默认采用A4纸比例，长图模式下将会关闭上下边距',
+      horizontal: '横向',
+      vertical: '纵向',
+      tip: '页面长宽默认采用A4纸比例',
+      showHeader: '显示页眉',
+      showFooter: '显示页脚',
+      showPageNum: '显示页码',
     },
     sameTimeRange: '修改起止日期',
     showLastest: {

@@ -8,43 +8,68 @@
       >
         <Button size="small">{{ t('templateView.toolbar.paperSize.btn') }}</Button>
         <template #content>
-          <div class="flex gap-1 items-center flex-col">
-            <span>{{ t('templateView.toolbar.paperSize.paddingTop') }}</span>
-            <Input
-              :disabled="!pageConfig.pagination"
-              size="small"
-              suffix="px"
-              v-model:value="pageConfig.paddingTop"
-              class="!w-16 text-center"
-            />
-            <span>{{ t('templateView.toolbar.paperSize.paddingBottom') }}</span>
-            <Input
-              :disabled="!pageConfig.pagination"
-              size="small"
-              suffix="px"
-              v-model:value="pageConfig.paddingBottom"
-              class="!w-16 text-center"
-            />
-            <span>{{ t('templateView.toolbar.paperSize.paddingLeft') }}</span>
-            <Input
-              size="small"
-              suffix="px"
-              v-model:value="pageConfig.paddingLeft"
-              class="!w-16 text-center"
-            />
-            <span>{{ t('templateView.toolbar.paperSize.paddingRight') }}</span>
-            <Input
-              size="small"
-              suffix="px"
-              v-model:value="pageConfig.paddingRight"
-              class="!w-16 text-center"
-            />
-            <Tooltip>
-              <template #title>
-                {{ t('templateView.toolbar.paperSize.tip') }}
-              </template>
-              <Icon icon="ant-design:question-circle-outlined" />
-            </Tooltip>
+          <div class="flex items-start gap-4">
+            <div>
+              <div class="flex w-full justify-center">
+                <Input size="small" suffix="px" v-model:value="pageConfig.paddingTop" />
+              </div>
+              <div class="flex gap-1 my-1 items-center w-full justify-center">
+                <Input size="small" suffix="px" v-model:value="pageConfig.paddingLeft" />
+                <div
+                  :class="[
+                    'mini-page border border-gray-300 shadow shadow-gray-700',
+                    pageConfig.horizontal ? 'horizontal' : 'vertical',
+                  ]"
+                  :style="miniPageStyle"
+                >
+                  <span
+                    class="cursor-pointer"
+                    @click="pageConfig.horizontal = !pageConfig.horizontal"
+                    >{{
+                      t(
+                        `templateView.toolbar.paperSize.${
+                          pageConfig.horizontal ? 'horizontal' : 'vertical'
+                        }`
+                      )
+                    }}</span
+                  >
+                </div>
+                <Input size="small" suffix="px" v-model:value="pageConfig.paddingRight" />
+              </div>
+              <div class="flex w-full justify-center">
+                <Input size="small" suffix="px" v-model:value="pageConfig.paddingBottom" />
+              </div>
+            </div>
+            <div class="flex flex-col gap-1 children:flex children:items-center children:gap-1">
+              <div>
+                <RadioGroup button-style="solid" size="small" v-model:value="pageConfig.pagination">
+                  <RadioButton :value="true">{{
+                    t('templateView.toolbar.pagination.t')
+                  }}</RadioButton>
+                  <RadioButton :value="false">{{
+                    t('templateView.toolbar.pagination.f')
+                  }}</RadioButton>
+                </RadioGroup>
+                <Tooltip>
+                  <template #title>
+                    {{ t('templateView.toolbar.paperSize.tip') }}
+                  </template>
+                  <Icon icon="ant-design:question-circle-outlined" />
+                </Tooltip>
+              </div>
+              <div>
+                <Switch size="small" v-model:checked="pageConfig.header.show" />
+                <span>{{ t('templateView.toolbar.paperSize.showHeader') }}</span>
+              </div>
+              <div>
+                <Switch size="small" v-model:checked="pageConfig.footer.show" />
+                <span>{{ t('templateView.toolbar.paperSize.showFooter') }}</span>
+              </div>
+              <div>
+                <Switch size="small" v-model:checked="pageConfig.footer.pageNum" />
+                <span>{{ t('templateView.toolbar.paperSize.showPageNum') }}</span>
+              </div>
+            </div>
           </div>
         </template>
       </Popover>
@@ -121,28 +146,29 @@
       }}</Button>
     </div>
     <div class="flex justify-between items-center gap-1">
-      <Switch
-        class="!min-w-58px !w-58px"
-        :checked-children="t('templateView.toolbar.pagination.t')"
-        :un-checked-children="t('templateView.toolbar.pagination.f')"
-        v-model:checked="pageConfig.pagination"
-        @change="dispatch('pagination')"
-      />
-      <Button size="small" type="primary" :loading="saveImgLoading" @click="dispatch('saveImg')">{{
-        t('templateView.toolbar.save.img')
-      }}</Button>
-      <Button size="small" @click="dispatch('savePdf')">{{
-        t('templateView.toolbar.save.pdf')
-      }}</Button>
+      <Button
+        :disabled="pageSetting.pagination"
+        size="small"
+        type="primary"
+        :loading="saveImgLoading"
+        @click="dispatch('saveImg')"
+        >{{ t('templateView.toolbar.save.img') }}</Button
+      >
+      <Button
+        size="small"
+        :disabled="!pageSetting.pagination"
+        type="primary"
+        @click="dispatch('savePdf')"
+        >{{ t('templateView.toolbar.save.pdf') }}</Button
+      >
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-  import { jsPDF } from 'jspdf';
-  import { DatePicker, Button, Switch, Input, Tooltip, Popover } from 'ant-design-vue';
+  import { DatePicker, Button, Switch, Input, Tooltip, Popover, Radio } from 'ant-design-vue';
   import { cloneDeep, remove } from 'lodash-es';
-  import { reactive, ref, toRaw, watch } from 'vue';
+  import { computed, ComputedRef, CSSProperties, reactive, ref, toRaw, nextTick } from 'vue';
   import { useUniqueField } from '../../quotaTable/components/helper';
   import {
     textTemplate,
@@ -160,9 +186,11 @@
   import { downloadByData } from '/@/utils/file/download';
   import { BasicUpload } from '/@/components/Upload';
   import { uploadApi } from '/@/api/sys/upload';
-  import { ImgConfig } from '/#/template';
+  import type { ImgConfig } from '/#/template';
 
   const RangePicker = DatePicker.RangePicker;
+  const RadioButton = Radio.Button;
+  const RadioGroup = Radio.Group;
   const { t } = useI18n();
   const selectedTemplateList = useSelectTemplateListContext();
   const templateList = useTemplateListContext();
@@ -177,20 +205,15 @@
       width: '50%',
       height: '300',
     },
-    ...toRaw(pageSetting),
+    ...cloneDeep(toRaw(pageSetting)),
   });
-  watch(
-    () => pageConfig.pagination,
-    (v) => {
-      if (v) {
-        pageConfig.paddingTop = 32;
-        pageConfig.paddingBottom = 32;
-      } else {
-        pageConfig.paddingTop = 0;
-        pageConfig.paddingBottom = 0;
-      }
-    }
-  );
+  const miniPageStyle: ComputedRef<CSSProperties> = computed(() => {
+    return {
+      padding: `${pageConfig.paddingTop / 10}px ${pageConfig.paddingRight / 10}px ${
+        pageConfig.paddingBottom / 10
+      }px ${pageConfig.paddingLeft / 10}px`,
+    };
+  });
   const saveImgLoading = ref(false);
   function updateConfig(configName: string, visible: boolean) {
     if (visible) return;
@@ -233,7 +256,7 @@
         });
         break;
       case 'pageSetting':
-        Object.assign(pageSetting, pageConfig);
+        Object.assign(pageSetting, cloneDeep(pageConfig));
         break;
       default:
         break;
@@ -257,8 +280,9 @@
       case 'saveImg':
         selectedTemplateList.value = [];
         saveImgLoading.value = true;
+        await nextTick();
         const blobObj = await dom2imgFile({
-          dom: document.getElementById('page-box')!,
+          dom: document.getElementById('page-box')!.getElementsByClassName('pages')[0]!,
           type: fileType.BLOB,
           scale: 4,
         });
@@ -266,13 +290,7 @@
         saveImgLoading.value = false;
         break;
       case 'savePdf':
-        const doc = new jsPDF();
-        doc.html(document.getElementById('page-box')!, {
-          callback: (doc) => doc.save(),
-        });
         break;
-      case 'pagination':
-        pageSetting.pagination = pageConfig.pagination;
       case 'header':
         pageSetting.header = pageConfig.header;
       default:
@@ -297,6 +315,34 @@
 
     &:hover {
       transform: scale(1.001);
+    }
+  }
+
+  ::v-deep(.ant-input-affix-wrapper) {
+    width: auto !important;
+
+    .ant-input {
+      width: 2em !important;
+      text-align: center;
+    }
+  }
+
+  .mini-page {
+    background-color: lighten(@primary-color, 35%);
+    background-clip: content-box;
+    color: @primary-color;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &.vertical {
+      width: 3.5rem;
+      height: 4.95rem;
+    }
+
+    &.horizontal {
+      width: 4.95rem;
+      height: 3.5rem;
     }
   }
 </style>

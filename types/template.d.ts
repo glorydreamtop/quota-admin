@@ -39,6 +39,7 @@ export interface pageSettingType {
   paddingBottom: number;
   paddingLeft: number;
   paddingRight: number;
+  horizontal: boolean;
   header: {
     show: boolean;
     left: string;
