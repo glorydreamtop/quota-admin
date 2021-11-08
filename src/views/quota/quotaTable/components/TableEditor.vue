@@ -32,7 +32,21 @@
             </Button>
           </DatePicker>
           <Button size="small" type="primary" @click="saveTable">{{ t('common.saveText') }}</Button>
-          <Button size="small" type="primary">{{ t('page.quotaTable.template') }}</Button>
+          <Popover trigger="click">
+            <template #content>
+              <div class="flex gap-2">
+                <div
+                  v-for="item in tableConfigSchemaList"
+                  :key="item.preview"
+                  class="flex flex-col items-center gap-2"
+                >
+                  <img class="w-80" :src="item.preview" alt="" />
+                  <span>{{ item.name }}</span>
+                </div>
+              </div>
+            </template>
+            <Button size="small">{{ t('page.quotaTable.template') }}</Button>
+          </Popover>
         </div>
       </template>
       <template #normal-title-text="{ column, columnIndex }">
@@ -473,8 +487,8 @@
     return gridOptions;
   }
   onMountedOrActivated(() => {
-    Object.assign(tableConfig, cloneDeep(tableConfigSchemaList[0]));
-    Object.assign(gridOptions, cloneDeep(transfer(tableConfigSchemaList[0])));
+    Object.assign(tableConfig, cloneDeep(tableConfigSchemaList.value[1]));
+    Object.assign(gridOptions, cloneDeep(transfer(tableConfigSchemaList.value[1])));
   });
 </script>
 
