@@ -353,7 +353,7 @@
     @apply text-sm;
     @apply leading-4;
     @apply px-1;
-    @apply text-gray-400;
+    @apply text-gray-300;
 
     position: relative;
     width: 100%;
@@ -364,7 +364,7 @@
 
     span {
       width: fit-content;
-      font-style: italic;
+      // font-style: italic;
       outline: none;
       overflow: visible;
     }

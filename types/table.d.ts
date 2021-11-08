@@ -20,7 +20,6 @@ export interface TableConfigType {
   title: string;
   timeConfig: {
     endDate: string;
-    timeOffset: string;
   };
   columns: TableCol[];
   mergeCells?: VxeTablePropTypes.MergeCell[];

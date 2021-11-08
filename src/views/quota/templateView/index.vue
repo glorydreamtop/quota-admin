@@ -67,7 +67,7 @@
     console.log(node);
   }
   onMountedOrActivated(() => {
-    const viewBox = document.getElementsByClassName('views-box')[0];
+    const viewBox = document.getElementById('page-box')!;
     const parentEle = viewBox.parentElement;
     useResizeObserver(parentEle, (e) => {
       viewBox.style.maxWidth = `${(e[0].target as HTMLElement).offsetWidth}px`;

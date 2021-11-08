@@ -145,7 +145,7 @@
         t('templateView.toolbar.removeNode.btn')
       }}</Button>
     </div>
-    <div class="flex justify-between items-center gap-1">
+    <!-- <div class="flex justify-between items-center gap-1">
       <Button
         :disabled="pageSetting.pagination"
         size="small"
@@ -161,7 +161,7 @@
         @click="dispatch('savePdf')"
         >{{ t('templateView.toolbar.save.pdf') }}</Button
       >
-    </div>
+    </div> -->
   </div>
 </template>
 

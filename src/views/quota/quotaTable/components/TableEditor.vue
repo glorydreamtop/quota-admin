@@ -32,6 +32,7 @@
             </Button>
           </DatePicker>
           <Button size="small" type="primary" @click="saveTable">{{ t('common.saveText') }}</Button>
+          <Button size="small" type="primary">{{ t('page.quotaTable.template') }}</Button>
         </div>
       </template>
       <template #normal-title-text="{ column, columnIndex }">
@@ -162,6 +163,8 @@
   import { CellTypeEnum, HeaderCellTypeEnum } from '/@/enums/tableEnum';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { formatToDate } from '/@/utils/dateUtil';
+  import { onMountedOrActivated } from '/@/hooks/core/onMountedOrActivated';
+  import { tableConfigSchemaList } from './tableSchema';
 
   const [registerHeaderCellSettingModal, { openModal: openHeaderCellSettingModal }] = useModal();
   const [
@@ -174,58 +177,8 @@
   const gridOptions = reactive<VxeGridProps & VxeGridEventProps>({
     border: true,
     resizable: true,
-    height: 600,
     align: 'center',
-    columns: [
-      {
-        title: '列a',
-        field: 'a',
-        editRender: {
-          name: 'input',
-        },
-        slots: {
-          header: 'normal-title-text',
-          default: 'normal-cell-text',
-          edit: 'normal-cell-text-editor',
-        },
-      },
-      {
-        title: '列b',
-        field: 'b',
-        editRender: {
-          name: 'input',
-        },
-        slots: {
-          header: 'normal-title-text',
-          default: 'normal-cell-text',
-          edit: 'normal-cell-text-editor',
-        },
-      },
-      {
-        title: '列b',
-        field: 'c',
-        editRender: {
-          name: 'input',
-        },
-        slots: {
-          header: 'normal-title-text',
-          default: 'normal-cell-text',
-          edit: 'normal-cell-text-editor',
-        },
-      },
-      {
-        title: '列d',
-        field: 'd',
-        editRender: {
-          name: 'input',
-        },
-        slots: {
-          header: 'normal-title-text',
-          default: 'normal-cell-text',
-          edit: 'normal-cell-text-editor',
-        },
-      },
-    ],
+    columns: [],
     toolbarConfig: {
       slots: {
         buttons: 'toolbar-buttons',
@@ -236,11 +189,7 @@
       mode: 'cell',
       showIcon: false,
     },
-    data: [
-      { a: '-', b: '-', c: '-', d: '-' },
-      { a: '-', b: '-', c: '-', d: '-' },
-      { a: '-', b: '-', c: '-', d: '-' },
-    ],
+    data: [],
     mergeCells: [],
     cellClassName: ({ rowIndex, columnIndex }) => {
       if (selectedCells.value.find((cell) => cell.row === rowIndex && cell.col === columnIndex)) {
@@ -388,71 +337,10 @@
     title: '',
     timeConfig: {
       endDate: formatToDate(),
-      timeOffset: '-2',
     },
-    columns: [
-      { title: '列a', field: 'a', headerType: 0, timeStr: '0' },
-      { title: '列b', field: 'b', headerType: 0, timeStr: '0' },
-      { title: '列c', field: 'c', headerType: 0, timeStr: '0' },
-      { title: '列d', field: 'd', headerType: 0, timeStr: '0' },
-    ],
+    columns: [],
     mergeCells: [],
-    data: [
-      {
-        a: {
-          val: '-',
-          type: 0,
-        },
-        b: {
-          val: '-',
-          type: 0,
-        },
-        c: {
-          val: '-',
-          type: 0,
-        },
-        d: {
-          val: '-',
-          type: 0,
-        },
-      },
-      {
-        a: {
-          val: '-',
-          type: 0,
-        },
-        b: {
-          val: '-',
-          type: 0,
-        },
-        c: {
-          val: '-',
-          type: 0,
-        },
-        d: {
-          val: '-',
-          type: 0,
-        },
-      },
-      {
-        a: {
-          val: '-',
-          type: 0,
-        },
-        b: {
-          val: '-',
-          type: 0,
-        },
-        c: {
-          val: '-',
-          type: 0,
-        },
-        d: {
-          val: '-',
-          type: 0,
-        },
-      },
-    ],
+    data: [],
   });
   createTableConfigContext(tableConfig);
   const [colValue, { addCol, removeCol }] = useAddCol(xGrid, tableConfig);
@@ -526,9 +414,7 @@
         const cell = tableConfig.data[rowIdx - 1][field];
         return cell.type === 0 ? cell.val : cell.qData;
       });
-
       cell.qData = eval(exp);
-      console.log(cell.qData);
     } else if (cell.type === CellTypeEnum.quota) {
       if (tableConfig.columns[columnIndex!].headerType !== HeaderCellTypeEnum.date) {
         createMessage.warn(t('table.headerCell.isNotDateTip'));
@@ -555,6 +441,41 @@
     tableConfig.mergeCells = cloneDeep(toRaw(mergeCells));
     console.log(tableConfig);
   }
+  function transfer(tableConfig: TableConfigType) {
+    const gridOptions: VxeGridProps & VxeGridEventProps = {
+      columns: [],
+      data: [],
+    };
+    for (let i = 0; i < tableConfig.columns.length; i++) {
+      const col = tableConfig.columns[i];
+      const column = {
+        field: col.field,
+        title: col.title,
+        editRender: {
+          name: 'input',
+        },
+        slots: {
+          header: 'normal-title-text',
+          default: 'normal-cell-text',
+          edit: 'normal-cell-text-editor',
+        },
+      };
+      gridOptions.columns?.push(column);
+    }
+    for (let i = 0; i < tableConfig.data.length; i++) {
+      const data = {};
+      const origin = tableConfig.data[i];
+      Object.keys(origin).forEach((key) => {
+        data[key] = origin[key].val;
+      });
+      gridOptions.data?.push(data);
+    }
+    return gridOptions;
+  }
+  onMountedOrActivated(() => {
+    Object.assign(tableConfig, cloneDeep(tableConfigSchemaList[0]));
+    Object.assign(gridOptions, cloneDeep(transfer(tableConfigSchemaList[0])));
+  });
 </script>
 
 <style lang="less" scoped>
