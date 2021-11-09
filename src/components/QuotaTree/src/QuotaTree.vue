@@ -1,12 +1,7 @@
 <template>
   <div class="bg-white tail">
     <QuotaSearch v-if="showSearch" @select="handleSelect" />
-    <Icon
-      v-repeat-click="getData"
-      class="refresh-icon"
-      icon="ant-design:sync-outlined"
-      :spin="loading[CategoryTreeType.sysQuota]"
-    />
+    <ToolBar :loading="loading[treeType]" />
     <Tabs v-model:activeKey="treeType" class="tabs" centered>
       <TabPane :key="CategoryTreeType.sysQuota" :tab="t('quota.sysQuota')">
         <BasicTree
@@ -67,7 +62,7 @@
 
 <script lang="ts" setup>
   import { onMounted, reactive, ref, unref, defineEmits, defineProps, toRefs, nextTick } from 'vue';
-  import { QuotaSearch } from '../index';
+  import { QuotaSearch, ToolBar } from '../index';
   import { BasicTree } from '/@/components/Tree/index';
   import type { ContextMenuItem } from '/@/components/Tree/index';
   import type { TreeItem, TreeActionType } from '/@/components/Tree/index';
@@ -417,14 +412,6 @@
 
   .tabs {
     height: calc(100% - 32px);
-  }
-
-  .refresh-icon {
-    position: absolute;
-    top: 90px;
-    right: 16px;
-    font-size: 20px !important;
-    z-index: 9;
   }
 
   ::v-deep(.ant-input-affix-wrapper) {
