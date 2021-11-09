@@ -34,15 +34,24 @@
           <Button size="small" type="primary" @click="saveTable">{{ t('common.saveText') }}</Button>
           <Popover trigger="click">
             <template #content>
-              <div class="flex gap-2">
-                <div
-                  v-for="item in tableConfigSchemaList"
-                  :key="item.preview"
-                  class="flex flex-col items-center gap-2"
-                >
-                  <img class="w-80" :src="item.preview" alt="" />
-                  <span>{{ item.name }}</span>
+              <div class="flex flex-col items-center">
+                <div class="flex gap-2">
+                  <div
+                    v-for="item in tableConfigSchemaList"
+                    :key="item.preview"
+                    :class="[
+                      'flex flex-col items-center gap-2 border',
+                      defaultTableConfig.name === item.name ? ' border-primary' : '',
+                    ]"
+                    @click="defaultTableConfig = item"
+                  >
+                    <img class="w-70 h-40" :src="item.preview" alt="" />
+                    <span class="text-gray-400">{{ item.name }}</span>
+                  </div>
                 </div>
+                <Button size="small" class="w-60 mt-4" type="primary" @click="applyConfig">{{
+                  t('common.okText')
+                }}</Button>
               </div>
             </template>
             <Button size="small">{{ t('page.quotaTable.template') }}</Button>
@@ -78,7 +87,7 @@
                 <Input
                   size="small"
                   class="!w-34 !text-center"
-                  v-model:value="column.timeStr"
+                  v-model:value="tableConfig.columns[columnIndex].timeStr"
                   @input="timeStrChange(columnIndex, $event)"
                 >
                   <template #addonAfter>
@@ -94,17 +103,8 @@
                   {{ timeStrTip }}
                 </div>
               </template>
-              <Icon
-                v-if="tableConfig.columns[columnIndex].headerType === 1"
-                class="cursor-pointer"
-                icon="ant-design:field-time-outlined"
-              />
+              <Icon class="cursor-pointer" icon="ant-design:field-time-outlined" />
             </Popover>
-            <Icon
-              class="cursor-pointer"
-              icon="ant-design:setting-outlined"
-              @click="showHeaderCellModal({ column, columnIndex })"
-            />
             <Icon
               class="cursor-pointer"
               icon="ant-design:check-outlined"
@@ -129,7 +129,9 @@
               "
             />
           </span>
-          <span class="text-gray-300 leading-4 absolute right-0 top-0">{{ rowIndex + 1 }}</span>
+          <span class="text-gray-300 leading-4 absolute right-0 top-0 select-none">{{
+            rowIndex + 1
+          }}</span>
         </div>
       </template>
       <template #normal-cell-text-editor="{ row, column, rowIndex, columnIndex }">
@@ -144,7 +146,6 @@
         </div>
       </template>
     </VxeGrid>
-    <HeaderCellSetting @register="registerHeaderCellSettingModal" />
     <CellSetting @register="registerCellSettingModal" />
   </div>
 </template>
@@ -170,17 +171,13 @@
   import type { TableConfigType } from '/#/table';
   import { cloneDeep, maxBy, minBy, parseInt, remove } from 'lodash-es';
   import { useModal } from '/@/components/Modal';
-  import HeaderCellSetting from './HeaderCellSetting.vue';
   import CellSetting from './CellSetting.vue';
   import Icon from '/@/components/Icon';
   import { getSingleQuotaData } from '/@/api/quota';
   import { CellTypeEnum, HeaderCellTypeEnum } from '/@/enums/tableEnum';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { formatToDate } from '/@/utils/dateUtil';
-  import { onMountedOrActivated } from '/@/hooks/core/onMountedOrActivated';
-  import { tableConfigSchemaList } from './tableSchema';
-
-  const [registerHeaderCellSettingModal, { openModal: openHeaderCellSettingModal }] = useModal();
+  import { TableConfigSchema, tableConfigSchemaList } from './tableSchema';
   const [
     registerCellSettingModal,
     { openModal: openCellSettingModal, setModalProps: setCellSettingModalProps },
@@ -364,14 +361,7 @@
     selectedCells.value = cells;
   });
   const selectedCells = ref<any[]>([]);
-  function showHeaderCellModal({
-    column,
-    columnIndex,
-  }: Partial<VxeGridDefines.HeaderCellClickEventParams>) {
-    console.log(tableConfig, columnIndex);
 
-    openHeaderCellSettingModal(true, { column, columnIndex });
-  }
   // 关掉表头编辑
   function closeTitleEditor({
     column,
@@ -382,6 +372,9 @@
     if (col.headerType === 1) {
       tableConfig.data.forEach((data) => {
         data[col.field!].type = 1;
+        if (!isNaN(parseInt(data[col.field!].val))) {
+          // 自动刷新指标值
+        }
       });
     }
   }
@@ -434,8 +427,13 @@
         createMessage.warn(t('table.headerCell.isNotDateTip'));
         return;
       }
+      const id = parseInt(row[column!.property]);
+      if (isNaN(id) || id.toString() !== row[column!.property]) {
+        createMessage.warn(t('table.cell.idError'));
+        return;
+      }
       const data = await getSingleQuotaData({
-        id: parseInt(row[column!.property]),
+        id,
         date: timeStrFilter(tableConfig.columns[columnIndex!].timeStr!),
       });
       cell.qData = (data[0]?.data[0] ?? [0, t('common.noData')])[1].toString();
@@ -447,6 +445,10 @@
   }
   function timeStrChange(columnIndex: number, e: InputEvent) {
     tableConfig.columns[columnIndex].timeStr = (e.target as HTMLInputElement).value;
+    tableConfig.columns[columnIndex].headerType =
+      (e.target as HTMLInputElement).value.length > 0
+        ? HeaderCellTypeEnum.date
+        : HeaderCellTypeEnum.normal;
     vaildTimeStr(e);
   }
   function saveTable() {
@@ -455,13 +457,14 @@
     tableConfig.mergeCells = cloneDeep(toRaw(mergeCells));
     console.log(tableConfig);
   }
-  function transfer(tableConfig: TableConfigType) {
+  const defaultTableConfig = ref<TableConfigSchema>({});
+  function transfer(table: TableConfigType) {
     const gridOptions: VxeGridProps & VxeGridEventProps = {
       columns: [],
       data: [],
     };
-    for (let i = 0; i < tableConfig.columns.length; i++) {
-      const col = tableConfig.columns[i];
+    for (let i = 0; i < table.columns.length; i++) {
+      const col = table.columns[i];
       const column = {
         field: col.field,
         title: col.title,
@@ -476,9 +479,9 @@
       };
       gridOptions.columns?.push(column);
     }
-    for (let i = 0; i < tableConfig.data.length; i++) {
+    for (let i = 0; i < table.data.length; i++) {
       const data = {};
-      const origin = tableConfig.data[i];
+      const origin = table.data[i];
       Object.keys(origin).forEach((key) => {
         data[key] = origin[key].val;
       });
@@ -486,10 +489,15 @@
     }
     return gridOptions;
   }
-  onMountedOrActivated(() => {
-    Object.assign(tableConfig, cloneDeep(tableConfigSchemaList.value[1]));
-    Object.assign(gridOptions, cloneDeep(transfer(tableConfigSchemaList.value[1])));
-  });
+  async function applyConfig() {
+    gridOptions.columns = [];
+    gridOptions.data = [];
+    tableConfig.columns = [];
+    tableConfig.data = [];
+    Object.assign(gridOptions, cloneDeep(transfer(defaultTableConfig.value)));
+    Object.assign(tableConfig, cloneDeep(defaultTableConfig.value));
+    console.log(gridOptions, tableConfig);
+  }
 </script>
 
 <style lang="less" scoped>

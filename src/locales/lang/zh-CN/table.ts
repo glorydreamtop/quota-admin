@@ -27,5 +27,6 @@ export default {
     normal: '普通文本',
     quota: '指标数据',
     formula: '公式文本',
+    idError: 'ID格式不正确',
   },
 };

@@ -2,7 +2,7 @@ import { ref } from 'vue-demi';
 import { TableConfigType } from '/#/table';
 import { formatToDate } from '/@/utils/dateUtil';
 
-interface TableConfigSchema extends TableConfigType {
+export interface TableConfigSchema extends TableConfigType {
   name: string;
   preview: string;
 }
@@ -137,8 +137,8 @@ export const tableConfigSchemaList = ref<TableConfigSchema[]>([
   },
   {
     title: '',
-    preview: 'http://121.4.186.36:23588/cms/downloadFile?fileKey=files/table1.png',
-    name: '空白3行4列',
+    preview: 'http://121.4.186.36:23588/cms/downloadFile?fileKey=files/table4.png',
+    name: '空白5行5列',
     timeConfig: {
       endDate: formatToDate(),
     },
@@ -147,8 +147,53 @@ export const tableConfigSchemaList = ref<TableConfigSchema[]>([
       { title: '列b', field: 'b', headerType: 0, timeStr: '0' },
       { title: '列c', field: 'c', headerType: 0, timeStr: '0' },
       { title: '列d', field: 'd', headerType: 0, timeStr: '0' },
+      { title: '列e', field: 'e', headerType: 0, timeStr: '0' },
     ],
     data: [
+      {
+        a: {
+          val: '-',
+          type: 0,
+        },
+        b: {
+          val: '-',
+          type: 0,
+        },
+        c: {
+          val: '-',
+          type: 0,
+        },
+        d: {
+          val: '-',
+          type: 0,
+        },
+        e: {
+          val: '-',
+          type: 0,
+        },
+      },
+      {
+        a: {
+          val: '-',
+          type: 0,
+        },
+        b: {
+          val: '-',
+          type: 0,
+        },
+        c: {
+          val: '-',
+          type: 0,
+        },
+        d: {
+          val: '-',
+          type: 0,
+        },
+        e: {
+          val: '-',
+          type: 0,
+        },
+      },
       {
         a: {
           val: '-',
