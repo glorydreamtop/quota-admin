@@ -2,16 +2,11 @@
   <div class="toolbar">
     <Icon
       v-repeat-click="getData"
-      class="refresh-icon"
+      class="cursor-pointer"
       icon="ant-design:sync-outlined"
       :spin="loading"
     />
-    <Icon
-      v-repeat-click="getData"
-      class="refresh-icon"
-      icon="ant-design:plus-outlined"
-      :spin="loading"
-    />
+    <Icon class="cursor-pointer" icon="ant-design:plus-outlined" />
   </div>
 </template>
 
@@ -37,6 +32,7 @@
     @apply shadow-gray-400;
     @apply shadow;
     @apply p-1;
+    @apply border;
 
     position: absolute;
     top: 90px;

@@ -1,7 +1,8 @@
 <template>
   <div class="bg-white tail">
     <QuotaSearch v-if="showSearch" @select="handleSelect" />
-    <ToolBar :loading="loading[treeType]" />
+    <ToolBar :loading="loading[treeType]" @getData="getData" />
+    <QuotaEditor @register="registerQuotaEditor" />
     <Tabs v-model:activeKey="treeType" class="tabs" centered>
       <TabPane :key="CategoryTreeType.sysQuota" :tab="t('quota.sysQuota')">
         <BasicTree
@@ -21,11 +22,20 @@
             >
               <Icon :icon="item.icon" />
               <span
+                v-show="item.key !== 'new-folder'"
                 :data-folderId="item.folder ? item.key : undefined"
                 :data-LeafId="!item.folder ? item.key : undefined"
                 class="select-none tree-node w-full"
                 >{{ nodeFilter(item) }}</span
               >
+              <Input
+                class="name-editor"
+                size="small"
+                v-show="item.key === 'new-folder'"
+                v-model:value="item.name"
+                @blur="handleBlur(item)"
+                autofocus
+              />
             </span>
           </template>
         </BasicTree>
@@ -47,26 +57,45 @@
             >
               <Icon :icon="item.icon" />
               <span
+                v-show="item.key !== 'new-folder'"
                 :data-folderId="item.folder ? item.key : undefined"
                 :data-LeafId="!item.folder ? item.key : undefined"
                 class="select-none tree-node w-full"
                 >{{ nodeFilter(item) }}</span
               >
+              <Input
+                class="name-editor"
+                size="small"
+                v-show="item.key === 'new-folder'"
+                v-model:value="item.name"
+                @blur="handleBlur(item)"
+                autofocus
+              />
             </span>
-          </template>
-        </BasicTree></TabPane
-      >
+          </template> </BasicTree
+      ></TabPane>
     </Tabs>
   </div>
 </template>
 
 <script lang="ts" setup>
-  import { onMounted, reactive, ref, unref, defineEmits, defineProps, toRefs, nextTick } from 'vue';
+  import {
+    onMounted,
+    reactive,
+    ref,
+    unref,
+    defineEmits,
+    defineProps,
+    toRefs,
+    nextTick,
+    watch,
+  } from 'vue';
   import { QuotaSearch, ToolBar } from '../index';
+  import { QuotaEditor } from '/@/components/QuotaEditor';
   import { BasicTree } from '/@/components/Tree/index';
   import type { ContextMenuItem } from '/@/components/Tree/index';
   import type { TreeItem, TreeActionType } from '/@/components/Tree/index';
-  import { Tabs } from 'ant-design-vue';
+  import { Tabs, Input } from 'ant-design-vue';
   import {
     getQuotaTree,
     getDirQuota,
@@ -81,11 +110,13 @@
   import Icon from '/@/components/Icon';
   import { findNode, findPath, forEach } from '/@/utils/helper/treeHelper';
   import { useMessage } from '/@/hooks/web/useMessage';
-  import { uniq } from 'lodash-es';
+  import { cloneDeep, uniq } from 'lodash-es';
   import { useTimeoutFn } from '/@/hooks/core/useTimeout';
-  import { useHighLight, useMultiSelect } from '../hooks';
+  import { useHighLight, useMultiSelect, useTreeCURD } from '../hooks';
   import { useCopyToClipboard } from '/@/hooks/web/useCopyToClipboard';
   import type { treeSelectParams, treePropsModel, QuotaType, searchItemType } from '../types';
+  import { useModal } from '/@/components/Modal';
+  import { useQuotaTreeStore } from '/@/store/modules/quotaTree';
 
   const emit = defineEmits<{
     (event: 'selectNode', node: QuotaItem): void;
@@ -99,6 +130,7 @@
   const TabPane = Tabs.TabPane;
   const { t } = useI18n();
   const { createMessage } = useMessage();
+  const quotaTreeStore = useQuotaTreeStore();
   const treeType = ref<QuotaType>(CategoryTreeType.sysQuota);
 
   const isFolder = (node: QuotaItem | CategoryTreeModel) =>
@@ -132,6 +164,24 @@
       beforeRightClick,
     },
   });
+  watch(
+    () => treeProps[CategoryTreeType.sysQuota].treeData,
+    (v) => {
+      quotaTreeStore.setSysQuotaTree(v!);
+    },
+    {
+      deep: true,
+    }
+  );
+  watch(
+    () => treeProps[CategoryTreeType.userQuota].treeData,
+    (v) => {
+      quotaTreeStore.setUserQuotaTree(v!);
+    },
+    {
+      deep: true,
+    }
+  );
   const loading = reactive({
     [CategoryTreeType.sysQuota]: false,
     [CategoryTreeType.userQuota]: false,
@@ -247,7 +297,6 @@
     });
   // 树节点的选择，支持多选
   async function handleTreeSelect(_, e: treeSelectParams) {
-    console.log(e.node.expanded);
     if (
       (e.node.dataRef as CategoryTreeModel).children?.every((item) => item.folder) &&
       e.node.expanded
@@ -280,6 +329,17 @@
       createMessage.success(t('quota.actionsRes.copyFailed'));
     }
   }
+  // 支持树节点的增删
+  const { addFolder, saveCategory, delCategory } = useTreeCURD({
+    tree: treeProps,
+    treeType: treeType,
+  });
+  async function handleBlur(node: CategoryTreeModel) {
+    await saveCategory(node);
+    await getData();
+  }
+  const [registerQuotaEditor, { openModal: openQuotaEditor, setModalProps: setQuotaEditorProps }] =
+    useModal();
   function beforeRightClick({
     dataRef,
   }: {
@@ -303,6 +363,27 @@
         icon: '',
         handler: () => copy(dataRef.name),
       },
+      {
+        label: t('quota.actions.addFolder'),
+        icon: '',
+        handler: () => addFolder(dataRef as CategoryTreeModel),
+      },
+      {
+        label: t('quota.actions.addQuota'),
+        icon: '',
+        handler: () => {
+          setQuotaEditorProps({});
+          openQuotaEditor(true, { categoryId: dataRef.id });
+        },
+      },
+      {
+        label: t('quota.actions.delFolder'),
+        icon: '',
+        handler: async () => {
+          await delCategory(dataRef as CategoryTreeModel);
+          await getData();
+        },
+      },
     ];
     const _isFolder = isFolder(dataRef);
     if (_isFolder) {
@@ -314,7 +395,6 @@
           label: t('quota.actions.multiSelectQuota'),
           icon: '',
           handler: () => {
-            console.log(highLightList);
             highLightList.forEach((node) => {
               emit('selectNode', node as QuotaItem);
             });
@@ -384,14 +464,23 @@
         id: highLightList[0].id,
         name: highLightList[0].name,
         parentId: parentNode.id,
-        parentName: parentNode.name,
       });
     }
     getData();
   }
   onMounted(() => {
-    getData(CategoryTreeType.sysQuota);
-    getData(CategoryTreeType.userQuota);
+    treeProps[CategoryTreeType.sysQuota].treeData = cloneDeep(
+      quotaTreeStore.geteSysQuotaTree
+    ) as TreeItem[];
+    treeProps[CategoryTreeType.userQuota].treeData = cloneDeep(
+      quotaTreeStore.geteUserQuotaTree
+    ) as TreeItem[];
+    if (treeProps[CategoryTreeType.sysQuota].treeData?.length === 0) {
+      getData(CategoryTreeType.sysQuota);
+    }
+    if (treeProps[CategoryTreeType.userQuota].treeData?.length === 0) {
+      getData(CategoryTreeType.userQuota);
+    }
   });
 </script>
 
@@ -443,5 +532,10 @@
       );
       pointer-events: none;
     }
+  }
+
+  .name-editor {
+    margin-top: -2px;
+    width: 14em;
   }
 </style>

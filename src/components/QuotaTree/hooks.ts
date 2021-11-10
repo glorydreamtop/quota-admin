@@ -1,6 +1,6 @@
 import { cloneDeep, remove } from 'lodash-es';
 import { TreeItem } from '../Tree';
-import { QuotaItem } from '/#/quota';
+import { CategoryTreeModel, QuotaItem } from '/#/quota';
 import { findNode } from '/@/utils/helper/treeHelper';
 import type {
   multiSelectHooksParams,
@@ -8,7 +8,11 @@ import type {
   hightlightHooksType,
   multiSelectHooksType,
   treeSelectParams,
+  treePropsModel,
 } from './types';
+import { Ref } from 'vue';
+import { updateCategory, delCategory as delCategoryById } from '/@/api/quota';
+import { CategoryTreeType } from '/@/enums/quotaEnum';
 
 export function useHighLight(HIGHTLIGHT: string): hightlightHooksType {
   const hightlightList: TreeItem[] = [];
@@ -104,4 +108,43 @@ export function useMultiSelect({ onSingleSelect }: multiSelectHooksParams): mult
     multiSelectedList,
     { insertMultiSelectedKey, setTreeData, clearMultiSelected, getMultiList },
   ];
+}
+
+export function useTreeCURD({
+  tree,
+  treeType,
+}: {
+  tree: treePropsModel;
+  treeType: Ref<CategoryTreeType>;
+}) {
+  function addFolder(folder: CategoryTreeModel) {
+    const parentNode = findNode<TreeItem>(
+      tree[treeType.value].treeData,
+      (item) => item.id === folder.id
+    )!;
+    const key = 'new-folder';
+    const folderConfig: TreeItem = {
+      children: [],
+      name: '新建文件夹',
+      folder: true,
+      icon: 'ant-design:folder-outlined',
+      id: key,
+      isLeaf: false,
+      key: key,
+      parentId: folder.id,
+    };
+    // 来自Antd奇怪的bug，不能push，必须整个数组重新赋值
+    parentNode.children = [folderConfig, ...parentNode.children!];
+  }
+  async function saveCategory(folder: CategoryTreeModel) {
+    await updateCategory({
+      parentId: folder.parentId!,
+      name: folder.name,
+      type: treeType.value,
+    });
+  }
+  async function delCategory(folder: CategoryTreeModel) {
+    delCategoryById({ id: folder.id });
+  }
+  return { addFolder, saveCategory, delCategory };
 }

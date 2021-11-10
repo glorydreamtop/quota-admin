@@ -10,24 +10,41 @@
         :options="chartTypeList"
       />
       <Color />
-      <DatePicker
-        size="small"
-        v-model:value="chartConfig.timeConfig.startDate"
-        value-format="YYYY-MM-DD"
-        :placeholer="t('page.quotaView.toolbar.startDatePicker')"
-        class="w-30"
-      />
-      <DatePicker
-        size="small"
-        v-model:value="chartConfig.timeConfig.endDate"
-        value-format="YYYY-MM-DD"
-        :placeholer="t('page.quotaView.toolbar.endDatePicker')"
-        class="w-30"
-      />
+      <div
+        class="
+          border border-gray-300
+          w-50
+          flex
+          justify-center
+          gap-2
+          hover:border-primary
+          date-picker
+        "
+      >
+        <DatePicker
+          size="small"
+          v-model:value="chartConfig.timeConfig.startDate"
+          value-format="YYYY-MM-DD"
+          :placeholer="t('page.quotaView.toolbar.startDatePicker')"
+          ><span class="cursor-pointer">{{ chartConfig.timeConfig.startDate }}</span></DatePicker
+        >
+        <span>~</span>
+        <DatePicker
+          size="small"
+          v-model:value="chartConfig.timeConfig.endDate"
+          value-format="YYYY-MM-DD"
+          :placeholer="t('page.quotaView.toolbar.endDatePicker')"
+          ><span class="cursor-pointer">{{ chartConfig.timeConfig.endDate }}</span></DatePicker
+        >
+      </div>
+
       <Icon title="暂不开放保存功能" class="save-icon" size="24" icon="ant-design:save-outlined" />
     </Space>
     <div class="absolute right-0 top-0 w-18 h-18 overflow-hidden" @click="paint">
-      <div v-ripple class="w-36 h-36 !absolute -right-18 -top-18 bg-card-blue1 rounded-1">
+      <div
+        v-ripple
+        class="w-36 h-36 !absolute -right-18 -top-18 bg-card-blue1 rounded-1 cursor-pointer"
+      >
         <Icon class="absolute left-7 bottom-7" size="32" color="#fff" icon="ph:paint-brush-light" />
       </div>
     </div>
@@ -107,5 +124,10 @@
     &:hover {
       color: @primary-6;
     }
+  }
+
+  .date-picker {
+    transition: border 300ms;
+    border-radius: 2px;
   }
 </style>

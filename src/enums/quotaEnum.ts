@@ -18,6 +18,7 @@ export enum SourceTypeEnum {
   eia = 'eia',
   usda = 'usda',
   manual = 'manual',
+  other = '',
 }
 
 export enum SourceTypeNameEnum {
@@ -31,4 +32,5 @@ export enum SourceTypeNameEnum {
   eia = 'EIA',
   usda = 'USDA',
   manual = '人工',
+  other = '其他',
 }

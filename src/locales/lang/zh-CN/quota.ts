@@ -18,9 +18,24 @@ export default {
     multiUpdateQuota: '更新选中指标',
     copyID: '提取ID',
     copyName: '提取名称',
+    addFolder: '新建子目录',
+    delFolder: '删除目录',
+    addQuota: '新建指标',
   },
   actionsRes: {
     copyOK: '已复制到剪贴板',
     copyFailed: '系统禁止或不支持等原因无法复制',
+  },
+  quotaEditorModal: {
+    title: '指标编辑',
+    form: {
+      name: '名称',
+      categoryId: '目录',
+      sourceCode: '指标代码',
+      sourceType: '指标类型',
+      frequency: '更新频率',
+      shortName: '名称缩写',
+      unit: '数据单位',
+    },
   },
 };

@@ -133,10 +133,17 @@ export function updateCategory(params: {
   id?: number;
   name: string;
   parentId: number;
-  parentName: string;
+  type?: CategoryTreeType;
 }) {
   return defHttp.post<ResultEnum.TYPE>({
     url: Api.UpdateCategory,
+    params,
+  });
+}
+
+export function delCategory(params: { id: number }) {
+  return defHttp.get<ResultEnum.TYPE>({
+    url: Api.DelCategoryTree,
     params,
   });
 }
