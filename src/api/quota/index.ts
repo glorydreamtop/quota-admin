@@ -16,6 +16,7 @@ enum Api {
   MoveQuota = '/category/indexMove',
   SortQuota = '/category/categorySorting',
   UpdateCategory = '/updatemonitor/dict-index/categorySaveOrUpdate',
+  SaveQuota = '/updatemonitor/dict-index/saveOrUpdateDictIndex',
 }
 
 export enum searchType {
@@ -144,6 +145,13 @@ export function updateCategory(params: {
 export function delCategory(params: { id: number }) {
   return defHttp.get<ResultEnum.TYPE>({
     url: Api.DelCategoryTree,
+    params,
+  });
+}
+
+export function saveQuota(params: Partial<QuotaItem>) {
+  return defHttp.post<ResultEnum.TYPE>({
+    url: Api.SaveQuota,
     params,
   });
 }

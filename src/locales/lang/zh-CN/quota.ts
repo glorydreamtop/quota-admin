@@ -21,6 +21,8 @@ export default {
     addFolder: '新建子目录',
     delFolder: '删除目录',
     addQuota: '新建指标',
+    editQuota: '编辑指标',
+    delQuota: '删除指标',
   },
   actionsRes: {
     copyOK: '已复制到剪贴板',

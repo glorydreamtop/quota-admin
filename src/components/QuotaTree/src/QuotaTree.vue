@@ -363,31 +363,37 @@
         icon: '',
         handler: () => copy(dataRef.name),
       },
-      {
-        label: t('quota.actions.addFolder'),
-        icon: '',
-        handler: () => addFolder(dataRef as CategoryTreeModel),
-      },
-      {
-        label: t('quota.actions.addQuota'),
-        icon: '',
-        handler: () => {
-          setQuotaEditorProps({});
-          openQuotaEditor(true, { categoryId: dataRef.id });
-        },
-      },
-      {
-        label: t('quota.actions.delFolder'),
-        icon: '',
-        handler: async () => {
-          await delCategory(dataRef as CategoryTreeModel);
-          await getData();
-        },
-      },
     ];
     const _isFolder = isFolder(dataRef);
     if (_isFolder) {
-      return [...commonActions];
+      return [
+        ...commonActions,
+        {
+          label: t('quota.actions.addFolder'),
+          icon: '',
+          handler: () => addFolder(dataRef as CategoryTreeModel),
+        },
+        {
+          label: t('quota.actions.addQuota'),
+          icon: '',
+          handler: () => {
+            setQuotaEditorProps({
+              afterClose() {
+                getData();
+              },
+            });
+            openQuotaEditor(true, { categoryId: dataRef.id });
+          },
+        },
+        {
+          label: t('quota.actions.delFolder'),
+          icon: '',
+          handler: async () => {
+            await delCategory(dataRef as CategoryTreeModel);
+            await getData();
+          },
+        },
+      ];
     } else {
       return [
         ...commonActions,
@@ -419,6 +425,18 @@
               clearHightLight();
               getTreeInstance(treeType.value)?.setSelectedKeys([]);
             }
+          },
+        },
+        {
+          label: t('quota.actions.delQuota'),
+          icon: '',
+          handler: () => {
+            setQuotaEditorProps({
+              afterClose() {
+                getData();
+              },
+            });
+            openQuotaEditor(true, { categoryId: dataRef.id });
           },
         },
       ];

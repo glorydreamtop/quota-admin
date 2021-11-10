@@ -36,6 +36,7 @@ export const schemas = computed<FormSchema[]>(() => {
     {
       field: 'sourceType',
       label: t('quota.quotaEditorModal.form.sourceType'),
+      required: true,
       component: 'Select',
       componentProps: {
         optionLabelProp: 'label',
