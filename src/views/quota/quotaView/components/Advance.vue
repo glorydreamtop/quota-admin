@@ -277,7 +277,7 @@
     },
     {
       deep: true,
-    }
+    },
   );
   watch(
     datasourceSetting,
@@ -289,7 +289,7 @@
         chartConfig.timeConfig.pastValue = undefined;
       }
     },
-    { deep: true }
+    { deep: true },
   );
   const pastUnitList = ref([
     {

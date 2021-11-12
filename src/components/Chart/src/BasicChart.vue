@@ -77,7 +77,7 @@
         loading.value = false;
       }
     },
-    { deep: true, immediate: true }
+    { deep: true, immediate: true },
   );
 
   function update() {

@@ -375,12 +375,12 @@
   }
 
   .quota-list-leave-to {
-    opacity: 0;
+    opacity: 0%;
     transform: translateY(-100px);
   }
 
   .quota-list-leave-from {
-    opacity: 1;
+    opacity: 100%;
     transform: translateY(0);
   }
 
@@ -396,7 +396,7 @@
     .quota-title {
       @apply text-lg leading-5 font-medium;
 
-      display: -webkit-box;
+      display: box;
       -webkit-box-orient: vertical;
       -webkit-line-clamp: 2;
       overflow: hidden;

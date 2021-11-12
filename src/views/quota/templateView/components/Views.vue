@@ -136,7 +136,7 @@
           templateList.value.push(clone[i]);
         }, 30 * i);
       }
-    }
+    },
   );
   const templateList = useTemplateListContext();
   const templateMap: ComputedRef<TemplateListMapType> = computed(() => {
@@ -157,7 +157,7 @@
   }
   watchEffect(() => {
     selectedTemplateDOMList.value = selectTemplateIdList.value.map(
-      (uniqId) => templateMap.value[uniqId]
+      (uniqId) => templateMap.value[uniqId],
     );
   });
 
@@ -214,7 +214,7 @@
     () => paginationInfo.totalPage,
     async () => {
       await nextTick();
-    }
+    },
   );
   function pageHeaderChange(pos: 'left' | 'right', e: InputEvent) {
     pageSetting.header[pos] = (e.target as HTMLSpanElement).innerText;
@@ -243,7 +243,7 @@
                       const target = e[0].target as HTMLElement;
                       if (isNull(target.parentElement)) return;
                       const _dom = templateList.value.find(
-                        (temp) => temp.uniqId === target.dataset['uniqid']
+                        (temp) => temp.uniqId === target.dataset['uniqid'],
                       )!;
                       if (_dom) {
                         _dom.pageConfig.width = target.style.width;
@@ -256,7 +256,7 @@
                               const page = paginationInfo.pages[i];
                               if (page.id === nextPagedom.dataset['pageid']) {
                                 paginationInfo.pages[i].list.unshift(
-                                  paginationInfo.pages[i - 1].list.pop()!
+                                  paginationInfo.pages[i - 1].list.pop()!,
                                 );
                                 break;
                               }
@@ -273,7 +273,7 @@
                                   (pagedom.nextElementSibling as HTMLElement).dataset['pageid']
                                 ) {
                                   paginationInfo.pages[i].list.unshift(
-                                    paginationInfo.pages[i - 1].list.pop()!
+                                    paginationInfo.pages[i - 1].list.pop()!,
                                   );
                                   break;
                                 }
@@ -288,14 +288,14 @@
               },
               {
                 childList: true,
-              }
+              },
             );
           });
         });
       },
       {
         childList: true,
-      }
+      },
     );
     paginationInfo.pages.push({ list: [], id: getUniqueField() });
     // useResizeObserver(boxdom.getElementsByClassName('sortable')[0], (e) => {
@@ -320,7 +320,7 @@
       bottom: 0;
       right: 0;
       background-color: @primary-color;
-      opacity: 0.5;
+      opacity: 50%;
     }
   }
 

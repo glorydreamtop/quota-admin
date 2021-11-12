@@ -23,6 +23,12 @@ export default {
     addQuota: '新建指标',
     editQuota: '编辑指标',
     delQuota: '删除指标',
+    delQuotaTip: '删除指标将会影响所有引用它的公式指标和图表，确认删除吗？',
+    importQuota: '导入指标(Excel)',
+    getQuotaExcel: '下载指标模板',
+    uploadQuotaExcel: '上传指标文件',
+    getQuotaDataExcel: '下载指标数据模板',
+    uploadQuotaDataExcel: '上传指标数据模板',
   },
   actionsRes: {
     copyOK: '已复制到剪贴板',

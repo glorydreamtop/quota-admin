@@ -166,7 +166,7 @@
     ({ record, index }: { record: SelectedQuotaItem; index?: number }) => {
       quotaIndex.value = index ?? quotaList.value.length;
       Object.assign(quotaSetting, record);
-    }
+    },
   );
   function close() {
     Object.assign(quotaSetting, defaultSetting);

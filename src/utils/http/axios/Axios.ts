@@ -1,5 +1,5 @@
 import type { AxiosRequestConfig, AxiosInstance, AxiosResponse, AxiosError } from 'axios';
-import type { RequestOptions, Result, UploadFileParams } from '../../../../types/axios';
+import type { RequestOptions, Result, UploadFileParams } from '/#/axios';
 import type { CreateAxiosOptions } from './axiosTransform';
 import axios from 'axios';
 import qs from 'qs';
@@ -81,6 +81,7 @@ export class VAxios {
     this.axiosInstance.interceptors.request.use((config: AxiosRequestConfig) => {
       // If cancel repeat request is turned on, then cancel repeat request is prohibited
       const {
+        // @ts-ignore
         headers: { ignoreCancelToken },
       } = config;
 
@@ -121,11 +122,17 @@ export class VAxios {
    */
   uploadFile<T = any>(config: AxiosRequestConfig, params: UploadFileParams) {
     const formData = new window.FormData();
+    const customFilename = params.name || 'file';
+
+    if (params.filename) {
+      formData.append(customFilename, params.file, params.filename);
+    } else {
+      formData.append(customFilename, params.file);
+    }
 
     if (params.data) {
       Object.keys(params.data).forEach((key) => {
-        if (!params.data) return;
-        const value = params.data[key];
+        const value = params.data![key];
         if (Array.isArray(value)) {
           value.forEach((item) => {
             formData.append(key, item);
@@ -152,6 +159,7 @@ export class VAxios {
       data: formData,
       headers: {
         'Content-type': ContentTypeEnum.FORM_DATA,
+        // @ts-ignore
         ignoreCancelToken: true,
       },
     });

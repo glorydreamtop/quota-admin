@@ -1,8 +1,9 @@
 <template>
-  <div class="bg-white tail">
+  <div class="bg-white tail" ref="quotaTreeRef">
     <QuotaSearch v-if="showSearch" @select="handleSelect" />
     <ToolBar :loading="loading[treeType]" @getData="getData" />
     <QuotaEditor @register="registerQuotaEditor" />
+    <QuotaUpload @register="registerQuotaUpload" />
     <Tabs v-model:activeKey="treeType" class="tabs" centered>
       <TabPane :key="CategoryTreeType.sysQuota" :tab="t('quota.sysQuota')">
         <BasicTree
@@ -89,9 +90,10 @@
     toRefs,
     nextTick,
     watch,
+    h,
   } from 'vue';
   import { QuotaSearch, ToolBar } from '../index';
-  import { QuotaEditor } from '/@/components/QuotaEditor';
+  import { QuotaEditor, QuotaUpload } from '/@/components/QuotaEditor';
   import { BasicTree } from '/@/components/Tree/index';
   import type { ContextMenuItem } from '/@/components/Tree/index';
   import type { TreeItem, TreeActionType } from '/@/components/Tree/index';
@@ -103,6 +105,7 @@
     moveQuota,
     sortQuota,
     updateCategory,
+    delQuota,
   } from '/@/api/quota';
   import type { CategoryTreeModel, QuotaItem } from '/#/quota';
   import { CategoryTreeType } from '/@/enums/quotaEnum';
@@ -125,11 +128,12 @@
   const props = defineProps<{
     showSearch: boolean;
   }>();
+  const quotaTreeRef = ref<HTMLElement>();
   const { showSearch } = toRefs(props);
   const HIGHTLIGHT = 'select-hightlight';
   const TabPane = Tabs.TabPane;
   const { t } = useI18n();
-  const { createMessage } = useMessage();
+  const { createMessage, createConfirm } = useMessage();
   const quotaTreeStore = useQuotaTreeStore();
   const treeType = ref<QuotaType>(CategoryTreeType.sysQuota);
 
@@ -171,7 +175,7 @@
     },
     {
       deep: true,
-    }
+    },
   );
   watch(
     () => treeProps[CategoryTreeType.userQuota].treeData,
@@ -180,7 +184,7 @@
     },
     {
       deep: true,
-    }
+    },
   );
   const loading = reactive({
     [CategoryTreeType.sysQuota]: false,
@@ -273,7 +277,7 @@
       await loadData(parentNode.id);
       const path: number[] = findPath(
         treeProps[CategoryTreeType.sysQuota].treeData,
-        (item) => item.id === parentNode!.id
+        (item) => item.id === parentNode!.id,
       ).map((path) => path.id);
       instance?.setExpandedKeys(uniq([...path, ...instance.getExpandedKeys()]));
       setHighLight(parentNode, id);
@@ -389,9 +393,16 @@
           label: t('quota.actions.delFolder'),
           icon: '',
           handler: async () => {
-            await delCategory(dataRef as CategoryTreeModel);
-            await getData();
+            try {
+              await delCategory(dataRef as CategoryTreeModel);
+              await getData();
+            } catch (error) {}
           },
+        },
+        {
+          label: t('quota.actions.importQuota'),
+          icon: '',
+          handler: () => {},
         },
       ];
     } else {
@@ -431,12 +442,14 @@
           label: t('quota.actions.delQuota'),
           icon: '',
           handler: () => {
-            setQuotaEditorProps({
-              afterClose() {
+            createConfirm({
+              iconType: 'warning',
+              content: h('span', {}, t('quota.actions.delQuotaTip')),
+              onOk: async () => {
+                await delQuota({ indexId: (dataRef as QuotaItem).id });
                 getData();
               },
             });
-            openQuotaEditor(true, { categoryId: dataRef.id });
           },
         },
       ];
@@ -488,10 +501,10 @@
   }
   onMounted(() => {
     treeProps[CategoryTreeType.sysQuota].treeData = cloneDeep(
-      quotaTreeStore.geteSysQuotaTree
+      quotaTreeStore.geteSysQuotaTree,
     ) as TreeItem[];
     treeProps[CategoryTreeType.userQuota].treeData = cloneDeep(
-      quotaTreeStore.geteUserQuotaTree
+      quotaTreeStore.geteUserQuotaTree,
     ) as TreeItem[];
     if (treeProps[CategoryTreeType.sysQuota].treeData?.length === 0) {
       getData(CategoryTreeType.sysQuota);
@@ -555,5 +568,9 @@
   .name-editor {
     margin-top: -2px;
     width: 14em;
+  }
+
+  ::v-deep(.confirm-delquota) {
+    border: 2px solid #450245;
   }
 </style>

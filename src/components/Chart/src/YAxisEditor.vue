@@ -179,7 +179,7 @@
     const hasDep = config.quotaList!.find((quota) => quota.setting.yAxisIndex === props.idx);
     if (hasDep) {
       createMessage.warn(
-        `[${hasDep.name}]` + t('page.quotaView.advance.axisSetting.yAxis.cannotdel')
+        `[${hasDep.name}]` + t('page.quotaView.advance.axisSetting.yAxis.cannotdel'),
       );
       return;
     }

@@ -206,7 +206,7 @@
       await loadData(parentNode.id);
       const path: number[] = findPath(
         treeProps[CategoryTreeType.sysTemplate].treeData,
-        (item) => item.id === parentNode!.id
+        (item) => item.id === parentNode!.id,
       ).map((path) => path.id);
       instance?.setExpandedKeys(uniq([...path, ...instance.getExpandedKeys()]));
       setHighLight(parentNode, id);
@@ -226,7 +226,7 @@
         } else {
           emit(
             'selectNode',
-            pick(dataRef, ['config', 'id', 'categoryId', 'version']) as TemplateItem
+            pick(dataRef, ['config', 'id', 'categoryId', 'version']) as TemplateItem,
           );
         }
       },

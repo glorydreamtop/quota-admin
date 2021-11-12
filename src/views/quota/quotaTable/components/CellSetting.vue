@@ -33,7 +33,7 @@
       console.log({ column, rowIndex });
 
       Object.assign(info, { column, rowIndex });
-    }
+    },
   );
   const modalConfig: Partial<ModalProps> = reactive({
     title: t('table.cell.modalTitle'),

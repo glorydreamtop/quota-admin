@@ -67,7 +67,7 @@ const gridConfig: GridComponentOption = {
 };
 // 季节性序列
 export async function useSeasonalChart(
-  chartConfig: seasonalChartConfigType
+  chartConfig: seasonalChartConfigType,
 ): Promise<EChartsOption> {
   const fetchParams: getQuotaDataParams = omit(
     {
@@ -75,7 +75,7 @@ export async function useSeasonalChart(
       rows: chartConfig.quotaList!,
       ...chartConfig.timeConfig,
     },
-    ['type', 'timeRule']
+    ['type', 'timeRule'],
   );
 
   const quotaDataList = await getQuotaData(fetchParams);
@@ -177,7 +177,7 @@ export async function useNormalChart(chartConfig: normalChartConfigType): Promis
       rows: chartConfig.quotaList!,
       ...chartConfig.timeConfig,
     },
-    ['type', 'timeRule']
+    ['type', 'timeRule'],
   );
 
   const quotaDataList = await getQuotaData(fetchParams);
@@ -223,7 +223,7 @@ export async function useNormalChart(chartConfig: normalChartConfigType): Promis
       (item) =>
         (item[1] =
           round(item[1], chartConfig.valueFormatter.afterDot) /
-          Math.pow(10, chartConfig.valueFormatter.scientificNotation))
+          Math.pow(10, chartConfig.valueFormatter.scientificNotation)),
     );
     series.push({
       name: quota.name,
@@ -302,7 +302,7 @@ export async function useBarChart(chartConfig: barChartConfigType) {
       ...quota.data.map(
         (item) =>
           round(item[1], chartConfig.valueFormatter.afterDot) /
-          Math.pow(10, chartConfig.valueFormatter.scientificNotation)
+          Math.pow(10, chartConfig.valueFormatter.scientificNotation),
       ),
     ];
     (dataset.source as any[]).push(source);
@@ -495,7 +495,7 @@ export async function useStructuralChart(chartConfig: structuralChartConfigType)
       ...quota.data.map(
         (item) =>
           round(item[1], chartConfig.valueFormatter.afterDot) /
-          Math.pow(10, chartConfig.valueFormatter.scientificNotation)
+          Math.pow(10, chartConfig.valueFormatter.scientificNotation),
       ),
     ];
     (dataset.source as any[]).push(source);
@@ -586,7 +586,7 @@ export async function usePieChart(chartConfig: pieChartConfigType) {
       ...quota.data.map(
         (item) =>
           round(item[1], chartConfig.valueFormatter.afterDot) /
-          Math.pow(10, chartConfig.valueFormatter.scientificNotation)
+          Math.pow(10, chartConfig.valueFormatter.scientificNotation),
       ),
     ];
     (dataset.source as any[]).push(source);
@@ -645,7 +645,7 @@ export async function useQuantileRadarChart(chartConfig: quantileRadarChartConfi
     quota.data.forEach(
       (item) =>
         round(item[1], chartConfig.valueFormatter.afterDot) /
-        Math.pow(10, chartConfig.valueFormatter.scientificNotation)
+        Math.pow(10, chartConfig.valueFormatter.scientificNotation),
     );
   });
   useNormalized({ chartConfig, quotaDataList });

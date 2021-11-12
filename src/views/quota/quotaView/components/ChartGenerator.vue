@@ -32,12 +32,12 @@
   .component-fade-enter-active,
   .component-fade-leave-active {
     transition: all 0.8s ease;
-    opacity: 1;
+    opacity: 100%;
   }
 
   .component-fade-enter-from,
   .component-fade-leave-to {
     transform: scale(0.5);
-    opacity: 0;
+    opacity: 0%;
   }
 </style>

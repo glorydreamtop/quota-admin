@@ -64,7 +64,7 @@
     {
       deep: true,
       immediate: true,
-    }
+    },
   );
   getColorSchemeList();
 </script>

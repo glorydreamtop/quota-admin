@@ -17,6 +17,7 @@ enum Api {
   SortQuota = '/category/categorySorting',
   UpdateCategory = '/updatemonitor/dict-index/categorySaveOrUpdate',
   SaveQuota = '/updatemonitor/dict-index/saveOrUpdateDictIndex',
+  DelQuota = '/updatemonitor/dict-index/deleteDictIndex',
 }
 
 export enum searchType {
@@ -101,7 +102,7 @@ export function requestUpdateQuotaData(params: requestUpdateParams) {
     },
     {
       isTransformResponse: false,
-    }
+    },
   );
 }
 
@@ -152,6 +153,13 @@ export function delCategory(params: { id: number }) {
 export function saveQuota(params: Partial<QuotaItem>) {
   return defHttp.post<ResultEnum.TYPE>({
     url: Api.SaveQuota,
+    params,
+  });
+}
+
+export function delQuota(params: { indexId: number }) {
+  return defHttp.get<ResultEnum.TYPE>({
+    url: Api.DelQuota,
     params,
   });
 }

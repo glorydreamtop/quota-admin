@@ -95,7 +95,7 @@
       el.innerHTML = v.formula;
       hljs.highlightElement(el);
     },
-    { deep: true }
+    { deep: true },
   );
 </script>
 
@@ -115,7 +115,7 @@
     white-space: wrap;
     word-wrap: break-word;
     word-break: break-all;
-    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, Courier, monospace;
+    font-family: SFMono-Regular, Consolas, 'Liberation Mono', Menlo, Courier, monospace;
   }
 
   .code {

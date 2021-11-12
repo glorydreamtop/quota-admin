@@ -72,16 +72,16 @@ export function useMultiSelect({ onSingleSelect }: multiSelectHooksParams): mult
       let maxIndex = 0;
       const list = findNode<TreeItem>(
         treeData!,
-        (node) => node.id === (dataRef as QuotaItem).categoryId
+        (node) => node.id === (dataRef as QuotaItem).categoryId,
       )!.children!;
       for (let i = 0; i < multiSelectedList.length; i++) {
         minIndex = Math.min(
           list.findIndex((item) => item.key === multiSelectedList[i]),
-          minIndex
+          minIndex,
         );
         maxIndex = Math.max(
           list.findIndex((item) => item.key === multiSelectedList[i]),
-          maxIndex
+          maxIndex,
         );
       }
       const currentIndex = list.findIndex((item) => item.key === eventKey);
@@ -120,7 +120,7 @@ export function useTreeCURD({
   function addFolder(folder: CategoryTreeModel) {
     const parentNode = findNode<TreeItem>(
       tree[treeType.value].treeData,
-      (item) => item.id === folder.id
+      (item) => item.id === folder.id,
     )!;
     const key = 'new-folder';
     const folderConfig: TreeItem = {
@@ -144,7 +144,7 @@ export function useTreeCURD({
     });
   }
   async function delCategory(folder: CategoryTreeModel) {
-    delCategoryById({ id: folder.id });
+    await delCategoryById({ id: folder.id });
   }
   return { addFolder, saveCategory, delCategory };
 }

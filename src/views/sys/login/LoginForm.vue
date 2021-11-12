@@ -103,7 +103,7 @@
   </Form>
 </template>
 <script lang="ts" setup>
-  import { reactive, ref, toRaw, unref, computed } from 'vue';
+  import { reactive, ref, unref, computed, toRaw } from 'vue';
 
   import { Checkbox, Form, Input, Row, Col, Button } from 'ant-design-vue';
   // import {
@@ -173,7 +173,7 @@
           captcha: data.captcha,
           uuid: unref(uuid),
           mode: 'none', //不要默认的错误提示
-        })
+        }),
       );
       if (userInfo) {
         notification.success({
@@ -185,7 +185,7 @@
     } catch (error) {
       createErrorModal({
         title: t('sys.api.errorTip'),
-        content: error.message || t('sys.api.networkExceptionMsg'),
+        content: (error as unknown as Error).message || t('sys.api.networkExceptionMsg'),
         getContainer: () => document.body.querySelector(`.${prefixCls}`) || document.body,
       });
     } finally {

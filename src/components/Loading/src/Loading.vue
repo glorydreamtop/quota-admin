@@ -35,6 +35,9 @@
       background: {
         type: String as PropType<string>,
       },
+      theme: {
+        type: String as PropType<'dark' | 'light'>,
+      },
     },
     setup(props) {
       const loadingEl = ref<HTMLElement>();
@@ -69,8 +72,8 @@
     height: 100%;
     justify-content: center;
     align-items: center;
-    background-color: rgba(240, 242, 245, 0.4);
-    opacity: 1;
+    background-color: rgb(240 242 245 / 40%);
+    opacity: 100%;
     transition: opacity 0.2s ease;
 
     &.absolute {
@@ -82,8 +85,12 @@
   }
 
   html[data-theme='dark'] {
-    .full-loading {
+    .full-loading:not(.light) {
       background-color: @modal-mask-bg;
     }
+  }
+
+  .full-loading.dark {
+    background-color: @modal-mask-bg;
   }
 </style>

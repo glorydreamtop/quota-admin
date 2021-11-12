@@ -14,7 +14,7 @@ interface dragLifeCycle {
 
 type pointerSlideInHooks = [
   HTMLElement,
-  { setBeforeAnimate: Fn; setAfterAnimate: Fn; initAnimation: Fn }
+  { setBeforeAnimate: Fn; setAfterAnimate: Fn; initAnimation: Fn },
 ];
 
 export function usePointerSlideIn(dom: HTMLElement, event: MouseEvent): pointerSlideInHooks {

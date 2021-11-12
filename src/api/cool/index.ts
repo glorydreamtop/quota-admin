@@ -14,6 +14,6 @@ export function oneSentence() {
     },
     {
       isTransformResponse: false,
-    }
+    },
   );
 }

@@ -72,16 +72,16 @@ export function useMultiSelect({ onSingleSelect }: multiSelectHooksParams): mult
       let maxIndex = 0;
       const list = findNode<TreeItem>(
         treeData!,
-        (node) => node.id === (dataRef as TemplateItem).categoryId
+        (node) => node.id === (dataRef as TemplateItem).categoryId,
       )!.children!;
       for (let i = 0; i < multiSelectedList.length; i++) {
         minIndex = Math.min(
           list.findIndex((item) => item.key === multiSelectedList[i]),
-          minIndex
+          minIndex,
         );
         maxIndex = Math.max(
           list.findIndex((item) => item.key === multiSelectedList[i]),
-          maxIndex
+          maxIndex,
         );
       }
       const currentIndex = list.findIndex((item) => item.key === eventKey);

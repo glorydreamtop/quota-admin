@@ -3,10 +3,7 @@ import { computed, unref, watch, nextTick } from 'vue';
 import type { Ref } from 'vue';
 import { SourceTypeEnum, SourceTypeNameEnum } from '/@/enums/quotaEnum';
 
-export function useWatchArray<T extends any>(
-  arr: Ref<T[]>,
-  callBack: (arr: T[], pre: T[]) => void
-) {
+export function useWatchArray<T>(arr: Ref<T[]>, callBack: (arr: T[], pre: T[]) => void) {
   let stopWatch = false;
   const cloneArr = computed(() => cloneDeep(unref(arr)));
 
@@ -19,7 +16,7 @@ export function useWatchArray<T extends any>(
       await nextTick();
       stopWatch = false;
     },
-    { deep: true }
+    { deep: true },
   );
 }
 

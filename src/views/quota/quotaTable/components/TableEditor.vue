@@ -502,7 +502,7 @@
 
 <style lang="less" scoped>
   ::v-deep(.area-cells) {
-    background-color: rgba(64, 158, 255, 0.3);
+    background-color: rgb(64 158 255 / 30%);
   }
 
   .header-icons-box {

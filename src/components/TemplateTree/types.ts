@@ -5,7 +5,7 @@ import { CategoryTreeType } from '/@/enums/quotaEnum';
 
 export type hightlightHooksType = [
   TreeItem[],
-  { setHighLight: Fn; clearHightLight: Fn; insertHightListNode: Fn }
+  { setHighLight: Fn; clearHightLight: Fn; insertHightListNode: Fn },
 ];
 
 export interface treeSelectParams {
@@ -24,7 +24,7 @@ export type multiSelectHooksType = [
     setTreeData: Fn;
     clearMultiSelected: Fn;
     getMultiList: () => number[];
-  }
+  },
 ];
 
 export interface multiSelectHooksParams {

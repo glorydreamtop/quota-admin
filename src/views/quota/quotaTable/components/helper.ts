@@ -22,12 +22,12 @@ export function useTableConfigContext() {
 
 type useAddColMethods = [
   VxeTableDefines.ColumnOptions,
-  { addCol: (columnIndex: number) => void; removeCol: (columnIndex: number) => void }
+  { addCol: (columnIndex: number) => void; removeCol: (columnIndex: number) => void },
 ];
 
 export function useAddCol(
   xGrid: Ref<VxeGridInstance>,
-  tableConfig: TableConfigType
+  tableConfig: TableConfigType,
 ): useAddColMethods {
   const col: VxeTableDefines.ColumnOptions = reactive({
     field: '',
@@ -101,7 +101,7 @@ type useAddSpaceRowMethods = {
 
 export function useAddRow(
   xGrid: Ref<VxeGridInstance>,
-  tableConfig: TableConfigType
+  tableConfig: TableConfigType,
 ): useAddSpaceRowMethods {
   function addSpaceRow(rowIndex = tableConfig.data.length) {
     const row = {};
@@ -169,7 +169,7 @@ interface cellPosition {
 }
 export function useAreaSelect(
   xGrid: Ref<VxeGridInstance>,
-  onAreaSelect: (cell: cellPosition[]) => void
+  onAreaSelect: (cell: cellPosition[]) => void,
 ) {
   const areaCells = ref<cellPosition[]>([]);
   onMountedOrActivated(() => {
@@ -264,7 +264,7 @@ export function useAreaSelect(
 
 type useTimeStrFilterMethods = [
   Ref<string>,
-  { timeStrFilter: (str: string) => string; vaildTimeStr: (e: InputEvent) => void }
+  { timeStrFilter: (str: string) => string; vaildTimeStr: (e: InputEvent) => void },
 ];
 
 export function useTimeStrFilter(tableConfig: TableConfigType): useTimeStrFilterMethods {

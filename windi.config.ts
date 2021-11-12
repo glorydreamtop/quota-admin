@@ -1,4 +1,3 @@
-import colors from 'windicss/colors';
 import { defineConfig } from 'vite-plugin-windicss';
 import { primaryColor } from './build/config/themeConfig';
 
@@ -14,7 +13,6 @@ export default defineConfig({
         fit: 'fit-content',
       },
       colors: {
-        ...colors,
         primary: primaryColor,
       },
       cursor: {
@@ -42,7 +40,7 @@ export default defineConfig({
  * Used for animation when the element is displayed
  * @param maxOutput The larger the maxOutput output, the larger the generated css volume
  */
-function createEnterPlugin(maxOutput = 10) {
+function createEnterPlugin(maxOutput = 7) {
   const createCss = (index: number, d = 'x') => {
     const upd = d.toUpperCase();
     return {

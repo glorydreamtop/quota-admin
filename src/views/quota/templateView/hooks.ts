@@ -46,7 +46,7 @@ export function usePageSettingContext() {
 
 type useMultiSelectRes = [
   Ref<string[]>,
-  { insertSelectKey: (temp: TemplateDOM, nativeEvent: PointerEvent) => void }
+  { insertSelectKey: (temp: TemplateDOM, nativeEvent: PointerEvent) => void },
 ];
 
 export function useMultiSelect(templateList: Ref<TemplateDOM[]>): useMultiSelectRes {
@@ -81,11 +81,11 @@ export function useMultiSelect(templateList: Ref<TemplateDOM[]>): useMultiSelect
       for (let i = 0; i < list.length; i++) {
         minIndex = Math.min(
           templateList.value.findIndex((item) => item.uniqId === list[i]),
-          minIndex
+          minIndex,
         );
         maxIndex = Math.max(
           templateList.value.findIndex((item) => item.uniqId === list[i]),
-          maxIndex
+          maxIndex,
         );
       }
       const currentIndex = templateList.value.findIndex((item) => item.uniqId === temp.uniqId);
@@ -112,13 +112,13 @@ export function useMultiSelect(templateList: Ref<TemplateDOM[]>): useMultiSelect
 export function insertDOM(
   templateList: Ref<TemplateDOM[]>,
   selectedTemplateList: Ref<TemplateDOM[]>,
-  cfg: TemplateDOM
+  cfg: TemplateDOM,
 ) {
   if (selectedTemplateList.value.length === 1) {
     templateList.value.splice(
       templateList.value.findIndex((t) => t.uniqId === selectedTemplateList.value[0].uniqId) + 1,
       0,
-      cfg
+      cfg,
     );
   } else {
     templateList.value.push(cfg);

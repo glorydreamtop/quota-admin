@@ -29,7 +29,7 @@
                       t(
                         `templateView.toolbar.paperSize.${
                           pageConfig.horizontal ? 'horizontal' : 'vertical'
-                        }`
+                        }`,
                       )
                     }}</span
                   >

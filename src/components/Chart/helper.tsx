@@ -252,7 +252,7 @@ export async function useLastestQuotaData({
                 index > 0
                   ? e[1] - data[index - 1][1]
                   : e[1] - last(series[idx - 1].data as [number, number][])![1],
-                chartConfig.valueFormatter.afterDot
+                chartConfig.valueFormatter.afterDot,
               ),
             });
             break;

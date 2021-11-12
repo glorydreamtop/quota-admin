@@ -1,3 +1,5 @@
+import { VNode } from 'vue';
+
 export interface Axis {
   x: number;
   y: number;
@@ -8,6 +10,7 @@ export interface ContextMenuItem {
   icon?: string;
   disabled?: boolean;
   handler?: Fn;
+  slot?: VNode<any>;
   divider?: boolean;
   children?: ContextMenuItem[];
 }

@@ -139,7 +139,7 @@
 
       const { getPaginationList, getTotal, setCurrentPage } = usePagination(
         currentList,
-        props.pageSize
+        props.pageSize,
       );
 
       watchEffect(() => {
@@ -151,7 +151,7 @@
         (v) => {
           emit('update:value', v);
           return emit('change', v);
-        }
+        },
       );
 
       function handlePageChange(page: number) {

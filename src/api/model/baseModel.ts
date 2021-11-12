@@ -3,7 +3,7 @@ export interface BasicPageParams {
   pageSize: number;
 }
 
-export interface BasicFetchResult<T extends any> {
+export interface BasicFetchResult<T> {
   list: T[];
   totalCount: number;
   pageSize: number;
@@ -15,4 +15,4 @@ export interface IdModel {
   id: number;
 }
 
-export type BasicIdParams<T extends any> = IdModel & T;
+export type BasicIdParams<T> = IdModel & T;
