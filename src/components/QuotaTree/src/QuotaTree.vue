@@ -344,6 +344,7 @@
   }
   const [registerQuotaEditor, { openModal: openQuotaEditor, setModalProps: setQuotaEditorProps }] =
     useModal();
+  const [registerQuotaUpload, { openModal: openQuotaUpload }] = useModal();
   function beforeRightClick({
     dataRef,
   }: {
@@ -402,7 +403,9 @@
         {
           label: t('quota.actions.importQuota'),
           icon: '',
-          handler: () => {},
+          handler: () => {
+            openQuotaUpload(true);
+          },
         },
       ];
     } else {

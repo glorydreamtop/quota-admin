@@ -39,11 +39,27 @@
       </div>
 
       <Icon title="暂不开放保存功能" class="save-icon" size="24" icon="ant-design:save-outlined" />
+      <Popover trigger="click">
+        <template #content>
+          <div class="text-primary flex justify-between whitespace-nowrap">
+            <span class="cursor-pointer flex items-center">
+              <Icon icon="ant-design:file-excel-outlined" />
+              <span>{{ t('page.quotaView.toolbar.downloadExcel') }}</span>
+            </span>
+            <Divider type="vertical" />
+            <span class="cursor-pointer flex items-center">
+              <Icon icon="ant-design:file-image-outlined" />
+              <span>{{ t('page.quotaView.toolbar.downloadImg') }}</span>
+            </span>
+          </div>
+        </template>
+        <Icon class="download-icon" size="24" icon="ant-design:download-outlined" />
+      </Popover>
     </Space>
     <div class="absolute right-0 top-0 w-18 h-18 overflow-hidden" @click="paint">
       <div
         v-ripple
-        class="w-36 h-36 !absolute -right-18 -top-18 bg-card-blue1 rounded-1 cursor-pointer"
+        class="w-36 h-36 !absolute -right-18 -top-18 bg-linear-primary rounded-1 cursor-pointer"
       >
         <Icon class="absolute left-7 bottom-7" size="32" color="#fff" icon="ph:paint-brush-light" />
       </div>
@@ -53,7 +69,7 @@
 
 <script lang="ts" setup>
   import { nextTick, reactive, unref } from 'vue';
-  import { Space, DatePicker, Select } from 'ant-design-vue';
+  import { Space, DatePicker, Select, Popover, Divider } from 'ant-design-vue';
   import vRipple from '/@/directives/ripple';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useChartConfigContext, useQuotaListContext, useSelectedQuotaListContext } from './hooks';
@@ -110,16 +126,10 @@
 </script>
 
 <style lang="less" scoped>
-  .setting-icon,
+  .download-icon,
   .save-icon {
     transition: 0.3s ease-in-out;
     transition-property: transform color;
-
-    &.rotate-icon {
-      &:hover {
-        transform: rotate(120deg);
-      }
-    }
 
     &:hover {
       color: @primary-6;

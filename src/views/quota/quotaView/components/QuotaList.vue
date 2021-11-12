@@ -58,7 +58,7 @@
         @contextmenu="handleContext($event, item)"
         v-ripple
         :class="[
-          item.selected ? 'bg-card-blue1' : 'bg-gray-500',
+          item.selected ? 'bg-linear-primary' : 'bg-gray-500',
           cardUI ? 'card-theme' : 'list-theme',
           'text-xs rounded-md flex sortable quota-list-item',
         ]"

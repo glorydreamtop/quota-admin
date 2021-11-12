@@ -29,6 +29,8 @@ export default {
       startDatePicker: '选择开始日期',
       endDatePicker: '选择结束日期',
       advanceDrawerTitle: '高级设置',
+      downloadExcel: '表格',
+      downloadImg: '图片',
     },
     seriesType: {
       line: '折线图',

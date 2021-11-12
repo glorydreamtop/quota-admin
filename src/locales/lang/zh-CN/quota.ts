@@ -30,6 +30,13 @@ export default {
     getQuotaDataExcel: '下载指标数据模板',
     uploadQuotaDataExcel: '上传指标数据模板',
   },
+  quotaUpload: {
+    importQuota: '导入指标(Excel)',
+    quotaExcel: '指标模板',
+    quotaDataExcel1: '标准数据模板',
+    quotaDataExcel2: 'wind数据模板',
+    quotaDataExcel3: '钢联数据模板',
+  },
   actionsRes: {
     copyOK: '已复制到剪贴板',
     copyFailed: '系统禁止或不支持等原因无法复制',

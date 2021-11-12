@@ -126,7 +126,7 @@
                 :class="[
                   chartConfig.timeConfig.sortMonth.includes(month)
                     ? 'bg-white text-primary'
-                    : 'bg-card-blue1 text-white',
+                    : 'bg-linear-primary text-white',
                   'w-full text-center rounded-sm month cursor-pointer',
                 ]"
                 v-for="month in monthList"
