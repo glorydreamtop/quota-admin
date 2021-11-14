@@ -7,7 +7,7 @@ import { generateModifyVars } from './build/generate/generateModifyVars';
 import { createProxy } from './build/vite/proxy';
 import { wrapperEnv } from './build/utils';
 import { createVitePlugins } from './build/vite/plugin';
-import { OUTPUT_DIR } from './build/constant';
+import { ASSESTS_DIR, OUTPUT_DIR } from './build/constant';
 
 function pathResolve(dir: string) {
   return resolve(process.cwd(), '.', dir);
@@ -62,6 +62,7 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
     build: {
       target: 'modules',
       outDir: OUTPUT_DIR,
+      assetsDir: ASSESTS_DIR,
       terserOptions: {
         compress: {
           keep_infinity: true,
