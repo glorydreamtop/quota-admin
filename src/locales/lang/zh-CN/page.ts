@@ -1,6 +1,15 @@
 export default {
   quotaView: {
     uniqSelectedQuotaMessage: '选过了',
+    quotaList: {
+      formula: '添加公式',
+      updateQuota: '更新选中指标',
+      checkAll: '全选/取消全选',
+      delChecked: '删除选中',
+      cardUI: '切换到卡片视角',
+      listUI: '切换到列表视角',
+      getXLSX: '数据导出为表格',
+    },
     toolbar: {
       paintBtn: '绘制',
       saveBtn: '保存',
@@ -29,8 +38,7 @@ export default {
       startDatePicker: '选择开始日期',
       endDatePicker: '选择结束日期',
       advanceDrawerTitle: '高级设置',
-      downloadExcel: '表格',
-      downloadImg: '图片',
+      downloadImg: '保存图片',
     },
     seriesType: {
       line: '折线图',

@@ -61,6 +61,9 @@
     [chartTypeEnum.quantileRadar]: useQuantileRadarChart,
   };
   const loading = ref(false);
+  defineExpose({
+    getInstance,
+  });
   watch(
     config,
     async (v) => {

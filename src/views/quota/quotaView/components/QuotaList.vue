@@ -1,43 +1,53 @@
 <template>
-  <div class="h-1/3 bg-white p-4 flex relative min-h-56">
-    <div class="pr-2 border-r border-gray-300 mr-2 flex flex-col gap-2 w-10">
+  <div class="h-48 bg-white p-4 flex relative min-h-48 shadow-md">
+    <div class="flex flex-wrap gap-2 w-auto write-vertical-left pr-2">
       <Tooltip placement="left">
-        <template #title>添加公式</template>
-        <Button @click="addFormula">
+        <template #title>{{ t('page.quotaView.quotaList.formula') }}</template>
+        <Button size="small" @click="addFormula">
           <template #icon>
-            <Icon icon="carbon:function-math" size="24" />
+            <Icon icon="carbon:function-math" size="16" />
           </template>
         </Button>
       </Tooltip>
       <Tooltip placement="left">
-        <template #title>删除选中</template>
-        <Button @click="clear" data-type="delete">
+        <template #title>{{ t('page.quotaView.quotaList.delChecked') }}</template>
+        <Button size="small" @click="clear" data-type="delete">
           <template #icon>
-            <Icon icon="ant-design:delete-outlined" size="24" />
+            <Icon icon="ant-design:delete-outlined" size="16" />
           </template>
         </Button>
       </Tooltip>
       <Tooltip placement="left">
-        <template #title>全选/取消全选</template>
-        <Button @click="checkAll">
+        <template #title>{{ t('page.quotaView.quotaList.checkAll') }}</template>
+        <Button size="small" @click="checkAll">
           <template #icon>
-            <Icon icon="ant-design:check-outlined" size="24" />
+            <Icon icon="ant-design:check-outlined" size="16" />
           </template>
         </Button>
       </Tooltip>
       <Tooltip placement="left">
-        <template #title>{{ `切换到${cardUI ? '列表' : '卡片'}视角` }}</template>
-        <Button @click="changeUI">
+        <template #title>{{
+          cardUI ? t('page.quotaView.quotaList.listUI') : t('page.quotaView.quotaList.cardUI')
+        }}</template>
+        <Button size="small" @click="changeUI">
           <template #icon>
-            <Icon icon="ant-design:swap-outlined" size="24" />
+            <Icon icon="ant-design:swap-outlined" size="16" />
           </template>
         </Button>
       </Tooltip>
       <Tooltip placement="left">
-        <template #title>更新选中指标</template>
-        <Button @click="updateQuota">
+        <template #title>{{ t('page.quotaView.quotaList.updateQuota') }}</template>
+        <Button size="small" @click="updateQuota">
           <template #icon>
-            <Icon icon="ant-design:sync-outlined" size="24" />
+            <Icon icon="ant-design:sync-outlined" size="16" />
+          </template>
+        </Button>
+      </Tooltip>
+      <Tooltip placement="left">
+        <template #title>{{ t('page.quotaView.quotaList.getXLSX') }}</template>
+        <Button size="small" @click="getXLSX">
+          <template #icon>
+            <Icon icon="ant-design:file-excel-outlined" size="16" />
           </template>
         </Button>
       </Tooltip>
@@ -47,7 +57,7 @@
       tag="div"
       name="quota-list"
       :class="[
-        'rounded-md overflow-y-scroll flex-grow relative',
+        'rounded-md overflow-y-scroll flex-grow relative border-l border-gray-300',
         cardUI ? 'flex gap-4 flex-wrap content-start' : 'w-0',
       ]"
       ref="quotaBox"
@@ -201,6 +211,7 @@
 
   const [registerEdit, { openModal: openEditModal, setModalProps: setEditModal }] = useModal();
 
+  function getXLSX() {}
   function addFormula() {
     openEditModal(true, {
       record: {},

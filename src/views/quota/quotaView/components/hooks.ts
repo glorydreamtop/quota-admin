@@ -2,6 +2,7 @@ import type { InjectionKey, Ref } from 'vue';
 import { createContext, useContext } from '/@/hooks/core/useContext';
 import type { QuotaItem } from '/#/quota';
 import { chartConfigType, normalQuotaSettingType } from '/#/chart';
+import { getQuotaDataResult } from '/@/api/quota/model';
 
 export interface SelectedQuotaItem extends QuotaItem {
   selected: boolean;
@@ -36,4 +37,14 @@ export function createChartConfigContext<T = chartConfigType>(context: T) {
 
 export function useChartConfigContext() {
   return useContext<chartConfigType>(chartConfigKey);
+}
+
+const chartOriginDataKey: InjectionKey<Ref<getQuotaDataResult[]>> = Symbol();
+
+export function createChartOriginDataContext<T = Ref>(context: T) {
+  return createContext<T>(context, chartOriginDataKey, { native: true });
+}
+
+export function useChartOriginDataContext() {
+  return useContext<Ref<getQuotaDataResult[]>>(chartOriginDataKey);
 }

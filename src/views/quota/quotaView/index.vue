@@ -1,6 +1,6 @@
 <template>
   <div class="flex justify-start items-center h-layout-full p-4 gap-4 w-full overflow-hidden">
-    <div class="h-full w-75 relative border resize-x overflow-hidden">
+    <div class="h-full w-75 relative border resize-x overflow-hidden shadow-md">
       <QuotaTree :show-search="true" class="h-full w-full enter-y" @selectNode="selectNode" />
       <!-- <TemplateTree :show-search="true" class="h-full w-full enter-y" @selectNode="selectTemplateNode" /> -->
     </div>
@@ -20,6 +20,7 @@
   // import { useRoute } from 'vue-router';
   import {
     createChartConfigContext,
+    createChartOriginDataContext,
     createQuotaListContext,
     createSelectedQuotaListContext,
   } from './components/hooks';
@@ -30,6 +31,7 @@
   import { useI18n } from '/@/hooks/web/useI18n';
   import { cloneDeep } from 'lodash-es';
   import { chartTypeEnum } from '/@/enums/chartEnum';
+  import { getQuotaDataResult } from '/@/api/quota/model';
   // import { TemplateItem } from '/#/template';
 
   const { createMessage } = useMessage();
@@ -45,6 +47,10 @@
   const def = cloneDeep(getChartDefaultConfig(chartTypeEnum.normal));
   const chartConfig = reactive(def);
   createChartConfigContext(chartConfig);
+  // 指标数据的Api源数据
+  const originData: getQuotaDataResult[] = ref([]);
+  createChartOriginDataContext(originData);
+
   function selectNode(q: QuotaItem) {
     const sq = cloneDeep(q) as SelectedQuotaItem;
     if (selectedQuotaList.value.find((q) => q.id === sq.id)) {

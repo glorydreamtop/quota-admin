@@ -16,6 +16,7 @@ export default {
   actions: {
     multiSelectQuota: '应用选中指标',
     multiUpdateQuota: '更新选中指标',
+    downloadExcel: '导出数据为表格',
     copyID: '提取ID',
     copyName: '提取名称',
     addFolder: '新建子目录',

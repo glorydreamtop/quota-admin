@@ -39,22 +39,17 @@
       </div>
 
       <Icon title="暂不开放保存功能" class="save-icon" size="24" icon="ant-design:save-outlined" />
-      <Popover trigger="click">
-        <template #content>
-          <div class="text-primary flex justify-between whitespace-nowrap">
-            <span class="cursor-pointer flex items-center">
-              <Icon icon="ant-design:file-excel-outlined" />
-              <span>{{ t('page.quotaView.toolbar.downloadExcel') }}</span>
-            </span>
-            <Divider type="vertical" />
-            <span class="cursor-pointer flex items-center">
-              <Icon icon="ant-design:file-image-outlined" />
-              <span>{{ t('page.quotaView.toolbar.downloadImg') }}</span>
-            </span>
-          </div>
+      <Tooltip>
+        <template #title>
+          <span>{{ t('page.quotaView.toolbar.downloadImg') }}</span>
         </template>
-        <Icon class="download-icon" size="24" icon="ant-design:download-outlined" />
-      </Popover>
+        <Icon
+          :class="['download-icon', chartConfig.title.length === 0 ? 'disabled' : '']"
+          size="24"
+          icon="ant-design:download-outlined"
+          @click="getImage"
+        />
+      </Tooltip>
     </Space>
     <div class="absolute right-0 top-0 w-18 h-18 overflow-hidden" @click="paint">
       <div
@@ -69,7 +64,7 @@
 
 <script lang="ts" setup>
   import { nextTick, reactive, unref } from 'vue';
-  import { Space, DatePicker, Select, Popover, Divider } from 'ant-design-vue';
+  import { Space, DatePicker, Select, Tooltip } from 'ant-design-vue';
   import vRipple from '/@/directives/ripple';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useChartConfigContext, useQuotaListContext, useSelectedQuotaListContext } from './hooks';
@@ -82,9 +77,9 @@
   const { t } = useI18n();
   const emit = defineEmits<{
     (event: 'paint'): void;
+    (event: 'event', eventName: string): void;
   }>();
   const chartConfig = useChartConfigContext();
-
   const quotaList = useQuotaListContext();
   const selectedQuotaList = useSelectedQuotaListContext();
   // 图表类型下拉选择
@@ -123,6 +118,9 @@
     chartConfig.quotaList = cloneDeep(unref(quotaList));
     emit('paint');
   }
+  async function getImage() {
+    emit('event', 'screenshot');
+  }
 </script>
 
 <style lang="less" scoped>
@@ -139,5 +137,12 @@
   .date-picker {
     transition: border 300ms;
     border-radius: 2px;
+  }
+
+  .disabled {
+    @apply text-gray-300;
+
+    pointer-events: none;
+    transition: none;
   }
 </style>
