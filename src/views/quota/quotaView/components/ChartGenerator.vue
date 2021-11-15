@@ -3,7 +3,13 @@
     <div class="w-2/3 relative top-0 bottom-0 left-0 right-0">
       <ToolBar @paint="paint" @event="handleEvent" />
       <div class="absolute top-12 bottom-0 left-0 right-2" id="chart-canvas">
-        <BasicChart :config="config" @update-config="updateConfig" ref="chartRef" />
+        <BasicChart
+          v-show="!showTable"
+          :config="config"
+          @update-config="updateConfig"
+          ref="chartRef"
+        />
+        <QuotaDataTable v-show="showTable" :config="tableConfig" />
       </div>
     </div>
     <Advance class="w-1/3" />
@@ -19,9 +25,12 @@
   import { cloneDeep } from 'lodash-es';
   import { EChartsType } from 'echarts/core';
   import { downloadByBase64 } from '/@/utils/file/download';
+  import { QuotaDataTable } from '/@/components/QuotaTable';
 
   const chartConfig = useChartConfigContext();
+  const showTable = ref(false);
   const config = reactive({}) as chartConfigType;
+  const tableConfig = reactive({}) as chartConfigType;
   function paint() {
     Object.assign(config, cloneDeep(chartConfig));
   }
@@ -39,7 +48,13 @@
         });
         await downloadByBase64(url, `${chartConfig.title}.png`);
         break;
-
+      case 'showTable':
+        Object.assign(tableConfig, cloneDeep(chartConfig));
+        showTable.value = true;
+        break;
+      case 'showChart':
+        showTable.value = false;
+        break;
       default:
         break;
     }

@@ -51,8 +51,17 @@
         />
       </Tooltip>
       <Tooltip>
-        <template #title>{{ t('page.quotaView.toolbar.tableView') }}</template>
-        <Icon icon="ant-design:file-excel-outlined" size="24" />
+        <template #title>{{
+          showTableRef
+            ? t('page.quotaView.toolbar.chartView')
+            : t('page.quotaView.toolbar.tableView')
+        }}</template>
+        <Icon
+          :class="[chartConfig.title.length === 0 ? 'disabled' : '']"
+          icon="ant-design:file-excel-outlined"
+          size="24"
+          @click="showTable"
+        />
       </Tooltip>
     </Space>
     <div class="absolute right-0 top-0 w-18 h-18 overflow-hidden" @click="paint">
@@ -67,7 +76,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { nextTick, reactive, unref } from 'vue';
+  import { nextTick, reactive, unref, ref } from 'vue';
   import { Space, DatePicker, Select, Tooltip } from 'ant-design-vue';
   import vRipple from '/@/directives/ripple';
   import { useI18n } from '/@/hooks/web/useI18n';
@@ -130,6 +139,11 @@
   }
   async function getImage() {
     emit('event', 'screenshot');
+  }
+  const showTableRef = ref(false);
+  function showTable() {
+    showTableRef.value = !showTableRef.value;
+    emit('event', showTableRef.value ? 'showTable' : 'showChart');
   }
 </script>
 

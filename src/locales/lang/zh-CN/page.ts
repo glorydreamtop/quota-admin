@@ -40,7 +40,8 @@ export default {
       advanceDrawerTitle: '高级设置',
       downloadImg: '保存图片',
       noQuotaListTip: '至少勾选一个指标',
-      tableView: '表格展示',
+      tableView: '数据表格',
+      chartView: '回到图表',
     },
     seriesType: {
       line: '折线图',

@@ -1,6 +1,6 @@
 <template>
   <div class="flex justify-start items-center h-layout-full p-4 gap-4 w-full overflow-hidden">
-    <div class="h-full w-75 relative border resize-x overflow-hidden shadow-md">
+    <div class="h-full min-w-75 w-75 relative border resize-x overflow-hidden shadow-md">
       <QuotaTree :show-search="true" class="h-full w-full enter-y" @selectNode="selectNode" />
       <!-- <TemplateTree :show-search="true" class="h-full w-full enter-y" @selectNode="selectTemplateNode" /> -->
     </div>
