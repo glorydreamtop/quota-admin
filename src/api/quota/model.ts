@@ -9,6 +9,7 @@ export interface getQuotaDataParams {
   pastUnit?: quotaDataPastUnitTypeEnum;
   pastValue?: number;
   rows: QuotaItem[];
+  exportConfig?: string;
 }
 
 export type getQuotaDataResult = { id: number; name: string; data: Array<[number, number]> };

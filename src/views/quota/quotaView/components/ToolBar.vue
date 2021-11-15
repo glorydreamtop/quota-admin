@@ -46,9 +46,13 @@
         <Icon
           :class="['download-icon', chartConfig.title.length === 0 ? 'disabled' : '']"
           size="24"
-          icon="ant-design:download-outlined"
+          icon="ant-design:file-image-outlined"
           @click="getImage"
         />
+      </Tooltip>
+      <Tooltip>
+        <template #title>{{ t('page.quotaView.toolbar.tableView') }}</template>
+        <Icon icon="ant-design:file-excel-outlined" size="24" />
       </Tooltip>
     </Space>
     <div class="absolute right-0 top-0 w-18 h-18 overflow-hidden" @click="paint">
@@ -73,12 +77,14 @@
   import Icon from '/@/components/Icon';
   import { cloneDeep } from 'lodash-es';
   import { getChartDefaultConfig } from '../helper';
+  import { useMessage } from '/@/hooks/web/useMessage';
 
   const { t } = useI18n();
   const emit = defineEmits<{
     (event: 'paint'): void;
     (event: 'event', eventName: string): void;
   }>();
+  const { createMessage } = useMessage();
   const chartConfig = useChartConfigContext();
   const quotaList = useQuotaListContext();
   const selectedQuotaList = useSelectedQuotaListContext();
@@ -98,6 +104,10 @@
     Object.assign(chartConfig, getChartDefaultConfig(type));
   }
   async function paint() {
+    if (quotaList.value.length === 0) {
+      createMessage.warn(t('page.quotaView.toolbar.noQuotaListTip'));
+      return;
+    }
     // 季节性的公历和农历均只适用一个指标，使其他指标置灰
     if ([chartTypeEnum.seasonal, chartTypeEnum.seasonalLunar].includes(chartConfig.type)) {
       const list = selectedQuotaList.value;

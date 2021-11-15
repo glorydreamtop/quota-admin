@@ -9,14 +9,18 @@ import type {
   seasonalChartConfigType,
   structuralChartConfigType,
 } from '/#/chart';
-import { today, yearsAgo } from '/@/utils/dateUtil';
+import { Ref, ref } from 'vue';
+import { formatToDate, today, yearsAgo } from '/@/utils/dateUtil';
 import {
   timeConfigEnum,
   chartTypeEnum,
   echartSeriesTypeEnum,
   structuralOffsetUnitEnum,
 } from '/@/enums/chartEnum';
-import { quotaDataPastUnitTypeEnum } from '/@/api/quota';
+import { quotaDataPastUnitTypeEnum, getQuotaData, quotaDataExportTypeEnum } from '/@/api/quota';
+import { SelectedQuotaItem } from './components/hooks';
+import { downloadByData } from '/@/utils/file/download';
+import { AxiosResponse } from 'axios';
 
 export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
   const defaultConfig = {
@@ -223,4 +227,25 @@ export function getNormalQuotaDefaultSetting(): normalQuotaSettingType {
     type: echartSeriesTypeEnum.line,
     lineWidth: 2,
   };
+}
+
+type useDownloadXLSXRes = [
+  Ref<string[]>,
+  { getXLSX: (rows: SelectedQuotaItem[]) => Promise<void> },
+];
+export function useDownloadXLSX(): useDownloadXLSXRes {
+  const dateStr = ref([yearsAgo(1), formatToDate()]);
+  async function getXLSX(rows: SelectedQuotaItem[]) {
+    const response = (await getQuotaData({
+      startDate: dateStr.value[0],
+      endDate: dateStr.value[1],
+      exportPara: quotaDataExportTypeEnum.XLSX,
+      rows,
+      exportConfig: JSON.stringify({ ID: 'ID', NAME: 'NAME' }),
+    })) as unknown;
+    const { data, headers } = response as AxiosResponse;
+    const filename = headers['content-disposition'].split(';')[1].split('filename=')[1];
+    downloadByData(data, decodeURI(filename));
+  }
+  return [dateStr, { getXLSX }];
 }

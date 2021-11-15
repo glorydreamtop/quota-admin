@@ -73,13 +73,19 @@ export function getQuotaData(params: getQuotaDataParams) {
   const rows = params.rows.map((item) => {
     return pick(item, ['sourceCode', 'id', 'name', 'sourceType']);
   });
-  return defHttp.post<getQuotaDataResult[]>({
-    url: Api.GetQuotaData,
-    params: {
-      ...params,
-      rows,
+  return defHttp.post<getQuotaDataResult[]>(
+    {
+      url: Api.GetQuotaData,
+      responseType: params.exportPara !== quotaDataExportTypeEnum.JSON ? 'arraybuffer' : 'json',
+      params: {
+        ...params,
+        rows,
+      },
     },
-  });
+    {
+      isReturnNativeResponse: params.exportPara !== quotaDataExportTypeEnum.JSON,
+    },
+  );
 }
 
 export function getSingleQuotaData({ id, date }: { id: number; date: string }) {

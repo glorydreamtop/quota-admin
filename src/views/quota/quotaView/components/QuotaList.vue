@@ -1,11 +1,11 @@
 <template>
-  <div class="h-48 bg-white p-4 flex relative min-h-48 shadow-md">
-    <div class="flex flex-wrap gap-2 w-auto write-vertical-left pr-2">
+  <div class="h-56 bg-white p-4 flex relative min-h-56 shadow-md">
+    <div class="flex flex-wrap gap-2 w-auto write-vertical-left pr-2 border-r border-gray-300">
       <Tooltip placement="left">
         <template #title>{{ t('page.quotaView.quotaList.formula') }}</template>
         <Button size="small" @click="addFormula">
           <template #icon>
-            <Icon icon="carbon:function-math" size="16" />
+            <Icon icon="carbon:function-math" size="20" />
           </template>
         </Button>
       </Tooltip>
@@ -13,7 +13,7 @@
         <template #title>{{ t('page.quotaView.quotaList.delChecked') }}</template>
         <Button size="small" @click="clear" data-type="delete">
           <template #icon>
-            <Icon icon="ant-design:delete-outlined" size="16" />
+            <Icon icon="ant-design:delete-outlined" size="20" />
           </template>
         </Button>
       </Tooltip>
@@ -21,7 +21,7 @@
         <template #title>{{ t('page.quotaView.quotaList.checkAll') }}</template>
         <Button size="small" @click="checkAll">
           <template #icon>
-            <Icon icon="ant-design:check-outlined" size="16" />
+            <Icon icon="ant-design:check-outlined" size="20" />
           </template>
         </Button>
       </Tooltip>
@@ -31,7 +31,7 @@
         }}</template>
         <Button size="small" @click="changeUI">
           <template #icon>
-            <Icon icon="ant-design:swap-outlined" size="16" />
+            <Icon icon="ant-design:swap-outlined" size="20" />
           </template>
         </Button>
       </Tooltip>
@@ -39,15 +39,7 @@
         <template #title>{{ t('page.quotaView.quotaList.updateQuota') }}</template>
         <Button size="small" @click="updateQuota">
           <template #icon>
-            <Icon icon="ant-design:sync-outlined" size="16" />
-          </template>
-        </Button>
-      </Tooltip>
-      <Tooltip placement="left">
-        <template #title>{{ t('page.quotaView.quotaList.getXLSX') }}</template>
-        <Button size="small" @click="getXLSX">
-          <template #icon>
-            <Icon icon="ant-design:file-excel-outlined" size="16" />
+            <Icon icon="ant-design:sync-outlined" size="20" />
           </template>
         </Button>
       </Tooltip>
@@ -57,7 +49,7 @@
       tag="div"
       name="quota-list"
       :class="[
-        'rounded-md overflow-y-scroll flex-grow relative border-l border-gray-300',
+        'rounded-md overflow-y-scroll flex-grow relative pl-4',
         cardUI ? 'flex gap-4 flex-wrap content-start' : 'w-0',
       ]"
       ref="quotaBox"
@@ -76,8 +68,22 @@
         :key="item.id"
         :data-quotaId="item.id"
       >
-        <Icon icon="akar-icons:drag-horizontal" color="#5eead4" class="drag-handler cursor-move" />
+        <span :class="['flex items-center gap-1', cardUI ? 'mb-1' : '']">
+          <Icon
+            icon="akar-icons:drag-horizontal"
+            color="#5eead4"
+            class="drag-handler cursor-move"
+          />
+          <span
+            class="text-purple-300 cursor-pointer select-none"
+            @click.stop
+            @dblclick="copy(item.id.toString(), 'id')"
+            >{{ item.id }}</span
+          >
+        </span>
+
         <span v-show="!cardUI" class="text-gray-200">{{ index + 1 }}</span>
+
         <!-- 全称 -->
         <Tooltip :placement="cardUI ? 'bottomLeft' : 'top'">
           <template #title>{{ item.name }}</template>
@@ -95,11 +101,11 @@
         >
         <!-- 单位和来源 -->
         <span class="flex justify-between text-teal-300 quota-unit-sourceType">
-          <span class="unit">{{ item.unit }}</span>
-          <span class="sourceType">{{ typeFomatter(item.sourceType) }}</span>
+          <span class="unit" @click.stop>{{ item.unit }}</span>
+          <span class="sourceType" @click.stop>{{ typeFomatter(item.sourceType) }}</span>
         </span>
         <span class="flex justify-between text-teal-300 children:w-fit">
-          <span class="whitespace-nowrap w-32">{{
+          <span class="whitespace-nowrap w-32" @click.stop>{{
             `${dateFomatter(item.dateLast)} ${item.frequency ? `${item.frequency}更` : ''}`
           }}</span>
           <span class="del-icon">
@@ -118,12 +124,12 @@
 </template>
 
 <script lang="ts" setup>
-  import { nextTick, onBeforeUnmount, onDeactivated, ref, unref } from 'vue';
+  import { nextTick, ref, unref } from 'vue';
   import type { QuotaItem } from '/#/quota';
   import { Button, Tooltip } from 'ant-design-vue';
   import { useModal } from '/@/components/Modal';
   import { useWatchArray, typeFomatter } from '/@/utils/helper/commonHelper';
-  import { cloneDeep, last, remove } from 'lodash-es';
+  import { cloneDeep, remove } from 'lodash-es';
   import { Icon } from '/@/components/Icon';
   // import QuotaModal from '/@/views/dataManagement/quotaTree/components/QuotaModal.vue';
   // import Edit from './SeriesEdit.vue';
@@ -134,7 +140,7 @@
   import { useContextMenu } from '/@/hooks/web/useContextMenu';
   import vRipple from '/@/directives/ripple';
   import { onMountedOrActivated } from '/@/hooks/core/onMountedOrActivated';
-  import { usePointerSlideIn } from '/@/hooks/web/useAnimation';
+  // import { usePointerSlideIn } from '/@/hooks/web/useAnimation';
   import { useQuotaListContext, useSelectedQuotaListContext } from './hooks';
   import type { SelectedQuotaItem } from './hooks';
   import { domForeach } from '/@/utils/domUtils';
@@ -144,7 +150,7 @@
   import { formatToDate } from '/@/utils/dateUtil';
   import { requestUpdateQuotaData } from '/@/api/quota';
 
-  let animationFlag = false;
+  // let animationFlag = false;
   // 交付给绘图的指标列表
   const quotaList = useQuotaListContext();
   // 所有从树中选中的指标
@@ -181,13 +187,12 @@
       arr.push(requestUpdateQuotaData({ categoryId: parseInt(key), indexIdList: obj[key] }));
     }
     try {
+      // 并发分组更新请求
       const res = await Promise.allSettled(arr);
       createMessage.success(res[0].value.msg);
     } catch (error) {
       createMessage.error(error);
     }
-
-    console.log(res);
   }
   // 监听数组，新加入的指标默认被选中
   useWatchArray(selectedQuota, (cur, pre) => {
@@ -198,9 +203,9 @@
           cur[i].setting = getNormalQuotaDefaultSetting();
         }
       }
-      animationFlag = true;
+      // animationFlag = true;
     } else {
-      animationFlag = false;
+      // animationFlag = false;
     }
     quotaList.value = cur.filter((item) => item.selected);
   });
@@ -210,8 +215,6 @@
   }
 
   const [registerEdit, { openModal: openEditModal, setModalProps: setEditModal }] = useModal();
-
-  function getXLSX() {}
   function addFormula() {
     openEditModal(true, {
       record: {},
@@ -263,13 +266,6 @@
         },
       },
       {
-        label: t('page.quotaCard.contextMenu.copyId'),
-        icon: 'ant-design:copy-outlined',
-        handler: () => {
-          copy(item.id.toString(), 'id');
-        },
-      },
-      {
         label: t('page.quotaCard.contextMenu.copyShortName'),
         icon: 'ant-design:copy-outlined',
         handler: () => {
@@ -301,19 +297,19 @@
   }
   const quotaBox = ref<ComponentRef>();
   // 飞入动画的监听器
-  async function listener(event: MouseEvent) {
-    const boxdom: HTMLDivElement = unref(quotaBox)!.$el;
-    if ((event.target as HTMLElement)!.dataset.leafid === undefined || !animationFlag) return;
-    await nextTick();
-    animationFlag = false;
-    // 生成飞入动画
-    const dom = last(boxdom.getElementsByClassName('sortable'))! as HTMLElement;
-    const [_, { setBeforeAnimate, initAnimation }] = usePointerSlideIn(dom, event);
-    setBeforeAnimate((dom) => {
-      dom.scrollIntoView({ behavior: 'smooth' });
-    });
-    initAnimation();
-  }
+  // async function listener(event: MouseEvent) {
+  //   const boxdom: HTMLDivElement = unref(quotaBox)!.$el;
+  //   if ((event.target as HTMLElement)!.dataset.leafid === undefined || !animationFlag) return;
+  //   await nextTick();
+  //   animationFlag = false;
+  //   // 生成飞入动画
+  //   const dom = last(boxdom.getElementsByClassName('sortable'))! as HTMLElement;
+  //   const [_, { setBeforeAnimate, initAnimation }] = usePointerSlideIn(dom, event);
+  //   setBeforeAnimate((dom) => {
+  //     dom.scrollIntoView({ behavior: 'smooth' });
+  //   });
+  //   initAnimation();
+  // }
 
   onMountedOrActivated(async () => {
     await nextTick();
@@ -329,10 +325,10 @@
           element.classList.remove('quota-list-item');
         });
       },
-      setData: (dt) => {
-        const d = document.createElement('div');
-        dt.setDragImage(d, 2, 2);
-      },
+      // setData: (dt) => {
+      //   const d = document.createElement('div');
+      //   dt.setDragImage(d, 2, 2);
+      // },
       onEnd: (evt) => {
         domForeach(boxdom.getElementsByClassName('sortable'), (element) => {
           element.classList.add('quota-list-item');
@@ -353,14 +349,14 @@
       },
     });
     initSortable();
-    window.addEventListener('click', listener);
+    // window.addEventListener('click', listener);
   });
-  onBeforeUnmount(() => {
-    window.removeEventListener('click', listener);
-  });
-  onDeactivated(() => {
-    window.removeEventListener('click', listener);
-  });
+  // onBeforeUnmount(() => {
+  //   window.removeEventListener('click', listener);
+  // });
+  // onDeactivated(() => {
+  //   window.removeEventListener('click', listener);
+  // });
 </script>
 
 <style lang="less" scoped>
@@ -396,29 +392,26 @@
   }
 
   .card-theme {
-    @apply w-60 h-32 flex-col pt-1 p-2 shadow-md;
-
-    .drag-handler {
-      @apply mb-1;
-
-      font-size: 16px;
-    }
+    @apply w-50 h-32 flex-col pt-1 p-2 shadow-md overflow-x-hidden;
 
     .quota-title {
-      @apply text-lg leading-5 font-medium;
+      @apply text-lg leading-5 font-medium whitespace-nowrap;
 
-      display: box;
-      -webkit-box-orient: vertical;
-      -webkit-line-clamp: 2;
       overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .quota-sourceCode {
-      @apply w-fit;
+      @apply w-fit text-teal-100;
     }
 
     .quota-unit-sourceType {
-      @apply mt-auto children:w-fit;
+      @apply mt-auto;
+
+      .unit,
+      .sourceType {
+        @apply w-30 text-center w-fit;
+      }
     }
   }
 
@@ -427,8 +420,6 @@
 
     .drag-handler {
       @apply items-center;
-
-      font-size: 16px;
     }
 
     .quota-title {
