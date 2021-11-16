@@ -41,13 +41,17 @@
       <Icon title="暂不开放保存功能" class="save-icon" size="24" icon="ant-design:save-outlined" />
       <Tooltip>
         <template #title>
-          <span>{{ t('page.quotaView.toolbar.downloadImg') }}</span>
+          <span>{{
+            showTableRef
+              ? t('page.quotaView.toolbar.downloadXLSX')
+              : t('page.quotaView.toolbar.downloadImg')
+          }}</span>
         </template>
         <Icon
           :class="['download-icon', chartConfig.title.length === 0 ? 'disabled' : '']"
           size="24"
-          icon="ant-design:file-image-outlined"
-          @click="getImage"
+          icon="ant-design:download-outlined"
+          @click="download"
         />
       </Tooltip>
       <Tooltip>
@@ -58,13 +62,13 @@
         }}</template>
         <Icon
           :class="[chartConfig.title.length === 0 ? 'disabled' : '']"
-          icon="ant-design:file-excel-outlined"
+          :icon="showTableRef ? 'ant-design:line-chart-outlined' : 'ant-design:table-outlined'"
           size="24"
           @click="showTable"
         />
       </Tooltip>
     </Space>
-    <div class="absolute right-0 top-0 w-18 h-18 overflow-hidden" @click="paint">
+    <div class="absolute right-0 top-0 z-9 w-18 h-18 overflow-hidden" @click="paint">
       <div
         v-ripple
         class="w-36 h-36 !absolute -right-18 -top-18 bg-linear-primary rounded-1 cursor-pointer"
@@ -137,8 +141,8 @@
     chartConfig.quotaList = cloneDeep(unref(quotaList));
     emit('paint');
   }
-  async function getImage() {
-    emit('event', 'screenshot');
+  async function download() {
+    emit('event', showTableRef.value ? 'xlsx' : 'screenshot');
   }
   const showTableRef = ref(false);
   function showTable() {

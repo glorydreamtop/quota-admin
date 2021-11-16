@@ -60,7 +60,7 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       proxy: createProxy(VITE_PROXY),
     },
     build: {
-      target: 'modules',
+      target: 'esnext',
       outDir: OUTPUT_DIR,
       assetsDir: ASSESTS_DIR,
       terserOptions: {

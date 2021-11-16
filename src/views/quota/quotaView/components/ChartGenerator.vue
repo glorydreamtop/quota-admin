@@ -9,7 +9,7 @@
           @update-config="updateConfig"
           ref="chartRef"
         />
-        <QuotaDataTable v-show="showTable" :config="tableConfig" />
+        <QuotaDataTable v-show="showTable" :config="config" ref="tableRef" />
       </div>
     </div>
     <Advance class="w-1/3" />
@@ -30,26 +30,37 @@
   const chartConfig = useChartConfigContext();
   const showTable = ref(false);
   const config = reactive({}) as chartConfigType;
-  const tableConfig = reactive({}) as chartConfigType;
   function paint() {
     Object.assign(config, cloneDeep(chartConfig));
   }
   function updateConfig(config) {
     Object.assign(chartConfig, cloneDeep(config));
   }
-  const chartRef = ref<ComponentRef>();
+  const chartRef = ref<
+    {
+      getInstance: () => EChartsType;
+    } & ComponentRef
+  >();
+  const tableRef = ref<
+    {
+      download: () => void;
+    } & ComponentRef
+  >();
   async function handleEvent(type: string) {
     switch (type) {
       case 'screenshot':
-        const url = (chartRef.value.getInstance() as EChartsType).getDataURL({
+        const url = (chartRef.value!.getInstance() as EChartsType).getDataURL({
           type: 'png',
-          pixelRatio: 2,
+          pixelRatio: 1,
           backgroundColor: '#FFF',
         });
         await downloadByBase64(url, `${chartConfig.title}.png`);
         break;
+
+      case 'xlsx':
+        tableRef.value!.download();
+        break;
       case 'showTable':
-        Object.assign(tableConfig, cloneDeep(chartConfig));
         showTable.value = true;
         break;
       case 'showChart':

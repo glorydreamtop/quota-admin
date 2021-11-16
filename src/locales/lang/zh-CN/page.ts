@@ -39,9 +39,13 @@ export default {
       endDatePicker: '选择结束日期',
       advanceDrawerTitle: '高级设置',
       downloadImg: '保存图片',
+      downloadXLSX: '导出表格',
       noQuotaListTip: '至少勾选一个指标',
       tableView: '数据表格',
       chartView: '回到图表',
+      quotaDataTableHeader:{
+        date:'日期'
+      }
     },
     seriesType: {
       line: '折线图',
