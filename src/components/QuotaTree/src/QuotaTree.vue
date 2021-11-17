@@ -23,7 +23,7 @@
             >
               <Icon :icon="item.icon" />
               <span
-                v-show="item.key !== 'new-folder'"
+                v-show="item.key !== editKey"
                 :data-folderId="item.folder ? item.key : undefined"
                 :data-LeafId="!item.folder ? item.key : undefined"
                 class="select-none tree-node w-full"
@@ -32,8 +32,9 @@
               <Input
                 class="name-editor"
                 size="small"
-                v-show="item.key === 'new-folder'"
+                v-show="item.key === editKey"
                 v-model:value="item.name"
+                @click.stop
                 @blur="handleBlur(item)"
                 autofocus
               />
@@ -58,7 +59,7 @@
             >
               <Icon :icon="item.icon" />
               <span
-                v-show="item.key !== 'new-folder'"
+                v-show="item.key !== editKey"
                 :data-folderId="item.folder ? item.key : undefined"
                 :data-LeafId="!item.folder ? item.key : undefined"
                 class="select-none tree-node w-full"
@@ -67,7 +68,7 @@
               <Input
                 class="name-editor"
                 size="small"
-                v-show="item.key === 'new-folder'"
+                v-show="item.key === editKey"
                 v-model:value="item.name"
                 @blur="handleBlur(item)"
                 autofocus
@@ -91,6 +92,7 @@
     nextTick,
     watch,
     h,
+    computed,
   } from 'vue';
   import { QuotaSearch, ToolBar } from '../index';
   import { QuotaEditor, QuotaUpload } from '/@/components/QuotaEditor';
@@ -156,6 +158,7 @@
       clickRowToExpand: true,
       loadData: ({ eventKey }) => loadData(eventKey),
       beforeRightClick,
+      treeInstance: computed(() => sysTree.value!),
     },
     [CategoryTreeType.userQuota]: {
       treeData: [],
@@ -166,6 +169,7 @@
       clickRowToExpand: true,
       loadData: ({ eventKey }) => loadData(eventKey),
       beforeRightClick,
+      treeInstance: computed(() => userTree.value!),
     },
   });
   watch(
@@ -197,8 +201,14 @@
       const res = (await getQuotaTree({ type })) as Partial<CategoryTreeModel & TreeItem>[];
       forEach(res, (item) => {
         item.isLeaf = !item.folder;
+        item.slots = { title: 'title' };
         item.icon = item.folder ? 'ant-design:folder-outlined' : 'tabler:letter-q';
-        if (expandedKeys && expandedKeys.includes(item.key!) && !item.children) {
+        // 恢复之前的展开状态
+        if (
+          expandedKeys &&
+          expandedKeys.includes(item.key!) &&
+          (item.children?.every((item) => item.folder)||!item.children)
+        ) {
           loadData(item.key!);
         }
       });
@@ -235,6 +245,7 @@
       item.icon = 'tabler:letter-q';
       item.isLeaf = true;
       item.key = item.id;
+      item.slots = { title: 'title' };
       item.categoryId = key;
       return item;
     });
@@ -333,6 +344,7 @@
       createMessage.success(t('quota.actionsRes.copyFailed'));
     }
   }
+  const editKey = ref<number>();
   // 支持树节点的增删
   const { addFolder, saveCategory, delCategory } = useTreeCURD({
     tree: treeProps,
@@ -340,6 +352,7 @@
   });
   async function handleBlur(node: CategoryTreeModel) {
     await saveCategory(node);
+    editKey.value = 0;
     await getData();
   }
   const [registerQuotaEditor, { openModal: openQuotaEditor, setModalProps: setQuotaEditorProps }] =
@@ -374,9 +387,19 @@
       return [
         ...commonActions,
         {
+          label: t('quota.actions.rename'),
+          icon: '',
+          handler: () => {
+            editKey.value = dataRef.id;
+          },
+        },
+        {
           label: t('quota.actions.addFolder'),
           icon: '',
-          handler: () => addFolder(dataRef as CategoryTreeModel),
+          handler: () => {
+            addFolder(dataRef as CategoryTreeModel);
+            editKey.value = 0;
+          },
         },
         {
           label: t('quota.actions.addQuota'),
@@ -411,6 +434,18 @@
     } else {
       return [
         ...commonActions,
+        {
+          label: t('quota.actions.editQuota'),
+          icon: '',
+          handler: () => {
+            setQuotaEditorProps({
+              afterClose() {
+                getData();
+              },
+            });
+            openQuotaEditor(true, dataRef);
+          },
+        },
         {
           label: t('quota.actions.multiSelectQuota'),
           icon: '',

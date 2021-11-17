@@ -169,10 +169,16 @@
     },
   );
   function close() {
-    Object.assign(quotaSetting, defaultSetting);
+    for (const key in quotaSetting) {
+      quotaSetting[key] = defaultSetting[key];
+    }
     closeModal();
   }
   function ok() {
+    if(quotaSetting.name.trim().length===0){
+      createMessage.warn(t('page.quotaView.quotaSetting.noName'))
+      return;
+    }
     if (quotaIndex.value === quotaList.value.length) {
       quotaList.value.push(cloneDeep(quotaSetting) as SelectedQuotaItem);
     } else {

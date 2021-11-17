@@ -43,9 +43,9 @@ export default {
       noQuotaListTip: '至少勾选一个指标',
       tableView: '数据表格',
       chartView: '回到图表',
-      quotaDataTableHeader:{
-        date:'日期'
-      }
+      quotaDataTableHeader: {
+        date: '日期',
+      },
     },
     seriesType: {
       line: '折线图',
@@ -63,7 +63,8 @@ export default {
       formula: '公式编辑',
       autofill: '快捷填充',
       autofillTip: '公式指标点击左半区可获取公式内容',
-      formulaWithoutId: '新创建的公式没有ID',
+      formulaWithoutId: '临时公式没有ID',
+      noName: '需要一个名字',
       setting: {
         yAxisIndex: '适用Y轴',
         type: '适用图形',
@@ -140,6 +141,10 @@ export default {
     id: '指标ID',
     sourceCode: '指标代码',
     shortName: '指标简称',
+    updateOn: '更新于',
+    calculate: '非指标，实时计算',
+    formulaTip: '这只是一个公式，不是公式指标',
+    formulaWithoutId:'临时公式',
     contextMenu: {
       edit: '编辑指标',
       copyId: '拷贝指标ID',

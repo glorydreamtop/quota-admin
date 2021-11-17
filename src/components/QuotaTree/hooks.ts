@@ -10,7 +10,7 @@ import type {
   treeSelectParams,
   treePropsModel,
 } from './types';
-import { Ref } from 'vue';
+import { Ref, reactive } from 'vue';
 import { updateCategory, delCategory as delCategoryById } from '/@/api/quota';
 import { CategoryTreeType } from '/@/enums/quotaEnum';
 
@@ -122,9 +122,10 @@ export function useTreeCURD({
       tree[treeType.value].treeData,
       (item) => item.id === folder.id,
     )!;
-    const key = 'new-folder';
+    const key = 0;
     const folderConfig: TreeItem = {
       children: [],
+      slots: { title: 'title' },
       name: '新建文件夹',
       folder: true,
       icon: 'ant-design:folder-outlined',
@@ -133,13 +134,17 @@ export function useTreeCURD({
       key: key,
       parentId: folder.id,
     };
+    console.log(tree[treeType.value].treeInstance);
+    const node = cloneDeep(parentNode);
+    parentNode.children = [reactive(folderConfig), ...parentNode.children!];
+
     // 来自Antd奇怪的bug，不能push，必须整个数组重新赋值
-    parentNode.children = [folderConfig, ...parentNode.children!];
   }
   async function saveCategory(folder: CategoryTreeModel) {
     await updateCategory({
       parentId: folder.parentId!,
       name: folder.name,
+      id: folder.id !== 0 ? folder.id : undefined,
       type: treeType.value,
     });
   }

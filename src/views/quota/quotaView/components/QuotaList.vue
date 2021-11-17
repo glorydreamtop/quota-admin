@@ -78,7 +78,7 @@
             class="text-purple-300 cursor-pointer select-none"
             @click.stop
             @dblclick="copy(item.id.toString(), 'id')"
-            >{{ item.id }}</span
+            >{{ item.id??t('page.quotaCard.formulaWithoutId') }}</span
           >
         </span>
 
@@ -94,20 +94,28 @@
           >
         </Tooltip>
         <!-- sourceCode -->
-        <span class="text-white cursor-pointer cursor-default select-none quota-sourceCode"
+        <span class="text-white max-w-full cursor-pointer cursor-default overflow-ellipsis overflow-x-hidden  select-none quota-sourceCode"
           ><span class="w-fit" @click.stop @dblclick="copy(item.sourceCode, 'sourceCode')">{{
             item.sourceCode
           }}</span></span
         >
         <!-- 单位和来源 -->
-        <span class="flex justify-between text-teal-300 quota-unit-sourceType">
+        <span class="flex justify-between text-purple-100 quota-unit-sourceType">
           <span class="unit" @click.stop>{{ item.unit }}</span>
           <span class="sourceType" @click.stop>{{ typeFomatter(item.sourceType) }}</span>
         </span>
-        <span class="flex justify-between text-teal-300 children:w-fit">
-          <span class="whitespace-nowrap w-32" @click.stop>{{
-            `${dateFomatter(item.dateLast)} ${item.frequency ? `${item.frequency}更` : ''}`
-          }}</span>
+        <span class="flex justify-between text-purple-100 children:w-fit">
+          <Tooltip>
+            <template #title>
+              <span class="text-xs">{{item.id?
+                `${t('page.quotaCard.updateOn')}${item.timeLastUpdate}`:
+                t('page.quotaCard.formulaTip')
+              }}</span>
+            </template>
+            <span class="whitespace-nowrap w-32" @click.stop>{{
+              `${dateFomatter(item)} ${item.frequency ? `${item.frequency}更` : ''}`
+            }}</span>
+          </Tooltip>
           <span class="del-icon">
             <Icon
               @click="handleIcon(item, 'del')"
@@ -149,6 +157,7 @@
   import { getNormalQuotaDefaultSetting } from '../helper';
   import { formatToDate } from '/@/utils/dateUtil';
   import { requestUpdateQuotaData } from '/@/api/quota';
+import { SourceTypeEnum } from '/@/enums/quotaEnum';
 
   // let animationFlag = false;
   // 交付给绘图的指标列表
@@ -161,15 +170,18 @@
     item.selected = !item.selected;
   }
   const cardUI = ref(true);
+  // 切换卡片or列表
   function changeUI() {
     cardUI.value = !cardUI.value;
   }
+  // 全选/取消全选
   function checkAll() {
     const b = selectedQuota.value.every((q) => q.selected);
     selectedQuota.value.forEach((q) => {
       q.selected = !b;
     });
   }
+  // 更新选中指标
   async function updateQuota() {
     const obj = {};
     // 按目录分组
@@ -209,9 +221,10 @@
     }
     quotaList.value = cur.filter((item) => item.selected);
   });
-  function dateFomatter(str: string) {
-    if (str === null) return t('common.noData');
-    return formatToDate(str);
+  function dateFomatter(quota: QuotaItem) {
+    if(!quota.id&&quota.sourceType===SourceTypeEnum.formula) return t('page.quotaCard.calculate')
+    if (quota.dateLast === null) return t('common.noData');
+    return formatToDate(quota.dateLast);
   }
 
   const [registerEdit, { openModal: openEditModal, setModalProps: setEditModal }] = useModal();

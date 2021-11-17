@@ -232,7 +232,7 @@
           if (m.addedNodes.length === 0) return;
           // 监听单页面内部新节点加入，并使其可拖拽，可拖拽缩放，并收集尺寸信息
           m.addedNodes.forEach((pagedom: HTMLElement) => {
-            pagedom.style.height = `${pagedom.offsetHeight}px`;
+            // pagedom.style.height = `${pagedom.offsetHeight}px`;
             useMutationObserver(
               pagedom.children[1],
               (mutation2) => {
@@ -248,8 +248,11 @@
                       if (_dom) {
                         _dom.pageConfig.width = target.style.width;
                         _dom.pageConfig.height = target.style.height;
+                        // 长图模式下不计算布局分页
+                        if (!pageSetting.pagination) return;
                         const overflow = checkOverflow(target.parentElement!);
                         if (overflow) {
+                          // 放不下就推到下一页
                           const nextPagedom = pagedom.nextElementSibling as HTMLElement;
                           if (nextPagedom) {
                             for (let i = 0; i < paginationInfo.pages.length; i++) {

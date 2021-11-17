@@ -1,6 +1,7 @@
-import type { ContextMenuItem, ReplaceFields, TreeItem } from '../Tree';
+import type { ContextMenuItem, ReplaceFields, TreeItem, TreeActionType } from '../Tree';
 import type { CategoryTreeModel, QuotaItem } from '/#/quota';
 import { CategoryTreeType } from '/@/enums/quotaEnum';
+import { ComputedRef } from 'vue';
 
 export type hightlightHooksType = [
   TreeItem[],
@@ -40,6 +41,7 @@ export type treeProp = Partial<{
   clickRowToExpand: boolean;
   loadData: Fn;
   rightMenuList: ContextMenuItem[];
+  treeInstance: ComputedRef<TreeActionType & ComponentRef>;
 }>;
 export interface treePropsModel {
   [CategoryTreeType.sysQuota]: treeProp;

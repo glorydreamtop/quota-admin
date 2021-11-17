@@ -38,7 +38,12 @@
         >
       </div>
 
-      <Icon title="暂不开放保存功能" class="save-icon" size="24" icon="ant-design:save-outlined" />
+      <Icon
+        title="暂不开放保存功能"
+        :class="['save-icon', chartConfig.title.length === 0 ? 'disabled' : '']"
+        size="24"
+        icon="ant-design:save-outlined"
+      />
       <Tooltip>
         <template #title>
           <span>{{

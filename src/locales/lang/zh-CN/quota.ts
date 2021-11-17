@@ -19,6 +19,7 @@ export default {
     downloadExcel: '导出数据为表格',
     copyID: '提取ID',
     copyName: '提取名称',
+    rename: '重命名',
     addFolder: '新建子目录',
     delFolder: '删除目录',
     addQuota: '新建指标',

@@ -26,4 +26,5 @@ export interface QuotaItem {
   unit: Nullable<string>;
   categoryIdList?: number[];
   categoryId?: number;
+  timeLastUpdate:string;
 }

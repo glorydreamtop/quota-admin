@@ -34,7 +34,9 @@ export function useECharts(elRef: Ref<HTMLDivElement>) {
       return;
     }
 
-    chartInstance = echarts.init(el);
+    chartInstance = echarts.init(el, {
+      renderer: 'svg',
+    });
     const { removeEvent } = useEventListener({
       el: window,
       name: 'resize',
