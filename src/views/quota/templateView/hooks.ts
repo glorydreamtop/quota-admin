@@ -1,4 +1,4 @@
-import { InjectionKey, ref, Ref, watchEffect } from 'vue';
+import { InjectionKey, Ref, watchEffect } from 'vue';
 import { createContext, useContext } from '/@/hooks/core/useContext';
 import type { pageSettingType, TemplateDOM } from '/#/template';
 import { remove } from 'lodash-es';
@@ -44,12 +44,15 @@ export function usePageSettingContext() {
   return useContext<pageSettingType>(pageSettingKey);
 }
 
-type useMultiSelectRes = [
-  Ref<string[]>,
-  { insertSelectKey: (temp: TemplateDOM, nativeEvent: PointerEvent) => void },
-];
+type useMultiSelectRes = {
+  insertSelectKey: (temp: TemplateDOM, nativeEvent: PointerEvent) => void;
+  clearSelectKey: () => void;
+};
 
-export function useMultiSelect(templateList: Ref<TemplateDOM[]>): useMultiSelectRes {
+export function useMultiSelect(
+  templateList: Ref<TemplateDOM[]>,
+  selectTemplateList: Ref<TemplateDOM[]>,
+): useMultiSelectRes {
   const { Ctrl_A } = useMagicKeys({
     passive: false,
     onEventFired(e) {
@@ -60,19 +63,17 @@ export function useMultiSelect(templateList: Ref<TemplateDOM[]>): useMultiSelect
   });
 
   watchEffect(() => {
-    if (Ctrl_A.value) selectTemplateList.value = templateList.value.map((temp) => temp.uniqId);
+    if (Ctrl_A.value) selectTemplateList.value = templateList.value.map((temp) => temp);
   });
-
-  const selectTemplateList = ref<string[]>([]);
 
   function insertSelectKey(temp: TemplateDOM, nativeEvent: PointerEvent) {
     const list = selectTemplateList.value;
     if (nativeEvent.ctrlKey) {
-      const idx = list.findIndex((t) => t === temp.uniqId);
+      const idx = list.findIndex((t) => t.uniqId === temp.uniqId);
       if (idx > -1) {
         list.splice(idx, 1);
       } else {
-        list.push(temp.uniqId);
+        list.push(temp);
       }
     } else if (nativeEvent.shiftKey) {
       // Shift多选
@@ -80,11 +81,11 @@ export function useMultiSelect(templateList: Ref<TemplateDOM[]>): useMultiSelect
       let maxIndex = 0;
       for (let i = 0; i < list.length; i++) {
         minIndex = Math.min(
-          templateList.value.findIndex((item) => item.uniqId === list[i]),
+          templateList.value.findIndex((item) => item.uniqId === list[i].uniqId),
           minIndex,
         );
         maxIndex = Math.max(
-          templateList.value.findIndex((item) => item.uniqId === list[i]),
+          templateList.value.findIndex((item) => item.uniqId === list[i].uniqId),
           maxIndex,
         );
       }
@@ -97,16 +98,19 @@ export function useMultiSelect(templateList: Ref<TemplateDOM[]>): useMultiSelect
       }
       for (let index = minIndex; index <= maxIndex; index++) {
         const key = templateList.value[index].uniqId;
-        if (list.findIndex((t) => t === key) === -1) {
-          list.push(key);
+        if (list.findIndex((t) => t.uniqId === key) === -1) {
+          list.push(templateList.value[index]);
         }
       }
     } else {
       remove(list, (_) => _);
-      list.push(temp.uniqId);
+      list.push(temp);
     }
   }
-  return [selectTemplateList, { insertSelectKey }];
+  function clearSelectKey() {
+    remove(selectTemplateList.value, (_) => _);
+  }
+  return { insertSelectKey, clearSelectKey };
 }
 
 export function insertDOM(
@@ -123,10 +127,6 @@ export function insertDOM(
   } else {
     templateList.value.push(cfg);
   }
-}
-
-export interface TemplateListMapType {
-  [key: string]: TemplateDOM;
 }
 
 export const textTemplate: TemplateDOM = {

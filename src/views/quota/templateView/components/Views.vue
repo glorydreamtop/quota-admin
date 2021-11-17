@@ -76,21 +76,11 @@
 </template>
 
 <script lang="ts" setup>
-  import {
-    reactive,
-    watchEffect,
-    computed,
-    ref,
-    ComputedRef,
-    watch,
-    nextTick,
-    CSSProperties,
-  } from 'vue';
+  import { reactive, computed, ref, ComputedRef, watch, nextTick, CSSProperties } from 'vue';
   import {
     useMultiSelect,
     useTemplateListContext,
     useSelectTemplateListContext,
-    TemplateListMapType,
     usePageSettingContext,
   } from '../hooks';
   import type { TemplateDOM } from '/#/template';
@@ -139,27 +129,15 @@
     },
   );
   const templateList = useTemplateListContext();
-  const templateMap: ComputedRef<TemplateListMapType> = computed(() => {
-    const obj = {};
-    templateList.value.forEach((t) => {
-      obj[t.uniqId] = t;
-    });
-    return obj;
-  });
   const compTypeMap = {
     Chart: BasicChart,
     Text: BasicText,
     Img: BasicImg,
   };
-  const [selectTemplateIdList, { insertSelectKey }] = useMultiSelect(templateList);
+  const { insertSelectKey } = useMultiSelect(templateList, selectedTemplateDOMList);
   function selectTemplate(temp: TemplateDOM, nativeEvent: PointerEvent) {
     insertSelectKey(temp, nativeEvent);
   }
-  watchEffect(() => {
-    selectedTemplateDOMList.value = selectTemplateIdList.value.map(
-      (uniqId) => templateMap.value[uniqId],
-    );
-  });
 
   const paginationInfo: { pages: { list: TemplateDOM[]; id: string }[]; totalPage: number } =
     reactive({
