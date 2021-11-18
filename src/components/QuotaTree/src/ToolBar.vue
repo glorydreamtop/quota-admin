@@ -2,11 +2,11 @@
   <div class="toolbar">
     <Icon
       v-repeat-click="getData"
-      class="cursor-pointer"
+      class="cursor-pointer !text-orange-600"
       icon="ant-design:sync-outlined"
       :spin="loading"
     />
-    <Icon class="cursor-pointer" icon="ant-design:plus-outlined" />
+    <Icon class="cursor-pointer !text-orange-600" icon="quota-cloud-sync" />
   </div>
 </template>
 

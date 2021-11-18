@@ -1,5 +1,5 @@
 import { cloneDeep, remove } from 'lodash-es';
-import { CSSProperties, reactive, ref, Ref, toRaw } from 'vue';
+import { CSSProperties, reactive, ref, toRaw } from 'vue';
 import { VxeGridInstance, VxeTableDefines } from 'vxe-table';
 import { TableConfigType } from '/#/table';
 import { onMountedOrActivated } from '/@/hooks/core/onMountedOrActivated';
@@ -41,21 +41,24 @@ export function useAddCol(
       edit: 'normal-cell-text-editor',
     },
   });
-  const usedStr = ['a', 'b', 'c', 'd'];
+  const usedStr = ['a', 'b', 'c', 'd', 'e'];
   const { getUniqueField } = useUniqueField(usedStr);
   function addCol(columnIndex = tableConfig.columns.length) {
     col.field = getUniqueField();
+    // 插入新列给tableConfig
     tableConfig.columns.splice(columnIndex, 0, {
       title: col.title,
       field: col.field,
       headerType: 0,
     });
+    // 生成table所需列信息
     const colInfoArr = tableConfig.columns.map((_col) => {
       const colCfg = cloneDeep(toRaw(col));
       colCfg.title = _col.title;
       colCfg.field = _col.field;
       return colCfg;
     });
+    // 给tableConfig每一行数据加上这个新列字段
     tableConfig.data.forEach((data) => {
       data[col.field!] = {
         val: '-',
@@ -63,24 +66,25 @@ export function useAddCol(
         type: 0,
       };
     });
-    console.log(colInfoArr);
-
     const $grid = xGrid.value;
     $grid.loadColumn(colInfoArr);
     col.field = '';
     col.title = '新列';
   }
   function removeCol(columnIndex: number) {
-    tableConfig.data.forEach((data) => {
-      Reflect.deleteProperty(data, tableConfig.columns[columnIndex].field!);
-    });
-
     const $grid = xGrid.value;
     const { fullData } = $grid.getTableData();
     // console.log({ fullData, tableData, d: tableConfig.data });
+    const field = tableConfig.columns[columnIndex].field!;
+    // 移除数据中的该列字段
     fullData.forEach((item) => {
-      Reflect.deleteProperty(item, tableConfig.columns[columnIndex].field!);
+      Reflect.deleteProperty(item, field);
     });
+    tableConfig.data.forEach((data) => {
+      Reflect.deleteProperty(data, field);
+    });
+    $grid.loadData(fullData);
+    // 移除这个列
     tableConfig.columns.splice(columnIndex, 1);
     const colInfoArr = tableConfig.columns.map((_col) => {
       const colCfg = cloneDeep(toRaw(col));
@@ -89,7 +93,6 @@ export function useAddCol(
       return colCfg;
     });
     $grid.loadColumn(colInfoArr);
-    $grid.loadData(fullData);
   }
   return [col, { addCol, removeCol }];
 }
@@ -106,6 +109,7 @@ export function useAddRow(
   function addSpaceRow(rowIndex = tableConfig.data.length) {
     const row = {};
     const dataRow = {};
+    // 构建新行数据
     tableConfig.columns.forEach((column) => {
       row[column.field!] = '-';
       dataRow[column.field!] = {
@@ -204,7 +208,15 @@ export function useAreaSelect(
     }
     // 鼠标按下开始绘制选区
     function mousedownListener(e: MouseEvent) {
-      if (e.button !== 0) return;
+      if (
+        e.button !== 0 ||
+        e.buttons !== 1 ||
+        e.ctrlKey ||
+        e.shiftKey ||
+        (e.target as HTMLElement).nodeName === 'INPUT'
+      )
+        return;
+
       remove(areaCells.value, (_) => _);
       rectInfo.startX = e.clientX;
       rectInfo.startY = e.clientY;

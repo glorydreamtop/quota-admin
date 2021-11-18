@@ -169,7 +169,7 @@
     useTimeStrFilter,
   } from './helper';
   import type { TableConfigType } from '/#/table';
-  import { cloneDeep, maxBy, minBy, parseInt, remove } from 'lodash-es';
+  import { cloneDeep, maxBy, merge, minBy, parseInt, remove } from 'lodash-es';
   import { useModal } from '/@/components/Modal';
   import CellSetting from './CellSetting.vue';
   import Icon from '/@/components/Icon';
@@ -494,8 +494,8 @@
     gridOptions.data = [];
     tableConfig.columns = [];
     tableConfig.data = [];
-    Object.assign(gridOptions, cloneDeep(transfer(defaultTableConfig.value)));
-    Object.assign(tableConfig, cloneDeep(defaultTableConfig.value));
+    merge(gridOptions, cloneDeep(transfer(defaultTableConfig.value)));
+    merge(tableConfig, cloneDeep(defaultTableConfig.value));
     console.log(gridOptions, tableConfig);
   }
 </script>

@@ -70,7 +70,7 @@
           el.appendChild(svg);
         } else {
           const span = document.createElement('span');
-          span.className = 'iconify';
+          span.className = `iconify ${props.icon}`;
           span.dataset.icon = icon;
           el.textContent = '';
           el.appendChild(span);

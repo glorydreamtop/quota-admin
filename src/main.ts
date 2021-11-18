@@ -15,6 +15,7 @@ import { setupGlobDirectives } from '/@/directives';
 import { setupI18n } from '/@/locales/setupI18n';
 import { registerGlobComp } from '/@/components/registerGlobComp';
 import { setupVxeTable } from './utils/lib/vxetable';
+import { setupAegisSDK } from './utils/lib/aegis';
 
 // Importing on demand in local development will increase the number of browser requests by around 20%.
 // This may slow down the browser refresh speed.
@@ -55,7 +56,8 @@ async function bootstrap() {
   // Mount when the route is ready
   // https://next.router.vuejs.org/api/#isready
   // await router.isReady();
-
+  // 腾讯云前端日志监控系统
+  setupAegisSDK();
   app.mount('#app');
 }
 

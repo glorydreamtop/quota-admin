@@ -44,6 +44,7 @@
     "@vueuse/core": "^6.7.4",
     "@vueuse/shared": "^6.7.4",
     "@zxcvbn-ts/core": "^1.0.0-beta.0",
+    "aegis-web-sdk": "^1.24.45",
     "ant-design-vue": "2.2.6",
     "axios": "^0.24.0",
     "crypto-js": "^4.1.1",

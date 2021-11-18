@@ -21,7 +21,7 @@
               :data-folderId="item.folder ? item.key : undefined"
               :data-LeafId="!item.folder ? item.key : undefined"
             >
-              <Icon :icon="item.icon" />
+              <Icon :icon="item.icon"/>
               <span
                 v-show="item.key !== editKey"
                 :data-folderId="item.folder ? item.key : undefined"
@@ -202,12 +202,12 @@
       forEach(res, (item) => {
         item.isLeaf = !item.folder;
         item.slots = { title: 'title' };
-        item.icon = item.folder ? 'ant-design:folder-outlined' : 'tabler:letter-q';
+        item.icon = item.folder ? 'flat-color-icons:folder' : 'flat-color-icons:file';
         // 恢复之前的展开状态
         if (
           expandedKeys &&
           expandedKeys.includes(item.key!) &&
-          (item.children?.every((item) => item.folder)||!item.children)
+          (item.children?.every((item) => item.folder) || !item.children)
         ) {
           loadData(item.key!);
         }
@@ -242,7 +242,7 @@
     const res = await getDirQuota({ categoryId: key });
     const { parentNode } = findParentNode(key, type);
     const list = res.map((item: QuotaItem & TreeItem) => {
-      item.icon = 'tabler:letter-q';
+      item.icon = 'flat-color-icons:file';
       item.isLeaf = true;
       item.key = item.id;
       item.slots = { title: 'title' };

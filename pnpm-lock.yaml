@@ -40,6 +40,7 @@ specifiers:
   '@vueuse/core': ^6.7.4
   '@vueuse/shared': ^6.7.4
   '@zxcvbn-ts/core': ^1.0.0-beta.0
+  aegis-web-sdk: ^1.24.45
   ant-design-vue: 2.2.6
   autoprefixer: ^10.4.0
   axios: ^0.24.0
@@ -125,6 +126,7 @@ dependencies:
   '@vueuse/core': 6.9.1_vue@3.2.22
   '@vueuse/shared': 6.9.1_vue@3.2.22
   '@zxcvbn-ts/core': 1.0.0
+  aegis-web-sdk: 1.24.45
   ant-design-vue: 2.2.6_800e8b1270b918ae09e333972324138b
   axios: 0.24.0
   crypto-js: 4.1.1
@@ -2853,6 +2855,12 @@ packages:
     engines: {node: '>=0.8'}
     dependencies:
       printj: 1.2.3
+    dev: false
+
+  /aegis-web-sdk/1.24.45:
+    resolution: {integrity: sha512-Fc/aaKNtTy7U2zWtPSln+OnwwNwFlXrRSV4c0s/ijx07Yn6UOM/t0dutSJOnMOlCrMAqOpIR+dH1kwD2hveLWQ==}
+    dependencies:
+      web-vitals: 1.1.2
     dev: false
 
   /agent-base/6.0.2:
@@ -10315,6 +10323,10 @@ packages:
     dependencies:
       defaults: 1.0.3
     dev: true
+
+  /web-vitals/1.1.2:
+    resolution: {integrity: sha512-PFMKIY+bRSXlMxVAQ+m2aw9c/ioUYfDgrYot0YUa+/xa0sakubWhSDyxAKwzymvXVdF4CZI71g06W+mqhzu6ig==}
+    dev: false
 
   /webidl-conversions/4.0.2:
     resolution: {integrity: sha512-YQ+BmxuTgd6UXZW3+ICGfyqRyHXVlD5GtQr5+qjiNW7bF0cqrzX500HVXPBOvgXb5YnzDd+h0zqyv61KUD7+Sg==}

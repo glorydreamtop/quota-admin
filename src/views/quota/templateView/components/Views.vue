@@ -36,7 +36,7 @@
             @click="selectTemplate(element, $event)"
             :data-uniqid="element.uniqId"
             :class="[
-              'border border-gray-100 resize overflow-hidden sortable relative',
+              'border resize rounded-sm overflow-hidden sortable relative',
               selectedTemplateDOMList.find((node) => node.uniqId === element.uniqId)
                 ? 'selected'
                 : '',
@@ -292,7 +292,9 @@
 
   .selected {
     position: relative;
+    border: 1px solid;
     border-color: @primary-color;
+    @apply shadow-lg shadow-primary;
 
     &::after {
       position: absolute;
