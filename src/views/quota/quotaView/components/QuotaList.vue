@@ -62,7 +62,7 @@
         :class="[
           item.selected ? 'bg-linear-primary' : 'bg-gray-500',
           cardUI ? 'card-theme' : 'list-theme',
-          'text-xs rounded-md flex sortable quota-list-item',
+          'text-xs rounded-md flex sortable quota-list-item animate__animated animate__zoomIn animate__fast',
         ]"
         v-for="(item, index) in selectedQuota"
         :key="item.id"

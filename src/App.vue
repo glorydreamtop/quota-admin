@@ -18,4 +18,5 @@
   useTitle();
 </script>
 
-<style></style>
+<style>
+</style>

@@ -11,6 +11,7 @@
   import type { CSSProperties } from 'vue';
   import { defineComponent, computed } from 'vue';
   import { useDesign } from '/@/hooks/web/useDesign';
+  import '//at.alicdn.com/t/font_2948274_lydq94ginwp.js';
 
   export default defineComponent({
     name: 'SvgIcon',

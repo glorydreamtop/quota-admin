@@ -98,9 +98,9 @@ export function useMultiSelect({ onSingleSelect }: multiSelectHooksParams): mult
         }
       }
     } else {
+      singleSelectFn && singleSelectFn({ dataRef, allowMultiSelect });
       clearMultiSelected();
       multiSelectedList.push(eventKey);
-      singleSelectFn && singleSelectFn({ dataRef, allowMultiSelect });
     }
   }
 
@@ -118,25 +118,30 @@ export function useTreeCURD({
   treeType: Ref<CategoryTreeType>;
 }) {
   function addFolder(folder: CategoryTreeModel) {
-    const parentNode = findNode<TreeItem>(
+    const parentNode = findNode<CategoryTreeModel>(
       tree[treeType.value].treeData,
       (item) => item.id === folder.id,
     )!;
     const key = 0;
-    const folderConfig: TreeItem = {
-      children: [],
+    const node: CategoryTreeModel = {
       slots: { title: 'title' },
       name: '新建文件夹',
       folder: true,
-      icon: 'ant-design:folder-outlined',
+      icon: 'flat-color-icons:folder',
       id: key,
       isLeaf: false,
       key: key,
       parentId: folder.id,
     };
-    console.log(tree[treeType.value].treeInstance);
-    const node = cloneDeep(parentNode);
-    parentNode.children = [reactive(folderConfig), ...parentNode.children!];
+    tree[treeType.value].treeInstance.insertNodeByKey({
+      parentKey:folder.id,
+      node,
+      push:'unshift'
+    });
+    const expandKeys:number[] = tree[treeType.value].treeInstance.getExpandedKeys();
+    if(!expandKeys.includes(folder.id)){
+      tree[treeType.value].treeInstance.setExpandedKeys([...expandKeys,folder.id])
+    }
 
     // 来自Antd奇怪的bug，不能push，必须整个数组重新赋值
   }

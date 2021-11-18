@@ -21,7 +21,7 @@
               :data-folderId="item.folder ? item.key : undefined"
               :data-LeafId="!item.folder ? item.key : undefined"
             >
-              <Icon :icon="item.icon"/>
+              <Icon class="-ml-1 mr-1" :icon="item.icon"/>
               <span
                 v-show="item.key !== editKey"
                 :data-folderId="item.folder ? item.key : undefined"
@@ -57,7 +57,7 @@
               :data-folderId="item.folder ? item.key : undefined"
               :data-LeafId="!item.folder ? item.key : undefined"
             >
-              <Icon :icon="item.icon" />
+              <Icon class="-ml-1 mr-1" :icon="item.icon" />
               <span
                 v-show="item.key !== editKey"
                 :data-folderId="item.folder ? item.key : undefined"
@@ -397,8 +397,9 @@
           label: t('quota.actions.addFolder'),
           icon: '',
           handler: () => {
-            addFolder(dataRef as CategoryTreeModel);
             editKey.value = 0;
+            addFolder(dataRef as CategoryTreeModel);
+            
           },
         },
         {
