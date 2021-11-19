@@ -15,13 +15,16 @@
           @drop="drop"
           @select="handleTreeSelect"
         >
+          <template #switcherIcon
+            ><Icon style="opacity: 0.3" icon="ant-design:down-outlined"
+          /></template>
           <template #title="item">
             <span
               class="w-full"
               :data-folderId="item.folder ? item.key : undefined"
               :data-LeafId="!item.folder ? item.key : undefined"
             >
-              <Icon class="-ml-1 mr-1" :icon="item.icon"/>
+              <Icon class="-ml-1 mr-1" :icon="item.icon" />
               <span
                 v-show="item.key !== editKey"
                 :data-folderId="item.folder ? item.key : undefined"
@@ -51,6 +54,9 @@
           @drop="drop"
           @select="handleTreeSelect"
         >
+          <template #switcherIcon
+            ><Icon style="opacity: 0.3" icon="ant-design:down-outlined"
+          /></template>
           <template #title="item">
             <span
               class="w-full"
@@ -159,6 +165,7 @@
       loadData: ({ eventKey }) => loadData(eventKey),
       beforeRightClick,
       treeInstance: computed(() => sysTree.value!),
+      showLine: false,
     },
     [CategoryTreeType.userQuota]: {
       treeData: [],
@@ -170,6 +177,7 @@
       loadData: ({ eventKey }) => loadData(eventKey),
       beforeRightClick,
       treeInstance: computed(() => userTree.value!),
+      showLine: false,
     },
   });
   watch(
@@ -291,6 +299,7 @@
         (item) => item.id === parentNode!.id,
       ).map((path) => path.id);
       instance?.setExpandedKeys(uniq([...path, ...instance.getExpandedKeys()]));
+      
       setHighLight(parentNode, id);
     }
     await nextTick();
@@ -312,6 +321,11 @@
     });
   // 树节点的选择，支持多选
   async function handleTreeSelect(_, e: treeSelectParams) {
+    if ((e.node.dataRef as CategoryTreeModel).folder) {
+      (e.node.dataRef as CategoryTreeModel).icon = e.node.expanded
+        ? 'flat-color-icons:opened-folder'
+        : 'flat-color-icons:folder';
+    }
     if (
       (e.node.dataRef as CategoryTreeModel).children?.every((item) => item.folder) &&
       e.node.expanded
@@ -399,7 +413,6 @@
           handler: () => {
             editKey.value = 0;
             addFolder(dataRef as CategoryTreeModel);
-            
           },
         },
         {

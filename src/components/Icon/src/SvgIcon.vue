@@ -1,17 +1,15 @@
 <template>
-  <svg
-    :class="[prefixCls, $attrs.class, spin && 'svg-icon-spin']"
-    :style="getStyle"
-    aria-hidden="true"
-  >
-    <use :xlink:href="symbolId" />
-  </svg>
+  <span :class="$attrs.class">
+    <svg :class="[prefixCls, spin && 'svg-icon-spin']" :style="getStyle" aria-hidden="true">
+      <use :xlink:href="symbolId" />
+    </svg>
+  </span>
 </template>
 <script lang="ts">
   import type { CSSProperties } from 'vue';
   import { defineComponent, computed } from 'vue';
   import { useDesign } from '/@/hooks/web/useDesign';
-  import '//at.alicdn.com/t/font_2948274_lydq94ginwp.js';
+  import '//at.alicdn.com/t/font_2948274_is2ghbuz08f.js';
 
   export default defineComponent({
     name: 'SvgIcon',

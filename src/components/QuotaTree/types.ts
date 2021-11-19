@@ -10,7 +10,7 @@ export type hightlightHooksType = [
 
 export interface treeSelectParams {
   nativeEvent: PointerEvent;
-  node: { eventKey: number; dataRef: QuotaItem | CategoryTreeModel };
+  node: { eventKey: number; dataRef: QuotaItem | CategoryTreeModel; expanded: boolean };
 }
 export interface insertMultiSelectHooksParams<T = treeSelectParams> {
   e: T;
@@ -42,6 +42,7 @@ export type treeProp = Partial<{
   loadData: Fn;
   rightMenuList: ContextMenuItem[];
   treeInstance: ComputedRef<TreeActionType & ComponentRef>;
+  showLine: boolean;
 }>;
 export interface treePropsModel {
   [CategoryTreeType.sysQuota]: treeProp;

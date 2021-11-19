@@ -2,7 +2,10 @@
   <div class="toolbar">
     <Icon
       v-repeat-click="getData"
-      :class="['cursor-pointer !text-purple-600 animate__animated',loading?' animate__flash':'']"
+      :class="[
+        'cursor-pointer !text-purple-600 animate__animated',
+        loading ? ' animate__flash' : '',
+      ]"
       :size="20"
       icon="CloudSync|svg"
     />

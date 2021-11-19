@@ -11,7 +11,7 @@
       </Tooltip>
       <Tooltip placement="left">
         <template #title>{{ t('page.quotaView.quotaList.delChecked') }}</template>
-        <Button size="small" @click="clear" data-type="delete">
+        <Button size="small" @click="clear" data-type="delete" class="delete-shake">
           <template #icon>
             <Icon icon="ant-design:delete-outlined" size="20" />
           </template>
@@ -62,7 +62,7 @@
         :class="[
           item.selected ? 'bg-linear-primary' : 'bg-gray-500',
           cardUI ? 'card-theme' : 'list-theme',
-          'text-xs rounded-md flex sortable quota-list-item animate__animated animate__zoomIn animate__fast',
+          'text-xs rounded-md flex sortable quota-list-item',
         ]"
         v-for="(item, index) in selectedQuota"
         :key="item.id"
@@ -78,7 +78,7 @@
             class="text-purple-300 cursor-pointer select-none"
             @click.stop
             @dblclick="copy(item.id.toString(), 'id')"
-            >{{ item.id??t('page.quotaCard.formulaWithoutId') }}</span
+            >{{ item.id ?? t('page.quotaCard.formulaWithoutId') }}</span
           >
         </span>
 
@@ -94,7 +94,15 @@
           >
         </Tooltip>
         <!-- sourceCode -->
-        <span class="text-white max-w-full cursor-pointer cursor-default overflow-ellipsis overflow-x-hidden  select-none quota-sourceCode"
+        <span
+          class="
+            text-white
+            max-w-full
+            cursor-pointer cursor-default
+            overflow-ellipsis overflow-x-hidden
+            select-none
+            quota-sourceCode
+          "
           ><span class="w-fit" @click.stop @dblclick="copy(item.sourceCode, 'sourceCode')">{{
             item.sourceCode
           }}</span></span
@@ -107,9 +115,10 @@
         <span class="flex justify-between text-purple-100 children:w-fit">
           <Tooltip>
             <template #title>
-              <span class="text-xs">{{item.id?
-                `${t('page.quotaCard.updateOn')}${item.timeLastUpdate}`:
-                t('page.quotaCard.formulaTip')
+              <span class="text-xs">{{
+                item.id
+                  ? `${t('page.quotaCard.updateOn')}${item.timeLastUpdate}`
+                  : t('page.quotaCard.formulaTip')
               }}</span>
             </template>
             <span class="whitespace-nowrap w-32" @click.stop>{{
@@ -157,7 +166,7 @@
   import { getNormalQuotaDefaultSetting } from '../helper';
   import { formatToDate } from '/@/utils/dateUtil';
   import { requestUpdateQuotaData } from '/@/api/quota';
-import { SourceTypeEnum } from '/@/enums/quotaEnum';
+  import { SourceTypeEnum } from '/@/enums/quotaEnum';
 
   // let animationFlag = false;
   // 交付给绘图的指标列表
@@ -222,7 +231,8 @@ import { SourceTypeEnum } from '/@/enums/quotaEnum';
     quotaList.value = cur.filter((item) => item.selected);
   });
   function dateFomatter(quota: QuotaItem) {
-    if(!quota.id&&quota.sourceType===SourceTypeEnum.formula) return t('page.quotaCard.calculate')
+    if (!quota.id && quota.sourceType === SourceTypeEnum.formula)
+      return t('page.quotaCard.calculate');
     if (quota.dateLast === null) return t('common.noData');
     return formatToDate(quota.dateLast);
   }
@@ -335,7 +345,12 @@ import { SourceTypeEnum } from '/@/enums/quotaEnum';
       dragoverBubble: true,
       onStart: () => {
         domForeach(boxdom.getElementsByClassName('sortable'), (element) => {
-          element.classList.remove('quota-list-item');
+          element.classList.remove(
+            'quota-list-item',
+            'animate__animated',
+            'animate__zoomIn',
+            'animate__fast',
+          );
         });
       },
       // setData: (dt) => {

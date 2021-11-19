@@ -40,9 +40,9 @@
 
       <Icon
         title="暂不开放保存功能"
-        :class="['save-icon', chartConfig.title.length === 0 ? 'disabled' : '']"
-        size="24"
-        icon="ant-design:save-outlined"
+        :class="['save-icon ml-2', chartConfig.title.length === 0 ? 'disabled' : '']"
+        size="21"
+        icon="save|svg"
       />
       <Tooltip>
         <template #title>
@@ -53,10 +53,13 @@
           }}</span>
         </template>
         <Icon
-          :class="['download-icon', chartConfig.title.length === 0 ? 'disabled' : '']"
+          :class="[
+            'download-icon animate__animated',
+            chartConfig.title.length === 0 ? 'disabled' : '',
+          ]"
           size="24"
-          icon="ant-design:download-outlined"
-          @click="download"
+          icon="download_one|svg"
+          @click="download($event)"
         />
       </Tooltip>
       <Tooltip>
@@ -65,12 +68,22 @@
             ? t('page.quotaView.toolbar.chartView')
             : t('page.quotaView.toolbar.tableView')
         }}</template>
-        <Icon
+        <div
+          class="relative w-29px h-29px"
           :class="[chartConfig.title.length === 0 ? 'disabled' : '']"
-          :icon="showTableRef ? 'ant-design:line-chart-outlined' : 'ant-design:table-outlined'"
-          size="24"
           @click="showTable"
-        />
+        >
+          <Icon
+            :class="['chartmode-icon', showTableRef ? 'front' : 'back']"
+            icon="barchart|svg"
+            size="27"
+          />
+          <Icon
+            :class="['sheetmode-icon -mt-1px', !showTableRef ? 'front' : 'back']"
+            icon="data_sheet|svg"
+            size="29"
+          />
+        </div>
       </Tooltip>
     </Space>
     <div class="absolute right-0 top-0 z-9 w-18 h-18 overflow-hidden" @click="paint">
@@ -96,6 +109,7 @@
   import { cloneDeep } from 'lodash-es';
   import { getChartDefaultConfig } from '../helper';
   import { useMessage } from '/@/hooks/web/useMessage';
+  import { useTimeoutFn } from '@vueuse/shared';
 
   const { t } = useI18n();
   const emit = defineEmits<{
@@ -146,8 +160,14 @@
     chartConfig.quotaList = cloneDeep(unref(quotaList));
     emit('paint');
   }
-  async function download() {
-    emit('event', showTableRef.value ? 'xlsx' : 'screenshot');
+  async function download({ target }: { target: HTMLElement }) {
+    console.log(target);
+
+    target.parentElement!.parentElement!.classList.add('animate__bounce');
+    useTimeoutFn(() => {
+      target.parentElement!.parentElement!.classList.remove('animate__bounce');
+      emit('event', showTableRef.value ? 'xlsx' : 'screenshot');
+    }, 1000);
   }
   const showTableRef = ref(false);
   function showTable() {
@@ -157,25 +177,31 @@
 </script>
 
 <style lang="less" scoped>
-  .download-icon,
-  .save-icon {
-    transition: 0.3s ease-in-out;
-    transition-property: transform color;
-
-    &:hover {
-      color: @primary-6;
-    }
-  }
-
   .date-picker {
     transition: border 300ms;
     border-radius: 2px;
   }
 
   .disabled {
-    @apply text-gray-300;
+    filter: grayscale(80%);
 
     pointer-events: none;
     transition: none;
+  }
+
+  .chartmode-icon,
+  .sheetmode-icon {
+    position: absolute;
+    backface-visibility: hidden;
+    transition: all 0.2s;
+    perspective: 1000;
+
+    &.front {
+      transform: rotateY(-180deg);
+    }
+
+    &.back {
+      transform: rotateY(-360deg);
+    }
   }
 </style>

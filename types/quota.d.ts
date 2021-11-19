@@ -12,7 +12,7 @@ export interface CategoryTreeModel {
   type: 'DictCategory';
   key: number;
   parentId: Nullable<number>;
-  icon?: 'quota' | 'folder' | 'table' | 'chart' | 'oldChart' | 'sqlTable';
+  icon?: 'flat-color-icons:opened-folder' | 'flat-color-icons:folder';
 }
 
 export interface QuotaItem {
@@ -26,5 +26,5 @@ export interface QuotaItem {
   unit: Nullable<string>;
   categoryIdList?: number[];
   categoryId?: number;
-  timeLastUpdate:string;
+  timeLastUpdate: string;
 }
