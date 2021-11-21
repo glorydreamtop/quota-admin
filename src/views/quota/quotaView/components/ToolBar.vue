@@ -25,9 +25,28 @@
           size="small"
           v-model:value="chartConfig.timeConfig.startDate"
           value-format="YYYY-MM-DD"
+          :showToday="false"
           :placeholer="t('page.quotaView.toolbar.startDatePicker')"
-          ><span class="cursor-pointer">{{ chartConfig.timeConfig.startDate }}</span></DatePicker
-        >
+          ><span class="cursor-pointer">{{ chartConfig.timeConfig.startDate }}</span>
+          <template #renderExtraFooter>
+            <div class="flex items-center">
+              <Input
+                size="small"
+                class="!w-10 text-center !mr-1"
+                v-model:value="quickDateParams.num"
+              />
+              <RadioGroup button-style="solid" size="small" v-model:value="quickDateParams.unit">
+                <RadioButton value="year">{{ t('page.quotaView.toolbar.year') }}</RadioButton>
+                <RadioButton value="month">{{ t('page.quotaView.toolbar.month') }}</RadioButton>
+                <RadioButton value="week">{{ t('page.quotaView.toolbar.week') }}</RadioButton>
+                <RadioButton value="day">{{ t('page.quotaView.toolbar.day') }}</RadioButton>
+              </RadioGroup>
+              <span class="text-primary ml-auto cursor-pointer" @click="quickDate">{{
+                t('common.okText')
+              }}</span>
+            </div>
+          </template>
+        </DatePicker>
         <span>~</span>
         <DatePicker
           size="small"
@@ -99,7 +118,7 @@
 
 <script lang="ts" setup>
   import { nextTick, reactive, unref, ref } from 'vue';
-  import { Space, DatePicker, Select, Tooltip } from 'ant-design-vue';
+  import { Input, Space, DatePicker, Select, Tooltip, Radio } from 'ant-design-vue';
   import vRipple from '/@/directives/ripple';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useChartConfigContext, useQuotaListContext, useSelectedQuotaListContext } from './hooks';
@@ -110,7 +129,10 @@
   import { getChartDefaultConfig } from '../helper';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { useTimeoutFn } from '@vueuse/shared';
+  import dayjs from 'dayjs';
 
+  const RadioButton = Radio.Button;
+  const RadioGroup = Radio.Group;
   const { t } = useI18n();
   const emit = defineEmits<{
     (event: 'paint'): void;
@@ -128,6 +150,16 @@
       value: v,
       disabled: [chartTypeEnum.seasonalLunar, chartTypeEnum.fixedbase].includes(v as chartTypeEnum),
     });
+  }
+  const quickDateParams = reactive({
+    num: '1',
+    unit: 'year',
+  });
+  function quickDate() {
+    chartConfig.timeConfig.startDate = dayjs().subtract(
+      parseInt(quickDateParams.num),
+      quickDateParams.unit,
+    ).format('YYYY-MM-DD');
   }
   function selectType(type: chartTypeEnum) {
     for (const key in chartConfig) {

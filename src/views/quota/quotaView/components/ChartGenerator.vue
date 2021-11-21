@@ -2,14 +2,18 @@
   <div class="bg-white shadow-md flex-grow p-4 overflow-hidden flex">
     <div class="w-2/3 relative top-0 bottom-0 left-0 right-0">
       <ToolBar @paint="paint" @event="handleEvent" />
-      <div class="absolute top-12 bottom-0 left-0 right-2" id="chart-canvas">
+      <div class="absolute top-12 bottom-0 left-0 right-2 preserve-3d box">
         <BasicChart
-          v-show="!showTable"
+          :class="['chart-view w-full', showTable ? 'back' : 'front']"
           :config="config"
           @update-config="updateConfig"
           ref="chartRef"
         />
-        <QuotaDataTable v-show="showTable" :config="config" ref="tableRef" />
+        <QuotaDataTable
+          :class="['table-view', showTable ? 'front' : 'back']"
+          :config="config"
+          ref="tableRef"
+        />
       </div>
     </div>
     <Advance class="w-1/3" />
@@ -73,15 +77,21 @@
 </script>
 
 <style lang="less" scoped>
-  .component-fade-enter-active,
-  .component-fade-leave-active {
-    transition: all 0.8s ease;
-    opacity: 100%;
+  .box {
+    perspective: 1000;
   }
+  .chart-view,
+  .table-view {
+    position: absolute;
+    backface-visibility: hidden;
+    transition: all 1s;
 
-  .component-fade-enter-from,
-  .component-fade-leave-to {
-    transform: scale(0.5);
-    opacity: 0%;
+    &.front {
+      transform: rotateY(0);
+    }
+
+    &.back {
+      transform: rotateY(180deg);
+    }
   }
 </style>

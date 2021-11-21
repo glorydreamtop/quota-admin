@@ -16,11 +16,7 @@ import {
   echartSeriesTypeEnum,
   structuralOffsetUnitEnum,
 } from '/@/enums/chartEnum';
-import { quotaDataPastUnitTypeEnum, getQuotaData, quotaDataExportTypeEnum } from '/@/api/quota';
-import { SelectedQuotaItem } from './components/hooks';
-import { downloadByData } from '/@/utils/file/download';
-import { AxiosResponse } from 'axios';
-import XLSX from 'xlsx';
+import { quotaDataPastUnitTypeEnum } from '/@/api/quota';
 
 export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
   const defaultConfig = {
@@ -229,77 +225,4 @@ export function getNormalQuotaDefaultSetting(): normalQuotaSettingType {
   };
 }
 
-type useDownloadXLSXRes = {
-  getXLSX: (rows: SelectedQuotaItem[], dateStr: string[]) => Promise<Blob>;
-  downloadXLSX: () => void;
-  getExcelData: (rawFile: Blob) => Promise<{
-    header: string[];
-    tableData: object[];
-  }>;
-};
-export function useDownloadXLSX(): useDownloadXLSXRes {
-  let rawData: Blob;
-  async function getXLSX(rows: SelectedQuotaItem[], dateStr: string[]) {
-    const response = (await getQuotaData({
-      startDate: dateStr[0],
-      endDate: dateStr[1],
-      exportPara: quotaDataExportTypeEnum.XLSX,
-      rows,
-      exportConfig: JSON.stringify({ ID: 'ID', NAME: 'NAME' }),
-    })) as unknown;
-    const { data } = response as AxiosResponse;
-    rawData = data;
-    return rawData;
-  }
-  async function downloadXLSX() {
-    downloadByData(rawData, 'Data.xls');
-  }
 
-  function getExcelData(rawFile: Blob) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = async (e) => {
-        try {
-          const data = e.target && e.target.result;
-          const workbook = XLSX.read(data, { type: 'array' });
-          // console.log(workbook);
-          /* DO SOMETHING WITH workbook HERE */
-          const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-          const header: string[] = getHeaderRow(worksheet);
-          const tableData = XLSX.utils
-            .sheet_to_json(worksheet, {
-              header,
-              raw: true,
-            })
-            .slice(2) as object[];
-          resolve({
-            header,
-            tableData,
-          });
-        } catch (error) {
-          console.log(error);
-          reject(error);
-        }
-      };
-      reader.readAsArrayBuffer(rawFile);
-    });
-  }
-  function getHeaderRow(sheet: XLSX.WorkSheet) {
-    if (!sheet || !sheet['!ref']) return [];
-    const headers: string[] = [];
-    // A1:c100=>{s:{c:0, r:0}, e:{c:2, r:99}}
-    const range = XLSX.utils.decode_range(sheet['!ref']);
-    // 从第二行开始
-    const R = range.s.r + 1;
-    for (let C = range.s.c; C <= range.e.c; ++C) {
-      /* walk every column in the range */
-      const cell = sheet[XLSX.utils.encode_cell({ c: C, r: R })];
-      /* find the cell in the first row */
-      let hdr = 'UNKNOWN ' + C; // <-- replace with your desired default
-      if (cell && cell.t) hdr = XLSX.utils.format_cell(cell);
-      headers.push(hdr);
-    }
-    return headers;
-  }
-  return { getXLSX, downloadXLSX, getExcelData };
-}

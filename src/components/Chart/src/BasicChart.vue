@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full overflow-hidden pt-4 relative" v-loading="loading">
+  <div class="h-full overflow-hidden relative" v-loading="loading">
     <div ref="chartElRef" class="w-full h-full"></div>
     <div v-if="noChart" class="no-chart flex flex-col items-center">
       <img src="../../../assets/svg/no-chart.svg" />
@@ -72,6 +72,7 @@
         loading.value = true;
         const options = await chartTypeHooks[v.type](v);
         setOptions(options);
+        console.log(123)
         noChart.value = false;
       } catch (error) {
         noChart.value = true;

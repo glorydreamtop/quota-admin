@@ -118,10 +118,6 @@ export function useTreeCURD({
   treeType: Ref<CategoryTreeType>;
 }) {
   function addFolder(folder: CategoryTreeModel) {
-    const parentNode = findNode<CategoryTreeModel>(
-      tree[treeType.value].treeData,
-      (item) => item.id === folder.id,
-    )!;
     const key = 0;
     const node: CategoryTreeModel = {
       slots: { title: 'title' },
@@ -138,12 +134,11 @@ export function useTreeCURD({
       node,
       push:'unshift'
     });
+    // 新增子目录时展开该目录
     const expandKeys:number[] = tree[treeType.value].treeInstance.getExpandedKeys();
     if(!expandKeys.includes(folder.id)){
       tree[treeType.value].treeInstance.setExpandedKeys([...expandKeys,folder.id])
     }
-
-    // 来自Antd奇怪的bug，不能push，必须整个数组重新赋值
   }
   async function saveCategory(folder: CategoryTreeModel) {
     await updateCategory({
