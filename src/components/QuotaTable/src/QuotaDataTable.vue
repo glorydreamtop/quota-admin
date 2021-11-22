@@ -22,7 +22,7 @@
             <div v-for="name in info.header" :key="name" class="relative">
               <span @dblclick="showEdit(item, name)">{{ item[name] }}</span>
               <Input
-                @blur="updateQuotaData"
+                @blur="updateQuotaData(item)"
                 class="edit-data"
                 v-if="editData.name === name && editData.date === item[editData.dateColName]"
                 size="small"
@@ -44,6 +44,8 @@
   import { useI18n } from '/@/hooks/web/useI18n';
   import { Icon } from '/@/components/Icon';
   import { Input } from 'ant-design-vue';
+  import { importJson } from '/@/api/quota';
+  import { useMessage } from '/@/hooks/web/useMessage';
 
   interface quotaDataType {
     header: string[];
@@ -55,6 +57,7 @@
     config: chartConfigType;
   }>();
   const { t } = useI18n();
+  const { createMessage } = useMessage();
   const { config } = toRefs(props);
   watch(
     config,
@@ -101,7 +104,25 @@
     editData.value = data[name];
     editData.date = data[t('page.quotaView.toolbar.quotaDataTableHeader.date')];
   }
-  function updateQuotaData() {}
+  async function updateQuotaData(rowData: Recordable<any>) {
+    const jsonObj = JSON.stringify([
+      {
+        id: info.ids[info.header.indexOf(editData.name) - 1],
+        rows: [[editData.date, editData.value]],
+      },
+    ]).toUpperCase();
+
+    try {
+      info.loading = true;
+      await importJson({ jsonObj, importPara: 0 });
+      rowData[editData.name] = editData.value;
+      editData.name = '';
+      editData.value = '';
+      editData.date = '';
+      info.loading = false;
+      createMessage.success(t('page.quotaView.toolbar.realTimeSave'));
+    } catch (error) {}
+  }
 </script>
 
 <style lang="less" scoped>

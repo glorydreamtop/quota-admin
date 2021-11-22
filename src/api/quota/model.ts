@@ -18,3 +18,8 @@ export interface requestUpdateParams {
   categoryId: number;
   indexIdList: number[];
 }
+
+export interface importJsonParams {
+  importPara: number;
+  jsonObj: string;
+}

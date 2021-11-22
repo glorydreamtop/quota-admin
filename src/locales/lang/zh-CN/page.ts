@@ -50,6 +50,7 @@ export default {
       quotaDataTableHeader: {
         date: '日期',
       },
+      realTimeSave: '实时保存成功',
     },
     seriesType: {
       line: '折线图',

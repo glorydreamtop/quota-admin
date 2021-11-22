@@ -19,6 +19,13 @@ export default {
       t: '打开',
       f: '关闭',
     },
+    colorsId: {
+      btn: '修改配色方案',
+      idList: '配色方案',
+      clearSelfColor: '清除特有颜色',
+      clearSelfColorTip:
+        '图表可能有个别序列拥有优先级高于配色方案的特有颜色，这将会删除这些特有颜色',
+    },
     pagination: {
       t: '分页',
       f: '长图',
@@ -37,6 +44,12 @@ export default {
     save: {
       img: '保存长图',
       pdf: '保存PDF',
+    },
+    toolBarMenu: {
+      pageConfig: '页面',
+      edit: '编辑',
+      insert: '插入',
+      tools: '工具',
     },
   },
   view: {

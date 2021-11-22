@@ -1,9 +1,14 @@
 import { defHttp } from '/@/utils/http/axios';
 import type { CategoryTreeModel, QuotaItem } from '/#/quota';
 import { CategoryTreeType, SourceTypeEnum } from '/@/enums/quotaEnum';
-import { getQuotaDataParams, getQuotaDataResult, requestUpdateParams } from './model';
+import {
+  getQuotaDataParams,
+  getQuotaDataResult,
+  importJsonParams,
+  requestUpdateParams,
+} from './model';
 import { pick } from 'lodash-es';
-import { ResultEnum } from '/@/enums/httpEnum';
+import { ContentTypeEnum, ResultEnum } from '/@/enums/httpEnum';
 
 enum Api {
   GetCategoryTree = '/updatemonitor/dict-index/categoryTree',
@@ -18,6 +23,7 @@ enum Api {
   UpdateCategory = '/updatemonitor/dict-index/categorySaveOrUpdate',
   SaveQuota = '/updatemonitor/dict-index/saveOrUpdateDictIndex',
   DelQuota = '/updatemonitor/dict-index/deleteDictIndex',
+  ImportQuotaData = '/updatemonitor/dict-index/importJson',
 }
 
 export enum searchType {
@@ -167,5 +173,16 @@ export function delQuota(params: { indexId: number }) {
   return defHttp.get<ResultEnum.TYPE>({
     url: Api.DelQuota,
     params,
+  });
+}
+
+export function importJson(params: importJsonParams) {
+  return defHttp.request<ResultEnum.TYPE>({
+    url: Api.ImportQuotaData,
+    method: 'POST',
+    params,
+    headers: {
+      'Content-Type': ContentTypeEnum.FORM_URLENCODED,
+    },
   });
 }
