@@ -369,9 +369,15 @@
   }: Partial<VxeGridDefines.HeaderCellClickEventParams>) {
     column!.slots.header = 'normal-title-text';
     const col = tableConfig.columns[columnIndex!];
-    if (col.headerType === 1) {
+    // 时间字符串为空或不合法时，表头类型自动为普通文本
+    if (col.timeStr?.trim().length === 0) {
+      col.headerType === HeaderCellTypeEnum.normal;
+    } else {
+      col.headerType === HeaderCellTypeEnum.date;
+    }
+    if (col.headerType === HeaderCellTypeEnum.date) {
       tableConfig.data.forEach((data) => {
-        data[col.field!].type = 1;
+        data[col.field!].type = CellTypeEnum.quota;
         if (!isNaN(parseInt(data[col.field!].val))) {
           // 自动刷新指标值
         }
