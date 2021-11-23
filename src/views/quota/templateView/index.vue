@@ -50,6 +50,7 @@
       right: '上海笃诚投资管理有限公司',
       pageNum: true,
     },
+    showElementborder: true,
   });
   createTemplateListContext(templateList);
   createSelectTemplateListContext(selectedTemplateList);

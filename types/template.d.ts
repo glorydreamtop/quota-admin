@@ -53,4 +53,5 @@ export interface pageSettingType {
     right: string;
     pageNum: boolean;
   };
+  showElementborder: boolean;
 }

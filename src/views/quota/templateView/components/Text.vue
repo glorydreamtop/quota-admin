@@ -39,8 +39,6 @@
   const htmlStr = ref(config.value.text);
   // function edit() {}
   function handleChange(s: string) {
-    console.log(s);
-
     emit('update:config', { text: s });
   }
 </script>

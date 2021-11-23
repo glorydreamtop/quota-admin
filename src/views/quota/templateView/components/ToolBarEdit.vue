@@ -37,8 +37,8 @@
       />
     </template>
   </Popover>
-  <Popover placement="bottom" trigger="click">
-    <Button size="small">{{ t('templateView.toolbar.colorsId.btn') }}</Button>
+  <Popover disabled placement="bottom" trigger="click">
+    <Button disabled size="small">{{ t('templateView.toolbar.colorsId.btn') }}</Button>
     <template #content>
       <ColorSchemeSelector @change="changeColorScheme" />
       <Button
@@ -59,7 +59,7 @@
 <script lang="ts" setup>
   import { reactive } from 'vue';
   import { useI18n } from '/@/hooks/web/useI18n';
-  import { Popover, Button, Input, Switch, DatePicker } from 'ant-design-vue';
+  import { Popover, Button, Input, Switch, DatePicker,Tooltip } from 'ant-design-vue';
   import ColorSchemeSelector from './ColorSchemeSelector.vue';
   import { formatToDate, yearsAgo } from '/@/utils/dateUtil';
   import { useSelectTemplateListContext, useTemplateListContext } from '../hooks';

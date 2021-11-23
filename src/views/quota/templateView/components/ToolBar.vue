@@ -4,14 +4,14 @@
       <TabPane
         key="pageConfig"
         :tab="t('templateView.toolbar.toolBarMenu.pageConfig')"
-        class="flex gap-2"
+        class="flex items-center gap-4"
       >
         <PageConfig />
       </TabPane>
-      <TabPane key="edit" :tab="t('templateView.toolbar.toolBarMenu.edit')" class="flex gap-2">
+      <TabPane key="edit" :tab="t('templateView.toolbar.toolBarMenu.edit')" class="flex gap-4">
         <ToolBarEdit />
       </TabPane>
-      <TabPane key="insert" :tab="t('templateView.toolbar.toolBarMenu.insert')" class="flex gap-2">
+      <TabPane key="insert" :tab="t('templateView.toolbar.toolBarMenu.insert')" class="flex gap-4">
         <Button size="small" @click="dispatch('insertText')">{{
           t('templateView.toolbar.insertText.btn')
         }}</Button>
@@ -31,7 +31,6 @@
         </BasicUpload>
       </TabPane>
     </Tabs>
-    <div class="flex flex-wrap flex-grow gap-1"> </div>
     <!-- <div class="flex items-center justify-between gap-1">
       <Button
         :disabled="pageSetting.pagination"
@@ -78,7 +77,7 @@
   const { t } = useI18n();
   const menuList = reactive({
     list: ['pageConfig', 'edit', 'insert', 'tool'],
-    key: '',
+    key: 'edit',
   });
   // 已选中的节点
   const selectedTemplateList = useSelectTemplateListContext();

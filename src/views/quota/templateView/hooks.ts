@@ -2,7 +2,7 @@ import { InjectionKey, Ref, watchEffect } from 'vue';
 import { createContext, useContext } from '/@/hooks/core/useContext';
 import type { pageSettingType, TemplateDOM } from '/#/template';
 import { remove } from 'lodash-es';
-import { useMagicKeys } from '@vueuse/core';
+import { useActiveElement, useMagicKeys } from '@vueuse/core';
 
 const templateKey: InjectionKey<Ref<TemplateDOM[]>> = Symbol();
 
@@ -53,17 +53,29 @@ export function useMultiSelect(
   templateList: Ref<TemplateDOM[]>,
   selectTemplateList: Ref<TemplateDOM[]>,
 ): useMultiSelectRes {
-  const { Ctrl_A } = useMagicKeys({
+  const activeElement = useActiveElement();
+  const { Ctrl_A, Delete, Backspace } = useMagicKeys({
     passive: false,
     onEventFired(e) {
       if (e.ctrlKey && e.key === 'a' && e.type === 'keydown') {
         e.preventDefault();
+      }
+      if (e.key === 'Backspace' || e.key === 'Delete') {
+        if (!activeElement.value!.hasAttribute('contentEditable')) {
+          e.preventDefault();
+        }
       }
     },
   });
 
   watchEffect(() => {
     if (Ctrl_A.value) selectTemplateList.value = templateList.value.map((temp) => temp);
+    if (Backspace.value || Delete.value) {
+      if (activeElement.value!.hasAttribute('contentEditable')) return;
+      remove(templateList.value, (t) => {
+        return selectTemplateList.value.some((temp) => t.uniqId === temp.uniqId);
+      });
+    }
   });
 
   function insertSelectKey(temp: TemplateDOM, nativeEvent: PointerEvent) {

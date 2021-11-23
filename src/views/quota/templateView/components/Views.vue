@@ -9,6 +9,7 @@
       :key="page.id"
       :data-pageid="page.id"
       :style="pageStyle"
+      @click.self="clearSelectKey"
     >
       <div class="pb-1 border-b page-header" v-show="pageSetting.header.show">
         <span contenteditable @input="pageHeaderChange('left', $event)">{{
@@ -25,6 +26,7 @@
       </div>
       <Draggable
         class="flex flex-wrap content-start flex-grow w-full overflow-hidden"
+        @click.self="clearSelectKey"
         :list="page.list"
         group="page"
         handle=".drag-handler"
@@ -40,6 +42,7 @@
               selectedTemplateDOMList.find((node) => node.uniqId === element.uniqId)
                 ? 'selected'
                 : '',
+              pageSetting.showElementborder ? '' : 'border-light-50',
             ]"
             :style="{ width: element.pageConfig.width, height: element.pageConfig.height }"
           >
@@ -134,11 +137,10 @@
     Text: BasicText,
     Img: BasicImg,
   };
-  const { insertSelectKey } = useMultiSelect(templateList, selectedTemplateDOMList);
+  const { insertSelectKey, clearSelectKey } = useMultiSelect(templateList, selectedTemplateDOMList);
   function selectTemplate(temp: TemplateDOM, nativeEvent: PointerEvent) {
     insertSelectKey(temp, nativeEvent);
   }
-
   const paginationInfo: { pages: { list: TemplateDOM[]; id: string }[]; totalPage: number } =
     reactive({
       pages: [],
@@ -292,6 +294,7 @@
 
   .selected {
     position: relative;
+    border-radius: 4px;
     border: 1px solid;
     border-color: @primary-color;
     @apply shadow-lg shadow-primary;
@@ -316,17 +319,19 @@
   .sortable {
     box-sizing: border-box;
     width: 50%;
+    transition: border 0.3s;
 
     &:hover {
       .drag-handler {
-        display: inline-flex !important;
+        opacity: 1;
       }
     }
 
     .drag-handler {
-      display: none !important;
+      opacity: 0;
       position: absolute;
       z-index: 9;
+      transition: opacity 0.2s;
     }
   }
 
