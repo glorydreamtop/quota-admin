@@ -2,7 +2,7 @@
   <Popover placement="bottom" trigger="click" @visibleChange="updateConfig">
     <Button size="small">{{ t('templateView.toolbar.paperSize.btn') }}</Button>
     <template #content>
-      <div class="flex items-start gap-4">
+      <div class="relative">
         <div>
           <div class="flex justify-center w-full">
             <Input size="small" suffix="px" v-model:value="pageConfig.paddingTop" />
@@ -34,42 +34,47 @@
             <Input size="small" suffix="px" v-model:value="pageConfig.paddingBottom" />
           </div>
         </div>
-        <div class="flex flex-col gap-1 children:flex children:items-center children:gap-1">
-          <div>
-            <RadioGroup button-style="solid" size="small" v-model:value="pageConfig.pagination">
-              <RadioButton :value="true">{{ t('templateView.toolbar.pagination.t') }}</RadioButton>
-              <RadioButton :value="false">{{ t('templateView.toolbar.pagination.f') }}</RadioButton>
-            </RadioGroup>
-            <Tooltip>
-              <template #title>
-                {{ t('templateView.toolbar.paperSize.tip') }}
-              </template>
-              <Icon icon="ant-design:question-circle-outlined" />
-            </Tooltip>
-          </div>
-          <div>
-            <Switch size="small" v-model:checked="pageConfig.header.show" />
-            <span>{{ t('templateView.toolbar.paperSize.showHeader') }}</span>
-          </div>
-          <div>
-            <Switch size="small" v-model:checked="pageConfig.footer.show" />
-            <span>{{ t('templateView.toolbar.paperSize.showFooter') }}</span>
-          </div>
-          <div>
-            <Switch size="small" v-model:checked="pageConfig.footer.pageNum" />
-            <span>{{ t('templateView.toolbar.paperSize.showPageNum') }}</span>
-          </div>
-        </div>
+        <Tooltip>
+          <template #title>
+            {{ t('templateView.toolbar.paperSize.tip') }}
+          </template>
+          <Icon class="absolute top-0 right-0" icon="ant-design:question-circle-outlined" />
+        </Tooltip>
       </div>
     </template>
   </Popover>
+  <div class="flex items-center">
+    <Switch size="small" v-model:checked="pageConfig.header.show" @change="updateConfig" />
+    <span>{{ t('templateView.toolbar.paperSize.showHeader') }}</span>
+  </div>
+  <div class="flex items-center">
+    <Switch size="small" v-model:checked="pageConfig.footer.show" @change="updateConfig" />
+    <span>{{ t('templateView.toolbar.paperSize.showFooter') }}</span>
+  </div>
+  <div class="flex items-center">
+    <Switch size="small" v-model:checked="pageConfig.footer.pageNum" @change="updateConfig" />
+    <span>{{ t('templateView.toolbar.paperSize.showPageNum') }}</span>
+  </div>
+  <div class="flex items-center">
+    <Switch size="small" v-model:checked="pageConfig.showElementborder" @change="updateConfig" />
+    <span>{{ t('templateView.toolbar.showElementborder') }}</span>
+  </div>
+  <RadioGroup
+    button-style="solid"
+    size="small"
+    v-model:value="pageConfig.pagination"
+    @change="updateConfig"
+  >
+    <RadioButton :value="true">{{ t('templateView.toolbar.pagination.t') }}</RadioButton>
+    <RadioButton :value="false">{{ t('templateView.toolbar.pagination.f') }}</RadioButton>
+  </RadioGroup>
 </template>
 
 <script lang="ts" setup>
-  import { computed, ComputedRef, CSSProperties, reactive, toRaw } from 'vue';
+  import { computed, ComputedRef, CSSProperties, reactive } from 'vue';
   import { Switch, Popover, Button, Tooltip, Radio, Input } from 'ant-design-vue';
   import { useI18n } from '/@/hooks/web/useI18n';
-  import { cloneDeep } from 'lodash-es';
+  import { cloneDeep, merge } from 'lodash-es';
   import { usePageSettingContext } from '../hooks';
 
   const RadioButton = Radio.Button;
@@ -79,7 +84,20 @@
   // 页面设置
   const pageSetting = usePageSettingContext();
   const pageConfig = reactive({
-    ...cloneDeep(toRaw(pageSetting)),
+    paddingBottom: 32,
+    paddingTop: 32,
+    paddingLeft: 32,
+    paddingRight: 32,
+    pagination: false,
+    horizontal: false,
+    header: {
+      show: true,
+    },
+    footer: {
+      show: true,
+      pageNum: true,
+    },
+    showElementborder: true,
   });
   // 页面模型的样式
   const miniPageStyle: ComputedRef<CSSProperties> = computed(() => {
@@ -90,7 +108,7 @@
     };
   });
   function updateConfig() {
-    Object.assign(pageSetting, cloneDeep(pageConfig));
+    merge(pageSetting, cloneDeep(pageConfig));
   }
 </script>
 

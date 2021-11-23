@@ -26,6 +26,7 @@ export default {
       clearSelfColorTip:
         '图表可能有个别序列拥有优先级高于配色方案的特有颜色，这将会删除这些特有颜色',
     },
+    showElementborder: '显示元素边框',
     pagination: {
       t: '分页',
       f: '长图',
