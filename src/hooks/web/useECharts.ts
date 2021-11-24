@@ -76,7 +76,11 @@ export function useECharts(elRef: Ref<HTMLDivElement>) {
   }
 
   function resize() {
-    chartInstance?.resize();
+    chartInstance?.resize({
+      animation: {
+        duration: 200,
+      },
+    });
   }
 
   tryOnUnmounted(() => {

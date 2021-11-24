@@ -1,6 +1,6 @@
 <template>
-  <div class="h-56 bg-white p-4 flex relative min-h-56 shadow-md">
-    <div class="flex flex-wrap gap-2 w-auto write-vertical-left pr-2 border-r border-gray-300">
+  <div class="h-48 bg-white p-4 flex relative min-h-48 shadow-md">
+    <div class="flex flex-wrap gap-2 w-auto write-vertical-left pr-2 pt-2px border-r border-gray-300">
       <Tooltip placement="left">
         <template #title>{{ t('page.quotaView.quotaList.formula') }}</template>
         <Button size="small" @click="addFormula">

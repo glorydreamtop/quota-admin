@@ -104,6 +104,7 @@
           />
         </div>
       </Tooltip>
+      <Icon icon="fullscreen|svg" size="20" @click="fullscreen" />
     </Space>
     <div class="absolute right-0 top-0 z-9 w-18 h-18 overflow-hidden" @click="paint">
       <div
@@ -156,10 +157,9 @@
     unit: 'year',
   });
   function quickDate() {
-    chartConfig.timeConfig.startDate = dayjs().subtract(
-      parseInt(quickDateParams.num),
-      quickDateParams.unit,
-    ).format('YYYY-MM-DD');
+    chartConfig.timeConfig.startDate = dayjs()
+      .subtract(parseInt(quickDateParams.num), quickDateParams.unit)
+      .format('YYYY-MM-DD');
   }
   function selectType(type: chartTypeEnum) {
     for (const key in chartConfig) {
@@ -205,6 +205,9 @@
   function showTable() {
     showTableRef.value = !showTableRef.value;
     emit('event', showTableRef.value ? 'showTable' : 'showChart');
+  }
+  function fullscreen() {
+    emit('event', 'fullscreen');
   }
 </script>
 

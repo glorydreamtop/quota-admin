@@ -71,8 +71,8 @@
       try {
         loading.value = true;
         const options = await chartTypeHooks[v.type](v);
+        options.animationEasing = 'quinticIn';
         setOptions(options);
-        console.log(123)
         noChart.value = false;
       } catch (error) {
         noChart.value = true;
@@ -97,7 +97,7 @@
   onMountedOrActivated(() => {
     const instance = getInstance()!;
     // 自适应大小
-    const handler = useDebounceFn(resize, 200);
+    const handler = useDebounceFn(resize, 100);
     const { stop } = useResizeObserver(unref(chartElRef), () => {
       handler();
     });

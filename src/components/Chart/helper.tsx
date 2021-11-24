@@ -146,7 +146,7 @@ function createRichText(data: lastestDataType[], options: EChartsOption, title: 
   //@ts-ignore
   const lastGraphicGroup = last((options.graphic as GraphicComponentOption).elements);
   //@ts-ignore
-  const left = lastGraphicGroup ? lastGraphicGroup.left + lastGraphicGroup.shape.width + 10 : 40;
+  const left = lastGraphicGroup ? lastGraphicGroup.left + lastGraphicGroup.shape.width + 10 : 80;
   const lastestConfig = {
     type: 'group',
     left,
