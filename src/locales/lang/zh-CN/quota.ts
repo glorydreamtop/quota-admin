@@ -25,7 +25,13 @@ export default {
     addQuota: '新建指标',
     editQuota: '编辑指标',
     delQuota: '删除指标',
+    clearData: '清空数据',
     delQuotaTip: '删除指标将会影响所有引用它的公式指标和图表，确认删除吗？',
+    delQuotaDataTip: '请输入要清空数据的日期范围',
+    delQuotaDataInfo:{
+      amount:'共',
+      rowsCount: '条数据'
+    },
     importQuota: '导入指标(Excel)',
     getQuotaExcel: '下载指标模板',
     uploadQuotaExcel: '上传指标文件',

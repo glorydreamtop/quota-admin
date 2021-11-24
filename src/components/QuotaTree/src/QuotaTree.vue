@@ -4,6 +4,7 @@
     <ToolBar :loading="loading[treeType]" @getData="getData" />
     <QuotaEditor @register="registerQuotaEditor" />
     <QuotaUpload @register="registerQuotaUpload" />
+    <ClearDataModal @register="registerClearData" />
     <Tabs v-model:activeKey="treeType" class="tabs" centered>
       <TabPane :key="CategoryTreeType.sysQuota" :tab="t('quota.sysQuota')">
         <BasicTree
@@ -106,6 +107,7 @@
   import type { ContextMenuItem } from '/@/components/Tree/index';
   import type { TreeItem, TreeActionType } from '/@/components/Tree/index';
   import { Tabs, Input } from 'ant-design-vue';
+  import ClearDataModal from './ClearDataModal.vue';
   import {
     getQuotaTree,
     getDirQuota,
@@ -128,6 +130,7 @@
   import type { treeSelectParams, treePropsModel, QuotaType, searchItemType } from '../types';
   import { useModal } from '/@/components/Modal';
   import { useQuotaTreeStore } from '/@/store/modules/quotaTree';
+  import { formatToDate, yearsAgo } from '/@/utils/dateUtil';
 
   const emit = defineEmits<{
     (event: 'selectNode', node: QuotaItem): void;
@@ -299,7 +302,7 @@
         (item) => item.id === parentNode!.id,
       ).map((path) => path.id);
       instance?.setExpandedKeys(uniq([...path, ...instance.getExpandedKeys()]));
-      
+
       setHighLight(parentNode, id);
     }
     await nextTick();
@@ -372,6 +375,7 @@
   const [registerQuotaEditor, { openModal: openQuotaEditor, setModalProps: setQuotaEditorProps }] =
     useModal();
   const [registerQuotaUpload, { openModal: openQuotaUpload }] = useModal();
+  const [registerClearData, { openModal: openClearData }] = useModal();
   function beforeRightClick({
     dataRef,
   }: {
@@ -491,11 +495,21 @@
           },
         },
         {
+          label: t('quota.actions.clearData'),
+          icon: '',
+          handler: () => {
+            openClearData(true, dataRef as QuotaItem);
+          },
+        },
+        {
           label: t('quota.actions.delQuota'),
           icon: '',
           handler: () => {
             createConfirm({
               iconType: 'warning',
+              okButtonProps: {
+                danger: true,
+              },
               content: h('span', {}, t('quota.actions.delQuotaTip')),
               onOk: async () => {
                 await delQuota({ indexId: (dataRef as QuotaItem).id });

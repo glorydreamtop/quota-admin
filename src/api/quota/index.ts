@@ -23,6 +23,7 @@ enum Api {
   UpdateCategory = '/updatemonitor/dict-index/categorySaveOrUpdate',
   SaveQuota = '/updatemonitor/dict-index/saveOrUpdateDictIndex',
   DelQuota = '/updatemonitor/dict-index/deleteDictIndex',
+  DelQuotaData = '/updatemonitor/dict-index/deleteDictIndexData',
   ImportQuotaData = '/updatemonitor/dict-index/importJson',
 }
 
@@ -184,5 +185,12 @@ export function importJson(params: importJsonParams) {
     headers: {
       'Content-Type': ContentTypeEnum.FORM_URLENCODED,
     },
+  });
+}
+
+export function delQuotaData(params: { indexId: number; startDate: string; endDate: string }) {
+  return defHttp.get<ResultEnum.TYPE>({
+    url: Api.DelQuotaData,
+    params,
   });
 }
