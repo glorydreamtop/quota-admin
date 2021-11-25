@@ -128,7 +128,6 @@ export function pingChart() {
         valueFormatter: {
           normalized: options['option_normalize'],
           afterDot: 2,
-          scientificNotation: false,
           sortMonth: [],
         },
         showLastest: true,
@@ -184,13 +183,23 @@ export function pingChart() {
         yaxis_list =
           yaxis_list.length > 0
             ? yaxis_list
-            : [{ position: 'left', max: undefined, min: undefined, offset: 0, inverse: false }];
+            : [
+                {
+                  position: 'left',
+                  max: undefined,
+                  min: undefined,
+                  offset: 0,
+                  inverse: false,
+                  axisLabel: { formatter: '{value}' },
+                },
+              ];
         yaxis_list.push({
           position: 'right',
           min: !row['ymin'] ? undefined : +row['ymin'],
           max: !row['ymax'] ? undefined : +row['ymax'],
           offset: 0,
           inverse: row['yaxis'] == 2,
+          axisLabel: { formatter: '{value}' },
         });
       }
       if (row.id && row.id > 100000000) {
@@ -223,6 +232,7 @@ export function pingChart() {
               inverse: false,
               offset: 0,
               position: 'left',
+              axisLabel: { formatter: '{value}' },
             },
           ];
     return o.config;
@@ -248,7 +258,6 @@ export function huiChart() {
       valueFormatter: {
         afterDot: o.decimal,
         normalized: o.normalized,
-        scientificNotation: false,
       },
       yAxis: o.multiY
         ? o.yAxis
@@ -257,6 +266,7 @@ export function huiChart() {
               inverse: false,
               offset: 0,
               position: 'left',
+              axisLabel: { formatter: '{value}' },
             },
           ],
     };

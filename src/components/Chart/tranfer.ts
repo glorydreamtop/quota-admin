@@ -21,6 +21,7 @@ import {
   useNormalized,
   useSortYear,
   useColor,
+  useScientificNotation,
 } from './helper';
 import {
   barChartConfigType,
@@ -95,9 +96,7 @@ export async function useSeasonalChart(
     const time = data[0];
     const y = dayjs(time).year();
     const m = dayjs(time).month();
-    const v =
-      round(data[1], chartConfig.valueFormatter.afterDot) /
-      Math.pow(10, chartConfig.valueFormatter.scientificNotation);
+    const v = round(data[1], chartConfig.valueFormatter.afterDot);
     let year: number, name: string;
     // 如果变更了起始月份
     if (changeStart) {
@@ -122,6 +121,7 @@ export async function useSeasonalChart(
         symbol: 'none',
         type: 'line',
         connectNulls: false,
+        triggerLineEvent: true,
         data: [[dayjs(time).year(year).hour(0).unix() * 1000, v]],
       });
     }
@@ -135,19 +135,21 @@ export async function useSeasonalChart(
       axisLabel: {
         formatter: '{MM}/{dd}',
       },
+      triggerEvent: true,
     },
     yAxis: chartConfig.yAxis?.map((y) => {
+      const _y = useScientificNotation(y);
       const base: YAXisComponentOption = {
         type: 'value',
         scale: true,
         show: true,
         triggerEvent: true,
       };
-      Object.assign(base, y);
+      Object.assign(base, _y);
       return base;
     }),
     legend,
-    color,
+    color: color.slice(0, series.length).reverse(),
     series,
     toolbox: toolboxConfig,
     tooltip: {
@@ -195,17 +197,20 @@ export async function useNormalChart(chartConfig: normalChartConfigType): Promis
       [echartSeriesTypeEnum.line]: {
         type: 'line',
         symbol: 'none',
+        triggerLineEvent: true,
       },
       [echartSeriesTypeEnum.smoothLine]: {
         type: 'line',
         smooth: true,
         symbol: 'none',
+        triggerLineEvent: true,
       },
       [echartSeriesTypeEnum.area]: {
         type: 'line',
         smooth: true,
         symbol: 'none',
         areaStyle: {},
+        triggerLineEvent: true,
       },
       [echartSeriesTypeEnum.scatter]: {
         type: 'scatter',
@@ -219,16 +224,10 @@ export async function useNormalChart(chartConfig: normalChartConfigType): Promis
   quotaDataList.forEach((quota, index) => {
     const quotaConfig = chartConfig.quotaList![index];
     legend.data!.push(quota.name);
-    quota.data.forEach(
-      (item) =>
-        (item[1] =
-          round(item[1], chartConfig.valueFormatter.afterDot) /
-          Math.pow(10, chartConfig.valueFormatter.scientificNotation)),
-    );
+    quota.data.forEach((item) => (item[1] = round(item[1], chartConfig.valueFormatter.afterDot)));
     series.push({
       name: quota.name,
       ...selectSeriesType(quotaConfig.setting.type),
-
       data: quota.data,
       yAxisIndex: quotaConfig.setting.yAxisIndex,
     });
@@ -238,15 +237,17 @@ export async function useNormalChart(chartConfig: normalChartConfigType): Promis
     title: titleConfig(chartConfig),
     xAxis: {
       type: 'time',
+      triggerEvent: true,
     },
     yAxis: chartConfig.yAxis?.map((y) => {
+      const _y = useScientificNotation(y);
       const base: YAXisComponentOption = {
         type: 'value',
         scale: true,
         show: true,
         triggerEvent: true,
       };
-      Object.assign(base, y);
+      Object.assign(base, _y);
       return base;
     }),
     color,
@@ -299,11 +300,7 @@ export async function useBarChart(chartConfig: barChartConfigType) {
   quotaDataList.forEach((quota) => {
     const source = [
       quota.name,
-      ...quota.data.map(
-        (item) =>
-          round(item[1], chartConfig.valueFormatter.afterDot) /
-          Math.pow(10, chartConfig.valueFormatter.scientificNotation),
-      ),
+      ...quota.data.map((item) => round(item[1], chartConfig.valueFormatter.afterDot)),
     ];
     (dataset.source as any[]).push(source);
   });
@@ -315,15 +312,17 @@ export async function useBarChart(chartConfig: barChartConfigType) {
       axisTick: {
         alignWithLabel: true,
       },
+      triggerEvent: true,
     },
     yAxis: chartConfig.yAxis?.map((y) => {
+      const _y = useScientificNotation(y);
       const base: YAXisComponentOption = {
         type: 'value',
         scale: true,
         show: true,
         triggerEvent: true,
       };
-      Object.assign(base, y);
+      Object.assign(base, _y);
       return base;
     }),
     dataset,
@@ -492,11 +491,7 @@ export async function useStructuralChart(chartConfig: structuralChartConfigType)
   quotaDataList.forEach((quota) => {
     const source = [
       quota.name,
-      ...quota.data.map(
-        (item) =>
-          round(item[1], chartConfig.valueFormatter.afterDot) /
-          Math.pow(10, chartConfig.valueFormatter.scientificNotation),
-      ),
+      ...quota.data.map((item) => round(item[1], chartConfig.valueFormatter.afterDot)),
     ];
     (dataset.source as any[]).push(source);
   });
@@ -508,15 +503,17 @@ export async function useStructuralChart(chartConfig: structuralChartConfigType)
       axisTick: {
         alignWithLabel: true,
       },
+      triggerEvent: true,
     },
     yAxis: chartConfig.yAxis?.map((y) => {
+      const _y = useScientificNotation(y);
       const base: YAXisComponentOption = {
         type: 'value',
         scale: true,
         show: true,
         triggerEvent: true,
       };
-      Object.assign(base, y);
+      Object.assign(base, _y);
       return base;
     }),
     dataset,
@@ -583,11 +580,7 @@ export async function usePieChart(chartConfig: pieChartConfigType) {
   quotaDataList.forEach((quota) => {
     const source = [
       quota.name,
-      ...quota.data.map(
-        (item) =>
-          round(item[1], chartConfig.valueFormatter.afterDot) /
-          Math.pow(10, chartConfig.valueFormatter.scientificNotation),
-      ),
+      ...quota.data.map((item) => round(item[1], chartConfig.valueFormatter.afterDot)),
     ];
     (dataset.source as any[]).push(source);
   });
@@ -642,11 +635,7 @@ export async function useQuantileRadarChart(chartConfig: quantileRadarChartConfi
 
   const quotaDataList = await getQuotaData(fetchParams);
   quotaDataList.forEach((quota) => {
-    quota.data.forEach(
-      (item) =>
-        round(item[1], chartConfig.valueFormatter.afterDot) /
-        Math.pow(10, chartConfig.valueFormatter.scientificNotation),
-    );
+    quota.data.forEach((item) => round(item[1], chartConfig.valueFormatter.afterDot));
   });
   useNormalized({ chartConfig, quotaDataList });
   const series: SeriesOption[] = [
@@ -681,9 +670,7 @@ export async function useQuantileRadarChart(chartConfig: quantileRadarChartConfi
   for (let index = 0; index < quotaDataList.length; index++) {
     const quota = quotaDataList[index];
     const data = quota.data[0];
-    data[1] =
-      round(data[1], chartConfig.valueFormatter.afterDot) /
-      Math.pow(10, chartConfig.valueFormatter.scientificNotation);
+    data[1] = round(data[1], chartConfig.valueFormatter.afterDot);
     const idx = index % len;
     maxVal[idx] = max([(data ?? [0, 0])[1] * 1.02, maxVal[idx]])!;
     minVal[idx] = min([(data ?? [0, 0])[1] * 0.95, minVal[idx]])!;

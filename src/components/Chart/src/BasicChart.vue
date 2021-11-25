@@ -1,6 +1,6 @@
 <template>
   <div class="h-full overflow-hidden relative" v-loading="loading">
-    <div ref="chartElRef" class="w-full h-full"></div>
+    <div ref="chartElRef" class="w-full h-full" @contextmenu="originContextmenu"></div>
     <div v-if="noChart" class="no-chart flex flex-col items-center">
       <img src="../../../assets/svg/no-chart.svg" />
       <span v-if="config.title" class="whitespace-nowrap mt-2 text-gray-400">{{
@@ -33,6 +33,7 @@
     createMountNode,
     useChartTitlePopover,
     useLineChartContextMenu,
+    useXAxisIndexEdit,
     useYAxisIndexEdit,
   } from '../helper';
   import { cloneDeep } from 'lodash-es';
@@ -75,6 +76,7 @@
         setOptions(options);
         noChart.value = false;
       } catch (error) {
+        console.log(error);
         noChart.value = true;
         createMessage.warn(t('common.renderError'));
       } finally {
@@ -83,7 +85,10 @@
     },
     { deep: true, immediate: true },
   );
-
+  // 屏蔽原生右键事件
+  function originContextmenu(e) {
+    e.preventDefault();
+  }
   function update() {
     emit('updateConfig', cloneDeep(unref(config)));
   }
@@ -130,10 +135,22 @@
     });
     eventBus.push({
       event: yAxisClickEvent,
-      eventType: 'dblclick',
+      eventType: 'contextmenu',
       target: 'yAxis',
     });
-
+    // 编辑X轴
+    const xAxisClickEvent = useXAxisIndexEdit({
+      chartConfig: config.value as normalChartConfigType,
+      onOk: (cfg) => {
+        Object.assign(config.value, cfg);
+        update();
+      },
+    });
+    eventBus.push({
+      event: xAxisClickEvent,
+      eventType: 'contextmenu',
+      target: 'xAxis',
+    });
     // 支持折线图series右键菜单
     const lineContextMenuEvent = useLineChartContextMenu({
       chartConfig: config.value as normalChartConfigType,

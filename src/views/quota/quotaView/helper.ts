@@ -39,7 +39,6 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
       quotaList: [],
       valueFormatter: {
         afterDot: 2,
-        scientificNotation: 0,
         normalized: false,
       },
       yAxis: [
@@ -48,7 +47,13 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
           max: undefined,
           inverse: false,
           offset: 0,
+          axisLine: {
+            show: true,
+          },
           position: 'left',
+          axisLabel: {
+            formatter: '{value}',
+          },
         },
       ],
     } as normalChartConfigType,
@@ -71,7 +76,6 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
       quotaList: [],
       valueFormatter: {
         afterDot: 2,
-        scientificNotation: 0,
         normalized: false,
       },
       yAxis: [
@@ -80,7 +84,13 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
           max: undefined,
           inverse: false,
           offset: 0,
+          axisLine: {
+            show: true,
+          },
           position: 'left',
+          axisLabel: {
+            formatter: '{value}',
+          },
         },
       ],
     } as seasonalChartConfigType,
@@ -103,7 +113,6 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
       quotaList: [],
       valueFormatter: {
         afterDot: 2,
-        scientificNotation: 0,
         normalized: false,
       },
       yAxis: [
@@ -112,7 +121,13 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
           max: undefined,
           inverse: false,
           offset: 0,
+          axisLine: {
+            show: true,
+          },
           position: 'left',
+          axisLabel: {
+            formatter: '{value}',
+          },
         },
       ],
     } as barChartConfigType,
@@ -134,7 +149,6 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
       quotaList: [],
       valueFormatter: {
         afterDot: 2,
-        scientificNotation: 0,
         normalized: false,
       },
     } as radarChartConfigType,
@@ -154,7 +168,6 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
       quotaList: [],
       valueFormatter: {
         afterDot: 2,
-        scientificNotation: 0,
         normalized: false,
       },
       quantileOffset: '1,2,3,5',
@@ -177,7 +190,6 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
       quotaList: [],
       valueFormatter: {
         afterDot: 2,
-        scientificNotation: 0,
         normalized: false,
       },
       structuralOffset: '30,15,7,1,0',
@@ -188,7 +200,13 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
           max: undefined,
           inverse: false,
           offset: 0,
+          axisLine: {
+            show: true,
+          },
           position: 'left',
+          axisLabel: {
+            formatter: '{value}',
+          },
         },
       ],
     } as structuralChartConfigType,
@@ -210,7 +228,6 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
       quotaList: [],
       valueFormatter: {
         afterDot: 2,
-        scientificNotation: 0,
         normalized: false,
       },
     } as pieChartConfigType,
@@ -224,5 +241,3 @@ export function getNormalQuotaDefaultSetting(): normalQuotaSettingType {
     lineWidth: 2,
   };
 }
-
-

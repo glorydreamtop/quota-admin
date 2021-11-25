@@ -107,6 +107,7 @@ export default {
           left: '左',
           right: '右',
           offset: '偏移',
+          showLine: '显示轴线',
           lastnotdel: '最后一个Y轴了',
           tip: '新增的轴若最大值最小值均自动，则此轴未被使用时不显示',
           cannotdel: '依赖于本轴，暂不可删除',

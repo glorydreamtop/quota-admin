@@ -1,10 +1,10 @@
 <template>
   <div class="bg-white shadow-md flex-grow p-4 overflow-hidden flex">
-    <div class="w-2/3 relative">
+    <div class="w-2/3 relative left-0 right-0">
       <ToolBar @paint="paint" @event="handleEvent" />
       <Teleport to="body" :disabled="!fullscreen">
         <div
-          class="absolute top-12 bottom-0 left-0 right-2 bg-white preserve-3d box"
+          class="absolute top-12 bottom-0 left-0 right-2 preserve-3d box"
           :class="[fullscreen ? 'fullscreen' : '']"
           id="quota-view-chartbox"
         >
@@ -99,16 +99,13 @@
 </script>
 
 <style lang="less" scoped>
-  .box {
-    perspective: 1000;
-  }
-
   .fullscreen {
     position: absolute;
     top: 0;
     left: 0;
     bottom: 0;
     right: 0;
+    background: @white;
     z-index: 9999;
   }
   .chart-view,

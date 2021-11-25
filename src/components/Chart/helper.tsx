@@ -8,14 +8,15 @@ import {
   GraphicComponentOption,
   LegendComponentOption,
   SeriesOption,
+  YAXisComponentOption,
 } from 'echarts';
-import { last, maxBy, nth, remove, round } from 'lodash-es';
+import { last, maxBy, nth, remove, round, cloneDeep } from 'lodash-es';
 import { chartTypeEnum } from '/@/enums/chartEnum';
 import { daysAgo, formatToDate } from '/@/utils/dateUtil';
 import dayjs from 'dayjs';
 import { useI18n } from '/@/hooks/web/useI18n';
 import YAxisEdit from './src/YAxisEditor.vue';
-import { useContextMenu } from '/@/hooks/web/useContextMenu';
+import XAxisEdit from './src/XAxisEditor.vue';
 import { getColorScheme } from '/@/api/color';
 
 const { t } = useI18n();
@@ -89,9 +90,6 @@ interface yAxixIndexEditParams {
 export function useYAxisIndexEdit({ chartConfig, onOk }: yAxixIndexEditParams) {
   return function (dom: HTMLElement, { yAxisIndex }: any) {
     const idx = yAxisIndex;
-    console.log(idx);
-    console.log(chartConfig);
-
     function YAxisEditComponent() {
       const editPopover = h(YAxisEdit, {
         chartConfig,
@@ -110,6 +108,34 @@ export function useYAxisIndexEdit({ chartConfig, onOk }: yAxixIndexEditParams) {
       return editPopover;
     }
     const component = YAxisEditComponent();
+    render(component, dom);
+    // 外部触发气泡显示
+    component.component!.exposed!.setVisible(true);
+  };
+}
+
+// 支持X轴编辑
+export function useXAxisIndexEdit({ chartConfig, onOk }: yAxixIndexEditParams) {
+  return function (dom: HTMLElement, { xAxisIndex }: any) {
+    const idx = xAxisIndex;
+    function XAxisEditComponent() {
+      const editPopover = h(XAxisEdit, {
+        chartConfig,
+        idx,
+        onVisibleChange: (v: boolean) => {
+          // 关闭时销毁挂载点
+          if (!v && dom.className === MOUNTNODE) {
+            dom.remove();
+          }
+        },
+        onUpdate: (v: any) => {
+          onOk(v);
+        },
+        getPopupContainer: () => dom,
+      });
+      return editPopover;
+    }
+    const component = XAxisEditComponent();
     render(component, dom);
     // 外部触发气泡显示
     component.component!.exposed!.setVisible(true);
@@ -270,8 +296,6 @@ export async function useLastestQuotaData({
       }
       quotaDataList.forEach((quotaData) => {
         const l = last(quotaData.data)!;
-        console.log(l[0]);
-
         lastestData.push({
           name: quotaData.name,
           date: formatToDate(getDate(l[0]), 'MM-DD'),
@@ -409,28 +433,31 @@ export function useRecentLegend(len: number, index: number, inverse = true) {
 
 // 支持折线图series右键菜单
 export function useLineChartContextMenu({ onOk, chartConfig }: chartTitlePopoverParams) {
-  if (
-    ![
-      chartTypeEnum.normal,
-      chartTypeEnum.seasonal,
-      chartTypeEnum.seasonalLunar,
-      chartTypeEnum.fixedbase,
-    ].includes(chartConfig.type)
-  )
-    return;
-  const [createContextMenu] = useContextMenu();
-  return function (_, e) {
-    createContextMenu({
-      event: e.event.event,
-      items: [
-        {
-          label: 'test',
-          handler: () => {
-            onOk('');
-          },
-        },
-      ],
-    });
+  return function (dom: HTMLElement, e: any) {
+    console.log(e);
+    
+    // const idx = xAxisIndex;
+    // function XAxisEditComponent() {
+    //   const editPopover = h(XAxisEdit, {
+    //     chartConfig,
+    //     idx,
+    //     onVisibleChange: (v: boolean) => {
+    //       // 关闭时销毁挂载点
+    //       if (!v && dom.className === MOUNTNODE) {
+    //         dom.remove();
+    //       }
+    //     },
+    //     onUpdate: (v: any) => {
+    //       onOk(v);
+    //     },
+    //     getPopupContainer: () => dom,
+    //   });
+    //   return editPopover;
+    // }
+    // const component = XAxisEditComponent();
+    // render(component, dom);
+    // // 外部触发气泡显示
+    // component.component!.exposed!.setVisible(true);
   };
 }
 // if (dom.className === MOUNTNODE) {
@@ -455,11 +482,27 @@ export async function useColor({ chartConfig }: { chartConfig: chartConfigType }
   if (id) {
     const { colors } = await getColorScheme({ id: id });
     // merge一下自有颜色和方案颜色，得到最终颜色
-    return colors.split(',').map((v, idx) => {
+    const finalColor = colors.split(',').map((v, idx) => {
       const bool = selfColors[idx] === undefined || !selfColors[idx].includes('#');
       return bool ? v : selfColors[idx];
     });
+    return finalColor;
   } else {
     return selfColors;
   }
+}
+
+// Y轴科学计数法
+export function useScientificNotation(yAxis: YAXisComponentOption) {
+  const y = cloneDeep(yAxis);
+  const formatter = y.axisLabel!.formatter as string;
+  if (/pow/i.test(formatter)) {
+    const s = parseInt(formatter.match(/\d+/i)![0]);
+    y.axisLabel!.formatter = (v) => {
+      return v / Math.pow(10, s);
+    };
+    y.name = `10e${s}`;
+    y.axisLine!.symbol = ['none', 'arrow'];
+  }
+  return y;
 }
