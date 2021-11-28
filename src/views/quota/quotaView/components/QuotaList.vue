@@ -2,7 +2,7 @@
   <div class="h-48 bg-white p-4 flex relative min-h-48 shadow-md">
     <div class="flex flex-wrap gap-2 w-auto write-vertical-left pr-2 pt-2px border-r border-gray-300">
       <Tooltip placement="left">
-        <template #title>{{ t('page.quotaView.quotaList.formula') }}</template>
+        <template #title>{{ t('quotaView.quotaList.formula') }}</template>
         <Button size="small" @click="addFormula">
           <template #icon>
             <Icon icon="carbon:function-math" size="20" />
@@ -10,7 +10,7 @@
         </Button>
       </Tooltip>
       <Tooltip placement="left">
-        <template #title>{{ t('page.quotaView.quotaList.delChecked') }}</template>
+        <template #title>{{ t('quotaView.quotaList.delChecked') }}</template>
         <Button size="small" @click="clear" data-type="delete" class="delete-shake">
           <template #icon>
             <Icon icon="ant-design:delete-outlined" size="20" />
@@ -18,7 +18,7 @@
         </Button>
       </Tooltip>
       <Tooltip placement="left">
-        <template #title>{{ t('page.quotaView.quotaList.checkAll') }}</template>
+        <template #title>{{ t('quotaView.quotaList.checkAll') }}</template>
         <Button size="small" @click="checkAll">
           <template #icon>
             <Icon icon="ant-design:check-outlined" size="20" />
@@ -27,7 +27,7 @@
       </Tooltip>
       <Tooltip placement="left">
         <template #title>{{
-          cardUI ? t('page.quotaView.quotaList.listUI') : t('page.quotaView.quotaList.cardUI')
+          cardUI ? t('quotaView.quotaList.listUI') : t('quotaView.quotaList.cardUI')
         }}</template>
         <Button size="small" @click="changeUI">
           <template #icon>
@@ -36,7 +36,7 @@
         </Button>
       </Tooltip>
       <Tooltip placement="left">
-        <template #title>{{ t('page.quotaView.quotaList.updateQuota') }}</template>
+        <template #title>{{ t('quotaView.quotaList.updateQuota') }}</template>
         <Button size="small" @click="updateQuota">
           <template #icon>
             <Icon icon="ant-design:sync-outlined" size="20" />
@@ -244,7 +244,7 @@
       index: selectedQuota.value.length,
     });
     setEditModal({
-      title: t('page.quotaView.quotaSetting.formulaModalTitle'),
+      title: t('quotaView.quotaSetting.formulaModalTitle'),
       minHeight: 300,
       width: '400px',
     });
@@ -283,7 +283,7 @@
             index: selectedQuota.value.findIndex((_item) => item.id === _item.id),
           });
           setEditModal({
-            title: t('page.quotaView.quotaSetting.modalTitle'),
+            title: t('quotaView.quotaSetting.modalTitle'),
             minHeight: 300,
           });
         },

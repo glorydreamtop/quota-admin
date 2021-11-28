@@ -133,10 +133,6 @@
   .toolbar {
     transition-property: transform box-shadow;
     transition-duration: 0.2s;
-
-    &:hover {
-      transform: scale(1.001);
-    }
   }
 
   ::v-deep(.ant-tabs .ant-tabs-small-bar .ant-tabs-tab) {

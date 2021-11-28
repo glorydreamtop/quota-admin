@@ -53,7 +53,7 @@
   function selectNode(q: QuotaItem) {
     const sq = cloneDeep(q) as SelectedQuotaItem;
     if (selectedQuotaList.value.find((q) => q.id === sq.id)) {
-      createMessage.warn((q.shortName || q.name) + t('page.quotaView.uniqSelectedQuotaMessage'));
+      createMessage.warn((q.shortName || q.name) + t('quotaView.uniqSelectedQuotaMessage'));
       return;
     }
     sq.selected = true;

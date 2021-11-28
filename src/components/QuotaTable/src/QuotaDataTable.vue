@@ -5,7 +5,7 @@
         <div class="title" v-for="name in info.header" :key="name">
           <span>{{ name }}</span>
           <Icon
-            v-if="name !== t('page.quotaView.toolbar.quotaDataTableHeader.date')"
+            v-if="name !== t('quotaView.toolbar.quotaDataTableHeader.date')"
             icon="ant-design:plus-square-outlined"
             class="!text-gray-400"
           />
@@ -97,12 +97,12 @@
     name: '',
     value: '',
     date: '',
-    dateColName: t('page.quotaView.toolbar.quotaDataTableHeader.date'),
+    dateColName: t('quotaView.toolbar.quotaDataTableHeader.date'),
   });
   function showEdit(data: Recordable<any>, name: string) {
     editData.name = name;
     editData.value = data[name];
-    editData.date = data[t('page.quotaView.toolbar.quotaDataTableHeader.date')];
+    editData.date = data[t('quotaView.toolbar.quotaDataTableHeader.date')];
   }
   async function updateQuotaData(rowData: Recordable<any>) {
     const jsonObj = JSON.stringify([
@@ -120,7 +120,7 @@
       editData.value = '';
       editData.date = '';
       info.loading = false;
-      createMessage.success(t('page.quotaView.toolbar.realTimeSave'));
+      createMessage.success(t('quotaView.toolbar.realTimeSave'));
     } catch (error) {}
   }
 </script>

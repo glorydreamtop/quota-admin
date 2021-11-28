@@ -3,31 +3,31 @@
     <Collapse v-model:activeKey="collapseKey" :bordered="false">
       <CollapsePanel key="rectSetting" :style="panelTitleStyle">
         <template #header>
-          <Divider orientation="left">{{ t('page.quotaView.advance.rectSetting.title') }}</Divider>
+          <Divider orientation="left">{{ t('quotaView.advance.rectSetting.title') }}</Divider>
         </template>
         <div class="grid grid-cols-2 pl-8">
           <span class="label">
             <Switch
-              :checked-children="t('page.quotaView.advance.show')"
-              :un-checked-children="t('page.quotaView.advance.hide')"
+              :checked-children="t('quotaView.advance.show')"
+              :un-checked-children="t('quotaView.advance.hide')"
               v-model:checked="chartConfig.showLastest"
             />
-            <span>{{ t('page.quotaView.advance.rectSetting.lastest') }}</span>
+            <span>{{ t('quotaView.advance.rectSetting.lastest') }}</span>
           </span>
           <span class="label">
             <Switch
-              :checked-children="t('page.quotaView.advance.show')"
-              :un-checked-children="t('page.quotaView.advance.hide')"
+              :checked-children="t('quotaView.advance.show')"
+              :un-checked-children="t('quotaView.advance.hide')"
               v-model:checked="chartConfig.showHighest"
             />
-            <span>{{ t('page.quotaView.advance.rectSetting.highest') }}</span>
+            <span>{{ t('quotaView.advance.rectSetting.highest') }}</span>
           </span>
         </div>
       </CollapsePanel>
       <CollapsePanel key="valueFormatter">
         <template #header>
           <Divider orientation="left">{{
-            t('page.quotaView.advance.valueFormatter.title')
+            t('quotaView.advance.valueFormatter.title')
           }}</Divider>
         </template>
         <div class="flex flex-wrap gap-2 pl-8">
@@ -37,20 +37,20 @@
               class="!w-12 min-w-12"
               :min="0"
               v-model:value="chartConfig.valueFormatter.afterDot"
-            /><span>{{ t('page.quotaView.advance.valueFormatter.afterDot') }}</span>
+            /><span>{{ t('quotaView.advance.valueFormatter.afterDot') }}</span>
           </span>
           <span class="label">
             <Switch
               v-model:checked="chartConfig.valueFormatter.normalized"
-              :checked-children="t('page.quotaView.advance.use')"
-              :un-checked-children="t('page.quotaView.advance.stop')"
-            /><span>{{ t('page.quotaView.advance.valueFormatter.normalized') }}</span>
+              :checked-children="t('quotaView.advance.use')"
+              :un-checked-children="t('quotaView.advance.stop')"
+            /><span>{{ t('quotaView.advance.valueFormatter.normalized') }}</span>
           </span>
         </div>
       </CollapsePanel>
       <CollapsePanel key="axisSetting">
         <template #header>
-          <Divider orientation="left">{{ t('page.quotaView.advance.axisSetting.title') }}</Divider>
+          <Divider orientation="left">{{ t('quotaView.advance.axisSetting.title') }}</Divider>
         </template>
         <div class="pl-8">
           <YAxisEdit
@@ -63,7 +63,7 @@
               <template #icon>
                 <Icon icon="ant-design:plus-outlined" />
               </template>
-              <span>{{ t('page.quotaView.advance.axisSetting.yAxis.createY') }}</span>
+              <span>{{ t('quotaView.advance.axisSetting.yAxis.createY') }}</span>
             </Button>
           </YAxisEdit>
         </div>
@@ -71,13 +71,13 @@
       <CollapsePanel key="datasourceSetting">
         <template #header>
           <Divider orientation="left">{{
-            t('page.quotaView.advance.datasourceSetting.title')
+            t('quotaView.advance.datasourceSetting.title')
           }}</Divider>
         </template>
         <div class="pl-8 flex flex-col gap-2">
           <span class="flex gap-1 items-center" v-if="showSettingFilter('pastValue')">
             <span>
-              {{ t('page.quotaView.advance.datasourceSetting.past') }}
+              {{ t('quotaView.advance.datasourceSetting.past') }}
             </span>
             <InputNumber
               size="small"
@@ -92,16 +92,16 @@
             />
             <Tooltip>
               <template #title>
-                <span>{{ t('page.quotaView.advance.datasourceSetting.tip') }}</span>
+                <span>{{ t('quotaView.advance.datasourceSetting.tip') }}</span>
               </template>
               <Icon icon="ant-design:question-circle-outlined" />
             </Tooltip>
           </span>
           <div class="bg-gray-100 p-2 rounded-sm" v-if="showSettingFilter('sortMonth')">
             <span class="text-primary flex items-center">
-              <span>{{ t('page.quotaView.advance.datasourceSetting.sortMonth') }}</span>
+              <span>{{ t('quotaView.advance.datasourceSetting.sortMonth') }}</span>
               <template v-if="showSettingFilter('startMonth')">
-                <span>，{{ t('page.quotaView.advance.datasourceSetting.startMonth') }}</span>
+                <span>，{{ t('quotaView.advance.datasourceSetting.startMonth') }}</span>
                 <Input
                   class="!w-18 ml-1"
                   size="small"
@@ -122,7 +122,7 @@
                 ]"
                 v-for="month in monthList"
                 :key="month"
-                >{{ month + t('page.quotaView.advance.datasourceSetting.pastUnit.month') }}</div
+                >{{ month + t('quotaView.advance.datasourceSetting.pastUnit.month') }}</div
               >
             </div>
             <div
@@ -146,7 +146,7 @@
           </div>
           <div class="bg-gray-100 p-2 rounded-sm" v-if="showSettingFilter('structuralOffset')">
             <span class="text-primary">
-              {{ t('page.quotaView.advance.datasourceSetting.structuralOffset') }}
+              {{ t('quotaView.advance.datasourceSetting.structuralOffset') }}
             </span>
             <div class="flex gap-2 items-center">
               <Input
@@ -170,7 +170,7 @@
               <Tooltip>
                 <template #title>
                   <span>{{
-                    t('page.quotaView.advance.datasourceSetting.structuralOffsetTip')
+                    t('quotaView.advance.datasourceSetting.structuralOffsetTip')
                   }}</span>
                 </template>
                 <Icon icon="ant-design:question-circle-outlined" />
@@ -179,7 +179,7 @@
           </div>
           <div class="bg-gray-100 p-2 rounded-sm" v-if="showSettingFilter('quantileOffset')">
             <span class="text-primary">
-              {{ t('page.quotaView.advance.datasourceSetting.quantileOffset') }}
+              {{ t('quotaView.advance.datasourceSetting.quantileOffset') }}
             </span>
             <div class="flex gap-2 items-center">
               <Input
@@ -191,7 +191,7 @@
               <Tooltip>
                 <template #title>
                   <span>{{
-                    t('page.quotaView.advance.datasourceSetting.structuralOffsetTip')
+                    t('quotaView.advance.datasourceSetting.structuralOffsetTip')
                   }}</span>
                 </template>
                 <Icon icon="ant-design:question-circle-outlined" />
@@ -306,7 +306,7 @@
       setTimeout(() => {
         chartConfig.timeConfig.startMonth = 1;
       }, 500);
-      createMessage.warn(t('page.quotaView.advance.datasourceSetting.startMonthTip'));
+      createMessage.warn(t('quotaView.advance.datasourceSetting.startMonthTip'));
       return;
     }
     chartConfig.timeConfig.startMonth = parseInt(value);
