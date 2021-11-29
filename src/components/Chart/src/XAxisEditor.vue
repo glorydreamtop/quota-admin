@@ -17,13 +17,13 @@
       >
         <div>
           <div class="w-3em text-justify mr-2">
-            {{ t('page.quotaView.advance.axisSetting.yAxis.index') }}
+            {{ t('quotaView.advance.axisSetting.yAxis.index') }}
           </div>
           <span>{{ idx > -1 ? idx + 1 : '' }}</span>
         </div>
         <div>
           <div class="min-w-3em text-justify mr-2">{{
-            t('page.quotaView.advance.axisSetting.yAxis.min')
+            t('quotaView.advance.axisSetting.yAxis.min')
           }}</div>
           <Input
             size="small"
@@ -34,7 +34,7 @@
         </div>
         <div>
           <div class="min-w-3em text-justify mr-2">{{
-            t('page.quotaView.advance.axisSetting.yAxis.max')
+            t('quotaView.advance.axisSetting.yAxis.max')
           }}</div>
           <Input
             size="small"
@@ -45,32 +45,32 @@
         </div>
         <div>
           <div class="min-w-3em text-justify mr-2">{{
-            t('page.quotaView.advance.axisSetting.yAxis.position')
+            t('quotaView.advance.axisSetting.yAxis.position')
           }}</div>
           <RadioGroup size="small" v-model:value="currentCfg.position" button-style="solid">
             <RadioButton value="left">{{
-              t('page.quotaView.advance.axisSetting.yAxis.left')
+              t('quotaView.advance.axisSetting.yAxis.left')
             }}</RadioButton>
             <RadioButton value="right">{{
-              t('page.quotaView.advance.axisSetting.yAxis.right')
+              t('quotaView.advance.axisSetting.yAxis.right')
             }}</RadioButton>
           </RadioGroup>
         </div>
         <div>
           <div class="min-w-3em text-justify mr-2">{{
-            t('page.quotaView.advance.axisSetting.yAxis.inverse')
+            t('quotaView.advance.axisSetting.yAxis.inverse')
           }}</div>
           <Switch size="small" v-model:checked="currentCfg.inverse" />
         </div>
         <div>
           <div class="min-w-3em text-justify mr-2">{{
-            t('page.quotaView.advance.axisSetting.yAxis.showLine')
+            t('quotaView.advance.axisSetting.yAxis.showLine')
           }}</div>
           <Switch size="small" v-model:checked="currentCfg.axisLine.show" />
         </div>
         <div>
           <div class="min-w-3em text-justify mr-2">{{
-            t('page.quotaView.advance.valueFormatter.scientificNotation')
+            t('quotaView.advance.valueFormatter.scientificNotation')
           }}</div>
           <InputNumber
             size="small"
@@ -81,7 +81,7 @@
         </div>
         <div>
           <div class="min-w-3em text-justify mr-2">{{
-            t('page.quotaView.advance.axisSetting.yAxis.offset')
+            t('quotaView.advance.axisSetting.yAxis.offset')
           }}</div>
           <Input
             size="small"
@@ -224,12 +224,12 @@
     const hasDep = config.quotaList!.find((quota) => quota.setting.yAxisIndex === props.idx);
     if (hasDep) {
       createMessage.warn(
-        `[${hasDep.name}]` + t('page.quotaView.advance.axisSetting.yAxis.cannotdel'),
+        `[${hasDep.name}]` + t('quotaView.advance.axisSetting.yAxis.cannotdel'),
       );
       return;
     }
     if (config.yAxis.length === 1) {
-      createMessage.warn(t('page.quotaView.advance.axisSetting.yAxis.lastnotdel'));
+      createMessage.warn(t('quotaView.advance.axisSetting.yAxis.lastnotdel'));
       return;
     }
     config.yAxis.splice(props.idx!, 1);

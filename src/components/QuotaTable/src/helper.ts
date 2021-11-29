@@ -30,7 +30,7 @@ export function useDownloadXLSX(): useDownloadXLSXRes {
   // 制作表格数据
   function getTableData() {
     const dataArr = cloneDeep(quotaData);
-    const dateColName = t('page.quotaView.toolbar.quotaDataTableHeader.date');
+    const dateColName = t('quotaView.toolbar.quotaDataTableHeader.date');
     const names: string[] = [dateColName];
     const ids: number[] = [];
     const dataSource: Recordable[] = [];

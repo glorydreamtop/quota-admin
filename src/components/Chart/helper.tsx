@@ -313,7 +313,7 @@ export async function useLastestQuotaData({
       });
     }
     // 开始创建echart富文本
-    createRichText(lastestData, options, t('page.quotaView.advance.rectSetting.lastest'));
+    createRichText(lastestData, options, t('quotaView.advance.rectSetting.lastest'));
   }
 }
 // 最高值模块
@@ -348,7 +348,7 @@ export async function useHighestQuotaData({
       });
     }
     // 开始创建echart富文本
-    createRichText(highestData, options, t('page.quotaView.advance.rectSetting.highest'));
+    createRichText(highestData, options, t('quotaView.advance.rectSetting.highest'));
   }
 }
 

@@ -4,7 +4,7 @@
       class="flex flex-wrap gap-2 w-auto write-vertical-left pr-2 pt-2px border-r border-gray-300"
     >
       <Tooltip placement="left">
-        <template #title>{{ t('page.quotaView.quotaList.formula') }}</template>
+        <template #title>{{ t('quotaView.quotaList.formula') }}</template>
         <Button size="small" @click="addFormula">
           <template #icon>
             <Icon icon="carbon:function-math" size="20" />
@@ -12,7 +12,7 @@
         </Button>
       </Tooltip>
       <Tooltip placement="left">
-        <template #title>{{ t('page.quotaView.quotaList.delChecked') }}</template>
+        <template #title>{{ t('quotaView.quotaList.delChecked') }}</template>
         <Button size="small" @click="clear" data-type="delete" class="delete-shake">
           <template #icon>
             <Icon icon="ant-design:delete-outlined" size="20" />
@@ -20,7 +20,7 @@
         </Button>
       </Tooltip>
       <Tooltip placement="left">
-        <template #title>{{ t('page.quotaView.quotaList.checkAll') }}</template>
+        <template #title>{{ t('quotaView.quotaList.checkAll') }}</template>
         <Button size="small" @click="checkAll">
           <template #icon>
             <Icon icon="ant-design:check-outlined" size="20" />
@@ -29,7 +29,7 @@
       </Tooltip>
       <Tooltip placement="left">
         <template #title>{{
-          cardUI ? t('page.quotaView.quotaList.listUI') : t('page.quotaView.quotaList.cardUI')
+          cardUI ? t('quotaView.quotaList.listUI') : t('quotaView.quotaList.cardUI')
         }}</template>
         <Button size="small" @click="changeUI">
           <template #icon>
@@ -38,7 +38,7 @@
         </Button>
       </Tooltip>
       <Tooltip placement="left">
-        <template #title>{{ t('page.quotaView.quotaList.updateQuota') }}</template>
+        <template #title>{{ t('quotaView.quotaList.updateQuota') }}</template>
         <Button size="small" @click="updateQuota">
           <template #icon>
             <Icon icon="ant-design:sync-outlined" size="20" />
@@ -81,7 +81,7 @@
             class="text-purple-300 cursor-pointer select-none"
             @click.stop
             @dblclick="copy(item.id.toString(), 'id')"
-            >{{ item.id ?? t('page.quotaCard.formulaWithoutId') }}</span
+            >{{ item.id ?? t('quotaView.quotaCard.formulaWithoutId') }}</span
           >
         </span>
 
@@ -120,8 +120,8 @@
             <template #title>
               <span class="text-xs">{{
                 item.id
-                  ? `${t('page.quotaCard.updateOn')}${item.timeLastUpdate}`
-                  : t('page.quotaCard.formulaTip')
+                  ? `${t('quotaView.quotaCard.updateOn')}${item.timeLastUpdate}`
+                  : t('quotaView.quotaCard.formulaTip')
               }}</span>
             </template>
             <span class="whitespace-nowrap w-32" @click.stop>{{
@@ -239,7 +239,7 @@
   });
   function dateFomatter(quota: QuotaItem) {
     if (!quota.id && quota.sourceType === SourceTypeEnum.formula)
-      return t('page.quotaCard.calculate');
+      return t('quotaView.quotaCard.calculate');
     if (quota.dateLast === null) return t('common.noData');
     return formatToDate(quota.dateLast);
   }
@@ -251,14 +251,14 @@
       index: selectedQuota.value.length,
     });
     setEditModal({
-      title: t('page.quotaView.quotaSetting.formulaModalTitle'),
+      title: t('quotaView.quotaSetting.formulaModalTitle'),
       minHeight: 300,
       width: '400px',
     });
   }
   function clear() {
     remove(selectedQuota.value, (quota) => quota.selected === true);
-    createMessage.success(t('page.quotaCard.alldel'));
+    createMessage.success(t('quotaView.quotaCard.alldel'));
   }
   function handleIcon(item: QuotaItem, type: string) {
     const handler = {
@@ -270,10 +270,10 @@
   }
   function copy(text: string, type) {
     const textType = {
-      name: t('page.quotaCard.name'),
-      id: t('page.quotaCard.id'),
-      sourceCode: t('page.quotaCard.sourceCode'),
-      shortName: t('page.quotaCard.shortName'),
+      name: t('quotaView.quotaCard.name'),
+      id: t('quotaView.quotaCard.id'),
+      sourceCode: t('quotaView.quotaCard.sourceCode'),
+      shortName: t('quotaView.quotaCard.shortName'),
     };
     const { isSuccessRef } = useCopyToClipboard(text);
     unref(isSuccessRef) && createMessage.success(`${textType[type]}已复制到剪贴板`);
@@ -282,7 +282,7 @@
   function handleContext(e: MouseEvent, item: SelectedQuotaItem) {
     const menuList = [
       {
-        label: t('page.quotaCard.contextMenu.edit'),
+        label: t('quotaView.quotaCard.contextMenu.edit'),
         icon: 'ant-design:edit-outlined',
         handler: () => {
           openEditModal(true, {
@@ -290,24 +290,24 @@
             index: selectedQuota.value.findIndex((_item) => item.id === _item.id),
           });
           setEditModal({
-            title: t('page.quotaView.quotaSetting.modalTitle'),
+            title: t('quotaView.quotaSetting.modalTitle'),
             minHeight: 300,
           });
         },
       },
       {
-        label: t('page.quotaCard.contextMenu.copyShortName'),
+        label: t('quotaView.quotaCard.contextMenu.copyShortName'),
         icon: 'ant-design:copy-outlined',
         handler: () => {
           if (item.shortName) {
             copy(item.shortName.toString(), 'shortName');
           } else {
-            createMessage.warning(t('page.quotaCard.contextMenu.noShortName'));
+            createMessage.warning(t('quotaView.quotaCard.contextMenu.noShortName'));
           }
         },
       },
       {
-        label: t('page.quotaCard.contextMenu.saveInMyFolder'),
+        label: t('quotaView.quotaCard.contextMenu.saveInMyFolder'),
         icon: 'ant-design:folder-add-outlined',
         handler: () => {
           // setQuotaSave({

@@ -6,7 +6,7 @@
         size="small"
         @select="selectType"
         v-model:value="chartConfig.type"
-        :placeholder="t('page.quotaView.toolbar.chartTypeSelectPlaceholer')"
+        :placeholder="t('quotaView.toolbar.chartTypeSelectPlaceholer')"
         :options="chartTypeList"
       />
       <Color />
@@ -26,7 +26,7 @@
           v-model:value="chartConfig.timeConfig.startDate"
           value-format="YYYY-MM-DD"
           :showToday="false"
-          :placeholer="t('page.quotaView.toolbar.startDatePicker')"
+          :placeholer="t('quotaView.toolbar.startDatePicker')"
           ><span class="cursor-pointer">{{ chartConfig.timeConfig.startDate }}</span>
           <template #renderExtraFooter>
             <div class="flex items-center">
@@ -36,10 +36,10 @@
                 v-model:value="quickDateParams.num"
               />
               <RadioGroup button-style="solid" size="small" v-model:value="quickDateParams.unit">
-                <RadioButton value="year">{{ t('page.quotaView.toolbar.year') }}</RadioButton>
-                <RadioButton value="month">{{ t('page.quotaView.toolbar.month') }}</RadioButton>
-                <RadioButton value="week">{{ t('page.quotaView.toolbar.week') }}</RadioButton>
-                <RadioButton value="day">{{ t('page.quotaView.toolbar.day') }}</RadioButton>
+                <RadioButton value="year">{{ t('quotaView.toolbar.year') }}</RadioButton>
+                <RadioButton value="month">{{ t('quotaView.toolbar.month') }}</RadioButton>
+                <RadioButton value="week">{{ t('quotaView.toolbar.week') }}</RadioButton>
+                <RadioButton value="day">{{ t('quotaView.toolbar.day') }}</RadioButton>
               </RadioGroup>
               <span class="text-primary ml-auto cursor-pointer" @click="quickDate">{{
                 t('common.okText')
@@ -52,7 +52,7 @@
           size="small"
           v-model:value="chartConfig.timeConfig.endDate"
           value-format="YYYY-MM-DD"
-          :placeholer="t('page.quotaView.toolbar.endDatePicker')"
+          :placeholer="t('quotaView.toolbar.endDatePicker')"
           ><span class="cursor-pointer">{{ chartConfig.timeConfig.endDate }}</span></DatePicker
         >
       </div>
@@ -67,8 +67,8 @@
         <template #title>
           <span>{{
             showTableRef
-              ? t('page.quotaView.toolbar.downloadXLSX')
-              : t('page.quotaView.toolbar.downloadImg')
+              ? t('quotaView.toolbar.downloadXLSX')
+              : t('quotaView.toolbar.downloadImg')
           }}</span>
         </template>
         <Icon
@@ -84,8 +84,8 @@
       <Tooltip>
         <template #title>{{
           showTableRef
-            ? t('page.quotaView.toolbar.chartView')
-            : t('page.quotaView.toolbar.tableView')
+            ? t('quotaView.toolbar.chartView')
+            : t('quotaView.toolbar.tableView')
         }}</template>
         <div
           class="relative w-29px h-29px"
@@ -147,7 +147,7 @@
   const chartTypeList: LabelValueOptions = reactive([]);
   for (let v in chartTypeEnum) {
     chartTypeList.push({
-      label: t(`page.quotaView.toolbar.chartTypeList.${v}`),
+      label: t(`quotaView.toolbar.chartTypeList.${v}`),
       value: v,
       disabled: [chartTypeEnum.seasonalLunar, chartTypeEnum.fixedbase].includes(v as chartTypeEnum),
     });
@@ -169,7 +169,7 @@
   }
   async function paint() {
     if (quotaList.value.length === 0) {
-      createMessage.warn(t('page.quotaView.toolbar.noQuotaListTip'));
+      createMessage.warn(t('quotaView.toolbar.noQuotaListTip'));
       return;
     }
     // 季节性的公历和农历均只适用一个指标，使其他指标置灰

@@ -466,15 +466,13 @@
                 {extendSlots(slots)}
               </TreeHeader>
             )}
-            <ScrollContainer style={scrollStyle} v-show={!unref(getNotFound)}>
-              <Tree {...unref(getBindValues)} showIcon={false}>
-                {{
-                  // switcherIcon: () => <DownOutlined />,
-                  default: () => renderTreeNode({ data: unref(getTreeData), level: 1 }),
-                  ...extendSlots(slots),
-                }}
-              </Tree>
-            </ScrollContainer>
+            <Tree {...unref(getBindValues)} showIcon={false} v-show={!unref(getNotFound)}>
+              {{
+                // switcherIcon: () => <DownOutlined />,
+                default: () => renderTreeNode({ data: unref(getTreeData), level: 1 }),
+                ...extendSlots(slots),
+              }}
+            </Tree>
             <div v-show={unref(getNotFound)} class="pt-8">
               <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
             </div>

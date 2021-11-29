@@ -1,4 +1,9 @@
 export default {
+  create: '创建表格',
+  addCol: '添加列',
+  addRow: '添加行',
+  endDate: '最新数据日期',
+  template: '预设模板',
   contextmenu: {
     mergeCells: '合并单元格',
     splitCells: '拆分单元格',

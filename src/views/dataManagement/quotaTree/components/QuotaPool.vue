@@ -4,23 +4,23 @@
       class="flex flex-wrap gap-2 w-auto write-vertical-left pr-2 pt-2px border-r border-gray-300"
     >
       <Tooltip placement="left">
-        <template #title>{{ t('page.quotaView.quotaList.formula') }}</template>
-        <Button size="small" @click="addFormula">
+        <template #title>{{ t('quotaView.quotaList.delChecked') }}</template>
+        <Button size="small" @click="clear" data-type="delete" class="delete-shake">
           <template #icon>
-            <Icon icon="carbon:function-math" size="20" />
+            <Icon icon="ant-design:stop-outlined" size="20" />
           </template>
         </Button>
       </Tooltip>
       <Tooltip placement="left">
-        <template #title>{{ t('page.quotaView.quotaList.delChecked') }}</template>
-        <Button size="small" @click="clear" data-type="delete" class="delete-shake">
+        <template #title>{{ t('quotaView.management.delete') }}</template>
+        <Button size="small" @click="del">
           <template #icon>
             <Icon icon="ant-design:delete-outlined" size="20" />
           </template>
         </Button>
       </Tooltip>
       <Tooltip placement="left">
-        <template #title>{{ t('page.quotaView.quotaList.checkAll') }}</template>
+        <template #title>{{ t('quotaView.quotaList.checkAll') }}</template>
         <Button size="small" @click="checkAll">
           <template #icon>
             <Icon icon="ant-design:check-outlined" size="20" />
@@ -29,7 +29,7 @@
       </Tooltip>
       <Tooltip placement="left">
         <template #title>{{
-          cardUI ? t('page.quotaView.quotaList.listUI') : t('page.quotaView.quotaList.cardUI')
+          cardUI ? t('quotaView.quotaList.listUI') : t('quotaView.quotaList.cardUI')
         }}</template>
         <Button size="small" @click="changeUI">
           <template #icon>
@@ -38,10 +38,26 @@
         </Button>
       </Tooltip>
       <Tooltip placement="left">
-        <template #title>{{ t('page.quotaView.quotaList.updateQuota') }}</template>
+        <template #title>{{ t('quotaView.quotaList.updateQuota') }}</template>
         <Button size="small" @click="updateQuota">
           <template #icon>
             <Icon icon="ant-design:sync-outlined" size="20" />
+          </template>
+        </Button>
+      </Tooltip>
+      <Tooltip placement="left">
+        <template #title>{{ t('quotaView.management.search.btn') }}</template>
+        <Button size="small" @click="search">
+          <template #icon>
+            <Icon icon="ant-design:search-outlined" size="20" />
+          </template>
+        </Button>
+      </Tooltip>
+      <Tooltip placement="left">
+        <template #title>{{ t('quotaView.management.clearData.btn') }}</template>
+        <Button size="small" @click="search">
+          <template #icon>
+            <Icon icon="ant-design:clear-outlined" size="20" />
           </template>
         </Button>
       </Tooltip>
@@ -59,7 +75,6 @@
       <!-- 一个卡片 -->
       <div
         @click="handleSelected(item)"
-        @contextmenu="handleContext($event, item)"
         v-ripple
         v-loading="loading"
         :class="[
@@ -81,14 +96,14 @@
             class="text-purple-300 cursor-pointer select-none"
             @click.stop
             @dblclick="copy(item.id.toString(), 'id')"
-            >{{ item.id ?? t('page.quotaCard.formulaWithoutId') }}</span
+            >{{ item.id ?? t('quotaView.quotaCard.formulaWithoutId') }}</span
           >
         </span>
 
         <span v-show="!cardUI" class="text-gray-200">{{ index + 1 }}</span>
 
         <!-- 全称 -->
-        <Tooltip :placement="cardUI ? 'bottomLeft' : 'top'">
+        <Tooltip destroyTooltipOnHide :placement="cardUI ? 'bottomLeft' : 'top'">
           <template #title>{{ item.name }}</template>
           <span class="cursor-default select-none text-white quota-title"
             ><span class="w-fit" @click.stop @dblclick="copy(item.name, 'name')">{{
@@ -120,8 +135,8 @@
             <template #title>
               <span class="text-xs">{{
                 item.id
-                  ? `${t('page.quotaCard.updateOn')}${item.timeLastUpdate}`
-                  : t('page.quotaCard.formulaTip')
+                  ? `${t('quotaView.quotaCard.updateOn')}${item.timeLastUpdate}`
+                  : t('quotaView.quotaCard.formulaTip')
               }}</span>
             </template>
             <span class="whitespace-nowrap w-32" @click.stop>{{
@@ -129,11 +144,36 @@
             }}</span>
           </Tooltip>
           <span class="del-icon">
-            <Icon
-              @click="handleIcon(item, 'del')"
-              class="mr-1 cursor-pointer"
-              icon="ant-design:delete-outlined"
-            />
+            <Tooltip destroyTooltipOnHide>
+              <template #title>
+                <span class="text-xs">{{ t('quotaView.management.edit') }}</span>
+              </template>
+              <Icon
+                @click="handleIcon(item, 'edit')"
+                class="cursor-pointer"
+                icon="ant-design:edit-outlined"
+              />
+            </Tooltip>
+            <Tooltip destroyTooltipOnHide>
+              <template #title>
+                <span class="text-xs">{{ t('quotaView.management.remove') }}</span>
+              </template>
+              <Icon
+                @click="handleIcon(item, 'del')"
+                class="cursor-pointer"
+                icon="ant-design:stop-outlined"
+              />
+            </Tooltip>
+            <Tooltip destroyTooltipOnHide>
+              <template #title>
+                <span class="text-xs">{{ t('quotaView.management.delete') }}</span>
+              </template>
+              <Icon
+                @click="handleIcon(item, 'edit')"
+                class="!text-red-600 cursor-pointer"
+                icon="ant-design:delete-outlined"
+              />
+            </Tooltip>
           </span>
         </span>
       </div>
@@ -154,7 +194,6 @@
   import { useSortable } from '/@/hooks/web/useSortable';
   import { isNullAndUnDef } from '/@/utils/is';
   import { useCopyToClipboard } from '/@/hooks/web/useCopyToClipboard';
-  import { useContextMenu } from '/@/hooks/web/useContextMenu';
   import vRipple from '/@/directives/ripple';
   import { onMountedOrActivated } from '/@/hooks/core/onMountedOrActivated';
   // import { usePointerSlideIn } from '/@/hooks/web/useAnimation';
@@ -222,85 +261,38 @@
   });
   function dateFomatter(quota: QuotaItem) {
     if (!quota.id && quota.sourceType === SourceTypeEnum.formula)
-      return t('page.quotaCard.calculate');
+      return t('quotaView.quotaCard.calculate');
     if (quota.dateLast === null) return t('common.noData');
     return formatToDate(quota.dateLast);
   }
   function clear() {
     remove(selectedQuota.value, (quota) => quota.selected === true);
-    createMessage.success(t('page.quotaCard.alldel'));
+    createMessage.success(t('quotaView.quotaCard.alldel'));
   }
+  function del() {}
+  function search() {}
   function handleIcon(item: QuotaItem, type: string) {
     const handler = {
       del: () => {
         remove(selectedQuota.value, (quota) => quota.id === item.id);
+      },
+      edit: () => {
+        console.log(item);
       },
     };
     handler[type]();
   }
   function copy(text: string, type) {
     const textType = {
-      name: t('page.quotaCard.name'),
-      id: t('page.quotaCard.id'),
-      sourceCode: t('page.quotaCard.sourceCode'),
-      shortName: t('page.quotaCard.shortName'),
+      name: t('quotaView.quotaCard.name'),
+      id: t('quotaView.quotaCard.id'),
+      sourceCode: t('quotaView.quotaCard.sourceCode'),
+      shortName: t('quotaView.quotaCard.shortName'),
     };
     const { isSuccessRef } = useCopyToClipboard(text);
     unref(isSuccessRef) && createMessage.success(`${textType[type]}已复制到剪贴板`);
   }
-  const [createContextMenu] = useContextMenu();
-  function handleContext(e: MouseEvent, item: SelectedQuotaItem) {
-    const menuList = [
-      {
-        label: t('page.quotaCard.contextMenu.edit'),
-        icon: 'ant-design:edit-outlined',
-        handler: () => {},
-      },
-      {
-        label: t('page.quotaCard.contextMenu.copyShortName'),
-        icon: 'ant-design:copy-outlined',
-        handler: () => {
-          if (item.shortName) {
-            copy(item.shortName.toString(), 'shortName');
-          } else {
-            createMessage.warning(t('page.quotaCard.contextMenu.noShortName'));
-          }
-        },
-      },
-      {
-        label: t('page.quotaCard.contextMenu.saveInMyFolder'),
-        icon: 'ant-design:folder-add-outlined',
-        handler: () => {
-          // setQuotaSave({
-          //   title: '添加到我的指标',
-          // });
-          const clone = cloneDeep(item);
-          Reflect.deleteProperty(clone, 'id');
-          clone.categoryIdList = [];
-          // openQuotaSave(true, clone);
-        },
-      },
-    ];
-    createContextMenu({
-      event: e,
-      items: menuList,
-    });
-  }
   const quotaBox = ref<ComponentRef>();
-  // 飞入动画的监听器
-  // async function listener(event: MouseEvent) {
-  //   const boxdom: HTMLDivElement = unref(quotaBox)!.$el;
-  //   if ((event.target as HTMLElement)!.dataset.leafid === undefined || !animationFlag) return;
-  //   await nextTick();
-  //   animationFlag = false;
-  //   // 生成飞入动画
-  //   const dom = last(boxdom.getElementsByClassName('sortable'))! as HTMLElement;
-  //   const [_, { setBeforeAnimate, initAnimation }] = usePointerSlideIn(dom, event);
-  //   setBeforeAnimate((dom) => {
-  //     dom.scrollIntoView({ behavior: 'smooth' });
-  //   });
-  //   initAnimation();
-  // }
 
   onMountedOrActivated(async () => {
     await nextTick();
@@ -345,14 +337,7 @@
       },
     });
     initSortable();
-    // window.addEventListener('click', listener);
   });
-  // onBeforeUnmount(() => {
-  //   window.removeEventListener('click', listener);
-  // });
-  // onDeactivated(() => {
-  //   window.removeEventListener('click', listener);
-  // });
 </script>
 
 <style lang="less" scoped>
@@ -407,7 +392,7 @@
   }
 
   .list-theme {
-    @apply w-auto min-w-700px gap-4 p-2 text-sm mb-1;
+    @apply w-auto min-w-700px gap-4 p-3 text-sm mb-1;
 
     .drag-handler {
       @apply items-center;
@@ -430,6 +415,9 @@
 
     .del-icon {
       @apply ml-8;
+      span {
+        @apply mr-8;
+      }
     }
   }
 </style>

@@ -13,14 +13,16 @@
   import { createQuotaListContext, SelectedQuotaItem } from './hooks';
   import QuotaPool from './components/QuotaPool.vue';
   import { useMessage } from '/@/hooks/web/useMessage';
+  import { useI18n } from '/@/hooks/web/useI18n';
 
   const quotaList = ref<SelectedQuotaItem[]>([]);
   const { createMessage } = useMessage();
+  const { t } = useI18n();
   createQuotaListContext(quotaList);
   function selectNode(quota: SelectedQuotaItem) {
     quota.selected = true;
     if (quotaList.value.some((q) => q.id === quota.id)) {
-      createMessage.warn('')
+      createMessage.warn(t('quotaView.uniqSelectedQuotaMessage'));
     } else {
       quotaList.value.push(quota);
     }

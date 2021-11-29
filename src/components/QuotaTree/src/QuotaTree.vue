@@ -3,7 +3,6 @@
     <QuotaSearch v-if="showSearch" @select="handleSelect" />
     <ToolBar :loading="loading[treeType]" @getData="getData" />
     <QuotaEditor @register="registerQuotaEditor" />
-    <QuotaUpload @register="registerQuotaUpload" />
     <ClearDataModal @register="registerClearData" />
     <Tabs v-model:activeKey="treeType" class="tabs" centered>
       <TabPane :key="CategoryTreeType.sysQuota" :tab="t('quota.sysQuota')">
@@ -102,7 +101,7 @@
     computed,
   } from 'vue';
   import { QuotaSearch, ToolBar } from '../index';
-  import { QuotaEditor, QuotaUpload } from '/@/components/QuotaEditor';
+  import { QuotaEditor } from '/@/components/QuotaEditor';
   import { BasicTree } from '/@/components/Tree/index';
   import type { ContextMenuItem } from '/@/components/Tree/index';
   import type { TreeItem, TreeActionType } from '/@/components/Tree/index';
@@ -130,7 +129,6 @@
   import type { treeSelectParams, treePropsModel, QuotaType, searchItemType } from '../types';
   import { useModal } from '/@/components/Modal';
   import { useQuotaTreeStore } from '/@/store/modules/quotaTree';
- 
   const emit = defineEmits<{
     (event: 'selectNode', node: QuotaItem): void;
     (event: 'selectFolder', folder: CategoryTreeModel): void;
@@ -373,7 +371,7 @@
   }
   const [registerQuotaEditor, { openModal: openQuotaEditor, setModalProps: setQuotaEditorProps }] =
     useModal();
-  const [registerQuotaUpload, { openModal: openQuotaUpload }] = useModal();
+
   const [registerClearData, { openModal: openClearData }] = useModal();
   function beforeRightClick({
     dataRef,
@@ -440,13 +438,13 @@
             } catch (error) {}
           },
         },
-        {
-          label: t('quota.actions.importQuota'),
-          icon: '',
-          handler: () => {
-            openQuotaUpload(true);
-          },
-        },
+        // {
+        //   label: t('quota.actions.importQuota'),
+        //   icon: '',
+        //   handler: () => {
+        //     openQuotaUpload(true);
+        //   },
+        // },
       ];
     } else {
       return [
@@ -468,11 +466,15 @@
           icon: '',
           disabled: highLightList.length === 0,
           handler: () => {
-            highLightList.forEach((node) => {
-              emit('selectNode', node as QuotaItem);
-            });
-            clearHightLight();
-            getTreeInstance(treeType.value)?.setSelectedKeys([]);
+            for (let i = 0; i < highLightList.length; i++) {
+              useTimeoutFn(() => {
+                emit('selectNode', highLightList[i] as QuotaItem);
+                if (i === highLightList.length - 1) {
+                  clearHightLight();
+                  getTreeInstance(treeType.value)?.setSelectedKeys([]);
+                }
+              }, i * 30);
+            }
           },
         },
         {

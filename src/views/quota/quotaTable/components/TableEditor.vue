@@ -12,10 +12,10 @@
                 }}</Button>
               </div>
             </template>
-            <Button size="small">{{ t('page.quotaTable.addCol') }}</Button>
+            <Button size="small">{{ t('table.addCol') }}</Button>
           </Popover>
           <Button size="small" @click="addSpaceRow(tableConfig.data.length)">{{
-            t('page.quotaTable.addRow')
+            t('table.addRow')
           }}</Button>
           <DatePicker
             size="small"
@@ -24,7 +24,7 @@
             valueFormat="YYYY-MM-DD"
           >
             <Button class="flex items-center gap-1" size="small">
-              <span>{{ t('page.quotaTable.endDate') }}：</span>
+              <span>{{ t('table.endDate') }}：</span>
               <span class="flex items-center gap-1 cursor-pointer">
                 <span>{{ tableConfig.timeConfig.endDate }}</span>
                 <Icon class="!text-primary" icon="ant-design:field-time-outlined" />
@@ -54,7 +54,7 @@
                 }}</Button>
               </div>
             </template>
-            <Button size="small">{{ t('page.quotaTable.template') }}</Button>
+            <Button size="small">{{ t('table.template') }}</Button>
           </Popover>
         </div>
       </template>

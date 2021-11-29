@@ -2,11 +2,11 @@
   <BasicModal @register="register" @ok="ok" @cancel="close">
     <div class="w-full flex flex-col gap-4 children:flex children:gap-2 children:items-center">
       <div class="">
-        <span class="min-w-4em">{{ t('page.quotaView.quotaSetting.name') }}</span>
+        <span class="min-w-4em">{{ t('quotaView.quotaSetting.name') }}</span>
         <Input class="!w-80" v-model:value="quotaSetting.name" />
       </div>
       <div v-show="quotaSetting.sourceType !== 'formula'">
-        <span class="min-w-4em">{{ t('page.quotaView.quotaSetting.sourceCode') }}</span>
+        <span class="min-w-4em">{{ t('quotaView.quotaSetting.sourceCode') }}</span>
         <Input class="!w-80" v-model:value="quotaSetting.sourceCode">
           <template #suffix>
             <span class="text-primary">{{
@@ -17,7 +17,7 @@
       </div>
       <template v-if="quotaSetting.sourceType === 'formula'">
         <div>
-          <span class="min-w-4em">{{ t('page.quotaView.quotaSetting.formula') }}</span>
+          <span class="min-w-4em">{{ t('quotaView.quotaSetting.formula') }}</span>
           <Editor
             class="w-80"
             v-model:formula="quotaSetting.sourceCode"
@@ -25,7 +25,7 @@
           />
         </div>
         <div>
-          <span>{{ t('page.quotaView.quotaSetting.autofill') }}</span>
+          <span>{{ t('quotaView.quotaSetting.autofill') }}</span>
           <div class="flex flex-wrap items-center gap-1 w-74">
             <span
               v-for="item in quotaList"
@@ -57,7 +57,7 @@
                 "
               ></span>
             </span>
-            <Tooltip :title="t('page.quotaView.quotaSetting.autofillTip')">
+            <Tooltip :title="t('quotaView.quotaSetting.autofillTip')">
               <Icon class="!text-gray-500" icon="ant-design:question-circle-outlined" />
             </Tooltip>
           </div>
@@ -65,7 +65,7 @@
       </template>
 
       <div>
-        <span class="min-w-4em">{{ t('page.quotaView.quotaSetting.setting.yAxisIndex') }}</span>
+        <span class="min-w-4em">{{ t('quotaView.quotaSetting.setting.yAxisIndex') }}</span>
         <Select
           class="w-80"
           v-model:value="quotaSetting.setting.yAxisIndex"
@@ -73,7 +73,7 @@
         />
       </div>
       <div>
-        <span class="min-w-4em">{{ t('page.quotaView.quotaSetting.setting.type') }}</span>
+        <span class="min-w-4em">{{ t('quotaView.quotaSetting.setting.type') }}</span>
         <Select class="w-80" v-model:value="quotaSetting.setting.type">
           <Option v-for="seriesType in seriesTypeList" :key="seriesType.value">
             <div>
@@ -126,38 +126,38 @@
   const yAxisIndexList = computed(() => {
     return chartConfig.yAxis.map((item, index) => {
       return {
-        label: `${index + 1}/${t('page.quotaView.advance.axisSetting.yAxis.min')}[${
+        label: `${index + 1}/${t('quotaView.advance.axisSetting.yAxis.min')}[${
           item.min || t('common.auto')
-        }]-${t('page.quotaView.advance.axisSetting.yAxis.max')}[${
-          item.max || t('common.auto')
-        }]/${t('page.quotaView.advance.axisSetting.yAxis.' + item.position)}`,
+        }]-${t('quotaView.advance.axisSetting.yAxis.max')}[${item.max || t('common.auto')}]/${t(
+          'quotaView.advance.axisSetting.yAxis.' + item.position,
+        )}`,
         value: index,
       };
     });
   });
   const seriesTypeList = ref([
     {
-      label: t('page.quotaView.seriesType.line'),
+      label: t('quotaView.seriesType.line'),
       value: echartSeriesTypeEnum.line,
       icon: 'carbon:chart-line',
     },
     {
-      label: t('page.quotaView.seriesType.bar'),
+      label: t('quotaView.seriesType.bar'),
       value: echartSeriesTypeEnum.bar,
       icon: 'carbon:chart-column',
     },
     {
-      label: t('page.quotaView.seriesType.smoothLine'),
+      label: t('quotaView.seriesType.smoothLine'),
       value: echartSeriesTypeEnum.smoothLine,
       icon: 'carbon:chart-line-smooth',
     },
     {
-      label: t('page.quotaView.seriesType.scatter'),
+      label: t('quotaView.seriesType.scatter'),
       value: echartSeriesTypeEnum.scatter,
       icon: 'carbon:chart-scatter',
     },
     {
-      label: t('page.quotaView.seriesType.area'),
+      label: t('quotaView.seriesType.area'),
       value: echartSeriesTypeEnum.area,
       icon: 'mdi:chart-areaspline-variant',
     },
@@ -175,8 +175,8 @@
     closeModal();
   }
   function ok() {
-    if(quotaSetting.name.trim().length===0){
-      createMessage.warn(t('page.quotaView.quotaSetting.noName'))
+    if (quotaSetting.name.trim().length === 0) {
+      createMessage.warn(t('quotaView.quotaSetting.noName'));
       return;
     }
     if (quotaIndex.value === quotaList.value.length) {
@@ -196,7 +196,7 @@
       if (!!item.id) {
         str = `idx(${item.id})`;
       } else {
-        createMessage.warn(t('page.quotaView.quotaSetting.formulaWithoutId'));
+        createMessage.warn(t('quotaView.quotaSetting.formulaWithoutId'));
       }
     } else {
       str = item.sourceCode;
