@@ -27,6 +27,20 @@ export interface timeConfigType {
   sortYear?: string[];
 }
 
+export interface seriesSettingType {
+  // 开启阴影
+  shadow: boolean;
+  // 线的粗细或散点的半径等尺寸
+  size: number;
+  // 线的类型，如虚线，点线，实线，
+  type: string;
+  // 直角坐标系的图，线或柱对应的Y轴
+  yAxisIndex: number | undefined;
+  // 直角坐标系的图，线或柱对应的X轴
+  xAxisIndex: number | undefined;
+  // 序列的名字或序号等唯一标识
+  name: string;
+}
 // export interface baseQuotaSettingType {}
 export interface baseChartConfigType {
   // 图表标题
@@ -48,6 +62,8 @@ export interface baseChartConfigType {
   };
 
   quotaList: Nullable<SelectedQuotaItem[]>;
+
+  seriesSetting: seriesSettingType[];
 }
 
 export interface reactSettingType {

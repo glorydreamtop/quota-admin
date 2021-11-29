@@ -126,8 +126,18 @@ export async function useSeasonalChart(
       });
     }
   });
+  const color = (await useColor({ chartConfig })).slice(0, series.length).reverse();
+  for (let i = 0; i < 3; i++) {
+    series[series.length - i - 1].lineStyle = {
+      width: 3,
+      shadowBlur: 4,
+      shadowColor: color[series.length - i - 1],
+      shadowOffsetX: 0,
+      shadowOffsetY: 2,
+    };
+  }
   useSortYear({ chartConfig, series, legend });
-  const color = await useColor({ chartConfig });
+
   const options: EChartsOption = {
     title: titleConfig(chartConfig),
     xAxis: {
@@ -149,7 +159,7 @@ export async function useSeasonalChart(
       return base;
     }),
     legend,
-    color: color.slice(0, series.length).reverse(),
+    color: color,
     series,
     toolbox: toolboxConfig,
     tooltip: {

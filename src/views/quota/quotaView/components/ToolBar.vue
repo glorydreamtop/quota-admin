@@ -126,7 +126,7 @@
   import { chartTypeEnum } from '/@/enums/chartEnum';
   import Color from './Color.vue';
   import Icon from '/@/components/Icon';
-  import { cloneDeep } from 'lodash-es';
+  import { cloneDeep, merge } from 'lodash-es';
   import { getChartDefaultConfig } from '../helper';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { useTimeoutFn } from '@vueuse/shared';
@@ -162,10 +162,10 @@
       .format('YYYY-MM-DD');
   }
   function selectType(type: chartTypeEnum) {
-    for (const key in chartConfig) {
-      Reflect.deleteProperty(chartConfig, key);
-    }
-    Object.assign(chartConfig, getChartDefaultConfig(type));
+    // for (const key in chartConfig) {
+    //   Reflect.deleteProperty(chartConfig, key);
+    // }
+    merge(chartConfig, getChartDefaultConfig(type));
   }
   async function paint() {
     if (quotaList.value.length === 0) {
@@ -188,7 +188,9 @@
     }
     await nextTick();
     // 拿到Title
-    chartConfig.title = quotaList.value[0].name;
+    if (chartConfig.title === '') {
+      chartConfig.title = quotaList.value[0].name;
+    }
     chartConfig.quotaList = cloneDeep(unref(quotaList));
     emit('paint');
   }

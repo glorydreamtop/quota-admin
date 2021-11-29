@@ -467,6 +467,7 @@
         {
           label: t('quota.actions.multiSelectQuota'),
           icon: '',
+          disabled: highLightList.length === 0,
           handler: () => {
             highLightList.forEach((node) => {
               emit('selectNode', node as QuotaItem);

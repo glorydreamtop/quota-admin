@@ -1,6 +1,8 @@
 <template>
   <div class="h-48 bg-white p-4 flex relative min-h-48 shadow-md">
-    <div class="flex flex-wrap gap-2 w-auto write-vertical-left pr-2 pt-2px border-r border-gray-300">
+    <div
+      class="flex flex-wrap gap-2 w-auto write-vertical-left pr-2 pt-2px border-r border-gray-300"
+    >
       <Tooltip placement="left">
         <template #title>{{ t('page.quotaView.quotaList.formula') }}</template>
         <Button size="small" @click="addFormula">
@@ -59,6 +61,7 @@
         @click="handleSelected(item)"
         @contextmenu="handleContext($event, item)"
         v-ripple
+        v-loading="loading"
         :class="[
           item.selected ? 'bg-linear-primary' : 'bg-gray-500',
           cardUI ? 'card-theme' : 'list-theme',
@@ -167,6 +170,7 @@
   import { formatToDate } from '/@/utils/dateUtil';
   import { requestUpdateQuotaData } from '/@/api/quota';
   import { SourceTypeEnum } from '/@/enums/quotaEnum';
+  import { createLoading } from '/@/components/Loading';
 
   // let animationFlag = false;
   // 交付给绘图的指标列表
@@ -190,6 +194,7 @@
       q.selected = !b;
     });
   }
+  const loading = ref(false);
   // 更新选中指标
   async function updateQuota() {
     const obj = {};
@@ -208,11 +213,14 @@
       arr.push(requestUpdateQuotaData({ categoryId: parseInt(key), indexIdList: obj[key] }));
     }
     try {
+      loading.value = true;
       // 并发分组更新请求
       const res = await Promise.allSettled(arr);
       createMessage.success(res[0].value.msg);
     } catch (error) {
       createMessage.error(error);
+    } finally {
+      loading.value = false;
     }
   }
   // 监听数组，新加入的指标默认被选中

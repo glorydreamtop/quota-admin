@@ -52,20 +52,32 @@
         <template #header>
           <Divider orientation="left">{{ t('page.quotaView.advance.axisSetting.title') }}</Divider>
         </template>
-        <div class="pl-8">
-          <YAxisEdit
-            :chart-config="chartConfig"
-            :idx="null"
-            @update="updateConfig"
-            v-if="showSettingFilter('yAxisEdit')"
-          >
-            <Button size="small">
-              <template #icon>
-                <Icon icon="ant-design:plus-outlined" />
+        <div class="pl-8" v-if="showSettingFilter('yAxisEdit')">
+          <div class="flex items-center gap-2">
+            <YAxisEdit :chart-config="chartConfig" :idx="null" @update="updateConfig">
+              <Button size="small">
+                <template #icon>
+                  <Icon icon="ant-design:plus-outlined" />
+                </template>
+                <span>{{ t('page.quotaView.advance.axisSetting.yAxis.createY') }}</span>
+              </Button>
+            </YAxisEdit>
+            <Tooltip>
+              <template #title>
+                <span>{{ t('page.quotaView.advance.axisSetting.yAxis.tip2') }}</span>
               </template>
-              <span>{{ t('page.quotaView.advance.axisSetting.yAxis.createY') }}</span>
-            </Button>
-          </YAxisEdit>
+              <Icon icon="ant-design:question-circle-outlined" />
+            </Tooltip>
+          </div>
+          <div class="yAxisList">
+            <Tag
+              v-for="(item, index) in yAxisIndexList"
+              :key="item.label"
+              :closable="item.closable"
+              @close="delYAxis(index)"
+              >{{ item.label }}</Tag
+            >
+          </div>
         </div>
       </CollapsePanel>
       <CollapsePanel key="datasourceSetting">
@@ -215,18 +227,20 @@
     Select,
     Radio,
     Tooltip,
+    Tag,
   } from 'ant-design-vue';
   import { useI18n } from '/@/hooks/web/useI18n';
   import Icon from '/@/components/Icon';
   import { useChartConfigContext } from './hooks';
   import YAxisEdit from '/@/components/Chart/src/YAxisEditor.vue';
-  import { reactive, ref, toRaw, watch } from 'vue';
+  import { computed, reactive, ref, toRaw, watch } from 'vue';
   import type { CSSProperties } from 'vue';
   import { quotaDataPastUnitTypeEnum } from '/@/api/quota';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { chartTypeEnum, structuralOffsetUnitEnum } from '/@/enums/chartEnum';
-  import { uniq } from 'lodash-es';
+  import { cloneDeep, uniq } from 'lodash-es';
   import dayjs from 'dayjs';
+  import { normalChartConfigType } from '/#/chart';
 
   const RadioGroup = Radio.Group;
   const RadioButton = Radio.Button;
@@ -369,6 +383,41 @@
   function quantileOffsetChange({ target }: { target: HTMLInputElement }) {
     return structuralOffsetChange({ target });
   }
+  const yAxisIndexList = computed(() => {
+    if (Reflect.has(chartConfig, 'yAxis')) {
+      return chartConfig.yAxis.map((item, index) => {
+        return {
+          label: `${index + 1}/${t('page.quotaView.advance.axisSetting.yAxis.min')}[${
+            item.min || t('common.auto')
+          }]-${t('page.quotaView.advance.axisSetting.yAxis.max')}[${
+            item.max || t('common.auto')
+          }]/${t('page.quotaView.advance.axisSetting.yAxis.' + item.position)}`,
+          value: index,
+          closable:
+            !chartConfig.quotaList!.some((quota) => quota.setting.yAxisIndex === index) &&
+            chartConfig.yAxis.length > 1,
+        };
+      });
+    } else {
+      return [];
+    }
+  });
+  function delYAxis(idx: number) {
+    const config = cloneDeep(chartConfig) as normalChartConfigType;
+    // 检查当前轴是否被使用中
+    const hasDep = config.quotaList!.find((quota) => quota.setting.yAxisIndex === idx);
+    if (hasDep) {
+      createMessage.warn(
+        `[${hasDep.name}]` + t('page.quotaView.advance.axisSetting.yAxis.cannotdel'),
+      );
+      return;
+    }
+    if (config.yAxis.length === 1) {
+      createMessage.warn(t('page.quotaView.advance.axisSetting.yAxis.lastnotdel'));
+      return;
+    }
+    chartConfig.yAxis.splice(idx, 1);
+  }
 </script>
 
 <style lang="less" scoped>
@@ -394,5 +443,20 @@
 
   .month {
     transition: all 0.3s ease;
+  }
+
+  .yAxisList {
+    margin-top: 0.5rem;
+    margin-bottom: -0.5rem;
+    ::v-deep(.ant-tag) {
+      margin-bottom: 0.5rem;
+    }
+    ::v-deep(.anticon.anticon-close) {
+      vertical-align: middle;
+      color: @primary-color;
+      font-size: 12px;
+      margin-top: -2px;
+      margin-right: -4px;
+    }
   }
 </style>

@@ -55,15 +55,16 @@
       };
     });
     colorScheme.value = cloneDeep(colorSchemeList.value[0]);
+    chartConfig.colorSchemeId = colorSchemeList.value[0].id;
   }
   watch(
     colorScheme,
     (v) => {
       chartConfig.colorSchemeId = v.id;
+      console.log(chartConfig);
     },
     {
       deep: true,
-      immediate: true,
     },
   );
   getColorSchemeList();

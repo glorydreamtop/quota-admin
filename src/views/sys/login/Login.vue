@@ -127,6 +127,26 @@
     }
   }
 
+  html[data-theme='light'] {
+    .@{prefix-cls}::before {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      // margin-left: -48%;
+      background-image: url('https://bing.biturl.top/?resolution=1366&format=image&index=0&mkt=zh-CN');
+      background-position: 100%;
+      background-repeat: no-repeat;
+      background-size: cover;
+      content: '';
+      // @media (max-width: @screen-xl) {
+      //   display: none;
+      // }
+
+      filter: blur(20px);
+    }
+  }
   .@{prefix-cls} {
     min-height: 100%;
     overflow: hidden;
@@ -135,23 +155,6 @@
 
       .@{prefix-cls}-form {
         background-color: #fff;
-      }
-    }
-
-    &::before {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      margin-left: -48%;
-      background-image: 'url(/@/assets/svg/login-bg.svg)';
-      background-position: 100%;
-      background-repeat: no-repeat;
-      background-size: auto 100%;
-      content: '';
-      @media (max-width: @screen-xl) {
-        display: none;
       }
     }
 

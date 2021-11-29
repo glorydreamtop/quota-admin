@@ -17,6 +17,7 @@ import dayjs from 'dayjs';
 import { useI18n } from '/@/hooks/web/useI18n';
 import YAxisEdit from './src/YAxisEditor.vue';
 import XAxisEdit from './src/XAxisEditor.vue';
+import SeriesEdit from './src/SeriesEditor.vue';
 import { getColorScheme } from '/@/api/color';
 
 const { t } = useI18n();
@@ -435,29 +436,28 @@ export function useRecentLegend(len: number, index: number, inverse = true) {
 export function useLineChartContextMenu({ onOk, chartConfig }: chartTitlePopoverParams) {
   return function (dom: HTMLElement, e: any) {
     console.log(e);
-    
     // const idx = xAxisIndex;
-    // function XAxisEditComponent() {
-    //   const editPopover = h(XAxisEdit, {
-    //     chartConfig,
-    //     idx,
-    //     onVisibleChange: (v: boolean) => {
-    //       // 关闭时销毁挂载点
-    //       if (!v && dom.className === MOUNTNODE) {
-    //         dom.remove();
-    //       }
-    //     },
-    //     onUpdate: (v: any) => {
-    //       onOk(v);
-    //     },
-    //     getPopupContainer: () => dom,
-    //   });
-    //   return editPopover;
-    // }
-    // const component = XAxisEditComponent();
-    // render(component, dom);
-    // // 外部触发气泡显示
-    // component.component!.exposed!.setVisible(true);
+    function SeriesEditComponent() {
+      const editPopover = h(SeriesEdit, {
+        chartConfig,
+        seriesInfo:e,
+        onVisibleChange: (v: boolean) => {
+          // 关闭时销毁挂载点
+          if (!v && dom.className === MOUNTNODE) {
+            dom.remove();
+          }
+        },
+        onUpdate: (v: any) => {
+          onOk(v);
+        },
+        getPopupContainer: () => dom,
+      });
+      return editPopover;
+    }
+    const component = SeriesEditComponent();
+    render(component, dom);
+    // 外部触发气泡显示
+    component.component!.exposed!.setVisible(true);
   };
 }
 // if (dom.className === MOUNTNODE) {
