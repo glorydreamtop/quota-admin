@@ -1,5 +1,5 @@
 <template>
-  <div class="h-48 bg-white p-4 flex relative min-h-48 shadow-md">
+  <div class="h-full w-full bg-white p-4 flex relative shadow-md">
     <div
       class="flex flex-wrap gap-2 w-auto write-vertical-left pr-2 pt-2px border-r border-gray-300"
     >
@@ -138,8 +138,6 @@
         </span>
       </div>
     </transition-group>
-
-    <QuotaSetting @register="registerEdit" />
   </div>
 </template>
 
@@ -147,7 +145,6 @@
   import { nextTick, ref, unref } from 'vue';
   import type { QuotaItem } from '/#/quota';
   import { Button, Tooltip } from 'ant-design-vue';
-  import { useModal } from '/@/components/Modal';
   import { useWatchArray, typeFomatter } from '/@/utils/helper/commonHelper';
   import { cloneDeep, remove } from 'lodash-es';
   import { Icon } from '/@/components/Icon';
@@ -161,27 +158,24 @@
   import vRipple from '/@/directives/ripple';
   import { onMountedOrActivated } from '/@/hooks/core/onMountedOrActivated';
   // import { usePointerSlideIn } from '/@/hooks/web/useAnimation';
-  import { useQuotaListContext, useSelectedQuotaListContext } from './hooks';
-  import type { SelectedQuotaItem } from './hooks';
+  import { useQuotaListContext, SelectedQuotaItem } from '../hooks';
   import { domForeach } from '/@/utils/domUtils';
-  import QuotaSetting from './QuotaSetting.vue';
   import { useI18n } from '/@/hooks/web/useI18n';
-  import { getNormalQuotaDefaultSetting } from '../helper';
   import { formatToDate } from '/@/utils/dateUtil';
   import { requestUpdateQuotaData } from '/@/api/quota';
   import { SourceTypeEnum } from '/@/enums/quotaEnum';
 
   // let animationFlag = false;
   // 交付给绘图的指标列表
-  const quotaList = useQuotaListContext();
+  const selectedQuota = useQuotaListContext();
   // 所有从树中选中的指标
-  const selectedQuota = useSelectedQuotaListContext();
+  const quotaList = ref<SelectedQuotaItem[]>([]);
   const { createMessage } = useMessage();
   const { t } = useI18n();
   function handleSelected(item: SelectedQuotaItem) {
     item.selected = !item.selected;
   }
-  const cardUI = ref(true);
+  const cardUI = ref(false);
   // 切换卡片or列表
   function changeUI() {
     cardUI.value = !cardUI.value;
@@ -223,18 +217,7 @@
     }
   }
   // 监听数组，新加入的指标默认被选中
-  useWatchArray(selectedQuota, (cur, pre) => {
-    if (cur.length > pre.length) {
-      for (let i = 0; i < cur.length; i++) {
-        if (pre.findIndex((quota) => quota.id === cur[i].id) === -1) {
-          cur[i].selected = true;
-          cur[i].setting = getNormalQuotaDefaultSetting();
-        }
-      }
-      // animationFlag = true;
-    } else {
-      // animationFlag = false;
-    }
+  useWatchArray(selectedQuota, (cur) => {
     quotaList.value = cur.filter((item) => item.selected);
   });
   function dateFomatter(quota: QuotaItem) {
@@ -242,19 +225,6 @@
       return t('page.quotaCard.calculate');
     if (quota.dateLast === null) return t('common.noData');
     return formatToDate(quota.dateLast);
-  }
-
-  const [registerEdit, { openModal: openEditModal, setModalProps: setEditModal }] = useModal();
-  function addFormula() {
-    openEditModal(true, {
-      record: {},
-      index: selectedQuota.value.length,
-    });
-    setEditModal({
-      title: t('page.quotaView.quotaSetting.formulaModalTitle'),
-      minHeight: 300,
-      width: '400px',
-    });
   }
   function clear() {
     remove(selectedQuota.value, (quota) => quota.selected === true);
@@ -284,16 +254,7 @@
       {
         label: t('page.quotaCard.contextMenu.edit'),
         icon: 'ant-design:edit-outlined',
-        handler: () => {
-          openEditModal(true, {
-            record: item,
-            index: selectedQuota.value.findIndex((_item) => item.id === _item.id),
-          });
-          setEditModal({
-            title: t('page.quotaView.quotaSetting.modalTitle'),
-            minHeight: 300,
-          });
-        },
+        handler: () => {},
       },
       {
         label: t('page.quotaCard.contextMenu.copyShortName'),

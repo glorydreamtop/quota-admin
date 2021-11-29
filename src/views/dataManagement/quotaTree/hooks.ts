@@ -2,12 +2,16 @@ import { InjectionKey, Ref } from 'vue';
 import { QuotaItem } from '/#/quota';
 import { useContext, createContext } from '/@/hooks/core/useContext';
 
-const quotaKey: InjectionKey<Ref<QuotaItem[]>> = Symbol();
+export interface SelectedQuotaItem extends QuotaItem {
+  selected: boolean;
+}
 
-export function createQuotaListContext(context: Ref<QuotaItem[]>) {
-  return createContext<Ref<QuotaItem[]>>(context, quotaKey, { native: true });
+const quotaKey: InjectionKey<Ref<SelectedQuotaItem[]>> = Symbol();
+
+export function createQuotaListContext(context: Ref<SelectedQuotaItem[]>) {
+  return createContext<Ref<SelectedQuotaItem[]>>(context, quotaKey, { native: true });
 }
 
 export function useQuotaListContext() {
-  return useContext<Ref<QuotaItem[]>>(quotaKey);
+  return useContext<Ref<SelectedQuotaItem[]>>(quotaKey);
 }

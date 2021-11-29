@@ -133,14 +133,11 @@
   import type { normalChartConfigType } from '/#/chart';
   import type { YAXisComponentOption } from 'echarts';
   import Icon from '/@/components/Icon';
-  import { useMessage } from '/@/hooks/web/useMessage';
   import { isNull } from '/@/utils/is';
   const { t } = useI18n();
 
   const RadioGroup = Radio.Group;
   const RadioButton = Radio.Button;
-
-  const { createMessage } = useMessage();
   const props = defineProps<{
     chartConfig: normalChartConfigType;
     idx: Nullable<number>;

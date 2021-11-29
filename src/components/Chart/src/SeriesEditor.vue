@@ -27,20 +27,13 @@
 
 <script lang="ts" setup>
   import { reactive, ref, watch } from 'vue';
-  import { Input, Switch, Radio, Popover, Button, Tooltip } from 'ant-design-vue';
-  import { cloneDeep, last, partition, merge } from 'lodash-es';
+  import { Popover, Button } from 'ant-design-vue';
+  import { cloneDeep } from 'lodash-es';
   import { useI18n } from '/@/hooks/web/useI18n';
   import type { normalChartConfigType, seriesSettingType } from '/#/chart';
-  import type { YAXisComponentOption } from 'echarts';
-  import Icon from '/@/components/Icon';
-  import { useMessage } from '/@/hooks/web/useMessage';
   import { chartTypeEnum } from '/@/enums/chartEnum';
+
   const { t } = useI18n();
-
-  const RadioGroup = Radio.Group;
-  const RadioButton = Radio.Button;
-
-  const { createMessage } = useMessage();
   const props = defineProps<{
     chartConfig: normalChartConfigType;
     seriesInfo: any;
