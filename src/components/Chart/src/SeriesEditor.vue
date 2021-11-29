@@ -9,9 +9,15 @@
           w-30
         "
       >
-        <div>
-          <span>{{ info.name }}</span>
-        </div>
+        <span class="text-primary">{{ info.name }}</span>
+        <span>
+          <span>{{ t('quotaView.seriesEdit.seriesType') }}</span>
+          <Select v-model:value="info.seriesType" :option="compOptions.seriesTypeList" />
+        </span>
+        <span>
+          <span>{{ t('quotaView.seriesEdit.lineType') }}：</span>
+          <Select v-model:value="info.lineType" :option="compOptions.lineTypeList" />
+        </span>
         <div class="mt-2 flex gap-1">
           <Button size="small" block type="primary" @click="confirm">{{
             t('common.okText')
@@ -27,13 +33,20 @@
 
 <script lang="ts" setup>
   import { reactive, ref, watch } from 'vue';
-  import { Popover, Button } from 'ant-design-vue';
+  import { Popover, Button, Radio, Select } from 'ant-design-vue';
   import { cloneDeep } from 'lodash-es';
   import { useI18n } from '/@/hooks/web/useI18n';
   import type { normalChartConfigType, seriesSettingType } from '/#/chart';
-  import { chartTypeEnum } from '/@/enums/chartEnum';
+  import {
+    chartTypeEnum,
+    echartLineTypeEnum,
+    echartSeriesTypeEnum,
+    echartSeriesTypeNameEnum,
+  } from '/@/enums/chartEnum';
 
   const { t } = useI18n();
+  const RadioGroup = Radio.Group;
+  const RadioButton = Radio.Button;
   const props = defineProps<{
     chartConfig: normalChartConfigType;
     seriesInfo: any;
@@ -41,10 +54,23 @@
   const info: seriesSettingType = reactive({
     name: '',
     size: 2,
-    type: '',
+    seriesType: echartSeriesTypeEnum.line,
+    lineType: echartLineTypeEnum.solid,
     shadow: false,
     yAxisIndex: 0,
     xAxisIndex: 0,
+  });
+  const compOptions = reactive({
+    seriesTypeList: [
+      echartSeriesTypeEnum.line,
+      echartSeriesTypeEnum.bar,
+      echartSeriesTypeEnum.scatter,
+      echartSeriesTypeEnum.smoothLine,
+      echartSeriesTypeEnum.area,
+      echartSeriesTypeEnum.radar,
+      echartSeriesTypeEnum.pie,
+    ],
+    lineTypeList: [echartLineTypeEnum.solid, echartLineTypeEnum.ddashed, echartLineTypeEnum.dotted],
   });
   const emit = defineEmits<{
     (event: 'update', chartConfig: normalChartConfigType);
@@ -60,7 +86,7 @@
       switch (props.chartConfig.type) {
         case chartTypeEnum.normal:
           info.name = props.seriesInfo.seriesName;
-
+          info.seriesType = echartSeriesTypeEnum[props.seriesInfo.seriesType];
           break;
 
         default:

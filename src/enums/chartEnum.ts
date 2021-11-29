@@ -44,6 +44,14 @@ export enum echartSeriesTypeEnum {
   bar = 'bar',
   scatter = 'scatter',
   area = 'area',
+  radar = 'radar',
+  pie = 'pie',
+}
+
+export enum echartLineTypeEnum {
+  solid = 'solid',
+  dashed = 'dashed',
+  dotted = 'dotted',
 }
 
 export enum structuralOffsetUnitEnum {

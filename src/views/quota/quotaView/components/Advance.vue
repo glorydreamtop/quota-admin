@@ -26,9 +26,7 @@
       </CollapsePanel>
       <CollapsePanel key="valueFormatter">
         <template #header>
-          <Divider orientation="left">{{
-            t('quotaView.advance.valueFormatter.title')
-          }}</Divider>
+          <Divider orientation="left">{{ t('quotaView.advance.valueFormatter.title') }}</Divider>
         </template>
         <div class="flex flex-wrap gap-2 pl-8">
           <span class="label">
@@ -66,17 +64,24 @@
               <template #title>
                 <span>{{ t('quotaView.advance.axisSetting.yAxis.tip2') }}</span>
               </template>
-              <Button></Button>
-              <span>{{ t('quotaView.advance.axisSetting.yAxis.createY') }}</span>
-            </Button>
-          </YAxisEdit>
+              <Icon icon="ant-design:question-circle-outlined" />
+            </Tooltip>
+          </div>
+          <div class="yAxisList">
+            <Tag
+              v-for="yAxis in yAxisIndexList"
+              :key="yAxis.label"
+              :closable="yAxis.closable"
+              @close="delYAxis(yAxis.value)"
+            >
+              {{ yAxis.label }}
+            </Tag>
+          </div>
         </div>
       </CollapsePanel>
       <CollapsePanel key="datasourceSetting">
         <template #header>
-          <Divider orientation="left">{{
-            t('quotaView.advance.datasourceSetting.title')
-          }}</Divider>
+          <Divider orientation="left">{{ t('quotaView.advance.datasourceSetting.title') }}</Divider>
         </template>
         <div class="pl-8 flex flex-col gap-2">
           <span class="flex gap-1 items-center" v-if="showSettingFilter('pastValue')">
@@ -173,9 +178,7 @@
               </RadioGroup>
               <Tooltip>
                 <template #title>
-                  <span>{{
-                    t('quotaView.advance.datasourceSetting.structuralOffsetTip')
-                  }}</span>
+                  <span>{{ t('quotaView.advance.datasourceSetting.structuralOffsetTip') }}</span>
                 </template>
                 <Icon icon="ant-design:question-circle-outlined" />
               </Tooltip>
@@ -194,9 +197,7 @@
               />
               <Tooltip>
                 <template #title>
-                  <span>{{
-                    t('quotaView.advance.datasourceSetting.structuralOffsetTip')
-                  }}</span>
+                  <span>{{ t('quotaView.advance.datasourceSetting.structuralOffsetTip') }}</span>
                 </template>
                 <Icon icon="ant-design:question-circle-outlined" />
               </Tooltip>
@@ -218,7 +219,8 @@
     Button,
     Select,
     Radio,
-    Tooltip
+    Tooltip,
+    Tag,
   } from 'ant-design-vue';
   import { useI18n } from '/@/hooks/web/useI18n';
   import Icon from '/@/components/Icon';
@@ -380,9 +382,9 @@
         return {
           label: `${index + 1}/${t('quotaView.advance.axisSetting.yAxis.min')}[${
             item.min || t('common.auto')
-          }]-${t('quotaView.advance.axisSetting.yAxis.max')}[${
-            item.max || t('common.auto')
-          }]/${t('quotaView.advance.axisSetting.yAxis.' + item.position)}`,
+          }]-${t('quotaView.advance.axisSetting.yAxis.max')}[${item.max || t('common.auto')}]/${t(
+            'quotaView.advance.axisSetting.yAxis.' + item.position,
+          )}`,
           value: index,
           closable:
             !chartConfig.quotaList!.some((quota) => quota.setting.yAxisIndex === index) &&
@@ -398,9 +400,7 @@
     // 检查当前轴是否被使用中
     const hasDep = config.quotaList!.find((quota) => quota.setting.yAxisIndex === idx);
     if (hasDep) {
-      createMessage.warn(
-        `[${hasDep.name}]` + t('quotaView.advance.axisSetting.yAxis.cannotdel'),
-      );
+      createMessage.warn(`[${hasDep.name}]` + t('quotaView.advance.axisSetting.yAxis.cannotdel'));
       return;
     }
     if (config.yAxis.length === 1) {

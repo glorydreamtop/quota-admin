@@ -110,6 +110,7 @@ export default {
         showLine: '显示轴线',
         lastnotdel: '最后一个Y轴了',
         tip: '新增的轴若最大值最小值均自动，则此轴未被使用时不显示',
+        tip2: '已有轴的编辑请直接在图中右键该轴',
         cannotdel: '依赖于本轴，暂不可删除',
       },
     },
@@ -168,5 +169,25 @@ export default {
     edit: '编辑指标',
     remove: '移除指标',
     delete: '删除指标',
+  },
+  seriesEdit: {
+    seriesType: '序列类型',
+    lineType: '线型',
+    lineShadow: '阴影',
+    lineWidth: '粗细',
+    seriesTypeList: {
+      line: '折线图',
+      smoothLine: '曲线图',
+      bar: '柱状图',
+      scatter: '散点图',
+      area: '面积图',
+      radar: '雷达图',
+      pie: '饼图',
+    },
+    lineTypeList: {
+      solid: '实线',
+      dashed: '段虚线',
+      dotted: '点虚线',
+    },
   },
 };

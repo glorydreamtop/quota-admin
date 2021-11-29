@@ -2,6 +2,7 @@ import { YAXisComponentOption } from 'echarts';
 import { quotaDataPastUnitTypeEnum } from '/@/api/quota';
 import {
   chartTypeEnum,
+  echartLineTypeEnum,
   echartSeriesTypeEnum,
   structuralOffsetUnitEnum,
   timeConfigEnum,
@@ -32,8 +33,9 @@ export interface seriesSettingType {
   shadow: boolean;
   // 线的粗细或散点的半径等尺寸
   size: number;
+  seriesType: echartSeriesTypeEnum;
   // 线的类型，如虚线，点线，实线，
-  type: string;
+  lineType: echartLineTypeEnum;
   // 直角坐标系的图，线或柱对应的Y轴
   yAxisIndex: number | undefined;
   // 直角坐标系的图，线或柱对应的X轴
