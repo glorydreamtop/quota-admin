@@ -64,7 +64,7 @@
         </div>
       </template>
 
-      <div>
+      <!-- <div>
         <span class="min-w-4em">{{ t('quotaView.quotaSetting.setting.yAxisIndex') }}</span>
         <Select
           class="w-80"
@@ -82,86 +82,36 @@
             </div>
           </Option>
         </Select>
-      </div>
+      </div> -->
     </div>
   </BasicModal>
 </template>
 
 <script lang="ts" setup>
   import { SelectedQuotaItem, useSelectedQuotaListContext } from './hooks';
-  import { useChartConfigContext } from './hooks';
   import { BasicModal, useModalInner } from '/@/components/Modal';
   import { useI18n } from '/@/hooks/web/useI18n';
-  import { Input, Select, Tooltip } from 'ant-design-vue';
-  import { useRootSetting } from '/@/hooks/setting/useRootSetting';
-  import { computed, reactive, ref, nextTick } from 'vue';
+  import { Input, Tooltip } from 'ant-design-vue';
+  import { reactive, ref, nextTick } from 'vue';
   import Icon from '/@/components/Icon';
-  import { echartSeriesTypeEnum } from '/@/enums/chartEnum';
   import { SourceTypeEnum } from '/@/enums/quotaEnum';
   import { cloneDeep } from 'lodash-es';
   import { Editor } from '/@/components/FormulaEditor';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { QuotaItem } from '/#/quota';
 
-  const Option = Select.Option;
   const { t } = useI18n();
-  const { getThemeColor } = useRootSetting();
-  const chartConfig = useChartConfigContext();
   const quotaList = useSelectedQuotaListContext();
   const quotaIndex = ref(0);
   const defaultSetting = {
     name: '',
     sourceCode: '',
     sourceType: SourceTypeEnum.formula,
-    setting: {
-      yAxisIndex: 0,
-      type: echartSeriesTypeEnum.line,
-      lineWidth: 2,
-    },
   };
   const { createMessage } = useMessage();
-  const quotaSetting: Pick<SelectedQuotaItem, 'name' | 'sourceCode' | 'sourceType' | 'setting'> =
+  const quotaSetting: Pick<SelectedQuotaItem, 'name' | 'sourceCode' | 'sourceType'> =
     reactive(cloneDeep(defaultSetting));
-  // Y轴选择器
-  const yAxisIndexList = computed(() => {
-    return chartConfig.yAxis.map((item, index) => {
-      return {
-        label: `${index + 1}/${t('quotaView.advance.axisSetting.yAxis.min')}[${
-          item.min || t('common.auto')
-        }]-${t('quotaView.advance.axisSetting.yAxis.max')}[${item.max || t('common.auto')}]/${t(
-          'quotaView.advance.axisSetting.yAxis.' + item.position,
-        )}`,
-        value: index,
-      };
-    });
-  });
-  const seriesTypeList = ref([
-    {
-      label: t('quotaView.seriesType.line'),
-      value: echartSeriesTypeEnum.line,
-      icon: 'carbon:chart-line',
-    },
-    {
-      label: t('quotaView.seriesType.bar'),
-      value: echartSeriesTypeEnum.bar,
-      icon: 'carbon:chart-column',
-    },
-    {
-      label: t('quotaView.seriesType.smoothLine'),
-      value: echartSeriesTypeEnum.smoothLine,
-      icon: 'carbon:chart-line-smooth',
-    },
-    {
-      label: t('quotaView.seriesType.scatter'),
-      value: echartSeriesTypeEnum.scatter,
-      icon: 'carbon:chart-scatter',
-    },
-    {
-      label: t('quotaView.seriesType.area'),
-      value: echartSeriesTypeEnum.area,
-      icon: 'mdi:chart-areaspline-variant',
-    },
-  ]);
+
   const [register, { closeModal }] = useModalInner(
     ({ record, index }: { record: SelectedQuotaItem; index?: number }) => {
       quotaIndex.value = index ?? quotaList.value.length;

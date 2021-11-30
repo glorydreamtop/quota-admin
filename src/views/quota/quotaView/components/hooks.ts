@@ -1,12 +1,11 @@
 import type { InjectionKey, Ref } from 'vue';
 import { createContext, useContext } from '/@/hooks/core/useContext';
 import type { QuotaItem } from '/#/quota';
-import { chartConfigType, normalQuotaSettingType } from '/#/chart';
+import { chartConfigType } from '/#/chart';
 import { getQuotaDataResult } from '/@/api/quota/model';
 
 export interface SelectedQuotaItem extends QuotaItem {
   selected: boolean;
-  setting: normalQuotaSettingType;
 }
 
 const quotaKey: InjectionKey<Ref<SelectedQuotaItem[]>> = Symbol();

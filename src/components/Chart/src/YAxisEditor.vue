@@ -245,7 +245,7 @@
   function del() {
     const config = cloneDeep(props.chartConfig);
     // 检查当前轴是否被使用中
-    const hasDep = config.quotaList!.find((quota) => quota.setting.yAxisIndex === props.idx);
+    const hasDep = config.seriesSetting!.find((ser) => ser.yAxisIndex === props.idx);
     if (hasDep) {
       createMessage.warn(`[${hasDep.name}]` + t('quotaView.advance.axisSetting.yAxis.cannotdel'));
       return;

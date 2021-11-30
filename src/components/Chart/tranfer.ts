@@ -1,10 +1,13 @@
 import dayjs from 'dayjs';
 import type {
+  BarSeriesOption,
   DatasetComponentOption,
   EChartsOption,
   GridComponentOption,
   LegendComponentOption,
+  LineSeriesOption,
   RadarComponentOption,
+  ScatterSeriesOption,
   SeriesOption,
   TitleComponentOption,
   ToolboxComponentOption,
@@ -31,11 +34,16 @@ import {
   quantileRadarChartConfigType,
   radarChartConfigType,
   seasonalChartConfigType,
+  seriesSettingType,
   structuralChartConfigType,
 } from '/#/chart';
 import { getQuotaData, quotaDataExportTypeEnum, quotaDataPastUnitTypeEnum } from '/@/api/quota';
 import { getQuotaDataParams, getQuotaDataResult } from '/@/api/quota/model';
-import { echartSeriesTypeEnum, structuralOffsetUnitEnum } from '/@/enums/chartEnum';
+import {
+  echartLineTypeEnum,
+  echartSeriesTypeEnum,
+  structuralOffsetUnitEnum,
+} from '/@/enums/chartEnum';
 import { SourceTypeEnum } from '/@/enums/quotaEnum';
 import { useI18n } from '/@/hooks/web/useI18n';
 import { daysAgo, formatToDate } from '/@/utils/dateUtil';
@@ -200,26 +208,49 @@ export async function useNormalChart(chartConfig: normalChartConfigType): Promis
     top: 'bottom',
     icon: 'roundRect',
   };
-  const series: SeriesOption[] = [];
+  type NormalChartSeriesOption = LineSeriesOption | BarSeriesOption | ScatterSeriesOption;
+  const series: NormalChartSeriesOption[] = [];
   // 选择series类型
-  function selectSeriesType(type: echartSeriesTypeEnum): SeriesOption {
+  function selectSeriesType(seriesSetting?: seriesSettingType): NormalChartSeriesOption {
+    function getLineStyle() {
+      return {
+        width: seriesSetting?.size ?? 2,
+        type: seriesSetting?.lineType ?? echartLineTypeEnum.solid,
+        shadowBlur: seriesSetting?.shadow,
+        shadowColor: color[quotaDataList.findIndex((q) => q.name === seriesSetting?.name)],
+        shadowOffsetX: seriesSetting?.shadow,
+        shadowOffsetY: seriesSetting?.shadow,
+      };
+    }
+    function getAxisIndex() {
+      return {
+        xAxisIndex: (seriesSetting?.xAxisIndex ?? 1) - 1,
+        yAxisIndex: (seriesSetting?.yAxisIndex ?? 1) - 1,
+      };
+    }
     const typeMap = {
       [echartSeriesTypeEnum.line]: {
         type: 'line',
         symbol: 'none',
+        lineStyle: getLineStyle(),
+        ...getAxisIndex(),
         triggerLineEvent: true,
       },
       [echartSeriesTypeEnum.smoothLine]: {
         type: 'line',
         smooth: true,
         symbol: 'none',
+        lineStyle: getLineStyle(),
+        ...getAxisIndex(),
         triggerLineEvent: true,
       },
       [echartSeriesTypeEnum.area]: {
         type: 'line',
-        smooth: true,
+        smooth: false,
         symbol: 'none',
         areaStyle: {},
+        lineStyle: getLineStyle(),
+        ...getAxisIndex(),
         triggerLineEvent: true,
       },
       [echartSeriesTypeEnum.scatter]: {
@@ -227,22 +258,24 @@ export async function useNormalChart(chartConfig: normalChartConfigType): Promis
       },
       [echartSeriesTypeEnum.bar]: {
         type: 'bar',
+        ...getAxisIndex(),
       },
     };
-    return typeMap[type] as SeriesOption;
+    return typeMap[
+      seriesSetting?.seriesType ?? echartSeriesTypeEnum.line
+    ] as NormalChartSeriesOption;
   }
-  quotaDataList.forEach((quota, index) => {
-    const quotaConfig = chartConfig.quotaList![index];
+  const color = await useColor({ chartConfig });
+  quotaDataList.forEach((quota) => {
     legend.data!.push(quota.name);
+    const seriesSetting = chartConfig.seriesSetting.find((ser) => ser.name === quota.name);
     quota.data.forEach((item) => (item[1] = round(item[1], chartConfig.valueFormatter.afterDot)));
     series.push({
       name: quota.name,
-      ...selectSeriesType(quotaConfig.setting.type),
+      ...selectSeriesType(seriesSetting),
       data: quota.data,
-      yAxisIndex: quotaConfig.setting.yAxisIndex,
     });
   });
-  const color = await useColor({ chartConfig });
   const options: EChartsOption = {
     title: titleConfig(chartConfig),
     xAxis: {

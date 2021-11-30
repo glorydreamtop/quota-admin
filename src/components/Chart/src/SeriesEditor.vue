@@ -58,9 +58,9 @@
 </template>
 
 <script lang="ts" setup>
-  import { reactive, ref, watch } from 'vue';
+  import { reactive, ref, watch, toRaw } from 'vue';
   import { Popover, Button, Switch, Radio, Select, Input } from 'ant-design-vue';
-  import { cloneDeep } from 'lodash-es';
+  import { cloneDeep, merge } from 'lodash-es';
   import { useI18n } from '/@/hooks/web/useI18n';
   import type { normalChartConfigType, seriesSettingType } from '/#/chart';
   import {
@@ -143,6 +143,12 @@
   });
   function confirm() {
     const config = cloneDeep(props.chartConfig);
+    const series = config.seriesSetting.find((ser) => ser.name === info.name);
+    if (series) {
+      merge(series, toRaw(info));
+    } else {
+      config.seriesSetting.push(cloneDeep(toRaw(info)));
+    }
     emit('update', config);
     setVisible(false);
   }

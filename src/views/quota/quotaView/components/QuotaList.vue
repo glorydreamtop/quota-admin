@@ -166,7 +166,6 @@
   import { domForeach } from '/@/utils/domUtils';
   import QuotaSetting from './QuotaSetting.vue';
   import { useI18n } from '/@/hooks/web/useI18n';
-  import { getNormalQuotaDefaultSetting } from '../helper';
   import { formatToDate } from '/@/utils/dateUtil';
   import { requestUpdateQuotaData } from '/@/api/quota';
   import { SourceTypeEnum } from '/@/enums/quotaEnum';
@@ -228,7 +227,6 @@
       for (let i = 0; i < cur.length; i++) {
         if (pre.findIndex((quota) => quota.id === cur[i].id) === -1) {
           cur[i].selected = true;
-          cur[i].setting = getNormalQuotaDefaultSetting();
         }
       }
       // animationFlag = true;

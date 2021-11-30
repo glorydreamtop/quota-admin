@@ -2,7 +2,6 @@ import type {
   barChartConfigType,
   chartConfigType,
   normalChartConfigType,
-  normalQuotaSettingType,
   pieChartConfigType,
   quantileRadarChartConfigType,
   radarChartConfigType,
@@ -55,7 +54,7 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
           },
         },
       ],
-      seriesSetting:[],
+      seriesSetting: [],
     } as normalChartConfigType,
     seasonal: {
       title: '',
@@ -92,7 +91,7 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
           },
         },
       ],
-      seriesSetting:[],
+      seriesSetting: [],
     } as seasonalChartConfigType,
     bar: {
       title: '',
@@ -130,7 +129,7 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
           },
         },
       ],
-      seriesSetting:[],
+      seriesSetting: [],
     } as barChartConfigType,
     normalRadar: {
       title: '',
@@ -151,7 +150,7 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
         afterDot: 2,
         normalized: false,
       },
-      seriesSetting:[],
+      seriesSetting: [],
     } as radarChartConfigType,
     quantileRadar: {
       title: '',
@@ -172,7 +171,7 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
         normalized: false,
       },
       quantileOffset: '1,2,3,5',
-      seriesSetting:[],
+      seriesSetting: [],
     } as quantileRadarChartConfigType,
     structural: {
       title: '',
@@ -211,7 +210,7 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
           },
         },
       ],
-      seriesSetting:[],
+      seriesSetting: [],
     } as structuralChartConfigType,
     pie: {
       title: '',
@@ -233,15 +232,8 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
         afterDot: 2,
         normalized: false,
       },
-      seriesSetting:[],
+      seriesSetting: [],
     } as pieChartConfigType,
   };
   return defaultConfig[type];
-}
-export function getNormalQuotaDefaultSetting(): normalQuotaSettingType {
-  return {
-    yAxisIndex: 0,
-    type: echartSeriesTypeEnum.line,
-    lineWidth: 2,
-  };
 }

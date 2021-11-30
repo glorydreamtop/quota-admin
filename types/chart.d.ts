@@ -107,8 +107,3 @@ export type chartConfigType =
   | radarChartConfigType
   | structuralChartConfigType
   | pieChartConfigType;
-export interface normalQuotaSettingType {
-  yAxisIndex: number;
-  lineWidth: number;
-  type: echartSeriesTypeEnum;
-}

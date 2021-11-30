@@ -249,12 +249,12 @@
   function showSettingFilter(modelName: string) {
     const filter = {
       [chartTypeEnum.normal]: ['yAxisEdit', 'sortMonth', 'pastValue'],
-      [chartTypeEnum.seasonal]: ['sortMonth', 'startMonth', 'sortYear'],
-      [chartTypeEnum.seasonalLunar]: ['sortMonth', 'startMonth'],
+      [chartTypeEnum.seasonal]: ['yAxisEdit', 'sortMonth', 'startMonth', 'sortYear'],
+      [chartTypeEnum.seasonalLunar]: ['yAxisEdit', 'sortMonth', 'startMonth'],
       [chartTypeEnum.normalRadar]: ['pastValue'],
       [chartTypeEnum.quantileRadar]: ['quantileOffset'],
-      [chartTypeEnum.bar]: ['pastValue'],
-      [chartTypeEnum.structural]: ['structuralOffset'],
+      [chartTypeEnum.bar]: ['yAxisEdit', 'pastValue'],
+      [chartTypeEnum.structural]: ['yAxisEdit', 'structuralOffset'],
       [chartTypeEnum.pie]: ['pastValue'],
     };
     return filter[chartConfig.type].includes(modelName);
@@ -387,7 +387,7 @@
           )}`,
           value: index,
           closable:
-            !chartConfig.quotaList!.some((quota) => quota.setting.yAxisIndex === index) &&
+            !chartConfig.seriesSetting!.some((ser) => ser.yAxisIndex! - 1 === index) &&
             chartConfig.yAxis.length > 1,
         };
       });
