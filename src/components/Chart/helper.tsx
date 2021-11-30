@@ -2,7 +2,7 @@ import { getQuotaData } from '/@/api/quota';
 import { getQuotaDataParams, getQuotaDataResult } from '/@/api/quota/model';
 import { Popover, Input } from 'ant-design-vue';
 import { h, ref, render } from 'vue';
-import { chartConfigType, normalChartConfigType } from '/#/chart';
+import { chartConfigType, normalChartConfigType, seriesSettingType } from '/#/chart';
 import {
   EChartsOption,
   GraphicComponentOption,
@@ -10,8 +10,8 @@ import {
   SeriesOption,
   YAXisComponentOption,
 } from 'echarts';
-import { last, maxBy, nth, remove, round, cloneDeep } from 'lodash-es';
-import { chartTypeEnum } from '/@/enums/chartEnum';
+import { last, maxBy, nth, remove, round, cloneDeep, has } from 'lodash-es';
+import { chartTypeEnum, echartSeriesTypeEnum } from '/@/enums/chartEnum';
 import { daysAgo, formatToDate } from '/@/utils/dateUtil';
 import dayjs from 'dayjs';
 import { useI18n } from '/@/hooks/web/useI18n';
@@ -426,21 +426,22 @@ export function useRecentLegend(len: number, index: number, inverse = true) {
     if (idx === 0) {
       return t('common.last');
     }
-    return t('page.chart.inserveIndex') + idx + t('page.chart.unit');
+    return t('quotaView.chart.inserveIndex') + idx + t('quotaView.chart.unit');
   } else {
-    return t('page.chart.inserveIndex') + `${index + 1}` + t('page.chart.unit');
+    return t('quotaView.chart.inserveIndex') + `${index + 1}` + t('quotaView.chart.unit');
   }
 }
 
 // 支持折线图series右键菜单
 export function useLineChartContextMenu({ onOk, chartConfig }: chartTitlePopoverParams) {
-  return function (dom: HTMLElement, e: any) {
+  return function (dom: HTMLElement, e: any, options: EChartsOption) {
     console.log(e);
     // const idx = xAxisIndex;
     function SeriesEditComponent() {
       const editPopover = h(SeriesEdit, {
         chartConfig,
-        seriesInfo:e,
+        seriesInfo: e,
+        options,
         onVisibleChange: (v: boolean) => {
           // 关闭时销毁挂载点
           if (!v && dom.className === MOUNTNODE) {
@@ -505,4 +506,77 @@ export function useScientificNotation(yAxis: YAXisComponentOption) {
     y.axisLine!.symbol = ['none', 'arrow'];
   }
   return y;
+}
+
+// 输出series信息
+export function setSeriesInfo(
+  info: seriesSettingType,
+  type: chartTypeEnum,
+  seriesInfo: any,
+  options: EChartsOption,
+) {
+  const seriesIndex = seriesInfo.seriesIndex;
+  const series = options.series![seriesIndex];
+  switch (type) {
+    case chartTypeEnum.normal:
+      info.name = series.name;
+      if (series.type === 'line') {
+        if (has(series, 'areaStyle')) {
+          info.seriesType = echartSeriesTypeEnum.area;
+        } else if (series.smooth === true) {
+          info.seriesType = echartSeriesTypeEnum.smoothLine;
+        } else if (series.smooth === false) {
+          info.seriesType = echartSeriesTypeEnum.line;
+        }
+        info.size = series.lineStyle.width;
+        info.lineType = series.lineStyle.type;
+        info.shadow = has(series.lineStyle, 'shadowColor');
+      } else if (series.type === 'bar') {
+        info.seriesType = echartSeriesTypeEnum.bar;
+      }
+      info.yAxisIndex = (series.yAxisIndex ?? 0) + 1;
+      info.xAxisIndex = (series.xAxisIndex ?? 0) + 1;
+      break;
+    case chartTypeEnum.seasonal:
+      info.name = series.name;
+      if (series.type === 'line') {
+        if (has(series, 'areaStyle')) {
+          info.seriesType = echartSeriesTypeEnum.area;
+        } else if (series.smooth === true) {
+          info.seriesType = echartSeriesTypeEnum.smoothLine;
+        } else if (series.smooth === false) {
+          info.seriesType = echartSeriesTypeEnum.line;
+        }
+        info.size = series.lineStyle.width;
+        info.lineType = series.lineStyle.type;
+        info.shadow = has(series.lineStyle, 'shadowColor');
+      } else if (series.type === 'bar') {
+        info.seriesType = echartSeriesTypeEnum.bar;
+      }
+      info.yAxisIndex = (series.yAxisIndex ?? 0) + 1;
+      info.xAxisIndex = (series.xAxisIndex ?? 0) + 1;
+    case chartTypeEnum.bar:
+      
+      
+      if (series.type === 'line') {
+        if (has(series, 'areaStyle')) {
+          info.seriesType = echartSeriesTypeEnum.area;
+        } else if (series.smooth === true) {
+          info.seriesType = echartSeriesTypeEnum.smoothLine;
+        } else if (series.smooth === false) {
+          info.seriesType = echartSeriesTypeEnum.line;
+        }
+        info.size = series.lineStyle.width;
+        info.lineType = series.lineStyle.type;
+        info.shadow = has(series.lineStyle, 'shadowColor');
+      } else if (series.type === 'bar') {
+        info.name = seriesInfo.seriesName;
+        info.seriesType = echartSeriesTypeEnum.bar;
+        info.shadow = has(series.itemStyle, 'shadowColor');
+      }
+      info.yAxisIndex = (series.yAxisIndex ?? 0) + 1;
+      info.xAxisIndex = (series.xAxisIndex ?? 0) + 1;
+    default:
+      break;
+  }
 }

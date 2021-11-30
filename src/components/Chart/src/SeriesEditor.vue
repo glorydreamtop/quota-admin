@@ -6,17 +6,43 @@
           flex flex-col
           gap-1
           children:whitespace-nowrap children:flex children:items-center
-          w-30
+          w-40
         "
       >
         <span class="text-primary">{{ info.name }}</span>
         <span>
-          <span>{{ t('quotaView.seriesEdit.seriesType') }}</span>
-          <Select v-model:value="info.seriesType" :option="compOptions.seriesTypeList" />
+          <span class="w-4em text-justify mr-2">{{ t('quotaView.seriesEdit.seriesType') }}</span>
+          <Select
+            class="!w-6em"
+            size="small"
+            v-model:value="info.seriesType"
+            :options="compOptions.seriesTypeList"
+          />
         </span>
-        <span>
-          <span>{{ t('quotaView.seriesEdit.lineType') }}：</span>
-          <Select v-model:value="info.lineType" :option="compOptions.lineTypeList" />
+        <span v-if="info.lineType !== undefined">
+          <span class="w-4em text-justify mr-2">{{ t('quotaView.seriesEdit.lineType') }}</span>
+          <Select
+            class="!w-6em"
+            size="small"
+            v-model:value="info.lineType"
+            :options="compOptions.lineTypeList"
+          />
+        </span>
+        <span v-if="info.size !== undefined">
+          <span class="w-4em text-justify mr-2">{{ t('quotaView.seriesEdit.lineWidth') }}</span>
+          <Input class="!w-3em !text-center" size="small" v-model:value="info.size" />
+        </span>
+        <span v-if="info.shadow !== undefined">
+          <span class="w-4em text-justify mr-2">{{ t('quotaView.seriesEdit.lineShadow') }}</span>
+          <Switch size="small" v-model:checked="info.shadow" />
+        </span>
+        <span v-if="info.yAxisIndex !== undefined">
+          <span class="w-4em text-justify mr-2">{{ t('quotaView.seriesEdit.yAxisIndex') }}</span>
+          <Input class="!w-3em !text-center" size="small" v-model:value="info.yAxisIndex" />
+        </span>
+        <span v-if="info.xAxisIndex !== undefined">
+          <span class="w-4em text-justify mr-2">{{ t('quotaView.seriesEdit.xAxisIndex') }}</span>
+          <Input class="!w-3em !text-center" size="small" v-model:value="info.xAxisIndex" />
         </span>
         <div class="mt-2 flex gap-1">
           <Button size="small" block type="primary" @click="confirm">{{
@@ -33,7 +59,7 @@
 
 <script lang="ts" setup>
   import { reactive, ref, watch } from 'vue';
-  import { Popover, Button, Radio, Select } from 'ant-design-vue';
+  import { Popover, Button, Switch, Radio, Select, Input } from 'ant-design-vue';
   import { cloneDeep } from 'lodash-es';
   import { useI18n } from '/@/hooks/web/useI18n';
   import type { normalChartConfigType, seriesSettingType } from '/#/chart';
@@ -43,6 +69,8 @@
     echartSeriesTypeEnum,
     echartSeriesTypeNameEnum,
   } from '/@/enums/chartEnum';
+  import { EChartsOption } from 'echarts';
+  import { setSeriesInfo } from '../helper';
 
   const { t } = useI18n();
   const RadioGroup = Radio.Group;
@@ -50,15 +78,16 @@
   const props = defineProps<{
     chartConfig: normalChartConfigType;
     seriesInfo: any;
+    options: EChartsOption;
   }>();
   const info: seriesSettingType = reactive({
     name: '',
-    size: 2,
+    size: undefined,
     seriesType: echartSeriesTypeEnum.line,
-    lineType: echartLineTypeEnum.solid,
-    shadow: false,
-    yAxisIndex: 0,
-    xAxisIndex: 0,
+    lineType: undefined,
+    shadow: undefined,
+    yAxisIndex: undefined,
+    xAxisIndex: undefined,
   });
   const compOptions = reactive({
     seriesTypeList: [
@@ -69,9 +98,34 @@
       echartSeriesTypeEnum.area,
       echartSeriesTypeEnum.radar,
       echartSeriesTypeEnum.pie,
-    ],
-    lineTypeList: [echartLineTypeEnum.solid, echartLineTypeEnum.ddashed, echartLineTypeEnum.dotted],
+    ].map((name) => {
+      return {
+        label: t(`quotaView.seriesEdit.seriesTypeList.${name}`),
+        value: name,
+      };
+    }),
+    lineTypeList: [
+      echartLineTypeEnum.solid,
+      echartLineTypeEnum.dashed,
+      echartLineTypeEnum.dotted,
+    ].map((name) => {
+      return {
+        label: t(`quotaView.seriesEdit.lineTypeList.${name}`),
+        value: name,
+      };
+    }),
   });
+  // function getWhiteList(type:string){
+  //   let whiteList = [];
+  //   switch (info.seriesType) {
+  //     case echartSeriesTypeEnum.line:
+  //       whiteList = ['seriesType','lineType','lineShadow']
+  //       break;
+
+  //     default:
+  //       break;
+  //   }
+  // }
   const emit = defineEmits<{
     (event: 'update', chartConfig: normalChartConfigType);
     (event: 'visibleChange', visible: boolean);
@@ -83,15 +137,7 @@
   defineExpose({ setVisible });
   watch(visible, (v) => {
     if (v) {
-      switch (props.chartConfig.type) {
-        case chartTypeEnum.normal:
-          info.name = props.seriesInfo.seriesName;
-          info.seriesType = echartSeriesTypeEnum[props.seriesInfo.seriesType];
-          break;
-
-        default:
-          break;
-      }
+      setSeriesInfo(info, props.chartConfig.type, props.seriesInfo, props.options);
     }
     emit('visibleChange', v);
   });

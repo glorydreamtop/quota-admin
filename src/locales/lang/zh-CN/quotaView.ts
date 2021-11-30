@@ -175,6 +175,8 @@ export default {
     lineType: '线型',
     lineShadow: '阴影',
     lineWidth: '粗细',
+    yAxisIndex:'Y轴序号',
+    xAxisIndex: 'X轴序号',
     seriesTypeList: {
       line: '折线图',
       smoothLine: '曲线图',

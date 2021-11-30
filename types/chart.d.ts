@@ -30,18 +30,18 @@ export interface timeConfigType {
 
 export interface seriesSettingType {
   // 开启阴影
-  shadow: boolean;
+  shadow?: boolean;
   // 线的粗细或散点的半径等尺寸
-  size: number;
+  size?: number;
   seriesType: echartSeriesTypeEnum;
   // 线的类型，如虚线，点线，实线，
-  lineType: echartLineTypeEnum;
+  lineType?: echartLineTypeEnum;
   // 直角坐标系的图，线或柱对应的Y轴
-  yAxisIndex: number | undefined;
+  yAxisIndex?: number | undefined;
   // 直角坐标系的图，线或柱对应的X轴
-  xAxisIndex: number | undefined;
+  xAxisIndex?: number | undefined;
   // 序列的名字或序号等唯一标识
-  name: string;
+  name?: string;
 }
 // export interface baseQuotaSettingType {}
 export interface baseChartConfigType {

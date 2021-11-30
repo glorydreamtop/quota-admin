@@ -13,7 +13,7 @@
       v-repeat-click="openModal"
       class="cursor-pointer !text-purple-600"
       :size="20"
-      icon="ant-design:plus-outlined"
+      icon="ant-design:cloud-upload-outlined"
     />
   </div>
   <QuotaUpload @register="registerQuotaUpload" />

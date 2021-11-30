@@ -657,7 +657,7 @@ export async function useQuantileRadarChart(chartConfig: quantileRadarChartConfi
   for (let index = 0; index < quantileOffset.length; index++) {
     (series[0].data as any[]).push({
       value: [] as number[],
-      name: `${quantileOffset[index]}${t('page.chart.quantile')}`,
+      name: `${quantileOffset[index]}${t('quotaView.chart.quantile')}`,
     });
   }
   const radar: RadarComponentOption = {

@@ -184,7 +184,8 @@
           // 匹配对应类型的事件
           if (e.componentType === event.target) {
             const dom = createMountNode(e);
-            event.event(dom, e);
+            console.log(instance.getOption());
+            event.event(dom, e, instance.getOption());
           }
         });
     });
