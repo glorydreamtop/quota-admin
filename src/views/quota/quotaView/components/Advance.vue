@@ -205,6 +205,32 @@
           </div>
         </div>
       </CollapsePanel>
+      <CollapsePanel key="dataEdit">
+        <template #header>
+          <Divider orientation="left">{{ t('quotaView.advance.dataEdit.title') }}</Divider>
+        </template>
+        <div class="">
+          <div>
+            <span>{{ t('quotaView.advance.dataEdit.removePoint') }}</span>
+            <Tooltip>
+              <template #title>
+                <span>{{ t('quotaView.advance.dataEdit.xTip') }}</span>
+              </template>
+              <Icon icon="ant-design:question-circle-outlined" />
+            </Tooltip>
+          </div>
+          <span class="flex items-center gap-1">
+            <span class="whitespace-nowrap">{{ t('quotaView.advance.dataEdit.xFilter') }}</span>
+            <Textarea />
+          </span>
+          <span class="flex items-center gap-1">
+            <span class="whitespace-nowrap">{{
+              t('quotaView.advance.dataEdit.seriesFilter')
+            }}</span>
+            <Select />
+          </span>
+        </div>
+      </CollapsePanel>
     </Collapse>
   </div>
 </template>
@@ -221,6 +247,7 @@
     Radio,
     Tooltip,
     Tag,
+    Textarea,
   } from 'ant-design-vue';
   import { useI18n } from '/@/hooks/web/useI18n';
   import Icon from '/@/components/Icon';
@@ -398,7 +425,7 @@
   function delYAxis(idx: number) {
     const config = cloneDeep(chartConfig) as normalChartConfigType;
     // 检查当前轴是否被使用中
-    const hasDep = config.quotaList!.find((quota) => quota.setting.yAxisIndex === idx);
+    const hasDep = config.seriesSetting!.find((ser) => ser.yAxisIndex === idx);
     if (hasDep) {
       createMessage.warn(`[${hasDep.name}]` + t('quotaView.advance.axisSetting.yAxis.cannotdel'));
       return;

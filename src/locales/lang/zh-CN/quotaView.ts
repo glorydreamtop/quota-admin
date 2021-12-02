@@ -87,7 +87,6 @@ export default {
     valueFormatter: {
       title: '数字格式设置',
       afterDot: '位小数',
-      scientificNotation: '数量级',
       normalized: '初值归一',
     },
     timeSeries: {
@@ -108,6 +107,7 @@ export default {
         offset: '偏移',
         offsetTip: '如非轴显示重叠，请勿手动修改智能推断值',
         showLine: '显示轴线',
+        magnitude: '数量级',
         lastnotdel: '最后一个Y轴了',
         tip: '新增的轴若最大值最小值均自动，则此轴未被使用时不显示',
         tip2: '已有轴的编辑请直接在图中右键该轴',
@@ -132,6 +132,15 @@ export default {
       structuralOffsetUnit: '曲线结构日期偏移单位',
       structuralOffsetTip: '使用英文逗号分隔，数量不限',
       quantileOffset: '多年分位数',
+    },
+    dataEdit: {
+      title: '数据处理',
+      startSelect: '开始选择',
+      removePoint: '智能抹去',
+      xFilter: 'X轴范围',
+      xTip: '输入X轴的范围如 2015-02-03<x<2015-03-01,或x=2019-02-01，多段用逗号分隔',
+      seriesFilter: '所属序列',
+      seriesTip: '数据所属序列，可多选',
     },
   },
   chart: {
@@ -162,6 +171,7 @@ export default {
   management: {
     search: {
       btn: '高级搜索',
+      title: '高级搜索',
     },
     clearData: {
       btn: '清空指标数据',
@@ -175,7 +185,7 @@ export default {
     lineType: '线型',
     lineShadow: '阴影',
     lineWidth: '粗细',
-    yAxisIndex:'Y轴序号',
+    yAxisIndex: 'Y轴序号',
     xAxisIndex: 'X轴序号',
     seriesTypeList: {
       line: '折线图',

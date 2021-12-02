@@ -178,6 +178,7 @@
         </span>
       </div>
     </transition-group>
+    <AdvanceSearch @register="avanceSearchModal" />
   </div>
 </template>
 
@@ -198,11 +199,13 @@
   import { onMountedOrActivated } from '/@/hooks/core/onMountedOrActivated';
   // import { usePointerSlideIn } from '/@/hooks/web/useAnimation';
   import { useQuotaListContext, SelectedQuotaItem } from '../hooks';
+  import { AdvanceSearch } from '/@/components/QuotaTree';
   import { domForeach } from '/@/utils/domUtils';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { formatToDate } from '/@/utils/dateUtil';
   import { requestUpdateQuotaData } from '/@/api/quota';
   import { SourceTypeEnum } from '/@/enums/quotaEnum';
+  import { useModal } from '/@/components/Modal';
 
   // let animationFlag = false;
   // 交付给绘图的指标列表
@@ -211,6 +214,7 @@
   const quotaList = ref<SelectedQuotaItem[]>([]);
   const { createMessage } = useMessage();
   const { t } = useI18n();
+  const [avanceSearchModal, { openModal: openAvanceSearchModal }] = useModal();
   function handleSelected(item: SelectedQuotaItem) {
     item.selected = !item.selected;
   }
@@ -270,7 +274,9 @@
     createMessage.success(t('quotaView.quotaCard.alldel'));
   }
   function del() {}
-  function search() {}
+  function search() {
+    openAvanceSearchModal(true);
+  }
   function handleIcon(item: QuotaItem, type: string) {
     const handler = {
       del: () => {

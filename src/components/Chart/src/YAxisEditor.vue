@@ -77,7 +77,7 @@
         </div>
         <div>
           <div class="min-w-3em text-justify mr-2">{{
-            t('quotaView.advance.valueFormatter.scientificNotation')
+            t('quotaView.advance.axisSetting.yAxis.magnitude')
           }}</div>
           <InputNumber
             size="small"
@@ -98,7 +98,7 @@
           />
           <Tooltip>
             <template #title>
-              <span>{{ t('page.quotaView.advance.axisSetting.yAxis.offsetTip') }}</span>
+              <span>{{ t('quotaView.advance.axisSetting.yAxis.offsetTip') }}</span>
             </template>
             <Icon icon="ant-design:question-circle-outlined" />
           </Tooltip>
