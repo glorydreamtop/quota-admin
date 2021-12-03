@@ -38,12 +38,14 @@
   } from '../helper';
   import { cloneDeep } from 'lodash-es';
   import { useMessage } from '/@/hooks/web/useMessage';
+  import { ECBasicOption } from 'echarts/types/dist/shared';
 
   const props = defineProps<{
     config: chartConfigType;
   }>();
   const emit = defineEmits<{
     (event: 'updateConfig', config: chartConfigType): void;
+    (event: 'paintSuccess', options: ECBasicOption): void;
   }>();
 
   const { config } = toRefs(props);
@@ -74,6 +76,7 @@
         const options = await chartTypeHooks[v.type](v);
         options.animationEasing = 'quinticIn';
         setOptions(options);
+        emit('paintSuccess', getInstance()!.getOption());
         noChart.value = false;
       } catch (error) {
         console.log(error);

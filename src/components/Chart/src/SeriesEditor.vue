@@ -30,7 +30,7 @@
         </span>
         <span v-if="info.size !== undefined">
           <span class="w-4em text-justify mr-2">{{ t('quotaView.seriesEdit.lineWidth') }}</span>
-          <Input class="!w-3em !text-center" size="small" v-model:value="info.size" />
+          <InputNumber :step="2" class="!text-center" size="small" v-model:value="info.size" />
         </span>
         <span v-if="info.shadow !== undefined">
           <span class="w-4em text-justify mr-2">{{ t('quotaView.seriesEdit.lineShadow') }}</span>
@@ -38,11 +38,11 @@
         </span>
         <span v-if="info.yAxisIndex !== undefined">
           <span class="w-4em text-justify mr-2">{{ t('quotaView.seriesEdit.yAxisIndex') }}</span>
-          <Input class="!w-3em !text-center" size="small" v-model:value="info.yAxisIndex" />
+          <InputNumber class="!w-3em !text-center" size="small" v-model:value="info.yAxisIndex" />
         </span>
         <span v-if="info.xAxisIndex !== undefined">
           <span class="w-4em text-justify mr-2">{{ t('quotaView.seriesEdit.xAxisIndex') }}</span>
-          <Input class="!w-3em !text-center" size="small" v-model:value="info.xAxisIndex" />
+          <InputNumber class="!w-3em !text-center" size="small" v-model:value="info.xAxisIndex" />
         </span>
         <div class="mt-2 flex gap-1">
           <Button size="small" block type="primary" @click="confirm">{{
@@ -59,7 +59,7 @@
 
 <script lang="ts" setup>
   import { reactive, ref, watch, toRaw } from 'vue';
-  import { Popover, Button, Switch, Radio, Select, Input } from 'ant-design-vue';
+  import { Popover, Button, Switch, Radio, Select, Input, InputNumber } from 'ant-design-vue';
   import { cloneDeep, merge } from 'lodash-es';
   import { useI18n } from '/@/hooks/web/useI18n';
   import type { normalChartConfigType, seriesSettingType } from '/#/chart';
@@ -154,4 +154,11 @@
   }
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+  ::v-deep(.ant-input-number-input-wrap) {
+    width: 2em !important;
+  }
+  ::v-deep(.ant-input-number) {
+    min-width: 0 !important;
+  }
+</style>

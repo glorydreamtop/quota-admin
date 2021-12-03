@@ -12,6 +12,7 @@
             :class="['chart-view w-full', showTable ? 'back' : 'front']"
             :config="config"
             @update-config="updateConfig"
+            @paint-success="paintSuccess"
             ref="chartRef"
           />
           <QuotaDataTable
@@ -37,7 +38,7 @@
   import ToolBar from './ToolBar.vue';
   import Advance from './Advance.vue';
   import { BasicChart } from '/@/components/Chart';
-  import { useChartConfigContext } from './hooks';
+  import { echartMitter, useChartConfigContext } from './hooks';
   import { reactive, ref, watchEffect } from 'vue';
   import type { chartConfigType } from '/#/chart';
   import { cloneDeep } from 'lodash-es';
@@ -45,12 +46,14 @@
   import { downloadByBase64 } from '/@/utils/file/download';
   import { QuotaDataTable } from '/@/components/QuotaTable';
   import { useMagicKeys } from '@vueuse/core';
+  import { ECBasicOption } from 'echarts/types/dist/shared';
 
   const chartConfig = useChartConfigContext();
   const showTable = ref(false);
   const fullscreen = ref(false);
   const { Escape } = useMagicKeys();
   watchEffect(() => {
+    // ESC键关闭全屏
     if (Escape.value) fullscreen.value = false;
   });
   const config = reactive({}) as chartConfigType;
@@ -70,6 +73,7 @@
       download: () => void;
     } & ComponentRef
   >();
+  // 响应工具栏事件
   async function handleEvent(type: string) {
     switch (type) {
       case 'screenshot':
@@ -95,6 +99,10 @@
       default:
         break;
     }
+  }
+  // 绘图完成
+  function paintSuccess(options: ECBasicOption) {
+    echartMitter.emit('echartOptions', options);
   }
 </script>
 

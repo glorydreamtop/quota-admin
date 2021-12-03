@@ -10,7 +10,7 @@ import {
   SeriesOption,
   YAXisComponentOption,
 } from 'echarts';
-import { last, maxBy, nth, remove, round, cloneDeep, has } from 'lodash-es';
+import { last, maxBy, nth, remove, round, cloneDeep,has } from 'lodash-es';
 import { chartTypeEnum, echartSeriesTypeEnum } from '/@/enums/chartEnum';
 import { daysAgo, formatToDate } from '/@/utils/dateUtil';
 import dayjs from 'dayjs';
@@ -530,7 +530,7 @@ export function setSeriesInfo(
         }
         info.size = series.lineStyle.width;
         info.lineType = series.lineStyle.type;
-        info.shadow = has(series.lineStyle, 'shadowColor');
+        info.shadow = series.lineStyle.shadowColor!==undefined;
       } else if (series.type === 'bar') {
         info.seriesType = echartSeriesTypeEnum.bar;
       }
@@ -549,7 +549,7 @@ export function setSeriesInfo(
         }
         info.size = series.lineStyle.width;
         info.lineType = series.lineStyle.type;
-        info.shadow = has(series.lineStyle, 'shadowColor');
+        info.shadow = series.lineStyle.shadowColor!==undefined;
       } else if (series.type === 'bar') {
         info.seriesType = echartSeriesTypeEnum.bar;
       }
@@ -568,11 +568,11 @@ export function setSeriesInfo(
         }
         info.size = series.lineStyle.width;
         info.lineType = series.lineStyle.type;
-        info.shadow = has(series.lineStyle, 'shadowColor');
+        info.shadow = series.lineStyle.shadowColor!==undefined;
       } else if (series.type === 'bar') {
         info.name = seriesInfo.seriesName;
         info.seriesType = echartSeriesTypeEnum.bar;
-        info.shadow = has(series.itemStyle, 'shadowColor');
+        info.shadow = series.lineStyle.shadowColor!==undefined;
       }
       info.yAxisIndex = (series.yAxisIndex ?? 0) + 1;
       info.xAxisIndex = (series.xAxisIndex ?? 0) + 1;

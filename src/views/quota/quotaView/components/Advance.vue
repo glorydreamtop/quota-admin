@@ -1,7 +1,7 @@
 <template>
   <div class="h-full border-l-gray-300 border-l p-2 overflow-y-scroll">
     <Collapse v-model:activeKey="collapseKey" :bordered="false">
-      <CollapsePanel key="rectSetting" :style="panelTitleStyle">
+      <CollapsePanel key="rectSetting">
         <template #header>
           <Divider orientation="left">{{ t('quotaView.advance.rectSetting.title') }}</Divider>
         </template>
@@ -162,7 +162,7 @@
                 size="small"
                 class="!w-30 !min-w-30"
                 v-model:value="chartConfig.structuralOffset"
-                @change="structuralOffsetChange"
+                @change="offsetChange"
               />
               <RadioGroup
                 button-style="solid"
@@ -193,7 +193,7 @@
                 size="small"
                 class="!w-30 !min-w-30"
                 v-model:value="chartConfig.quantileOffset"
-                @change="quantileOffsetChange"
+                @change="offsetChange"
               />
               <Tooltip>
                 <template #title>
@@ -227,7 +227,7 @@
             <span class="whitespace-nowrap">{{
               t('quotaView.advance.dataEdit.seriesFilter')
             }}</span>
-            <Select />
+            <Select class="!w-20" :options="seriesOptions" />
           </span>
         </div>
       </CollapsePanel>
@@ -251,24 +251,19 @@
   } from 'ant-design-vue';
   import { useI18n } from '/@/hooks/web/useI18n';
   import Icon from '/@/components/Icon';
-  import { useChartConfigContext } from './hooks';
+  import { echartMitter, useChartConfigContext, useSortMonthAndYear, useYAxisEdit } from './hooks';
   import YAxisEdit from '/@/components/Chart/src/YAxisEditor.vue';
-  import { computed, reactive, ref, toRaw, watch } from 'vue';
-  import type { CSSProperties } from 'vue';
+  import { reactive, ref, toRaw, watch } from 'vue';
   import { quotaDataPastUnitTypeEnum } from '/@/api/quota';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { chartTypeEnum, structuralOffsetUnitEnum } from '/@/enums/chartEnum';
-  import { cloneDeep, uniq } from 'lodash-es';
-  import dayjs from 'dayjs';
-  import { normalChartConfigType } from '/#/chart';
+  import { ECBasicOption } from 'echarts/types/dist/shared';
+  import { uniq } from 'lodash-es';
+  import { EChartsOption, LineSeriesOption } from 'echarts';
 
   const RadioGroup = Radio.Group;
   const RadioButton = Radio.Button;
   const CollapsePanel = Collapse.Panel;
-  const panelTitleStyle: CSSProperties = reactive({
-    backgroundColor: 'transparent',
-    border: 'none',
-  });
   const { t } = useI18n();
   const { createMessage } = useMessage();
   const chartConfig = useChartConfigContext();
@@ -333,61 +328,15 @@
   function updateConfig(config) {
     Object.assign(chartConfig, config);
   }
-  // 调整起始月份
-  const monthList = ref([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
-  function startMonthChange({ target: { value } }: { target: HTMLInputElement }) {
-    if (!(parseInt(value) > 0 && parseInt(value) < 13)) {
-      setTimeout(() => {
-        chartConfig.timeConfig.startMonth = 1;
-      }, 500);
-      createMessage.warn(t('quotaView.advance.datasourceSetting.startMonthTip'));
-      return;
-    }
-    chartConfig.timeConfig.startMonth = parseInt(value);
-    const index = monthList.value!.indexOf(parseInt(value));
-    const [a1, a2] = [monthList.value.slice(0, index), monthList.value.slice(index)];
-    monthList.value = [...a2, ...a1];
-    updateYears();
-  }
-  function updateYears() {
-    const startYear = dayjs(chartConfig.timeConfig.startDate).year();
-    const endYear = dayjs(chartConfig.timeConfig.endDate).year();
-    yearList.value = [];
-    const startMonth = chartConfig.timeConfig.startMonth;
-    for (let i = startYear; i <= endYear + 1; i++) {
-      yearList.value.push(startMonth !== 1 ? `${i - 1}-${i}` : `${i}`);
-    }
-  }
-
-  // 修改不要的月份
-  function sortMonthChange(e: PointerEvent) {
-    const m = parseInt(e.target.dataset.month ?? NaN);
-    if (m) {
-      const idx = chartConfig.timeConfig.sortMonth!.indexOf(m);
-      if (idx !== -1) {
-        chartConfig.timeConfig.sortMonth?.splice(idx, 1);
-      } else {
-        chartConfig.timeConfig.sortMonth?.push(m);
-        chartConfig.timeConfig.sortMonth?.sort();
-      }
-    }
-  }
-  const yearList = ref<string[]>([]);
-  updateYears();
-  // 修改不要的年份
-  function sortYearChange(e: PointerEvent) {
-    const y = e.target.dataset.year;
-    if (y) {
-      const idx = chartConfig.timeConfig.sortYear!.indexOf(y);
-      if (idx !== -1) {
-        chartConfig.timeConfig.sortYear?.splice(idx, 1);
-      } else {
-        chartConfig.timeConfig.sortYear?.push(y);
-      }
-    }
-  }
+  // 年份月份过滤
+  const [
+    { monthList, yearList },
+    { sortMonthChange, startMonthChange, sortYearChange, updateYears },
+  ] = useSortMonthAndYear(chartConfig);
+  // Y轴编辑
+  const [yAxisIndexList, { delYAxis }] = useYAxisEdit(chartConfig);
   // 校验曲线结构日期偏移量输入值
-  function structuralOffsetChange({ target }: { target: HTMLInputElement }) {
+  function offsetChange({ target }: { target: HTMLInputElement }) {
     if (/[^(\d|,)]/g.test(target.value)) {
       target.style.borderColor = 'red';
       createMessage.error(t('common.invaildTextTip'));
@@ -400,42 +349,15 @@
     }
     target.style.borderColor = '';
   }
-  function quantileOffsetChange({ target }: { target: HTMLInputElement }) {
-    return structuralOffsetChange({ target });
-  }
-  const yAxisIndexList = computed(() => {
-    if (Reflect.has(chartConfig, 'yAxis')) {
-      return chartConfig.yAxis.map((item, index) => {
-        return {
-          label: `${index + 1}/${t('quotaView.advance.axisSetting.yAxis.min')}[${
-            item.min || t('common.auto')
-          }]-${t('quotaView.advance.axisSetting.yAxis.max')}[${item.max || t('common.auto')}]/${t(
-            'quotaView.advance.axisSetting.yAxis.' + item.position,
-          )}`,
-          value: index,
-          closable:
-            !chartConfig.seriesSetting!.some((ser) => ser.yAxisIndex! - 1 === index) &&
-            chartConfig.yAxis.length > 1,
-        };
-      });
-    } else {
-      return [];
-    }
+  const seriesOptions = ref<{ label: any; value: any }[]>([]);
+  echartMitter.on('echartOptions', (options: EChartsOption) => {
+    seriesOptions.value = (options.series as LineSeriesOption[]).map((ser) => {
+      return {
+        label: ser.name,
+        value: ser.name,
+      };
+    });
   });
-  function delYAxis(idx: number) {
-    const config = cloneDeep(chartConfig) as normalChartConfigType;
-    // 检查当前轴是否被使用中
-    const hasDep = config.seriesSetting!.find((ser) => ser.yAxisIndex === idx);
-    if (hasDep) {
-      createMessage.warn(`[${hasDep.name}]` + t('quotaView.advance.axisSetting.yAxis.cannotdel'));
-      return;
-    }
-    if (config.yAxis.length === 1) {
-      createMessage.warn(t('quotaView.advance.axisSetting.yAxis.lastnotdel'));
-      return;
-    }
-    chartConfig.yAxis.splice(idx, 1);
-  }
 </script>
 
 <style lang="less" scoped>

@@ -213,14 +213,19 @@ export async function useNormalChart(chartConfig: normalChartConfigType): Promis
   // 选择series类型
   function selectSeriesType(seriesSetting?: seriesSettingType): NormalChartSeriesOption {
     function getLineStyle() {
-      return {
+      const lineStyle = {
         width: seriesSetting?.size ?? 2,
         type: seriesSetting?.lineType ?? echartLineTypeEnum.solid,
-        shadowBlur: seriesSetting?.shadow,
-        shadowColor: color[quotaDataList.findIndex((q) => q.name === seriesSetting?.name)],
-        shadowOffsetX: seriesSetting?.shadow,
-        shadowOffsetY: seriesSetting?.shadow,
       };
+      if (seriesSetting?.shadow) {
+        Object.assign(lineStyle, {
+          shadowBlur: 2,
+          shadowColor: color[quotaDataList.findIndex((q) => q.name === seriesSetting?.name)],
+          shadowOffsetX: 2,
+          shadowOffsetY: 2,
+        });
+      }
+      return lineStyle;
     }
     function getAxisIndex() {
       return {

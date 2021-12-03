@@ -1,8 +1,17 @@
-import type { InjectionKey, Ref } from 'vue';
+import { InjectionKey, Ref, ref, computed, ComputedRef } from 'vue';
 import { createContext, useContext } from '/@/hooks/core/useContext';
 import type { QuotaItem } from '/#/quota';
-import { chartConfigType } from '/#/chart';
+import { chartConfigType, normalChartConfigType } from '/#/chart';
 import { getQuotaDataResult } from '/@/api/quota/model';
+import { ECBasicOption } from 'echarts/types/dist/shared';
+import mitt from '/@/utils/mitt';
+import { useI18n } from '/@/hooks/web/useI18n';
+import { cloneDeep } from 'lodash-es';
+import { useMessage } from '/@/hooks/web/useMessage';
+import dayjs from 'dayjs';
+
+const { t } = useI18n();
+const { createMessage } = useMessage();
 
 export interface SelectedQuotaItem extends QuotaItem {
   selected: boolean;
@@ -46,4 +55,128 @@ export function createChartOriginDataContext<T = Ref>(context: T) {
 
 export function useChartOriginDataContext() {
   return useContext<Ref<getQuotaDataResult[]>>(chartOriginDataKey);
+}
+
+const chartOptionsKey: InjectionKey<Ref<ECBasicOption>> = Symbol();
+
+export function createChartOptionsContext<T = Ref>(context: T) {
+  return createContext<T>(context, chartOptionsKey, { native: true });
+}
+
+export function useChartOptionsContext() {
+  return useContext<Ref<ECBasicOption>>(chartOptionsKey);
+}
+
+export const echartMitter = mitt();
+
+type useYAxisEditRes = [ComputedRef<any[]>, { delYAxis: (idx: number) => void }];
+
+export function useYAxisEdit(chartConfig: chartConfigType): useYAxisEditRes {
+  const yAxisIndexList = computed(() => {
+    if (Reflect.has(chartConfig, 'yAxis')) {
+      return chartConfig.yAxis.map((item, index) => {
+        return {
+          label: `${index + 1}/${t('quotaView.advance.axisSetting.yAxis.min')}[${
+            item.min || t('common.auto')
+          }]-${t('quotaView.advance.axisSetting.yAxis.max')}[${item.max || t('common.auto')}]/${t(
+            'quotaView.advance.axisSetting.yAxis.' + item.position,
+          )}`,
+          value: index,
+          closable:
+            !chartConfig.seriesSetting!.some((ser) => ser.yAxisIndex! - 1 === index) &&
+            chartConfig.yAxis.length > 1,
+        };
+      });
+    } else {
+      return [];
+    }
+  });
+  function delYAxis(idx: number) {
+    const config = cloneDeep(chartConfig) as normalChartConfigType;
+    // 检查当前轴是否被使用中
+    const hasDep = config.seriesSetting!.find((ser) => ser.yAxisIndex! - 1 === idx);
+    if (hasDep) {
+      createMessage.warn(`[${hasDep.name}]` + t('quotaView.advance.axisSetting.yAxis.cannotdel'));
+      return;
+    }
+    if (config.yAxis.length === 1) {
+      createMessage.warn(t('quotaView.advance.axisSetting.yAxis.lastnotdel'));
+      return;
+    }
+    chartConfig.yAxis.splice(idx, 1);
+  }
+  return [yAxisIndexList, { delYAxis }];
+}
+
+type useSortMonthRes = [
+  {
+    monthList: Ref<number[]>;
+    yearList: Ref<string[]>;
+  },
+  {
+    startMonthChange: ({ target: { value } }: { target: HTMLInputElement }) => void;
+    sortYearChange: (e: PointerEvent) => void;
+    sortMonthChange: (e: PointerEvent) => void;
+    updateYears: () => void;
+  },
+];
+
+export function useSortMonthAndYear(chartConfig: chartConfigType): useSortMonthRes {
+  // 调整起始月份
+  const monthList = ref([1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]);
+  function startMonthChange({ target: { value } }: { target: HTMLInputElement }) {
+    if (!(parseInt(value) > 0 && parseInt(value) < 13)) {
+      setTimeout(() => {
+        chartConfig.timeConfig.startMonth = 1;
+      }, 500);
+      createMessage.warn(t('quotaView.advance.datasourceSetting.startMonthTip'));
+      return;
+    }
+    chartConfig.timeConfig.startMonth = parseInt(value);
+    const index = monthList.value!.indexOf(parseInt(value));
+    const [a1, a2] = [monthList.value.slice(0, index), monthList.value.slice(index)];
+    monthList.value = [...a2, ...a1];
+    updateYears();
+  }
+  function updateYears() {
+    const startYear = dayjs(chartConfig.timeConfig.startDate).year();
+    const endYear = dayjs(chartConfig.timeConfig.endDate).year();
+    yearList.value = [];
+    const startMonth = chartConfig.timeConfig.startMonth;
+    for (let i = startYear; i <= endYear + 1; i++) {
+      yearList.value.push(startMonth !== 1 ? `${i - 1}-${i}` : `${i}`);
+    }
+  }
+
+  // 修改不要的月份
+  function sortMonthChange(e: PointerEvent) {
+    const m = parseInt((e.target as HTMLElement).dataset.month ?? NaN);
+    if (m) {
+      const idx = chartConfig.timeConfig.sortMonth!.indexOf(m);
+      if (idx !== -1) {
+        chartConfig.timeConfig.sortMonth?.splice(idx, 1);
+      } else {
+        chartConfig.timeConfig.sortMonth?.push(m);
+        chartConfig.timeConfig.sortMonth?.sort();
+      }
+    }
+  }
+  const yearList = ref<string[]>([]);
+  updateYears();
+  // 修改不要的年份
+  function sortYearChange(e: PointerEvent) {
+    const y = (e.target as HTMLElement).dataset.year;
+    if (y) {
+      const idx = chartConfig.timeConfig.sortYear!.indexOf(y);
+      if (idx !== -1) {
+        chartConfig.timeConfig.sortYear?.splice(idx, 1);
+      } else {
+        chartConfig.timeConfig.sortYear?.push(y);
+      }
+    }
+  }
+  return [
+    { monthList, yearList },
+    { startMonthChange, sortYearChange, sortMonthChange, updateYears },
+  ];
 }
