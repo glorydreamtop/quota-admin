@@ -257,7 +257,6 @@
   import { quotaDataPastUnitTypeEnum } from '/@/api/quota';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { chartTypeEnum, structuralOffsetUnitEnum } from '/@/enums/chartEnum';
-  import { ECBasicOption } from 'echarts/types/dist/shared';
   import { uniq } from 'lodash-es';
   import { EChartsOption, LineSeriesOption } from 'echarts';
 

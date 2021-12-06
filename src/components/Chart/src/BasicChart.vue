@@ -12,7 +12,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { onBeforeUnmount, onDeactivated, ref, toRefs, unref, watch } from 'vue';
+  import { nextTick, onBeforeUnmount, onDeactivated, ref, toRefs, unref, watch } from 'vue';
   import type { Ref } from 'vue';
   import { useECharts } from '/@/hooks/web/useECharts';
   import { useI18n } from '/@/hooks/web/useI18n';
@@ -76,8 +76,11 @@
         const options = await chartTypeHooks[v.type](v);
         options.animationEasing = 'quinticIn';
         setOptions(options);
-        emit('paintSuccess', getInstance()!.getOption());
         noChart.value = false;
+        await nextTick();
+        console.log(getInstance()!.getOption());
+        
+        emit('paintSuccess', getInstance()!.getOption());
       } catch (error) {
         console.log(error);
         noChart.value = true;

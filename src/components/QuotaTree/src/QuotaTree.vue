@@ -321,6 +321,7 @@
     });
   // 树节点的选择，支持多选
   async function handleTreeSelect(_, e: treeSelectParams) {
+    console.log(e);
     if ((e.node.dataRef as CategoryTreeModel).folder) {
       (e.node.dataRef as CategoryTreeModel).icon = e.node.expanded
         ? 'flat-color-icons:opened-folder'

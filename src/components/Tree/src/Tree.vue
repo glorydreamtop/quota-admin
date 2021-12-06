@@ -98,19 +98,8 @@
             emit('update:selectedKeys', v);
           },
           onCheck: (v: CheckKeys, e: CheckEvent) => {
-            let currentValue = toRaw(state.checkedKeys) as Keys;
-            if (isArray(currentValue) && searchState.startSearch) {
-              const { key } = unref(getReplaceFields);
-              currentValue = difference(currentValue, getChildrenKeys(e.node.$attrs.node[key]));
-              if (e.checked) {
-                currentValue.push(e.node.$attrs.node[key]);
-              }
-              state.checkedKeys = currentValue;
-            } else {
-              state.checkedKeys = v;
-            }
-
-            const rawVal = toRaw(state.checkedKeys);
+            state.checkedKeys = v;
+            const rawVal = toRaw(v);
             emit('update:value', rawVal);
             emit('check', rawVal, e);
           },

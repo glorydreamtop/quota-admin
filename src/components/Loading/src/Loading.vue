@@ -1,19 +1,21 @@
 <template>
   <section class="full-loading" :class="{ absolute }" v-show="loadingRef" ref="loadingEl">
     <!-- <Spin v-bind="$attrs" :tip="tip" :size="size" :spinning="loadingRef" /> -->
-    <div class="loader-inner pacman">
+    <!-- <div class="loader-inner pacman">
       <div></div>
       <div></div>
       <div></div>
       <div></div>
       <div></div>
-    </div>
+    </div> -->
+    <div class="container"></div>
   </section>
 </template>
 <script lang="ts">
-  import { PropType, ref, toRefs, watch } from 'vue';
+  import { onMounted, PropType, ref, toRefs, watch } from 'vue';
   import { defineComponent } from 'vue';
   import { SizeEnum } from '/@/enums/sizeEnum';
+  import { useLottie } from '/@/hooks/web/useCool';
 
   export default defineComponent({
     name: 'Loading',
@@ -48,14 +50,25 @@
       const loadingEl = ref<HTMLElement>();
       const loadingRef = ref(false);
       const { loading } = toRefs(props);
+      let anim;
+      onMounted(() => {
+        anim = useLottie({
+          container: loadingEl.value!.getElementsByClassName('container')[0],
+          loop: true,
+          autoplay: false,
+          path: '/src/assets/lottie/load2.json',
+        });
+      });
       watch(loading, (v) => {
         if (v) {
+          anim.play();
           loadingEl.value!.style.opacity = '1';
           loadingRef.value = v;
         } else {
           loadingEl.value!.style.opacity = '0';
           setTimeout(() => {
             loadingRef.value = false;
+            anim.stop();
           }, 200);
         }
       });
@@ -79,7 +92,7 @@
     align-items: center;
     background-color: rgb(240 242 245 / 40%);
     opacity: 100%;
-    transition: opacity 10%s ease;
+    transition: opacity 300ms ease;
 
     &.absolute {
       position: absolute;
@@ -234,5 +247,15 @@
     transform: translate(0, -6.25px);
     top: 25px;
     left: 70px;
+  }
+
+  .container {
+    width: 120px;
+    height: 120px;
+
+    ::v-deep(image) {
+      transform: scale(2);
+      transform-origin: center;
+    }
   }
 </style>
