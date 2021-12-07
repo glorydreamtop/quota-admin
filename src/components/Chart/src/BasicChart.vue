@@ -73,14 +73,16 @@
       if (!Reflect.has(v, 'quotaList') || v.quotaList?.length === 0) return;
       try {
         loading.value = true;
+        getInstance()?.on('finished', function () {
+          nextTick(() => {
+            emit('paintSuccess', getInstance()!.getOption());
+            getInstance()?.off('finished');
+          });
+        });
         const options = await chartTypeHooks[v.type](v);
         options.animationEasing = 'quinticIn';
         setOptions(options);
         noChart.value = false;
-        await nextTick();
-        console.log(getInstance()!.getOption());
-        
-        emit('paintSuccess', getInstance()!.getOption());
       } catch (error) {
         console.log(error);
         noChart.value = true;
@@ -95,6 +97,7 @@
   function originContextmenu(e) {
     e.preventDefault();
   }
+
   function update() {
     emit('updateConfig', cloneDeep(unref(config)));
   }

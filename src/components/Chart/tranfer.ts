@@ -13,7 +13,7 @@ import type {
   ToolboxComponentOption,
   YAXisComponentOption,
 } from 'echarts';
-import { cloneDeep, max, maxBy, min, minBy, omit, remove, round } from 'lodash-es';
+import { cloneDeep, max, maxBy, min, minBy, omit, remove, round, pick } from 'lodash-es';
 import {
   useAddGraphicElement,
   useHighestQuotaData,
@@ -25,6 +25,7 @@ import {
   useSortYear,
   useColor,
   useScientificNotation,
+  selectSeriesType,
 } from './helper';
 import {
   barChartConfigType,
@@ -78,14 +79,11 @@ const gridConfig: GridComponentOption = {
 export async function useSeasonalChart(
   chartConfig: seasonalChartConfigType,
 ): Promise<EChartsOption> {
-  const fetchParams: getQuotaDataParams = omit(
-    {
-      exportPara: quotaDataExportTypeEnum.JSON,
-      rows: chartConfig.quotaList!,
-      ...chartConfig.timeConfig,
-    },
-    ['type', 'timeRule'],
-  );
+  const fetchParams: getQuotaDataParams = {
+    exportPara: quotaDataExportTypeEnum.JSON,
+    rows: chartConfig.quotaList!,
+    ...pick(chartConfig.timeConfig, ['startDate', 'endDate']),
+  };
 
   const quotaDataList = await getQuotaData(fetchParams);
   // 移除不展示的月份
@@ -129,6 +127,7 @@ export async function useSeasonalChart(
         symbol: 'none',
         type: 'line',
         connectNulls: false,
+        // ...selectSeriesType(quotaDataList, color, seriesSetting),
         triggerLineEvent: true,
         data: [[dayjs(time).year(year).hour(0).unix() * 1000, v]],
       });
@@ -191,14 +190,11 @@ export async function useSeasonalChart(
 }
 // 普通数据序列
 export async function useNormalChart(chartConfig: normalChartConfigType): Promise<EChartsOption> {
-  const fetchParams: getQuotaDataParams = omit(
-    {
-      exportPara: quotaDataExportTypeEnum.JSON,
-      rows: chartConfig.quotaList!,
-      ...chartConfig.timeConfig,
-    },
-    ['type', 'timeRule'],
-  );
+  const fetchParams: getQuotaDataParams = {
+    exportPara: quotaDataExportTypeEnum.JSON,
+    rows: chartConfig.quotaList!,
+    ...pick(chartConfig.timeConfig, ['startDate', 'endDate', 'pastValue', 'pastUnit']),
+  };
 
   const quotaDataList = await getQuotaData(fetchParams);
   useSortMonth({ chartConfig, quotaDataList });
@@ -210,66 +206,7 @@ export async function useNormalChart(chartConfig: normalChartConfigType): Promis
   };
   type NormalChartSeriesOption = LineSeriesOption | BarSeriesOption | ScatterSeriesOption;
   const series: NormalChartSeriesOption[] = [];
-  // 选择series类型
-  function selectSeriesType(seriesSetting?: seriesSettingType): NormalChartSeriesOption {
-    function getLineStyle() {
-      const lineStyle = {
-        width: seriesSetting?.size ?? 2,
-        type: seriesSetting?.lineType ?? echartLineTypeEnum.solid,
-      };
-      if (seriesSetting?.shadow) {
-        Object.assign(lineStyle, {
-          shadowBlur: 2,
-          shadowColor: color[quotaDataList.findIndex((q) => q.name === seriesSetting?.name)],
-          shadowOffsetX: 2,
-          shadowOffsetY: 2,
-        });
-      }
-      return lineStyle;
-    }
-    function getAxisIndex() {
-      return {
-        xAxisIndex: (seriesSetting?.xAxisIndex ?? 1) - 1,
-        yAxisIndex: (seriesSetting?.yAxisIndex ?? 1) - 1,
-      };
-    }
-    const typeMap = {
-      [echartSeriesTypeEnum.line]: {
-        type: 'line',
-        symbol: 'none',
-        lineStyle: getLineStyle(),
-        ...getAxisIndex(),
-        triggerLineEvent: true,
-      },
-      [echartSeriesTypeEnum.smoothLine]: {
-        type: 'line',
-        smooth: true,
-        symbol: 'none',
-        lineStyle: getLineStyle(),
-        ...getAxisIndex(),
-        triggerLineEvent: true,
-      },
-      [echartSeriesTypeEnum.area]: {
-        type: 'line',
-        smooth: false,
-        symbol: 'none',
-        areaStyle: {},
-        lineStyle: getLineStyle(),
-        ...getAxisIndex(),
-        triggerLineEvent: true,
-      },
-      [echartSeriesTypeEnum.scatter]: {
-        type: 'scatter',
-      },
-      [echartSeriesTypeEnum.bar]: {
-        type: 'bar',
-        ...getAxisIndex(),
-      },
-    };
-    return typeMap[
-      seriesSetting?.seriesType ?? echartSeriesTypeEnum.line
-    ] as NormalChartSeriesOption;
-  }
+
   const color = await useColor({ chartConfig });
   quotaDataList.forEach((quota) => {
     legend.data!.push(quota.name);
@@ -277,7 +214,7 @@ export async function useNormalChart(chartConfig: normalChartConfigType): Promis
     quota.data.forEach((item) => (item[1] = round(item[1], chartConfig.valueFormatter.afterDot)));
     series.push({
       name: quota.name,
-      ...selectSeriesType(seriesSetting),
+      ...selectSeriesType(quotaDataList, color, seriesSetting),
       data: quota.data,
     });
   });

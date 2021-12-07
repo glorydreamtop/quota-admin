@@ -209,7 +209,7 @@
         <template #header>
           <Divider orientation="left">{{ t('quotaView.advance.dataEdit.title') }}</Divider>
         </template>
-        <div class="">
+        <div class="children:mb-2">
           <div>
             <span>{{ t('quotaView.advance.dataEdit.removePoint') }}</span>
             <Tooltip>
@@ -219,16 +219,18 @@
               <Icon icon="ant-design:question-circle-outlined" />
             </Tooltip>
           </div>
-          <span class="flex items-center gap-1">
-            <span class="whitespace-nowrap">{{ t('quotaView.advance.dataEdit.xFilter') }}</span>
+          <div class="flex items-center gap-3">
+            <div class="min-w-4em">{{ t('quotaView.advance.dataEdit.xFilter') }}</div>
             <Textarea />
-          </span>
-          <span class="flex items-center gap-1">
-            <span class="whitespace-nowrap">{{
-              t('quotaView.advance.dataEdit.seriesFilter')
-            }}</span>
-            <Select class="!w-20" :options="seriesOptions" />
-          </span>
+          </div>
+          <div class="flex items-center gap-3">
+            <div class="min-w-4em">{{ t('quotaView.advance.dataEdit.seriesFilter') }}</div>
+            <Select
+              :placeholder="t('quotaView.advance.dataEdit.seriesTip')"
+              class="flex-grow"
+              :options="seriesOptions"
+            />
+          </div>
         </div>
       </CollapsePanel>
     </Collapse>
@@ -266,7 +268,7 @@
   const { t } = useI18n();
   const { createMessage } = useMessage();
   const chartConfig = useChartConfigContext();
-  const collapseKey = ref('datasourceSetting');
+  const collapseKey = ref('dataEdit');
   function showSettingFilter(modelName: string) {
     const filter = {
       [chartTypeEnum.normal]: ['yAxisEdit', 'sortMonth', 'pastValue'],
@@ -289,8 +291,9 @@
       return chartConfig.timeConfig;
     },
     (v) => {
-      if (v.pastValue) {
+      if (v.pastValue !== undefined&&v.pastUnit !== undefined) {
         datasourceSetting.pastValue = v.pastValue;
+        datasourceSetting.pastUnit = v.pastUnit;
       }
       updateYears();
     },
@@ -350,6 +353,8 @@
   }
   const seriesOptions = ref<{ label: any; value: any }[]>([]);
   echartMitter.on('echartOptions', (options: EChartsOption) => {
+    console.log(options);
+
     seriesOptions.value = (options.series as LineSeriesOption[]).map((ser) => {
       return {
         label: ser.name,

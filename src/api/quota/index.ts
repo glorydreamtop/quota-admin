@@ -77,6 +77,10 @@ export function searchQuota(params: {
 }
 
 export function getQuotaData(params: getQuotaDataParams) {
+  if (params.pastValue === 0) {
+    Reflect.deleteProperty(params, 'pastValue');
+    Reflect.deleteProperty(params, 'pastUnit');
+  }
   const rows = params.rows.map((item) => {
     return pick(item, ['sourceCode', 'id', 'name', 'sourceType']);
   });

@@ -10,8 +10,8 @@ import {
   SeriesOption,
   YAXisComponentOption,
 } from 'echarts';
-import { last, maxBy, nth, remove, round, cloneDeep,has } from 'lodash-es';
-import { chartTypeEnum, echartSeriesTypeEnum } from '/@/enums/chartEnum';
+import { last, maxBy, nth, remove, round, cloneDeep, has } from 'lodash-es';
+import { chartTypeEnum, echartLineTypeEnum, echartSeriesTypeEnum } from '/@/enums/chartEnum';
 import { daysAgo, formatToDate } from '/@/utils/dateUtil';
 import dayjs from 'dayjs';
 import { useI18n } from '/@/hooks/web/useI18n';
@@ -19,6 +19,7 @@ import YAxisEdit from './src/YAxisEditor.vue';
 import XAxisEdit from './src/XAxisEditor.vue';
 import SeriesEdit from './src/SeriesEditor.vue';
 import { getColorScheme } from '/@/api/color';
+import { QuotaItem } from '/#/quota';
 
 const { t } = useI18n();
 export async function fetchQuotaData(params: getQuotaDataParams) {
@@ -530,12 +531,12 @@ export function setSeriesInfo(
         }
         info.size = series.lineStyle.width;
         info.lineType = series.lineStyle.type;
-        info.shadow = series.lineStyle.shadowColor!==undefined;
+        info.shadow = series.lineStyle.shadowColor !== undefined;
       } else if (series.type === 'bar') {
         info.seriesType = echartSeriesTypeEnum.bar;
       }
-      info.yAxisIndex = (series.yAxisIndex ?? 0) + 1;
-      info.xAxisIndex = (series.xAxisIndex ?? 0) + 1;
+      info.yAxisIndex = series.yAxisIndex + 1;
+      info.xAxisIndex = series.xAxisIndex + 1;
       break;
     case chartTypeEnum.seasonal:
       info.name = series.name;
@@ -549,15 +550,13 @@ export function setSeriesInfo(
         }
         info.size = series.lineStyle.width;
         info.lineType = series.lineStyle.type;
-        info.shadow = series.lineStyle.shadowColor!==undefined;
+        info.shadow = series.lineStyle.shadowColor !== undefined;
       } else if (series.type === 'bar') {
         info.seriesType = echartSeriesTypeEnum.bar;
       }
       info.yAxisIndex = (series.yAxisIndex ?? 0) + 1;
       info.xAxisIndex = (series.xAxisIndex ?? 0) + 1;
     case chartTypeEnum.bar:
-      
-      
       if (series.type === 'line') {
         if (has(series, 'areaStyle')) {
           info.seriesType = echartSeriesTypeEnum.area;
@@ -568,15 +567,78 @@ export function setSeriesInfo(
         }
         info.size = series.lineStyle.width;
         info.lineType = series.lineStyle.type;
-        info.shadow = series.lineStyle.shadowColor!==undefined;
+        info.shadow = series.lineStyle.shadowColor !== undefined;
       } else if (series.type === 'bar') {
         info.name = seriesInfo.seriesName;
         info.seriesType = echartSeriesTypeEnum.bar;
-        info.shadow = series.lineStyle.shadowColor!==undefined;
+        info.shadow = series.lineStyle.shadowColor !== undefined;
       }
       info.yAxisIndex = (series.yAxisIndex ?? 0) + 1;
       info.xAxisIndex = (series.xAxisIndex ?? 0) + 1;
     default:
       break;
   }
+}
+
+// 选择series类型
+export function selectSeriesType(
+  quotaDataList: getQuotaDataResult[],
+  color:string[],
+  seriesSetting?: seriesSettingType,
+): NormalChartSeriesOption {
+  function getLineStyle() {
+    const lineStyle = {
+      width: seriesSetting?.size ?? 2,
+      type: seriesSetting?.lineType ?? echartLineTypeEnum.solid,
+    };
+    if (seriesSetting?.shadow) {
+      Object.assign(lineStyle, {
+        shadowBlur: 2,
+        shadowColor: color[quotaDataList.findIndex((q) => q.name === seriesSetting?.name)],
+        shadowOffsetX: 2,
+        shadowOffsetY: 2,
+      });
+    }
+    return lineStyle;
+  }
+  function getAxisIndex() {
+    return {
+      xAxisIndex: seriesSetting?.xAxisIndex ?? 0,
+      yAxisIndex: seriesSetting?.yAxisIndex ?? 0,
+    };
+  }
+  const typeMap = {
+    [echartSeriesTypeEnum.line]: {
+      type: 'line',
+      symbol: 'none',
+      lineStyle: getLineStyle(),
+      ...getAxisIndex(),
+      triggerLineEvent: true,
+    },
+    [echartSeriesTypeEnum.smoothLine]: {
+      type: 'line',
+      smooth: true,
+      symbol: 'none',
+      lineStyle: getLineStyle(),
+      ...getAxisIndex(),
+      triggerLineEvent: true,
+    },
+    [echartSeriesTypeEnum.area]: {
+      type: 'line',
+      smooth: false,
+      symbol: 'none',
+      areaStyle: {},
+      lineStyle: getLineStyle(),
+      ...getAxisIndex(),
+      triggerLineEvent: true,
+    },
+    [echartSeriesTypeEnum.scatter]: {
+      type: 'scatter',
+    },
+    [echartSeriesTypeEnum.bar]: {
+      type: 'bar',
+      ...getAxisIndex(),
+    },
+  };
+  return typeMap[seriesSetting?.seriesType ?? echartSeriesTypeEnum.line] as NormalChartSeriesOption;
 }

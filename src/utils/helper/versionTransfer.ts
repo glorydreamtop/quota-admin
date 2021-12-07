@@ -123,6 +123,7 @@ export function pingChart() {
         type: chart_types_map[options['option_template_type']],
         title: options['chart_title'],
         quotaList: [],
+        seriesSetting: [],
         colorSchemeId: 22,
         selfColorScheme: chart_colors_list[options['option_chart_color']]['colors'].join(','),
         valueFormatter: {
@@ -215,11 +216,13 @@ export function pingChart() {
         shortName: row['shortName'],
         selected: true,
         id: row.id,
-        setting: {
-          type: line_types_map[row['chart_type']],
-          yAxisIndex: row['yaxis'] == 1 || row['yaxis'] == 2 ? yaxis_list.length - 1 : 0,
-          lineWidth: 2,
-        },
+        timeLastUpdate: '',
+      });
+      o.config.seriesSetting.push({
+        seriesType: line_types_map[row['chart_type']],
+        yAxisIndex: row['yaxis'] == 1 || row['yaxis'] == 2 ? yaxis_list.length - 1 : 0,
+        size: 2,
+        name: row['name'],
       });
     }
 

@@ -66,9 +66,7 @@
       <Tooltip>
         <template #title>
           <span>{{
-            showTableRef
-              ? t('quotaView.toolbar.downloadXLSX')
-              : t('quotaView.toolbar.downloadImg')
+            showTableRef ? t('quotaView.toolbar.downloadXLSX') : t('quotaView.toolbar.downloadImg')
           }}</span>
         </template>
         <Icon
@@ -83,9 +81,7 @@
       </Tooltip>
       <Tooltip>
         <template #title>{{
-          showTableRef
-            ? t('quotaView.toolbar.chartView')
-            : t('quotaView.toolbar.tableView')
+          showTableRef ? t('quotaView.toolbar.chartView') : t('quotaView.toolbar.tableView')
         }}</template>
         <div
           class="relative w-29px h-29px"
@@ -166,6 +162,8 @@
     //   Reflect.deleteProperty(chartConfig, key);
     // }
     merge(chartConfig, getChartDefaultConfig(type));
+    console.log(chartConfig);
+    
   }
   async function paint() {
     if (quotaList.value.length === 0) {
@@ -195,8 +193,6 @@
     emit('paint');
   }
   async function download({ target }: { target: HTMLElement }) {
-    console.log(target);
-
     target.parentElement!.parentElement!.classList.add('animate__bounce');
     useTimeoutFn(() => {
       target.parentElement!.parentElement!.classList.remove('animate__bounce');

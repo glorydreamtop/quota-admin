@@ -144,10 +144,13 @@
   function confirm() {
     const config = cloneDeep(props.chartConfig);
     const series = config.seriesSetting.find((ser) => ser.name === info.name);
+    const cloneInfo = cloneDeep(toRaw(info));
+    cloneInfo.yAxisIndex! -= 1;
+    cloneInfo.xAxisIndex! -= 1;
     if (series) {
-      merge(series, toRaw(info));
+      merge(series, cloneInfo);
     } else {
-      config.seriesSetting.push(cloneDeep(toRaw(info)));
+      config.seriesSetting.push(cloneInfo);
     }
     emit('update', config);
     setVisible(false);

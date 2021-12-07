@@ -41,7 +41,7 @@
   import { echartMitter, useChartConfigContext } from './hooks';
   import { reactive, ref, watchEffect } from 'vue';
   import type { chartConfigType } from '/#/chart';
-  import { cloneDeep } from 'lodash-es';
+  import { cloneDeep, merge } from 'lodash-es';
   import { EChartsType } from 'echarts/core';
   import { downloadByBase64 } from '/@/utils/file/download';
   import { QuotaDataTable } from '/@/components/QuotaTable';
@@ -58,10 +58,11 @@
   });
   const config = reactive({}) as chartConfigType;
   function paint() {
-    Object.assign(config, cloneDeep(chartConfig));
+    merge(config, cloneDeep(chartConfig));
   }
-  function updateConfig(config) {
-    Object.assign(chartConfig, cloneDeep(config));
+  function updateConfig(cfg) {
+    merge(chartConfig, cloneDeep(cfg));
+    paint();
   }
   const chartRef = ref<
     {

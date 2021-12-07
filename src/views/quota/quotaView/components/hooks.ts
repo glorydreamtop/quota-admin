@@ -83,7 +83,7 @@ export function useYAxisEdit(chartConfig: chartConfigType): useYAxisEditRes {
           )}`,
           value: index,
           closable:
-            !chartConfig.seriesSetting!.some((ser) => ser.yAxisIndex! - 1 === index) &&
+            !chartConfig.seriesSetting!.some((ser) => ser.yAxisIndex! === index) &&
             chartConfig.yAxis.length > 1,
         };
       });
