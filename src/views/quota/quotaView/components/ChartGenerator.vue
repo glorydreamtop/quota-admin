@@ -116,13 +116,11 @@
     right: 0;
     background: @white;
     z-index: 9999;
-
     .chart-view {
       padding-top: 1rem;
       padding-bottom: 1rem;
     }
   }
-
   .chart-view,
   .table-view {
     position: absolute;

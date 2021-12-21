@@ -103,6 +103,17 @@
       };
     }),
   });
+  // function getWhiteList(type:string){
+  //   let whiteList = [];
+  //   switch (info.seriesType) {
+  //     case echartSeriesTypeEnum.line:
+  //       whiteList = ['seriesType','lineType','lineShadow']
+  //       break;
+
+  //     default:
+  //       break;
+  //   }
+  // }
   const emit = defineEmits<{
     (event: 'update', chartConfig: normalChartConfigType);
     (event: 'visibleChange', visible: boolean);
@@ -137,9 +148,7 @@
 <style lang="less" scoped>
   ::v-deep(.ant-input-number-input-wrap) {
     width: 2em !important;
-  }
-
-  ::v-deep(.ant-input-number) {
+  }::v-deep(.ant-input-number) {
     min-width: 0 !important;
   }
 </style>

@@ -106,125 +106,133 @@
 </template>
 
 <script lang="ts" setup>
-  import { nextTick, reactive, unref, ref } from 'vue';
-  import { Input, Space, DatePicker, Select, Tooltip, Radio } from 'ant-design-vue';
-  import vRipple from '/@/directives/ripple';
-  import { useI18n } from '/@/hooks/web/useI18n';
-  import { useChartConfigContext, useQuotaListContext, useSelectedQuotaListContext } from './hooks';
-  import { chartTypeEnum } from '/@/enums/chartEnum';
-  import Color from './Color.vue';
-  import Icon from '/@/components/Icon';
-  import { cloneDeep, merge } from 'lodash-es';
-  import { getChartDefaultConfig } from '../helper';
-  import { useMessage } from '/@/hooks/web/useMessage';
-  import { useTimeoutFn } from '@vueuse/shared';
-  import dayjs from 'dayjs';
+    import { nextTick, reactive, unref, ref } from 'vue';
+    import { Input, Space, DatePicker, Select, Tooltip, Radio } from 'ant-design-vue';
+    import vRipple from '/@/directives/ripple';
+    import { useI18n } from '/@/hooks/web/useI18n';
+    import { useChartConfigContext, useQuotaListContext, useSelectedQuotaListContext } from './hooks';
+    import { chartTypeEnum } from '/@/enums/chartEnum';
+    import Color from './Color.vue';
+    import Icon from '/@/components/Icon';
+    import { cloneDeep, merge } from 'lodash-es';
+    import { getChartDefaultConfig } from '../helper';
+    import { useMessage } from '/@/hooks/web/useMessage';
+    import { useTimeoutFn } from '@vueuse/shared';
+    import dayjs from 'dayjs';
 
-  const RadioButton = Radio.Button;
-  const RadioGroup = Radio.Group;
-  const { t } = useI18n();
-  const emit = defineEmits<{
-    (event: 'paint'): void;
-    (event: 'event', eventName: string): void;
-  }>();
-  const { createMessage } = useMessage();
-  const chartConfig = useChartConfigContext();
-  const quotaList = useQuotaListContext();
-  const selectedQuotaList = useSelectedQuotaListContext();
-  // 图表类型下拉选择
-  const chartTypeList: LabelValueOptions = reactive([]);
-  for (let v in chartTypeEnum) {
-    chartTypeList.push({
-      label: t(`quotaView.toolbar.chartTypeList.${v}`),
-      value: v,
-      disabled: [chartTypeEnum.seasonalLunar, chartTypeEnum.fixedbase].includes(v as chartTypeEnum),
-    });
-  }
-  const quickDateParams = reactive({
-    num: '1',
-    unit: 'year',
-  });
-  function quickDate() {
-    chartConfig.timeConfig.startDate = dayjs()
-      .subtract(parseInt(quickDateParams.num), quickDateParams.unit)
-      .format('YYYY-MM-DD');
-  }
-  function selectType(type: chartTypeEnum) {
-    // for (const key in chartConfig) {
-    //   Reflect.deleteProperty(chartConfig, key);
-    // }
-    merge(chartConfig, getChartDefaultConfig(type));
-    console.log(chartConfig);
-  }
-  async function paint() {
-    if (quotaList.value.length === 0) {
-      createMessage.warn(t('quotaView.toolbar.noQuotaListTip'));
-      return;
+    const RadioButton = Radio.Button;
+    const RadioGroup = Radio.Group;
+    const { t } = useI18n();
+    const emit = defineEmits<{
+      (event: 'paint'): void;
+      (event: 'event', eventName: string): void;
+    }>();
+    const { createMessage } = useMessage();
+    const chartConfig = useChartConfigContext();
+    const quotaList = useQuotaListContext();
+    const selectedQuotaList = useSelectedQuotaListContext();
+    // 图表类型下拉选择
+    const chartTypeList: LabelValueOptions = reactive([]);
+    for (let v in chartTypeEnum) {
+      chartTypeList.push({
+        label: t(`quotaView.toolbar.chartTypeList.${v}`),
+        value: v,
+        disabled: [chartTypeEnum.seasonalLunar, chartTypeEnum.fixedbase].includes(v as chartTypeEnum),
+      });
     }
-    // 季节性的公历和农历均只适用一个指标，使其他指标置灰
-    if ([chartTypeEnum.seasonal, chartTypeEnum.seasonalLunar].includes(chartConfig.type)) {
-      const list = selectedQuotaList.value;
-      // 是否找到用户已选中的第一个指标，将用户选中的第一个指标作为绘图指标
-      let findSelected = false;
-      for (let index = 0; index < list.length; index++) {
-        const quota = list[index];
-        if (findSelected) {
-          quota.selected = false;
-        } else if (quota.selected) {
-          findSelected = true;
+    const quickDateParams = reactive({
+      num: '1',
+      unit: 'year',
+    });
+    function quickDate() {
+      chartConfig.timeConfig.startDate = dayjs()
+        .subtract(parseInt(quickDateParams.num), quickDateParams.unit)
+        .format('YYYY-MM-DD');
+    }
+    function selectType(type: chartTypeEnum) {
+      // for (const key in chartConfig) {
+      //   Reflect.deleteProperty(chartConfig, key);
+      // }
+      merge(chartConfig, getChartDefaultConfig(type));
+      console.log(chartConfig);
+  <<<<<<< HEAD
+  =======
+
+  >>>>>>> 3464bebbab726e9d07339558bd5ea71b64dddaea
+    }
+    async function paint() {
+      if (quotaList.value.length === 0) {
+        createMessage.warn(t('quotaView.toolbar.noQuotaListTip'));
+        return;
+      }
+      // 季节性的公历和农历均只适用一个指标，使其他指标置灰
+      if ([chartTypeEnum.seasonal, chartTypeEnum.seasonalLunar].includes(chartConfig.type)) {
+        const list = selectedQuotaList.value;
+        // 是否找到用户已选中的第一个指标，将用户选中的第一个指标作为绘图指标
+        let findSelected = false;
+        for (let index = 0; index < list.length; index++) {
+          const quota = list[index];
+          if (findSelected) {
+            quota.selected = false;
+          } else if (quota.selected) {
+            findSelected = true;
+          }
         }
       }
+      await nextTick();
+      // 拿到Title
+      if (chartConfig.title === '') {
+        chartConfig.title = quotaList.value[0].name;
+      }
+      chartConfig.quotaList = cloneDeep(unref(quotaList));
+      emit('paint');
     }
-    await nextTick();
-    // 拿到Title
-    if (chartConfig.title === '') {
-      chartConfig.title = quotaList.value[0].name;
+    async function download({ target }: { target: HTMLElement }) {
+      target.parentElement!.parentElement!.classList.add('animate__bounce');
+      useTimeoutFn(() => {
+        target.parentElement!.parentElement!.classList.remove('animate__bounce');
+        emit('event', showTableRef.value ? 'xlsx' : 'screenshot');
+      }, 1000);
     }
-    chartConfig.quotaList = cloneDeep(unref(quotaList));
-    emit('paint');
-  }
-  async function download({ target }: { target: HTMLElement }) {
-    target.parentElement!.parentElement!.classList.add('animate__bounce');
-    useTimeoutFn(() => {
-      target.parentElement!.parentElement!.classList.remove('animate__bounce');
-      emit('event', showTableRef.value ? 'xlsx' : 'screenshot');
-    }, 1000);
-  }
-  const showTableRef = ref(false);
-  function showTable() {
-    showTableRef.value = !showTableRef.value;
-    emit('event', showTableRef.value ? 'showTable' : 'showChart');
-  }
-  function fullscreen() {
-    emit('event', 'fullscreen');
-  }
+    const showTableRef = ref(false);
+    function showTable() {
+      showTableRef.value = !showTableRef.value;
+      emit('event', showTableRef.value ? 'showTable' : 'showChart');
+    }
+    function fullscreen() {
+      emit('event', 'fullscreen');
+    }
 </script>
 
 <style lang="less" scoped>
-  .date-picker {
-    transition: border 300ms;
-    border-radius: 2px;
-  }
-
-  .disabled {
-    filter: grayscale(80%);
-    pointer-events: none;
-    transition: none;
-  }
-
-  .chartmode-icon,
-  .sheetmode-icon {
-    position: absolute;
-    backface-visibility: hidden;
-    transition: all 0.2s;
-    perspective: 1000;
-
-    &.front {
-      transform: rotateY(-180deg);
+    .date-picker {
+      transition: border 300ms;
+      border-radius: 2px;
     }
 
-    &.back {
-      transform: rotateY(-360deg);
+    .disabled {
+      filter: grayscale(80%);
+  <<<<<<< HEAD
+  =======
+
+  >>>>>>> 3464bebbab726e9d07339558bd5ea71b64dddaea
+      pointer-events: none;
+      transition: none;
     }
-  }
+
+    .chartmode-icon,
+    .sheetmode-icon {
+      position: absolute;
+      backface-visibility: hidden;
+      transition: all 0.2s;
+      perspective: 1000;
+
+      &.front {
+        transform: rotateY(-180deg);
+      }
+
+      &.back {
+        transform: rotateY(-360deg);
+      }
+    }
 </style>

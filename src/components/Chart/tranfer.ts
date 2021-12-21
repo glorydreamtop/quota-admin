@@ -13,7 +13,7 @@ import type {
   ToolboxComponentOption,
   YAXisComponentOption,
 } from 'echarts';
-import { cloneDeep, max, maxBy, min, minBy, remove, round, pick } from 'lodash-es';
+import { cloneDeep, max, maxBy, min, minBy, omit, remove, round, pick } from 'lodash-es';
 import {
   useAddGraphicElement,
   useHighestQuotaData,
@@ -35,11 +35,16 @@ import {
   quantileRadarChartConfigType,
   radarChartConfigType,
   seasonalChartConfigType,
+  seriesSettingType,
   structuralChartConfigType,
 } from '/#/chart';
 import { getQuotaData, quotaDataExportTypeEnum, quotaDataPastUnitTypeEnum } from '/@/api/quota';
 import { getQuotaDataParams, getQuotaDataResult } from '/@/api/quota/model';
-import { structuralOffsetUnitEnum } from '/@/enums/chartEnum';
+import {
+  echartLineTypeEnum,
+  echartSeriesTypeEnum,
+  structuralOffsetUnitEnum,
+} from '/@/enums/chartEnum';
 import { SourceTypeEnum } from '/@/enums/quotaEnum';
 import { useI18n } from '/@/hooks/web/useI18n';
 import { daysAgo, formatToDate } from '/@/utils/dateUtil';
@@ -183,8 +188,6 @@ export async function useSeasonalChart(
   useHighestQuotaData({ chartConfig, options, quotaDataList });
   return options;
 }
-
-export type NormalChartSeriesOption = LineSeriesOption | BarSeriesOption | ScatterSeriesOption;
 // 普通数据序列
 export async function useNormalChart(chartConfig: normalChartConfigType): Promise<EChartsOption> {
   const fetchParams: getQuotaDataParams = {
@@ -201,7 +204,7 @@ export async function useNormalChart(chartConfig: normalChartConfigType): Promis
     top: 'bottom',
     icon: 'roundRect',
   };
-
+  type NormalChartSeriesOption = LineSeriesOption | BarSeriesOption | ScatterSeriesOption;
   const series: NormalChartSeriesOption[] = [];
 
   const color = await useColor({ chartConfig });
