@@ -13,6 +13,7 @@ import type {
 import { Ref, reactive } from 'vue';
 import { updateCategory, delCategory as delCategoryById } from '/@/api/quota';
 import { CategoryTreeType } from '/@/enums/quotaEnum';
+import mitt from '/@/utils/mitt';
 
 export function useHighLight(HIGHTLIGHT: string): hightlightHooksType {
   const hightlightList: TreeItem[] = [];
@@ -130,14 +131,14 @@ export function useTreeCURD({
       parentId: folder.id,
     };
     tree[treeType.value].treeInstance.insertNodeByKey({
-      parentKey:folder.id,
+      parentKey: folder.id,
       node,
-      push:'unshift'
+      push: 'unshift',
     });
     // 新增子目录时展开该目录
-    const expandKeys:number[] = tree[treeType.value].treeInstance.getExpandedKeys();
-    if(!expandKeys.includes(folder.id)){
-      tree[treeType.value].treeInstance.setExpandedKeys([...expandKeys,folder.id])
+    const expandKeys: number[] = tree[treeType.value].treeInstance.getExpandedKeys();
+    if (!expandKeys.includes(folder.id)) {
+      tree[treeType.value].treeInstance.setExpandedKeys([...expandKeys, folder.id]);
     }
   }
   async function saveCategory(folder: CategoryTreeModel) {
@@ -153,3 +154,5 @@ export function useTreeCURD({
   }
   return { addFolder, saveCategory, delCategory };
 }
+
+export const emitter = mitt();

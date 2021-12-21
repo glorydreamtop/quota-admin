@@ -1,7 +1,7 @@
 <template>
-  <div class="h-48 bg-white p-4 flex relative min-h-48 shadow-md">
+  <div class="relative flex h-48 p-4 bg-white shadow-md min-h-48">
     <div
-      class="flex flex-wrap gap-2 w-auto write-vertical-left pr-2 pt-2px border-r border-gray-300"
+      class="flex flex-wrap w-auto gap-2 pr-2 border-r border-gray-300 write-vertical-left pt-2px"
     >
       <Tooltip placement="left">
         <template #title>{{ t('quotaView.quotaList.formula') }}</template>
@@ -75,13 +75,13 @@
           <Icon
             icon="akar-icons:drag-horizontal"
             color="#5eead4"
-            class="drag-handler cursor-move"
+            class="cursor-move drag-handler"
           />
           <span
             class="text-purple-300 cursor-pointer select-none"
             @click.stop
             @dblclick="copy(item.id.toString(), 'id')"
-            >{{ item.id ?? t('quotaView.quotaCard.formulaWithoutId') }}</span
+            >{{ isFormula(item) ? t('quotaView.quotaCard.formulaWithoutId') : item.id }}</span
           >
         </span>
 
@@ -90,7 +90,7 @@
         <!-- 全称 -->
         <Tooltip :placement="cardUI ? 'bottomLeft' : 'top'">
           <template #title>{{ item.name }}</template>
-          <span class="cursor-default select-none text-white quota-title"
+          <span class="text-white cursor-default select-none quota-title"
             ><span class="w-fit" @click.stop @dblclick="copy(item.name, 'name')">{{
               item.name
             }}</span></span
@@ -98,14 +98,7 @@
         </Tooltip>
         <!-- sourceCode -->
         <span
-          class="
-            text-white
-            max-w-full
-            cursor-pointer cursor-default
-            overflow-ellipsis overflow-x-hidden
-            select-none
-            quota-sourceCode
-          "
+          class="max-w-full overflow-x-hidden text-white cursor-default cursor-pointer select-none  overflow-ellipsis quota-sourceCode"
           ><span class="w-fit" @click.stop @dblclick="copy(item.sourceCode, 'sourceCode')">{{
             item.sourceCode
           }}</span></span
@@ -124,7 +117,7 @@
                   : t('quotaView.quotaCard.formulaTip')
               }}</span>
             </template>
-            <span class="whitespace-nowrap w-32" @click.stop>{{
+            <span class="w-32 whitespace-nowrap" @click.stop>{{
               `${dateFomatter(item)} ${item.frequency ? `${item.frequency}更` : ''}`
             }}</span>
           </Tooltip>
@@ -235,8 +228,11 @@
     }
     quotaList.value = cur.filter((item) => item.selected);
   });
+  function isFormula(quota: QuotaItem) {
+    return /formula/i.test(quota.id.toString());
+  }
   function dateFomatter(quota: QuotaItem) {
-    if (!quota.id && quota.sourceType === SourceTypeEnum.formula)
+    if (isFormula(quota) && quota.sourceType === SourceTypeEnum.formula)
       return t('quotaView.quotaCard.calculate');
     if (quota.dateLast === null) return t('common.noData');
     return formatToDate(quota.dateLast);

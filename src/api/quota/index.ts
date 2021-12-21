@@ -17,6 +17,7 @@ enum Api {
   GetDirQuota = '/index/index',
   SearchQuota = '/updatemonitor/dict-index/searchIndex',
   GetQuotaData = '/updatemonitor/dict-index/exportData',
+  GetQuotaInfo = '/updatemonitor/dict-index/queryDictIndex',
   RequestUpdateQuotaData = '/dataUpdater/updateIndex',
   MoveQuota = '/category/indexMove',
   SortQuota = '/category/categorySorting',
@@ -25,6 +26,7 @@ enum Api {
   DelQuota = '/updatemonitor/dict-index/deleteDictIndex',
   DelQuotaData = '/updatemonitor/dict-index/deleteDictIndexData',
   ImportQuotaData = '/updatemonitor/dict-index/importJson',
+  NOCSearch = '/updatemonitor/dict-index/getNoCategoryIndex',
 }
 
 export enum searchType {
@@ -66,12 +68,21 @@ export function getDirQuota(params: { categoryId: number }) {
 
 export function searchQuota(params: {
   flag?: searchType;
-  key: string;
+  key?: string;
   sourceType?: SourceTypeEnum;
+  idRange?: string;
 }) {
   if (!params.flag) params.flag = searchType.all;
   return defHttp.get<QuotaItem[]>({
     url: Api.SearchQuota,
+    params,
+  });
+}
+
+export function getNOCQuota(params: { key: string; currPage: number; pageSize: number }) {
+  return defHttp.request<{ totalCount: number; list: QuotaItem[] }>({
+    url: Api.NOCSearch,
+    method: 'GET',
     params,
   });
 }
@@ -108,6 +119,14 @@ export function getSingleQuotaData({ id, date }: { id: number; date: string }) {
       lastFlag: true,
       rows,
     },
+  });
+}
+
+export function getQuotaInfo(params: { indexId: number }) {
+  return defHttp.request<QuotaItem[]>({
+    url: Api.GetQuotaInfo,
+    method: 'GET',
+    params,
   });
 }
 

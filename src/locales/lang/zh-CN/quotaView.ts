@@ -176,6 +176,12 @@ export default {
     clearData: {
       btn: '清空指标数据',
     },
+    move: {
+      btn: '批量移动到...',
+    },
+    calcData: {
+      btn: '重算指标数据',
+    },
     edit: '编辑指标',
     remove: '移除指标',
     delete: '删除指标',

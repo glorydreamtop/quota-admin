@@ -638,8 +638,4 @@
     margin-top: -2px;
     width: 14em;
   }
-
-  ::v-deep(.confirm-delquota) {
-    border: 2px solid #450245;
-  }
 </style>

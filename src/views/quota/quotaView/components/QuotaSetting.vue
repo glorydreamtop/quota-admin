@@ -99,6 +99,7 @@
   import { Editor } from '/@/components/FormulaEditor';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { QuotaItem } from '/#/quota';
+  import { buildShortUUID } from '/@/utils/uuid';
 
   const { t } = useI18n();
   const quotaList = useSelectedQuotaListContext();
@@ -109,8 +110,9 @@
     sourceType: SourceTypeEnum.formula,
   };
   const { createMessage } = useMessage();
-  const quotaSetting: Pick<SelectedQuotaItem, 'name' | 'sourceCode' | 'sourceType'> =
-    reactive(cloneDeep(defaultSetting));
+  const quotaSetting: Pick<SelectedQuotaItem, 'name' | 'sourceCode' | 'sourceType'> = reactive(
+    cloneDeep(defaultSetting),
+  );
 
   const [register, { closeModal }] = useModalInner(
     ({ record, index }: { record: SelectedQuotaItem; index?: number }) => {
@@ -130,7 +132,10 @@
       return;
     }
     if (quotaIndex.value === quotaList.value.length) {
-      quotaList.value.push(cloneDeep(quotaSetting) as SelectedQuotaItem);
+      quotaList.value.push({
+        ...cloneDeep(quotaSetting),
+        id: buildShortUUID('formula'),
+      } as SelectedQuotaItem);
     } else {
       Object.assign(quotaList.value[quotaIndex.value], quotaSetting);
     }

@@ -22,7 +22,7 @@ export function buildUUID(): string {
 let unique = 0;
 export function buildShortUUID(prefix = ''): string {
   const time = Date.now();
-  const random = Math.floor(Math.random() * 1000000000);
+  const random = Math.floor(Math.random() * 100000);
   unique++;
-  return prefix + '_' + random + unique + String(time);
+  return prefix + '_' + random + unique;
 }
