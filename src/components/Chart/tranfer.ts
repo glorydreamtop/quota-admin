@@ -13,7 +13,7 @@ import type {
   ToolboxComponentOption,
   YAXisComponentOption,
 } from 'echarts';
-import { cloneDeep, max, maxBy, min, minBy, omit, remove, round, pick } from 'lodash-es';
+import { cloneDeep, max, maxBy, min, minBy, remove, round, pick } from 'lodash-es';
 import {
   useAddGraphicElement,
   useHighestQuotaData,
@@ -35,16 +35,11 @@ import {
   quantileRadarChartConfigType,
   radarChartConfigType,
   seasonalChartConfigType,
-  seriesSettingType,
   structuralChartConfigType,
 } from '/#/chart';
 import { getQuotaData, quotaDataExportTypeEnum, quotaDataPastUnitTypeEnum } from '/@/api/quota';
 import { getQuotaDataParams, getQuotaDataResult } from '/@/api/quota/model';
-import {
-  echartLineTypeEnum,
-  echartSeriesTypeEnum,
-  structuralOffsetUnitEnum,
-} from '/@/enums/chartEnum';
+import { structuralOffsetUnitEnum } from '/@/enums/chartEnum';
 import { SourceTypeEnum } from '/@/enums/quotaEnum';
 import { useI18n } from '/@/hooks/web/useI18n';
 import { daysAgo, formatToDate } from '/@/utils/dateUtil';

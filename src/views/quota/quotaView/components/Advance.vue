@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full border-l-gray-300 border-l p-2 overflow-y-scroll">
+  <div class="h-full p-2 overflow-y-scroll border-l border-l-gray-300">
     <Collapse v-model:activeKey="collapseKey" :bordered="false">
       <CollapsePanel key="rectSetting">
         <template #header>
@@ -83,8 +83,8 @@
         <template #header>
           <Divider orientation="left">{{ t('quotaView.advance.datasourceSetting.title') }}</Divider>
         </template>
-        <div class="pl-8 flex flex-col gap-2">
-          <span class="flex gap-1 items-center" v-if="showSettingFilter('pastValue')">
+        <div class="flex flex-col gap-2 pl-8">
+          <span class="flex items-center gap-1" v-if="showSettingFilter('pastValue')">
             <span>
               {{ t('quotaView.advance.datasourceSetting.past') }}
             </span>
@@ -106,8 +106,8 @@
               <Icon icon="ant-design:question-circle-outlined" />
             </Tooltip>
           </span>
-          <div class="bg-gray-100 p-2 rounded-sm" v-if="showSettingFilter('sortMonth')">
-            <span class="text-primary flex items-center">
+          <div class="p-2 bg-gray-100 rounded-sm" v-if="showSettingFilter('sortMonth')">
+            <span class="flex items-center text-primary">
               <span>{{ t('quotaView.advance.datasourceSetting.sortMonth') }}</span>
               <template v-if="showSettingFilter('startMonth')">
                 <span>，{{ t('quotaView.advance.datasourceSetting.startMonth') }}</span>
@@ -136,7 +136,7 @@
             </div>
             <div
               v-if="showSettingFilter('sortYear')"
-              class="flex flex-wrap gap-2 mt-2 pt-2 border-t border-t-gray-400"
+              class="flex flex-wrap gap-2 pt-2 mt-2 border-t border-t-gray-400"
               @click="sortYearChange"
             >
               <div
@@ -153,11 +153,11 @@
               >
             </div>
           </div>
-          <div class="bg-gray-100 p-2 rounded-sm" v-if="showSettingFilter('structuralOffset')">
+          <div class="p-2 bg-gray-100 rounded-sm" v-if="showSettingFilter('structuralOffset')">
             <span class="text-primary">
               {{ t('quotaView.advance.datasourceSetting.structuralOffset') }}
             </span>
-            <div class="flex gap-2 items-center">
+            <div class="flex items-center gap-2">
               <Input
                 size="small"
                 class="!w-30 !min-w-30"
@@ -184,11 +184,11 @@
               </Tooltip>
             </div>
           </div>
-          <div class="bg-gray-100 p-2 rounded-sm" v-if="showSettingFilter('quantileOffset')">
+          <div class="p-2 bg-gray-100 rounded-sm" v-if="showSettingFilter('quantileOffset')">
             <span class="text-primary">
               {{ t('quotaView.advance.datasourceSetting.quantileOffset') }}
             </span>
-            <div class="flex gap-2 items-center">
+            <div class="flex items-center gap-2">
               <Input
                 size="small"
                 class="!w-30 !min-w-30"
@@ -209,7 +209,7 @@
         <template #header>
           <Divider orientation="left">{{ t('quotaView.advance.dataEdit.title') }}</Divider>
         </template>
-        <div class="children:mb-2">
+        <div class="children:mb-2 children:flex children:items-center children:gap-3">
           <div>
             <span>{{ t('quotaView.advance.dataEdit.removePoint') }}</span>
             <Tooltip>
@@ -219,16 +219,35 @@
               <Icon icon="ant-design:question-circle-outlined" />
             </Tooltip>
           </div>
-          <div class="flex items-center gap-3">
+          <div>
             <div class="min-w-4em">{{ t('quotaView.advance.dataEdit.xFilter') }}</div>
+            <TextArea v-model:value="removePoint.xRange" />
           </div>
-          <div class="flex items-center gap-3">
+          <div>
             <div class="min-w-4em">{{ t('quotaView.advance.dataEdit.seriesFilter') }}</div>
-            <Select
-              :placeholder="t('quotaView.advance.dataEdit.seriesTip')"
-              class="flex-grow"
-              :options="seriesOptions"
-            />
+            <div class="flex items-center flex-grow gap-3">
+              <Select
+                :placeholder="t('quotaView.advance.dataEdit.seriesTip')"
+                class="flex-grow"
+                v-model:value="removePoint.seriesName"
+                :options="seriesOptions"
+              />
+              <Button type="primary" @click="addFilterGroup">{{
+                t('quotaView.advance.dataEdit.addBtn')
+              }}</Button>
+            </div>
+          </div>
+          <div class="items-baseline">
+            <div class="min-w-4em">{{ t('quotaView.advance.dataEdit.filterGroup') }}</div>
+            <div class="!children:mb-3">
+              <Tag
+                v-for="item in chartConfig.removePoint"
+                :key="`${item.seriesName}${item.xRange}`"
+                closable
+                @close="delFilterGroup(item)"
+                >{{ item.seriesName }}</Tag
+              >
+            </div>
           </div>
         </div>
       </CollapsePanel>
@@ -257,12 +276,14 @@
   import { quotaDataPastUnitTypeEnum } from '/@/api/quota';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { chartTypeEnum, structuralOffsetUnitEnum } from '/@/enums/chartEnum';
-  import { uniq } from 'lodash-es';
+  import { remove, uniq } from 'lodash-es';
   import { EChartsOption, LineSeriesOption } from 'echarts';
+  import { normalChartConfigType } from '/#/chart';
 
   const RadioGroup = Radio.Group;
   const RadioButton = Radio.Button;
   const CollapsePanel = Collapse.Panel;
+  const TextArea = Input.TextArea;
   const { t } = useI18n();
   const { createMessage } = useMessage();
   const chartConfig = useChartConfigContext();
@@ -349,10 +370,13 @@
     }
     target.style.borderColor = '';
   }
+  // 智能抹去数据点
+  const removePoint = reactive({
+    xRange: '',
+    seriesName: '',
+  });
   const seriesOptions = ref<{ label: any; value: any }[]>([]);
   echartMitter.on('echartOptions', (options: EChartsOption) => {
-    console.log(options);
-
     seriesOptions.value = (options.series as LineSeriesOption[]).map((ser) => {
       return {
         label: ser.name,
@@ -360,6 +384,20 @@
       };
     });
   });
+  function addFilterGroup() {
+    const list = (chartConfig as normalChartConfigType).removePoint ?? [];
+    list.push({
+      seriesName: removePoint.seriesName,
+      xRange: removePoint.xRange,
+    });
+    (chartConfig as normalChartConfigType).removePoint = list;
+  }
+  function delFilterGroup(group: any) {
+    remove(
+      (chartConfig as normalChartConfigType).removePoint!,
+      (item) => item.xRange === group.xRange && item.seriesName === group.seriesName,
+    );
+  }
 </script>
 
 <style lang="less" scoped>
@@ -394,13 +432,13 @@
     ::v-deep(.ant-tag) {
       margin-bottom: 0.5rem;
     }
+  }
 
-    ::v-deep(.anticon.anticon-close) {
-      vertical-align: middle;
-      color: @primary-color;
-      font-size: 12px;
-      margin-top: -2px;
-      margin-right: -4px;
-    }
+  ::v-deep(.anticon.anticon-close) {
+    vertical-align: middle;
+    color: @primary-color;
+    font-size: 12px;
+    margin-top: -2px;
+    margin-right: -4px;
   }
 </style>

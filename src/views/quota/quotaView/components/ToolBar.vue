@@ -106,7 +106,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { nextTick, reactive, unref, ref } from 'vue';
+  import { nextTick, reactive, ref } from 'vue';
   import { Input, Space, DatePicker, Select, Tooltip, Radio } from 'ant-design-vue';
   import vRipple from '/@/directives/ripple';
   import { useI18n } from '/@/hooks/web/useI18n';
@@ -180,7 +180,7 @@
     if (chartConfig.title === '') {
       chartConfig.title = quotaList.value[0].name;
     }
-    chartConfig.quotaList = cloneDeep(unref(quotaList));
+    chartConfig.quotaList = cloneDeep(quotaList.value);
     emit('paint');
   }
   async function download({ target }: { target: HTMLElement }) {

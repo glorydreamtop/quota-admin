@@ -98,7 +98,7 @@
         </Tooltip>
         <!-- sourceCode -->
         <span
-          class="max-w-full overflow-x-hidden text-white cursor-default cursor-pointer select-none  overflow-ellipsis quota-sourceCode"
+          class="max-w-full overflow-x-hidden text-white cursor-default cursor-pointer select-none overflow-ellipsis quota-sourceCode"
           ><span class="w-fit" @click.stop @dblclick="copy(item.sourceCode, 'sourceCode')">{{
             item.sourceCode
           }}</span></span
@@ -112,12 +112,12 @@
           <Tooltip>
             <template #title>
               <span class="text-xs">{{
-                item.id
+                !isFormula(item)
                   ? `${t('quotaView.quotaCard.updateOn')}${item.timeLastUpdate}`
                   : t('quotaView.quotaCard.formulaTip')
               }}</span>
             </template>
-            <span class="w-32 whitespace-nowrap" @click.stop>{{
+            <span class="w-fit whitespace-nowrap" @click.stop>{{
               `${dateFomatter(item)} ${item.frequency ? `${item.frequency}更` : ''}`
             }}</span>
           </Tooltip>
@@ -262,7 +262,9 @@
     };
     handler[type]();
   }
-  function copy(text: string, type) {
+  function copy(text: string, type: string) {
+    // 临时公式没有ID
+    if (type === 'id' && /formula/i.test(text)) return;
     const textType = {
       name: t('quotaView.quotaCard.name'),
       id: t('quotaView.quotaCard.id'),

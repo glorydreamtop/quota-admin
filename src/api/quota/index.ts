@@ -93,7 +93,13 @@ export function getQuotaData(params: getQuotaDataParams) {
     Reflect.deleteProperty(params, 'pastUnit');
   }
   const rows = params.rows.map((item) => {
-    return pick(item, ['sourceCode', 'id', 'name', 'sourceType']);
+    // 临时公式不发送id
+    return pick(item, [
+      'sourceCode',
+      'name',
+      'sourceType',
+      /formula/i.test(item.id.toString()) ? '' : 'id',
+    ]);
   });
   return defHttp.post<getQuotaDataResult[]>(
     {

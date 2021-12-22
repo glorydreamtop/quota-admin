@@ -75,11 +75,19 @@ export interface reactSettingType {
 
 export interface seasonalChartConfigType extends reactSettingType, baseChartConfigType {
   yAxis: YAXisComponentOption[];
+  removePoint?: {
+    xRange: string;
+    seriesName: string;
+  }[];
 }
 
 export interface normalChartConfigType extends reactSettingType, baseChartConfigType {
   [x: string]: any;
   yAxis: YAXisComponentOption[];
+  removePoint?: {
+    xRange: string;
+    seriesName: string;
+  }[];
 }
 
 export interface barChartConfigType extends reactSettingType, baseChartConfigType {

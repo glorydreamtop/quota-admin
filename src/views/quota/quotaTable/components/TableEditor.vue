@@ -2,7 +2,7 @@
   <div class="p-4 bg-white">
     <VxeGrid v-bind="gridOptions" ref="xGrid">
       <template #toolbar-buttons>
-        <div class="flex gap-2 items-center">
+        <div class="flex items-center gap-2">
           <Popover trigger="click">
             <template #content>
               <div class="flex gap-1">
@@ -45,11 +45,11 @@
                     ]"
                     @click="defaultTableConfig = item"
                   >
-                    <img class="w-70 h-40" :src="item.preview" alt="" />
+                    <img class="h-40 w-70" :src="item.preview" alt="" />
                     <span class="text-gray-400">{{ item.name }}</span>
                   </div>
                 </div>
-                <Button size="small" class="w-60 mt-4" type="primary" @click="applyConfig">{{
+                <Button size="small" class="mt-4 w-60" type="primary" @click="applyConfig">{{
                   t('common.okText')
                 }}</Button>
               </div>
@@ -75,13 +75,13 @@
       <template #normal-title-text-editor="{ column, columnIndex }">
         <div class="flex items-center justify-center">
           <Input
-            class="text-center flex-grow"
+            class="flex-grow text-center"
             size="small"
             v-model:value="column.title"
             @blur="titleChange(columnIndex, $event)"
           />
 
-          <div class="w-auto flex items-center gap-1 border border-gray-300 header-icons-box pl-1">
+          <div class="flex items-center w-auto gap-1 pl-1 border border-gray-300 header-icons-box">
             <Popover trigger="click">
               <template #content>
                 <Input
@@ -118,7 +118,7 @@
           <span v-if="tableConfig.data[rowIndex][column.property].type === 0" class="select-none">{{
             row[column.property]
           }}</span>
-          <span v-else class="select-none flex items-center justify-center gap-1">
+          <span v-else class="flex items-center justify-center gap-1 select-none">
             <span>{{ tableConfig.data[rowIndex][column.property].qData }}</span
             ><Icon
               class="!text-primary"
@@ -129,7 +129,7 @@
               "
             />
           </span>
-          <span class="text-gray-300 leading-4 absolute right-0 top-0 select-none">{{
+          <span class="absolute top-0 right-0 leading-4 text-gray-300 select-none">{{
             rowIndex + 1
           }}</span>
         </div>
@@ -137,7 +137,7 @@
       <template #normal-cell-text-editor="{ row, column, rowIndex, columnIndex }">
         <div class="flex items-center justify-center">
           <Input class="text-center" v-model:value="row[column.property]" />
-          <div class="gap-1 border-gray-300 header-icons-box pl-1">
+          <div class="gap-1 pl-1 border-gray-300 header-icons-box">
             <Icon
               icon="ant-design:setting-outlined"
               @click="showCellModal({ column, rowIndex, row, columnIndex })"
@@ -169,7 +169,7 @@
     useTimeStrFilter,
   } from './helper';
   import type { TableConfigType } from '/#/table';
-  import { cloneDeep, maxBy, merge, minBy, parseInt, remove } from 'lodash-es';
+  import { cloneDeep, maxBy, mergeWith, minBy, parseInt, remove } from 'lodash-es';
   import { useModal } from '/@/components/Modal';
   import CellSetting from './CellSetting.vue';
   import Icon from '/@/components/Icon';
@@ -500,9 +500,16 @@
     gridOptions.data = [];
     tableConfig.columns = [];
     tableConfig.data = [];
-    merge(gridOptions, cloneDeep(transfer(defaultTableConfig.value)));
-    merge(tableConfig, cloneDeep(defaultTableConfig.value));
-    console.log(gridOptions, tableConfig);
+    mergeWith(gridOptions, cloneDeep(transfer(defaultTableConfig.value)), (target, src) => {
+      if (target instanceof Array) {
+        return reactive(src);
+      }
+    });
+    mergeWith(tableConfig, cloneDeep(defaultTableConfig.value), (target, src) => {
+      if (target instanceof Array) {
+        return reactive(src);
+      }
+    });
   }
 </script>
 

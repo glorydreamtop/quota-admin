@@ -141,6 +141,8 @@ export default {
       xTip: '输入X轴的范围如 2015-02-03<x<2015-03-01,或x=2019-02-01，多段用逗号分隔',
       seriesFilter: '所属序列',
       seriesTip: '先绘图再选择数据所属序列，可多选',
+      addBtn: '添加',
+      filterGroup: '过滤组',
     },
   },
   chart: {

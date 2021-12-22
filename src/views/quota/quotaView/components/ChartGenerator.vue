@@ -1,10 +1,10 @@
 <template>
-  <div class="bg-white shadow-md flex-grow p-4 overflow-hidden flex">
-    <div class="w-2/3 relative left-0 right-0">
+  <div class="flex flex-grow p-4 overflow-hidden bg-white shadow-md">
+    <div class="relative left-0 right-0 w-2/3">
       <ToolBar @paint="paint" @event="handleEvent" />
       <Teleport to="body" :disabled="!fullscreen">
         <div
-          class="absolute top-12 bottom-0 left-0 right-2 preserve-3d box"
+          class="absolute bottom-0 left-0 top-12 right-2 preserve-3d box"
           :class="[fullscreen ? 'fullscreen' : '']"
           id="quota-view-chartbox"
         >
@@ -20,7 +20,7 @@
             :config="config"
             ref="tableRef"
           />
-          <div class="absolute top-2 right-2 flex gap-4">
+          <div class="absolute flex gap-4 top-2 right-2">
             <Icon
               icon="ant-design:close-circle-filled"
               v-if="fullscreen"
@@ -41,7 +41,7 @@
   import { echartMitter, useChartConfigContext } from './hooks';
   import { reactive, ref, watchEffect } from 'vue';
   import type { chartConfigType } from '/#/chart';
-  import { cloneDeep, merge } from 'lodash-es';
+  import { cloneDeep, mergeWith } from 'lodash-es';
   import { EChartsType } from 'echarts/core';
   import { downloadByBase64 } from '/@/utils/file/download';
   import { QuotaDataTable } from '/@/components/QuotaTable';
@@ -58,10 +58,18 @@
   });
   const config = reactive({}) as chartConfigType;
   function paint() {
-    merge(config, cloneDeep(chartConfig));
+    mergeWith(config, cloneDeep(chartConfig), (target, src) => {
+      if (target instanceof Array) {
+        return reactive(src);
+      }
+    });
   }
-  function updateConfig(cfg) {
-    merge(chartConfig, cloneDeep(cfg));
+  function updateConfig(cfg: chartConfigType) {
+    mergeWith(chartConfig, cloneDeep(cfg), (target, src) => {
+      if (target instanceof Array) {
+        return reactive(src);
+      }
+    });
     paint();
   }
   const chartRef = ref<
@@ -116,11 +124,13 @@
     right: 0;
     background: @white;
     z-index: 9999;
+
     .chart-view {
       padding-top: 1rem;
       padding-bottom: 1rem;
     }
   }
+
   .chart-view,
   .table-view {
     position: absolute;
