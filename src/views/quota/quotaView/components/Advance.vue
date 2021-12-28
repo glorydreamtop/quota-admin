@@ -240,13 +240,17 @@
           <div class="items-baseline">
             <div class="min-w-4em">{{ t('quotaView.advance.dataEdit.filterGroup') }}</div>
             <div class="!children:mb-3">
-              <Tag
+              <span
                 v-for="item in chartConfig.removePoint"
                 :key="`${item.seriesName}${item.xRange}`"
-                closable
-                @close="delFilterGroup(item)"
-                >{{ item.seriesName }}</Tag
               >
+                <Tooltip placement="left">
+                  <template #title>
+                    <span>{{ item.xRange }}</span>
+                  </template>
+                  <Tag closable @close="delFilterGroup(item)">{{ item.seriesName }}</Tag>
+                </Tooltip>
+              </span>
             </div>
           </div>
         </div>

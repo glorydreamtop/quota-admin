@@ -77,12 +77,7 @@
           </div>
         </template>
       </VScroll>
-      <img
-        class="w-60 no-data"
-        v-if="searchResult.length === 0"
-        src="../../../assets/images/no-data.png"
-        alt=""
-      />
+      <img class="w-60 no-data" v-if="searchResult.length === 0" :src="naDataSvg" alt="" />
       <Pagination
         class="!mt-1"
         size="small"
@@ -112,6 +107,7 @@
   import { useMagicKeys, useResizeObserver } from '@vueuse/core';
   import { SelectedQuotaItem } from '/@/views/quota/quotaView/components/hooks';
   import { cloneDeep, omit } from 'lodash-es';
+  import naDataSvg from '/@/assets/svg/no-data.svg';
 
   const TabPane = Tabs.TabPane;
   interface searchKeyType {
@@ -285,6 +281,7 @@
   .searchres-item {
     transition: background 0.2s ease;
   }
+
   .no-data {
     position: absolute;
     top: 50%;

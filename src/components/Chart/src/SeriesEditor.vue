@@ -33,7 +33,13 @@
         </span>
         <span v-if="info.yAxisIndex !== undefined">
           <span class="w-4em text-justify mr-2">{{ t('quotaView.seriesEdit.yAxisIndex') }}</span>
-          <InputNumber class="!w-3em !text-center" size="small" v-model:value="info.yAxisIndex" />
+          <InputNumber
+            class="!w-3em !text-center"
+            size="small"
+            v-model:value="info.yAxisIndex"
+            :max="limit.yAxisMax"
+            :min="1"
+          />
         </span>
         <span v-if="info.xAxisIndex !== undefined">
           <span class="w-4em text-justify mr-2">{{ t('quotaView.seriesEdit.xAxisIndex') }}</span>
@@ -53,7 +59,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { reactive, ref, watch, toRaw } from 'vue';
+  import { reactive, ref, watch, toRaw, computed } from 'vue';
   import { Popover, Button, Switch, Select, InputNumber } from 'ant-design-vue';
   import { cloneDeep, merge } from 'lodash-es';
   import { useI18n } from '/@/hooks/web/useI18n';
@@ -76,6 +82,11 @@
     shadow: undefined,
     yAxisIndex: undefined,
     xAxisIndex: undefined,
+  });
+  const limit = computed(() => {
+    return {
+      yAxisMax: props.chartConfig.yAxis.length,
+    };
   });
   const compOptions = reactive({
     seriesTypeList: [
@@ -129,6 +140,7 @@
     }
     emit('visibleChange', v);
   });
+  // 确认并关闭
   function confirm() {
     const config = cloneDeep(props.chartConfig);
     const series = config.seriesSetting.find((ser) => ser.name === info.name);
@@ -148,7 +160,9 @@
 <style lang="less" scoped>
   ::v-deep(.ant-input-number-input-wrap) {
     width: 2em !important;
-  }::v-deep(.ant-input-number) {
+  }
+
+  ::v-deep(.ant-input-number) {
     min-width: 0 !important;
   }
 </style>

@@ -642,3 +642,17 @@ export function selectSeriesType(
   };
   return typeMap[seriesSetting?.seriesType ?? echartSeriesTypeEnum.line] as NormalChartSeriesOption;
 }
+
+export function useRemovePoint({
+  chartConfig,
+  quotaDataList,
+}: {
+  chartConfig: normalChartConfigType;
+  quotaDataList: getQuotaDataResult[];
+}) {
+  const rules = chartConfig.removePoint;
+  if (rules === undefined || rules.length === 0) return;
+  quotaDataList.forEach((quota) => {
+    console.log(quota.id);
+  });
+}
