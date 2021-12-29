@@ -98,7 +98,7 @@ export function getQuotaData(params: getQuotaDataParams) {
       'sourceCode',
       'name',
       'sourceType',
-      /formula/i.test(item.id.toString()) ? '' : 'id',
+      item.id ? (/formula/i.test(item.id.toString()) ? '' : 'id') : '',
     ]);
   });
   return defHttp.post<getQuotaDataResult[]>(

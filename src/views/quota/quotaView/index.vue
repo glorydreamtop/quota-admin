@@ -1,10 +1,10 @@
 <template>
   <div class="flex justify-start items-center h-layout-full p-4 gap-4 w-full overflow-hidden">
-    <div class="h-full min-w-75 w-75 relative border resize-x overflow-hidden shadow-md">
+    <div class="h-full min-w-75 w-75 relative border shadow-md" v-resizeable:show="`x`">
       <QuotaTree :show-search="true" class="h-full w-full enter-y" @selectNode="selectNode" />
     </div>
     <div class="flex flex-col h-full flex-grow w-0 gap-4">
-      <QuotaList class="border enter-y overflow-hidden resize-y" />
+      <QuotaList class="border enter-y" v-resizeable:show="`y`" />
       <ChartGenerator class="enter-y" />
     </div>
   </div>

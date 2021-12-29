@@ -6,7 +6,7 @@ import { isDef } from '/@/utils/is';
 const domSymbol = Symbol('watermark-dom');
 
 export function useWatermark(
-  appendEl: Ref<HTMLElement | null> = ref(document.body) as Ref<HTMLElement>,
+  appendEl: Ref<HTMLElement | undefined> = ref(document.body) as Ref<HTMLElement>,
 ) {
   const func = useRafThrottle(function () {
     const el = unref(appendEl);

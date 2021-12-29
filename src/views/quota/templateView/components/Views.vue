@@ -38,13 +38,14 @@
             @click="selectTemplate(element, $event)"
             :data-uniqid="element.uniqId"
             :class="[
-              'border resize rounded-sm overflow-hidden sortable relative',
+              'border rounded-sm overflow-hidden sortable relative',
               selectedTemplateDOMList.find((node) => node.uniqId === element.uniqId)
                 ? 'selected'
                 : '',
               pageSetting.showElementborder ? '' : 'border-light-50',
             ]"
             :style="{ width: element.pageConfig.width, height: element.pageConfig.height }"
+            v-resizeable:hidden="`xy`"
           >
             <Icon
               icon="akar-icons:drag-horizontal"
@@ -53,7 +54,7 @@
             <component
               :is="compTypeMap[element.type]"
               v-model:config="element.config"
-              class="w-full h-full text-base"
+              :class="['w-full h-full text-base', element.type === 'Chart' ? 'py-2' : '']"
             />
           </div>
         </template>
@@ -293,11 +294,12 @@
   }
 
   .selected {
+    @apply shadow-sm shadow-primary;
+
     position: relative;
     border-radius: 4px;
     border: 1px solid;
     border-color: @primary-color;
-    @apply shadow-lg shadow-primary;
 
     &::after {
       position: absolute;

@@ -1,6 +1,6 @@
 <template>
   <div class="p-4 h-layout-full flex gap-4">
-    <div class="h-full min-w-90 w-90 relative border resize-x overflow-hidden shadow-md">
+    <div class="h-full min-w-90 w-90 relative border shadow-md" v-resizeable:show="`x`">
       <QuotaTree :show-search="true" class="h-full w-full enter-y" @selectNode="selectNode" />
     </div>
     <QuotaPool />
