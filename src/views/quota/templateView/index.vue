@@ -63,6 +63,7 @@
     node.pageConfig = {
       width: '50%',
       height: '300px',
+      // margin: '0 auto',
     };
     insertDOM(templateList, selectedTemplateList, node);
     console.log(node);

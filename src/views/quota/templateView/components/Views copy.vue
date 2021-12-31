@@ -24,36 +24,6 @@
           ></span
         >
       </div>
-      <!-- <div
-        class="flex flex-wrap content-start flex-grow w-full overflow-hidden relative"
-        @click.self="clearSelectKey"
-      >
-        <div
-          v-for="element in page.list"
-          :key="element.uniqId"
-          @click="selectTemplate(element, $event)"
-          :data-uniqid="element.uniqId"
-          :class="[
-            'border rounded-sm overflow-hidden sortable',
-            selectedTemplateDOMList.find((node) => node.uniqId === element.uniqId)
-              ? 'selected'
-              : '',
-            pageSetting.showElementborder ? '' : 'border-light-50',
-          ]"
-          :style="{ width: element.pageConfig.width, height: element.pageConfig.height }"
-          v-resizeable:hidden="`xy`"
-        >
-          <Icon
-            icon="akar-icons:drag-horizontal"
-            class="drag-handler cursor-move pl-1 pt-1 !text-primary"
-          />
-          <component
-            :is="compTypeMap[element.type]"
-            v-model:config="element.config"
-            :class="['w-full h-full text-base', element.type === 'Chart' ? 'py-2' : '']"
-          />
-        </div>
-      </div> -->
       <Draggable
         class="flex flex-wrap content-start flex-grow w-full overflow-hidden"
         @click.self="clearSelectKey"
@@ -74,13 +44,12 @@
                 : '',
               pageSetting.showElementborder ? '' : 'border-light-50',
             ]"
-            :style="element.pageConfig"
+            :style="{ width: element.pageConfig.width, height: element.pageConfig.height }"
             v-resizeable:hidden="`xy`"
           >
             <Icon
               icon="akar-icons:drag-horizontal"
               class="drag-handler cursor-move pl-1 pt-1 !text-primary"
-              @contextmenu="dragHandleMenu"
             />
             <component
               :is="compTypeMap[element.type]"
@@ -124,16 +93,14 @@
   import BasicImg from './Image.vue';
   import Icon from '/@/components/Icon';
   import { onMountedOrActivated } from '/@/hooks/core/onMountedOrActivated';
-  import { useI18n } from '/@/hooks/web/useI18n';
+  // import { useI18n } from '/@/hooks/web/useI18n';
   import { useMutationObserver, useResizeObserver, useTimeoutFn } from '@vueuse/core';
   import { cloneDeep, differenceBy, findIndex, isNull, remove } from 'lodash-es';
   import { useWatchArray } from '/@/utils/helper/commonHelper';
   import { useUniqueField } from '../../quotaTable/components/helper';
   import Draggable from 'vuedraggable';
-  import { useContextMenu } from '/@/hooks/web/useContextMenu';
 
-  const { t } = useI18n();
-  const [createContextMenu] = useContextMenu();
+  // const { t } = useI18n();
   const pageSetting = usePageSettingContext();
   const selectedTemplateDOMList = useSelectTemplateListContext();
   const pageStyle: ComputedRef<CSSProperties> = computed(() => {
@@ -182,10 +149,8 @@
     });
   const { getUniqueField } = useUniqueField();
   useWatchArray(templateList, (v, pre) => {
-    // 是切换页面模式导致的重排则不响应
     if (reload.value) return;
     if (pre.length < v.length) {
-      // 新增元素时计算插入位置
       const diffNode = differenceBy(v, pre, (node) => node.uniqId);
       for (let i = 0; i < diffNode.length; i++) {
         const nodeIndex = findIndex(v, (node) => node.uniqId === diffNode[i].uniqId);
@@ -237,19 +202,6 @@
   }
   function pageFooterChange(pos: 'left' | 'right', e: InputEvent) {
     pageSetting.footer[pos] = (e.target as HTMLSpanElement).innerText;
-  }
-  function dragHandleMenu(event: MouseEvent) {
-    createContextMenu({
-      event,
-      items: [
-        {
-          label: t('templateView.view.dragHandleMenu.wholeLine'),
-        },
-        {
-          label: t('templateView.view.dragHandleMenu.notWholeLine'),
-        },
-      ],
-    });
   }
   onMountedOrActivated(() => {
     const boxdom = document.getElementById('page-box') as HTMLDivElement;
@@ -310,7 +262,7 @@
                                   break;
                                 }
                               }
-                            }, 96);
+                            }, 100);
                           }
                         }
                       }

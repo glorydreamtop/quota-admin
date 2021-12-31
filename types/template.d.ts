@@ -1,3 +1,4 @@
+import { CSSProperties } from 'vue';
 import { chartConfigType } from './chart';
 import { versionEnum } from '/@/enums/chartEnum';
 
@@ -17,10 +18,7 @@ export interface TemplateDOM {
   categoryId?: number;
   id?: number;
   uniqId: string;
-  pageConfig: {
-    width: string;
-    height: string;
-  };
+  pageConfig: CSSProperties;
 }
 
 export interface TextConfig {

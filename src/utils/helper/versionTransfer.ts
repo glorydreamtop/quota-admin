@@ -263,7 +263,7 @@ export function huiChart() {
         normalized: o.normalized,
       },
       yAxis: o.multiY
-        ? o.yAxis
+        ? o.yAxis.map((y) => ({ ...y, axisLabel: { formatter: '{value}' } }))
         : [
             {
               inverse: false,
@@ -293,16 +293,18 @@ export function huiChart() {
         .map((item) => item.value)
         .join(',');
     }
+    config.seriesSetting = [];
     config.quotaList = o.rows.map((row) => {
       const r = omit(row, ['show', 'seriesCfg']) as SelectedQuotaItem;
       r.selected = row.show || row.selected;
-      r.setting = {
+      config.seriesSetting.push({
         yAxisIndex: row.seriesCfg.yAxisIndex,
-        lineWidth: row.seriesCfg.lineWidth,
-        type: row.seriesCfg.type,
-      };
+        size: row.seriesCfg.lineWidth,
+        seriesType: row.seriesCfg.type,
+      });
       return r;
     });
+
     return config;
   };
 }

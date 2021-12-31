@@ -63,5 +63,9 @@ export default {
         none: '原图尺寸',
       },
     },
+    dragHandleMenu: {
+      wholeLine: '占据整行',
+      notWholeLine: '不占据整行',
+    },
   },
 };
