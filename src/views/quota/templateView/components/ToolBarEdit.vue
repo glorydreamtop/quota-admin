@@ -23,7 +23,7 @@
         size="small"
         class="w-200px"
         value-format="YYYY-MM-DD"
-        v-model="pageConfig.date"
+        v-model:value="pageConfig.date"
       />
     </template>
   </Popover>
@@ -59,7 +59,7 @@
 <script lang="ts" setup>
   import { reactive } from 'vue';
   import { useI18n } from '/@/hooks/web/useI18n';
-  import { Popover, Button, Input, Switch, DatePicker,Tooltip } from 'ant-design-vue';
+  import { Popover, Button, Input, Switch, DatePicker, Tooltip } from 'ant-design-vue';
   import ColorSchemeSelector from './ColorSchemeSelector.vue';
   import { formatToDate, yearsAgo } from '/@/utils/dateUtil';
   import { useSelectTemplateListContext, useTemplateListContext } from '../hooks';
@@ -86,8 +86,8 @@
   // 所有节点
   const templateList = useTemplateListContext();
   async function updateConfig(configName: string, visible: boolean) {
-    console.log(configName,visible);
-    
+    console.log(configName, visible);
+
     if (visible) return;
     const param = pageConfig[configName];
     switch (configName) {
@@ -156,8 +156,8 @@
         break;
     }
   }
-  function changeColorScheme(id: number) {
-    selectedTemplateList.value.f;
+  function changeColorScheme() {
+    // selectedTemplateList.value.f;
   }
 </script>
 

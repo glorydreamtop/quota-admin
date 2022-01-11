@@ -40,7 +40,7 @@ export const basicProps = {
   },
   name: {
     type: String as PropType<string>,
-    default: 'file',
+    default: 'files',
   },
   filename: {
     type: String as PropType<string>,

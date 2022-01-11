@@ -20,6 +20,7 @@ import XAxisEdit from './src/XAxisEditor.vue';
 import SeriesEdit from './src/SeriesEditor.vue';
 import { getColorScheme } from '/@/api/color';
 import { NormalChartSeriesOption } from './tranfer';
+import { isNumber, isArray } from '/@/utils/is';
 
 const { t } = useI18n();
 export async function fetchQuotaData(params: getQuotaDataParams) {
@@ -651,8 +652,41 @@ export function useRemovePoint({
   quotaDataList: getQuotaDataResult[];
 }) {
   const rules = chartConfig.removePoint;
-  if (rules === undefined || rules.length === 0) return;
-  quotaDataList.forEach((quota) => {
-    console.log(quota.id);
-  });
+  console.log(rules);
+  if (rules !== undefined && rules.length > 0) {
+    const filterSeries: { [key: string]: string[] } = {};
+    rules?.forEach((item) => {
+      const range = item.xRange.split(',');
+      filterSeries[item.seriesName] = range;
+    });
+    if (rules === undefined || rules.length === 0) return;
+    quotaDataList.forEach((quota) => {
+      if (Reflect.has(filterSeries, quota.name)) {
+        const r = filterSeries[quota.name].map((item) => {
+          // 等于某日期
+          if (/x=\d{4}-\d{2}-\d{2}/i.test(item)) {
+            return dayjs(item.split('=')[1]).unix() * 1000;
+          }
+          if (/\d{4}-\d{2}-\d{2}<x<\d{4}-\d{2}-\d{2}/i.test(item)) {
+            return item.split('<x<').map((s) => dayjs(s).unix() * 1000);
+          }
+        });
+        if (r.length > 0) {
+          console.log(r[0]);
+
+          quota.data = quota.data.filter((data) => {
+            const time = dayjs(data[0]).startOf('d').unix() * 1000;
+            for (let i = 0; i < r.length; i++) {
+              const s = r[i];
+              if (isNumber(s) && s === time) return false;
+              if (isArray(s) && time > s[0] && time < s[1]) return false;
+            }
+            console.log(time);
+
+            return true;
+          });
+        }
+      }
+    });
+  }
 }

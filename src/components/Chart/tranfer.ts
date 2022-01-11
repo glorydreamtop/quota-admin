@@ -24,6 +24,7 @@ import {
   useNormalized,
   useSortYear,
   useColor,
+  useRemovePoint,
   useScientificNotation,
   selectSeriesType,
 } from './helper';
@@ -194,6 +195,7 @@ export async function useNormalChart(chartConfig: normalChartConfigType): Promis
   const quotaDataList = await getQuotaData(fetchParams);
   useSortMonth({ chartConfig, quotaDataList });
   useNormalized({ chartConfig, quotaDataList });
+  useRemovePoint({ chartConfig, quotaDataList });
   const legend: LegendComponentOption = {
     data: [],
     top: 'bottom',

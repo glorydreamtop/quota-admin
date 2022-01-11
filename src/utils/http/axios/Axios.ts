@@ -122,13 +122,7 @@ export class VAxios {
    */
   uploadFile<T = any>(config: AxiosRequestConfig, params: UploadFileParams) {
     const formData = new window.FormData();
-    const customFilename = params.name || 'file';
-
-    if (params.filename) {
-      formData.append(customFilename, params.file, params.filename);
-    } else {
-      formData.append(customFilename, params.file);
-    }
+    const customFilename = params.name || 'files';
 
     if (params.data) {
       Object.keys(params.data).forEach((key) => {
@@ -146,10 +140,10 @@ export class VAxios {
     if (params.file) {
       if (Array.isArray(params.file)) {
         params.file.forEach((file) => {
-          formData.append(params.name || 'files', file, params.filename);
+          formData.append(customFilename, file, params.filename);
         });
       } else {
-        formData.append(params.name || 'files', params.file, params.filename);
+        formData.append(customFilename, params.file, params.filename);
       }
     }
 
