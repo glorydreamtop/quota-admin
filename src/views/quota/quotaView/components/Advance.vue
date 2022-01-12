@@ -209,7 +209,10 @@
         <template #header>
           <Divider orientation="left">{{ t('quotaView.advance.dataEdit.title') }}</Divider>
         </template>
-        <div class="children:mb-2 children:flex children:items-center children:gap-3">
+        <div
+          class="children:mb-2 children:flex children:items-center children:gap-3"
+          v-if="showSettingFilter('removePoint')"
+        >
           <div>
             <span>{{ t('quotaView.advance.dataEdit.removePoint') }}</span>
             <Tooltip>
@@ -294,9 +297,9 @@
   const collapseKey = ref('dataEdit');
   function showSettingFilter(modelName: string) {
     const filter = {
-      [chartTypeEnum.normal]: ['yAxisEdit', 'sortMonth', 'pastValue'],
-      [chartTypeEnum.seasonal]: ['yAxisEdit', 'sortMonth', 'startMonth', 'sortYear'],
-      [chartTypeEnum.seasonalLunar]: ['yAxisEdit', 'sortMonth', 'startMonth'],
+      [chartTypeEnum.normal]: ['yAxisEdit', 'sortMonth', 'pastValue', 'removePoint'],
+      [chartTypeEnum.seasonal]: ['yAxisEdit', 'sortMonth', 'startMonth', 'sortYear', 'removePoint'],
+      [chartTypeEnum.seasonalLunar]: ['yAxisEdit', 'sortMonth', 'startMonth', 'removePoint'],
       [chartTypeEnum.normalRadar]: ['pastValue'],
       [chartTypeEnum.quantileRadar]: ['quantileOffset'],
       [chartTypeEnum.bar]: ['yAxisEdit', 'pastValue'],
@@ -390,6 +393,13 @@
   });
   function addFilterGroup() {
     const list = (chartConfig as normalChartConfigType).removePoint ?? [];
+    const repeat = list.some(
+      (item) => item.seriesName === removePoint.seriesName && item.xRange === removePoint.xRange,
+    );
+    if (repeat) {
+      createMessage.warn(t('common.notUniqTip'));
+      return;
+    }
     list.push({
       seriesName: removePoint.seriesName,
       xRange: removePoint.xRange,

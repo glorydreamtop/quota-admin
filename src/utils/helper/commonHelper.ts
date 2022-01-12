@@ -2,6 +2,7 @@ import { cloneDeep } from 'lodash-es';
 import { computed, unref, watch, nextTick } from 'vue';
 import type { Ref } from 'vue';
 import { SourceTypeEnum, SourceTypeNameEnum } from '/@/enums/quotaEnum';
+import { isObject } from '../is';
 
 export function useWatchArray<T>(arr: Ref<T[]>, callBack: (arr: T[], pre: T[]) => void) {
   let stopWatch = false;
@@ -42,9 +43,9 @@ export function useTaskPool() {
       this.pool.push(currTask);
       currTask()
         .then((res) => {
-          console.log(new Date().getTime() - startTime);
+          console.log(new Date().getTime() - res);
         })
-        .catch((err) => {})
+        .catch((_) => {})
         .finally(() => {
           this.pool.splice(this.pool.indexOf(currTask), 1);
           this.run();
@@ -52,4 +53,31 @@ export function useTaskPool() {
     }
   };
   return taskPool;
+}
+
+// type mergeAndRemoveOptions = {
+//   excludes: string[];
+// };
+
+export function mergeAndRemove(target: object, source: object) {
+  for (const key in target) {
+    // 继承属性不管
+    if (!target.hasOwnProperty(key)) continue;
+    const sourceHas = Reflect.has(source, key);
+    if (sourceHas) {
+      if (isObject(target[key]) && isObject(source[key])) {
+        mergeAndRemove(target[key], source[key]);
+      } else {
+        target[key] = cloneDeep(source[key]);
+      }
+    } else {
+      Reflect.deleteProperty(target, key);
+    }
+  }
+  for (const key in source) {
+    const targetHas = Reflect.has(target, key);
+    if (!targetHas) {
+      target[key] = cloneDeep(source[key]);
+    }
+  }
 }

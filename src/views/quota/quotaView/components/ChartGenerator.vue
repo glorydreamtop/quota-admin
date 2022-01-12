@@ -47,6 +47,7 @@
   import { QuotaDataTable } from '/@/components/QuotaTable';
   import { useMagicKeys } from '@vueuse/core';
   import { ECBasicOption } from 'echarts/types/dist/shared';
+  import { mergeAndRemove } from '/@/utils/helper/commonHelper';
 
   const chartConfig = useChartConfigContext();
   const showTable = ref(false);
@@ -58,11 +59,13 @@
   });
   const config = reactive({}) as chartConfigType;
   function paint() {
-    mergeWith(config, cloneDeep(chartConfig), (target, src) => {
-      if (target instanceof Array) {
-        return reactive(src);
-      }
-    });
+    // mergeWith(config, cloneDeep(chartConfig), (target, src) => {
+    //   if (target instanceof Array) {
+    //     return reactive(src);
+    //   }
+    // });
+    mergeAndRemove(config, chartConfig);
+    console.log(cloneDeep(config));
   }
   function updateConfig(cfg: chartConfigType) {
     mergeWith(chartConfig, cloneDeep(cfg), (target, src) => {
@@ -129,6 +132,10 @@
       padding-top: 1rem;
       padding-bottom: 1rem;
     }
+  }
+
+  .box {
+    transition: width 0.3s ease;
   }
 
   .chart-view,

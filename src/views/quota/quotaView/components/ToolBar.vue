@@ -114,11 +114,12 @@
   import { chartTypeEnum } from '/@/enums/chartEnum';
   import Color from './Color.vue';
   import Icon from '/@/components/Icon';
-  import { cloneDeep, merge } from 'lodash-es';
+  import { cloneDeep } from 'lodash-es';
   import { getChartDefaultConfig } from '../helper';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { useTimeoutFn } from '@vueuse/shared';
   import dayjs from 'dayjs';
+  import { mergeAndRemove } from '/@/utils/helper/commonHelper';
 
   const RadioButton = Radio.Button;
   const RadioGroup = Radio.Group;
@@ -153,8 +154,9 @@
     // for (const key in chartConfig) {
     //   Reflect.deleteProperty(chartConfig, key);
     // }
-    merge(chartConfig, getChartDefaultConfig(type));
-    console.log(chartConfig);
+    const def = getChartDefaultConfig(type);
+    mergeAndRemove(chartConfig, def);
+    console.log(cloneDeep(chartConfig));
   }
   async function paint() {
     if (quotaList.value.length === 0) {

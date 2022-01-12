@@ -70,7 +70,7 @@ export function useECharts(elRef: Ref<HTMLDivElement>) {
         }
         clear && chartInstance?.clear();
 
-        chartInstance?.setOption(unref(getOptions));
+        chartInstance?.setOption(unref(getOptions), true);
       }, 30);
     });
   }

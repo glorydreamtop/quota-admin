@@ -1,6 +1,12 @@
 <template>
   <div class="flex-grow w-0 h-full p-4 bg-white shadow-md" ref="loadingRef">
     <div class="flex flex-wrap gap-2 pb-2 border-b border-gray-300 toolbar pt-2px">
+      <Button size="small" @click="checkAll">
+        <template #icon>
+          <Icon icon="ant-design:check-outlined" />
+        </template>
+        <span>{{ t('quotaView.quotaList.checkAll') }}</span>
+      </Button>
       <Button size="small" @click="clear" :disabled="!allowDel" class="delete-shake">
         <template #icon>
           <Icon icon="ant-design:stop-outlined" />
@@ -13,29 +19,23 @@
         </template>
         <span>{{ t('quotaView.management.delete') }}</span>
       </Button>
-      <Button size="small" @click="checkAll">
-        <template #icon>
-          <Icon icon="ant-design:check-outlined" />
-        </template>
-        <span>{{ t('quotaView.quotaList.checkAll') }}</span>
-      </Button>
       <Button size="small" @click="updateQuota" :disabled="!allowDel">
         <template #icon>
           <Icon icon="ant-design:sync-outlined" />
         </template>
         <span>{{ t('quotaView.quotaList.updateQuota') }}</span>
       </Button>
-      <Button size="small" @click="search">
-        <template #icon>
-          <Icon icon="ant-design:search-outlined" />
-        </template>
-        <span>{{ t('quotaView.management.search.btn') }}</span>
-      </Button>
       <Button size="small" @click="clearData" :disabled="!allowDel">
         <template #icon>
           <Icon icon="ant-design:clear-outlined" />
         </template>
         <span>{{ t('quotaView.management.clearData.btn') }}</span>
+      </Button>
+      <Button size="small" :disabled="!allowCalcData" @click="calcData">
+        <template #icon>
+          <Icon icon="ant-design:calculator-outlined" />
+        </template>
+        <span>{{ t('quotaView.management.calcData.btn') }}</span>
       </Button>
       <Popover placement="bottom" trigger="click">
         <Button size="small" @click="moveQuotaTo" :disabled="!allowDel">
@@ -63,11 +63,11 @@
           </div>
         </template>
       </Popover>
-      <Button size="small" :disabled="!allowCalcData" @click="calcData">
+      <Button size="small" @click="search">
         <template #icon>
-          <Icon icon="ant-design:calculator-outlined" />
+          <Icon icon="ant-design:search-outlined" />
         </template>
-        <span>{{ t('quotaView.management.calcData.btn') }}</span>
+        <span>{{ t('quotaView.management.search.btn') }}</span>
       </Button>
     </div>
     <!-- 列表start -->
@@ -119,15 +119,7 @@
             </span>
             <!-- sourceCode -->
             <span
-              class="
-                w-40
-                max-w-full
-                overflow-x-hidden
-                text-xs text-gray-300
-                truncate
-                overflow-ellipsis
-                min-w-30
-              "
+              class="w-40 max-w-full overflow-x-hidden text-xs text-gray-300 truncate overflow-ellipsis min-w-30"
             >
               <Tooltip>
                 <template #title>{{ item.sourceCode }}</template>
@@ -228,9 +220,9 @@
 </template>
 
 <script lang="ts" setup>
-  import { nextTick, ref, reactive, unref, watch, computed } from 'vue';
+  import { nextTick, ref, reactive, unref, watch, computed, h } from 'vue';
   import type { QuotaItem } from '/#/quota';
-  import { Button, Tooltip, Modal, Popover, TreeSelect } from 'ant-design-vue';
+  import { Button, Tooltip, Modal, Popover, TreeSelect, Input } from 'ant-design-vue';
   import { typeFomatter } from '/@/utils/helper/commonHelper';
   import { remove, cloneDeep } from 'lodash-es';
   import { useLoading } from '/@/components/Loading';
@@ -375,7 +367,7 @@
   });
   function del() {
     Modal.confirm({
-      title: '这将会影响所用依赖此的模板和报告，确认删除吗',
+      title: t('quotaView.management.deleteConfirmTip'),
       onOk: async () => {
         const pl: any[] = [];
         const ql = cloneDeep(quotaList.value);
@@ -424,12 +416,35 @@
         openQuotaEditor(true, item);
       },
       del: () => {
+        const targetID = ref('');
+        const disabled = computed(() => {
+          return targetID.value !== item.id.toString();
+        });
         Modal.confirm({
-          title: '这将会影响所用依赖此的模板和报告，确认删除吗',
+          title: t('quotaView.management.deleteConfirmTip'),
+          content: h(
+            'div',
+            {
+              className: 'flex items-center flex-col',
+            },
+            [
+              h('span', {}, t('quotaView.management.deleteInputId')),
+              h(Input, {
+                onInput: (e) => {
+                  targetID.value = e.target.value;
+                },
+              }),
+            ],
+          ),
+          okType: 'danger',
+          okText: t('quotaView.management.confirmDel'),
+          okButtonProps: {
+            disabled: disabled,
+          },
           onOk: async () => {
             try {
               delQuota({ indexId: item.id });
-              createMessage.success('删除成功');
+              createMessage.success(t('sys.api.delOK'));
               remove(selectedQuota.value, (q) => q.id === item.id);
               emitter.emit('updateTree');
             } catch (error) {

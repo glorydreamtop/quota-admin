@@ -24,37 +24,19 @@
             @updateEndOffset="updateEndOffset"
           />
         </div>
-        <div>
+        <div v-if="quotaList.length > 0">
           <span>{{ t('quotaView.quotaSetting.autofill') }}</span>
           <div class="flex flex-wrap items-center gap-1 w-74">
             <span
               v-for="item in quotaList"
               :key="item.id"
-              class="
-                rounded-sm
-                overflow-hidden
-                cursor-pointer
-                bg-purple-400
-                text-white
-                px-1
-                relative
-              "
+              class="rounded-sm overflow-hidden cursor-pointer bg-purple-400 text-white px-1 relative"
             >
               <span @click="fillFormula(item, 'id')">{{ item.shortName || item.name }}</span>
               <span
                 v-show="item.sourceType === 'formula'"
                 @click="fillFormula(item, 'sourceCode')"
-                class="
-                  absolute
-                  -left-1/5
-                  top-0
-                  w-7/10
-                  bg-gray-100
-                  h-full
-                  opacity-45
-                  skew-x-165
-                  transform
-                "
+                class="absolute -left-1/5 top-0 w-7/10 bg-gray-100 h-full opacity-45 skew-x-165 transform"
               ></span>
             </span>
             <Tooltip :title="t('quotaView.quotaSetting.autofillTip')">

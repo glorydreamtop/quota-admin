@@ -1,6 +1,6 @@
 <template>
   <div class="flex justify-start items-center h-layout-full p-4 gap-4 w-full overflow-hidden">
-    <div class="w-75 h-full border enter-y flex-shrink-0" v-resizeable:show="`x`">
+    <div class="w-75 h-full border enter-y flex-shrink-0 relative" v-resizeable:show="`x`">
       <TemplateTree :show-search="false" class="h-full w-full" @selectNode="selectNode" />
     </div>
     <div class="flex-grow h-full enter-y bg-gray-100 flex flex-col">

@@ -144,7 +144,7 @@
   const searchKey: searchKeyType = reactive({
     sourceType: undefined,
     key: '',
-    idRange: '119300-119400',
+    idRange: '',
   });
   const nocSearchKey = reactive({
     pageSize: 40,

@@ -61,7 +61,10 @@
     colorScheme,
     (v) => {
       chartConfig.colorSchemeId = v.id;
-      console.log(chartConfig);
+      // 颜色方案ID不可删除，避免切换图表类型或其他操作时这个字段被意外删除
+      Reflect.defineProperty(chartConfig, 'colorSchemeId', {
+        configurable: false,
+      });
     },
     {
       deep: true,

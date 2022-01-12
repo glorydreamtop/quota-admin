@@ -187,6 +187,9 @@ export default {
     edit: '编辑指标',
     remove: '移除指标',
     delete: '删除指标',
+    deleteConfirmTip: '这将会影响所用依赖此的模板和报告，确认删除吗',
+    deleteInputId: '请输入要删除的指标ID',
+    confirmDel: '确认删除',
   },
   seriesEdit: {
     seriesType: '序列类型',
