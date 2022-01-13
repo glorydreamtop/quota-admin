@@ -12,6 +12,9 @@ export default defineConfig({
       width: {
         fit: 'fit-content',
       },
+      minWidth: {
+        fit: 'fit-content',
+      },
       colors: {
         primary: primaryColor,
       },

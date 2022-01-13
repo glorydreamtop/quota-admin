@@ -1,5 +1,5 @@
 <template>
-  <div class="relative">
+  <div class="relative min-w-fit">
     <Space align="center">
       <Select
         class="w-30"

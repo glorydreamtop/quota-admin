@@ -1,6 +1,12 @@
 <template>
-  <div class="h-full p-2 overflow-y-scroll border-l border-l-gray-300">
-    <Collapse v-model:activeKey="collapseKey" :bordered="false">
+  <div class="h-full pr-2 overflow-y-scroll border-l-gray-300 flex w-1/3" ref="container">
+    <div class="w-20px h-full relative border-l group line hover-gray-shadow" @click="hide">
+      <Icon
+        class="absolute -left-4px group-hover:-left-3px top-1/2 !text-26px !text-gray-400"
+        :icon="`ant-design:${containerHidden ? 'left' : 'right'}-outlined`"
+      />
+    </div>
+    <Collapse class="flex-grow main" v-model:activeKey="collapseKey" :bordered="false">
       <CollapsePanel key="rectSetting">
         <template #header>
           <Divider orientation="left">{{ t('quotaView.advance.rectSetting.title') }}</Divider>
@@ -279,7 +285,7 @@
   import Icon from '/@/components/Icon';
   import { echartMitter, useChartConfigContext, useSortMonthAndYear, useYAxisEdit } from './hooks';
   import YAxisEdit from '/@/components/Chart/src/YAxisEditor.vue';
-  import { reactive, ref, toRaw, watch } from 'vue';
+  import { onMounted, reactive, ref, toRaw, unref, watch } from 'vue';
   import { quotaDataPastUnitTypeEnum } from '/@/api/quota';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { chartTypeEnum, structuralOffsetUnitEnum } from '/@/enums/chartEnum';
@@ -291,6 +297,7 @@
   const RadioButton = Radio.Button;
   const CollapsePanel = Collapse.Panel;
   const TextArea = Input.TextArea;
+  const container = ref<HTMLElement>();
   const { t } = useI18n();
   const { createMessage } = useMessage();
   const chartConfig = useChartConfigContext();
@@ -412,6 +419,48 @@
       (item) => item.xRange === group.xRange && item.seriesName === group.seriesName,
     );
   }
+  const containerHidden = ref(false);
+  function hide() {
+    const parent = unref(container)!;
+    const line = parent.getElementsByClassName('line')[0] as HTMLElement;
+    const shadow = parent.parentElement?.getElementsByClassName('shadow-box')[0] as HTMLElement;
+    const startWidth = parent.offsetWidth;
+    const remainWidth = line.offsetWidth;
+    if (containerHidden.value) {
+      // 移动本体，缩小影子
+      parent.style.right = '1rem';
+      shadow.style.width = `${startWidth}px`;
+      line.classList.remove('gray-shadow');
+      line.classList.add('hover-gray-shadow');
+      containerHidden.value = false;
+    } else {
+      parent.style.right = `calc(-${startWidth - remainWidth}px + 1rem)`;
+      shadow.style.width = `${remainWidth}px`;
+      line.classList.remove('hover-gray-shadow');
+      line.classList.add('gray-shadow');
+      containerHidden.value = true;
+    }
+  }
+  onMounted(() => {
+    const parent = unref(container)!;
+    const shadow = document.createElement('div') as HTMLElement;
+    const startWidth = `${parent.offsetWidth}px`;
+    const startHeight = `${parent.offsetHeight}px`;
+    Object.assign(shadow.style, {
+      width: startWidth,
+      height: '100%',
+      transition: 'width .3s',
+    });
+    Object.assign(parent.style, {
+      width: startWidth,
+      height: startHeight,
+      position: 'absolute',
+      right: '1rem',
+      transition: 'right .3s',
+    });
+    shadow.className = 'shadow-box';
+    parent.parentElement?.appendChild(shadow);
+  });
 </script>
 
 <style lang="less" scoped>
@@ -454,5 +503,29 @@
     font-size: 12px;
     margin-top: -2px;
     margin-right: -4px;
+  }
+
+  .line {
+    transition: background-color 0.3s;
+
+    &.hover-gray-shadow {
+      &:hover {
+        background-color: rgb(242, 245, 250);
+        border-left: none;
+      }
+    }
+
+    &.gray-shadow {
+      background-color: rgb(242, 245, 250);
+      border-left-color: rgb(242, 245, 250);
+
+      &:hover {
+        border-left: none;
+      }
+    }
+  }
+
+  .container {
+    transform: translateX(100px);
   }
 </style>

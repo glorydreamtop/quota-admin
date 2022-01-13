@@ -1,6 +1,6 @@
 <template>
-  <div class="flex flex-grow p-4 overflow-hidden bg-white shadow-md">
-    <div class="relative left-0 right-0 w-2/3">
+  <div class="flex flex-grow p-4 overflow-hidden bg-white shadow-md relative min-w-fit">
+    <div class="relative flex-grow">
       <ToolBar @paint="paint" @event="handleEvent" />
       <Teleport to="body" :disabled="!fullscreen">
         <div
@@ -31,7 +31,7 @@
         </div>
       </Teleport>
     </div>
-    <Advance class="w-1/3" />
+    <Advance />
   </div>
 </template>
 <script lang="ts" setup>

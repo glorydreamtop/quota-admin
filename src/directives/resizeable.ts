@@ -61,7 +61,7 @@ const resizeDirective: Directive = {
       posStart.w = el.offsetWidth;
       posStart.h = el.offsetHeight;
       on(document.body, 'mousemove', mousemoveListener);
-      on(el, 'mouseup', mouseupListener);
+      on(document.body, 'mouseup', mouseupListener);
     }
     function mousemoveListener(event: MouseEvent) {
       event.preventDefault();
@@ -77,7 +77,7 @@ const resizeDirective: Directive = {
     function mouseupListener(event: MouseEvent) {
       event.preventDefault();
       off(document.body, 'mousemove', mousemoveListener);
-      off(el, 'mouseup', mouseupListener);
+      off(document.body, 'mouseup', mouseupListener);
     }
     resizeFn();
   },
