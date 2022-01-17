@@ -108,6 +108,8 @@ export function useMultiSelect(
       if (currentIndex > maxIndex) {
         maxIndex = currentIndex;
       }
+      console.log(templateList.value);
+
       for (let index = minIndex; index <= maxIndex; index++) {
         const key = templateList.value[index].uniqId;
         if (list.findIndex((t) => t.uniqId === key) === -1) {

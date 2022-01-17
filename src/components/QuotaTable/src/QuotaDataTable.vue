@@ -7,6 +7,7 @@
           <Icon
             v-if="name !== t('quotaView.toolbar.quotaDataTableHeader.date')"
             icon="ant-design:plus-square-outlined"
+            @click="addData(name)"
             class="!text-gray-400"
           />
         </div>
@@ -37,15 +38,18 @@
 </template>
 
 <script lang="ts" setup>
-  import { toRefs, watch, reactive } from 'vue';
+  import { toRefs, watch, reactive, h, computed } from 'vue';
   import { VScroll } from '/@/components/VirtualScroll';
   import { chartConfigType } from '/#/chart';
   import { useDownloadXLSX } from './helper';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { Icon } from '/@/components/Icon';
-  import { Input } from 'ant-design-vue';
+  import { Input, Modal, DatePicker } from 'ant-design-vue';
   import { importJson } from '/@/api/quota';
   import { useMessage } from '/@/hooks/web/useMessage';
+  import locale from 'ant-design-vue/es/date-picker/locale/zh_CN';
+  import { formatToDate } from '/@/utils/dateUtil';
+  import dayjs from 'dayjs';
 
   interface quotaDataType {
     header: string[];
@@ -121,13 +125,98 @@
       editData.date = '';
       info.loading = false;
       createMessage.success(t('quotaView.toolbar.realTimeSave'));
-    } catch (error) {}
+    } catch (error) {
+      createMessage.error(error);
+    }
+  }
+  async function addData(name: string) {
+    const data = reactive({
+      value: '',
+      date: formatToDate(),
+    });
+    const disabled = computed(() => {
+      return data.value.length === 0 || !/\d{4}-\d{2}-\d{2}/i.test(data.date);
+    });
+    Modal.confirm({
+      title: t('quotaView.toolbar.addData.title'),
+      content: h(
+        'div',
+        {
+          className: 'flex items-center flex-col gap-2',
+        },
+        [
+          h('div', { className: 'flex items-center justify-between gap-2' }, [
+            h(
+              'span',
+              { className: 'whitespace-nowrap w-4em text-center' },
+              t('quotaView.toolbar.addData.dataValue'),
+            ),
+            h(Input, {
+              class: '!w-30',
+              size: 'small',
+              onInput: ({ target }: { target: HTMLInputElement }) => {
+                data.value = target.value.trim();
+              },
+            }),
+          ]),
+          h('div', { className: 'flex items-center justify-between gap-2' }, [
+            h(
+              'span',
+              { className: 'whitespace-nowrap w-4em text-center' },
+              t('quotaView.toolbar.addData.dataDate'),
+            ),
+            h(DatePicker, {
+              locale,
+              class: '!w-30',
+              size: 'small',
+              value: data.date,
+              format: 'YYYY-MM-DD',
+              onChange: (value: string) => {
+                data.date = value;
+              },
+            }),
+          ]),
+        ],
+      ),
+      okType: 'primary',
+      okText: t('quotaView.toolbar.addData.confirm'),
+      okButtonProps: {
+        disabled: disabled,
+      },
+      onOk: async () => {
+        const jsonObj = JSON.stringify([
+          {
+            id: info.ids[info.header.indexOf(name) - 1],
+            rows: [[data.date, data.value]],
+          },
+        ]).toUpperCase();
+
+        try {
+          info.loading = true;
+          await importJson({ jsonObj, importPara: 0 });
+          const line = info.quotaDataLine;
+          for (let i = 1; i < line.length; i++) {
+            const e = line[i];
+            if (
+              dayjs(line[i - 1][t('quotaView.toolbar.quotaDataTableHeader.date')]).isAfter(
+                dayjs(data.date),
+              ) &&
+              dayjs(e[t('quotaView.toolbar.quotaDataTableHeader.date')]).isBefore(dayjs(data.date))
+            ) {
+            }
+          }
+          info.loading = false;
+          createMessage.success(t('quotaView.toolbar.realTimeSave'));
+        } catch (error) {}
+      },
+    });
   }
 </script>
 
 <style lang="less" scoped>
   @column-width: 8rem;
   @column-height: 40px;
+
   .title {
     text-align: center;
     width: @column-width;
@@ -145,8 +234,13 @@
     max-width: unset !important;
     min-width: 100%;
   }
+
   .vscroll-item {
     @apply flex items-center border-b border-light-700 text-gray-600;
+
+    height: @column-height;
+    line-height: @column-height;
+    position: relative !important;
 
     & > div {
       width: @column-width;
@@ -154,10 +248,6 @@
       text-align: center;
       user-select: none;
     }
-
-    height: @column-height;
-    line-height: @column-height;
-    position: relative !important;
   }
 
   .edit-data {
@@ -167,5 +257,9 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+  }
+
+  .value-input {
+    @apply !w-16;
   }
 </style>

@@ -63,7 +63,7 @@
         v-ripple
         v-loading="loading"
         :class="[
-          item.selected ? 'bg-linear-primary' : 'bg-gray-500',
+          item.selected ? 'bg-linear-primary' : 'bg-notselected',
           cardUI ? 'card-theme' : 'list-theme',
           'text-xs rounded-sm flex sortable quota-list-item',
         ]"
@@ -78,14 +78,16 @@
             class="cursor-move drag-handler"
           />
           <span
-            class="text-purple-300 cursor-pointer select-none"
+            class="text-purple-300 w-4em text-center cursor-pointer select-none"
             @click.stop
             @dblclick="copy(item.id.toString(), 'id')"
             >{{ isFormula(item) ? t('quotaView.quotaCard.formulaWithoutId') : item.id }}</span
           >
         </span>
 
-        <span v-show="!cardUI" class="text-gray-200">{{ index + 1 }}</span>
+        <span v-show="!cardUI" class="text-gray-200 text-center">{{
+          `${index + 1}`.padStart(2, '0')
+        }}</span>
 
         <!-- 全称 -->
         <Tooltip :placement="cardUI ? 'bottomLeft' : 'top'">
@@ -336,7 +338,6 @@
   //   });
   //   initAnimation();
   // }
-
   onMountedOrActivated(async () => {
     await nextTick();
     const boxdom: HTMLDivElement = unref(quotaBox)!.$el;
@@ -466,5 +467,9 @@
     .del-icon {
       @apply ml-8;
     }
+  }
+
+  .bg-notselected {
+    @apply bg-cool-gray-400;
   }
 </style>

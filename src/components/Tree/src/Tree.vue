@@ -13,13 +13,10 @@
     onMounted,
   } from 'vue';
   import { Tree, Empty } from 'ant-design-vue';
-  import { TreeIcon } from './TreeIcon';
-  import TreeHeader from './TreeHeader.vue';
 
   import { omit, get } from 'lodash-es';
-  import { isBoolean, isEmpty, isFunction } from '/@/utils/is';
+  import { isFunction } from '/@/utils/is';
   import { extendSlots, getSlot } from '/@/utils/helper/tsxHelper';
-  import { filter, treeToList } from '/@/utils/helper/treeHelper';
 
   import { useTree } from './useTree';
   import { useContextMenu } from '/@/hooks/web/useContextMenu';
@@ -40,26 +37,13 @@
     name: 'BasicTree',
     inheritAttrs: false,
     props: basicProps,
-    emits: [
-      'update:expandedKeys',
-      'update:selectedKeys',
-      'update:value',
-      'change',
-      'check',
-      'update:searchValue',
-    ],
+    emits: ['update:expandedKeys', 'update:selectedKeys', 'update:value', 'change', 'check'],
     setup(props, { attrs, slots, emit, expose }) {
       const state = reactive<State>({
         checkStrictly: props.checkStrictly,
         expandedKeys: props.expandedKeys || [],
         selectedKeys: props.selectedKeys || [],
         checkedKeys: props.checkedKeys || [],
-      });
-
-      const searchState = reactive({
-        startSearch: false,
-        searchText: '',
-        searchData: [] as TreeItem[],
       });
 
       const treeDataRef = ref<TreeItem[]>([]);
@@ -106,14 +90,11 @@
         return omit(propsData, 'treeData', 'class');
       });
 
-      const getTreeData = computed((): TreeItem[] =>
-        searchState.startSearch ? searchState.searchData : unref(treeDataRef),
-      );
+      const getTreeData = computed((): TreeItem[] => unref(treeDataRef));
 
       const getNotFound = computed((): boolean => {
         return !getTreeData.value || getTreeData.value.length === 0;
       });
-
       const {
         deleteNodeByKey,
         insertNodeByKey,
@@ -123,15 +104,6 @@
         getAllKeys,
         getEnabledKeys,
       } = useTree(treeDataRef, getReplaceFields);
-
-      function getIcon(params: Recordable, icon?: string) {
-        if (!icon) {
-          if (props.renderIcon && isFunction(props.renderIcon)) {
-            return props.renderIcon(params);
-          }
-        }
-        return icon;
-      }
 
       async function handleRightClick({ event, node }: Recordable) {
         const { rightMenuList: menuList = [], beforeRightClick } = props;
@@ -182,75 +154,9 @@
         state.expandedKeys = expandAll ? getAllKeys() : ([] as Keys);
       }
 
-      function onStrictlyChange(strictly: boolean) {
-        state.checkStrictly = strictly;
-      }
-
-      watch(
-        () => props.searchValue,
-        (val) => {
-          if (val !== searchState.searchText) {
-            searchState.searchText = val;
-          }
-        },
-        {
-          immediate: true,
-        },
-      );
-
-      watch(
-        () => props.treeData,
-        (val) => {
-          if (val) {
-            handleSearch(searchState.searchText);
-          }
-        },
-      );
-
-      function handleSearch(searchValue: string) {
-        if (searchValue !== searchState.searchText) searchState.searchText = searchValue;
-        emit('update:searchValue', searchValue);
-        if (!searchValue) {
-          searchState.startSearch = false;
-          return;
-        }
-        const { filterFn, checkable, expandOnSearch, checkOnSearch, selectedOnSearch } =
-          unref(props);
-        searchState.startSearch = true;
-        const { title: titleField, key: keyField } = unref(getReplaceFields);
-
-        const matchedKeys: string[] = [];
-        searchState.searchData = filter(
-          unref(treeDataRef),
-          (node) => {
-            const result = filterFn
-              ? filterFn(searchValue, node, unref(getReplaceFields))
-              : node[titleField]?.includes(searchValue) ?? false;
-            if (result) {
-              matchedKeys.push(node[keyField]);
-            }
-            return result;
-          },
-          unref(getReplaceFields),
-        );
-
-        if (expandOnSearch) {
-          const expandKeys = treeToList(searchState.searchData).map((val) => {
-            return val[keyField];
-          });
-          if (expandKeys && expandKeys.length) {
-            setExpandedKeys(expandKeys);
-          }
-        }
-
-        if (checkOnSearch && checkable && matchedKeys.length) {
-          setCheckedKeys(matchedKeys);
-        }
-
-        if (selectedOnSearch && matchedKeys.length) {
-          setSelectedKeys(matchedKeys);
-        }
-      }
+      // function onStrictlyChange(strictly: boolean) {
+      //   state.checkStrictly = strictly;
+      // }
 
       function handleClickNode(key: string, isLeaf: boolean) {
         if (!props.clickRowToExpand && isLeaf) return;
@@ -336,91 +242,28 @@
         filterByLevel: (level: number) => {
           state.expandedKeys = filterByLevel(level);
         },
-        setSearchValue: (value: string) => {
-          handleSearch(value);
-        },
-        getSearchValue: () => {
-          return searchState.searchText;
-        },
       };
 
       expose(instance);
-
-      function renderAction(node: TreeItem) {
-        const { actionList } = props;
-        if (!actionList || actionList.length === 0) return;
-        return actionList.map((item, index) => {
-          let nodeShow = true;
-          if (isFunction(item.show)) {
-            nodeShow = item.show?.(node);
-          } else if (isBoolean(item.show)) {
-            nodeShow = item.show;
-          }
-
-          if (!nodeShow) return null;
-
-          return (
-            <span key={index} class={`${prefixCls}__action`}>
-              {item.render(node)}
-            </span>
-          );
-        });
-      }
 
       function renderTreeNode({ data, level }: { data: TreeItem[] | undefined; level: number }) {
         if (!data) {
           return null;
         }
-        const searchText = searchState.searchText;
-        const { highlight } = unref(props);
         return data.map((item) => {
-          const {
-            title: titleField,
-            key: keyField,
-            children: childrenField,
-          } = unref(getReplaceFields);
-
+          const { key: keyField, children: childrenField } = unref(getReplaceFields);
           const propsData = omit(item, 'title');
           propsData.dataRef = item;
-          const icon = getIcon({ ...item, level }, item.icon);
           const children = get(item, childrenField) || [];
-          const title = get(item, titleField);
-
-          const searchIdx = searchText ? title.indexOf(searchText) : -1;
-          const isHighlight =
-            searchState.startSearch && !isEmpty(searchText) && highlight && searchIdx !== -1;
-          const highlightStyle = `color: ${isBoolean(highlight) ? '#f50' : highlight}`;
-
-          const titleDom = isHighlight ? (
-            <span class={unref(getBindValues)?.blockNode ? `${prefixCls}__content` : ''}>
-              <span>{title.substr(0, searchIdx)}</span>
-              <span style={highlightStyle}>{searchText}</span>
-              <span>{title.substr(searchIdx + (searchText as string).length)}</span>
-            </span>
-          ) : (
-            title
-          );
-
           return (
             <Tree.TreeNode {...propsData} node={toRaw(item)} key={get(item, keyField)}>
               {{
                 title: () => (
                   <span
-                    class={`${prefixCls}-title pl-2`}
+                    class={`${prefixCls}-title`}
                     onClick={handleClickNode.bind(null, item[keyField], item.isLeaf)}
                   >
-                    {item.slots?.title ? (
-                      getSlot(slots, item.slots?.title, item)
-                    ) : (
-                      <>
-                        {icon && <TreeIcon icon={icon} />}
-                        {titleDom}
-                        {/*{get(item, titleField)}*/}
-                        <span class={`${prefixCls}__actions`}>
-                          {renderAction({ ...item, level })}
-                        </span>
-                      </>
-                    )}
+                    {getSlot(slots, item.slots?.title, item)}
                   </span>
                 ),
                 default: () => renderTreeNode({ data: children, level: level + 1 }),
@@ -430,26 +273,8 @@
         });
       }
       return () => {
-        const { title, helpMessage, toolbar, search, checkable } = props;
-        const showTitle = title || toolbar || search || slots.headerTitle;
         return (
           <div class={[prefixCls, attrs.class]}>
-            {showTitle && (
-              <TreeHeader
-                checkable={checkable}
-                checkAll={checkAll}
-                expandAll={expandAll}
-                title={title}
-                search={search}
-                toolbar={toolbar}
-                helpMessage={helpMessage}
-                onStrictlyChange={onStrictlyChange}
-                onSearch={handleSearch}
-                searchText={searchState.searchText}
-              >
-                {extendSlots(slots)}
-              </TreeHeader>
-            )}
             <Tree {...unref(getBindValues)} showIcon={false} v-show={!unref(getNotFound)}>
               {{
                 // switcherIcon: () => <DownOutlined />,
@@ -476,14 +301,13 @@
       position: relative;
 
       &:hover {
-        border: 1px solid @primary-1;
         border-radius: 2px;
       }
 
       .ant-tree-title {
-        position: absolute;
-        left: 0;
-        width: 100%;
+        // position: absolute;
+        // left: 0;
+        // width: 100%;
       }
     }
 
@@ -492,7 +316,6 @@
       display: flex;
       align-items: center;
       width: 100%;
-      padding-right: 10px;
 
       &:hover {
         .@{prefix-cls}__actions {

@@ -3,8 +3,8 @@
     <div class="h-full min-w-75 w-75 relative border shadow-md" v-resizeable:show="`x`">
       <QuotaTree :show-search="true" class="h-full w-full enter-y" @selectNode="selectNode" />
     </div>
-    <div class="flex flex-col h-full flex-grow w-0 gap-4 min-w-fit">
-      <QuotaList class="border enter-y" v-resizeable:show="`y`" />
+    <div class="flex flex-col h-full flex-grow w-0 gap-4">
+      <QuotaList class="border enter-y w-full quota-list" v-resizeable:show="`y`" />
       <ChartGenerator class="enter-y" />
     </div>
   </div>

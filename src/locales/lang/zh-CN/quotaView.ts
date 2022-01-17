@@ -50,6 +50,12 @@ export default {
       date: '日期',
     },
     realTimeSave: '实时保存成功',
+    addData: {
+      title: '添加新数据',
+      dataValue: '数据值',
+      dataDate: '数据日期',
+      confirm: '添加',
+    },
   },
   seriesType: {
     line: '折线图',

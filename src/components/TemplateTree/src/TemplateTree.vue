@@ -121,7 +121,8 @@
       const res = (await getTemplateTree({ type })) as Partial<CategoryTreeModel & TreeItem>[];
       forEach(res, (item) => {
         item.isLeaf = !item.folder;
-        item.icon = 'ant-design:folder-outlined';
+        item.slots = { title: 'title' };
+        item.icon = 'flat-color-icons:folder';
         if (expandedKeys && expandedKeys.includes(item.key!) && !item.children) {
           loadData(item.key!);
         }
@@ -168,6 +169,7 @@
         item.version = versionEnum.PROChart;
       }
       item.icon = iconFilter(item);
+      item.slots = { title: 'title' };
       item.isLeaf = true;
       item.key = item.id;
       item.categoryId = key;
@@ -233,6 +235,11 @@
     });
   // 树节点的选择，支持多选
   function handleTreeSelect(_, e: treeSelectParams) {
+    if ((e.node.dataRef as CategoryTreeModel).folder) {
+      (e.node.dataRef as CategoryTreeModel).icon = e.node.expanded
+        ? 'flat-color-icons:opened-folder'
+        : 'flat-color-icons:folder';
+    }
     const instance = getTreeInstance(treeType.value);
     // 拿到待操作的树数据
     setTreeData(treeProps[treeType.value].treeData);
