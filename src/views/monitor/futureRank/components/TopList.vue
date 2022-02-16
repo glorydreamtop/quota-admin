@@ -6,9 +6,11 @@
       :key="item.memberName"
     >
       <div class="w-10">{{ index + 1 }}</div>
-      <div class="flex-grow">{{ item.memberName }}</div>
-      <div class="flex-grow">{{ item.volume }}</div>
-      <div class="flex-grow">{{ item.volumeChange }}</div>
+      <div class="flex items-center flex-grow">
+        <div class="w-1/3">{{ item.memberName }}</div>
+        <div class="w-1/3">{{ item.volume }}</div>
+        <div class="w-1/3">{{ item.volumeChange }}</div>
+      </div>
     </div>
   </div>
 </template>

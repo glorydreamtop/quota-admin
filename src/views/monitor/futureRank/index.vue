@@ -1,7 +1,7 @@
 <template>
   <div class="h-layout-full flex flex-col gap-4 p-4 w-full">
     <div class="flex items-center h-3/5 gap-4">
-      <div class="w-60 h-full bg-white shadow-md p-4 flex flex-col gap-4">
+      <div class="w-60 h-full bg-white shadow-md p-4 flex flex-col gap-2">
         <RadioGroup size="small" v-model:value="searchParams.type" button-style="solid">
           <RadioButton value="contract">{{ t('monitor.futureRank.contract') }}</RadioButton>
           <RadioButton value="productId">{{ t('monitor.futureRank.productName') }}</RadioButton>
@@ -15,16 +15,28 @@
           @select="handleSelect"
           :placeholder="t('monitor.futureRank.serachPlaceholder')"
         />
-
+        <div class="h-8 pl-2">{{ rankParams.tradeDate }}</div>
         <DatePicker
           :getCalendarContainer="getCalendarContainer"
           valueFormat="YYYY-MM-DD"
           :disabled-date="disabledDate"
           size="small"
+          :show-today="false"
           v-model:value="rankParams.tradeDate"
           open
-          ><div ref="calendar" class="h-8"></div
-        ></DatePicker>
+        >
+          <div ref="calendar" class="-mt-2"></div>
+          <template #dateRender="{ current }">
+            <div
+              :class="[
+                avalidDate.includes(current.format('YYYY-MM-DD')) ? 'avalid-date' : 'disabled',
+                current.format('YYYY-MM-DD') === rankParams.tradeDate ? 'selected-date' : '',
+              ]"
+            >
+              {{ current.date() }}
+            </div>
+          </template>
+        </DatePicker>
       </div>
       <div
         class="flex justify-start gap-4 flex-grow h-full children:bg-white children:shadow-md children:h-full children:flex-grow"
@@ -53,6 +65,7 @@
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useDebounceFn } from '@vueuse/shared';
   import { cloneDeep } from 'lodash-es';
+  import dayjs from 'dayjs';
 
   const RadioGroup = Radio.Group;
   const RadioButton = Radio.Button;
@@ -122,7 +135,7 @@
       (item) => item.value === value,
     )!.key;
   }
-  function disabledDate(cur) {
+  function disabledDate(cur: dayjs.Dayjs) {
     const date = cur.format('YYYY-MM-DD');
     return !avalidDate.value.includes(date);
   }
@@ -133,7 +146,6 @@
         [searchParams.type]: rankParams[searchParams.type],
       })
     ).map((day) => formatToDate(day));
-    console.log(avalidDate.value);
   }
   getRankList();
   updateValidDate();
@@ -146,5 +158,33 @@
 <style lang="less" scoped>
   ::v-deep(.ant-calendar.ant-calendar-picker-container-content) {
     width: 100%;
+    box-shadow: none;
+    border: 1px solid #e0e0e0;
+  }
+
+  ::v-deep(.ant-calendar-input-wrap) {
+    display: none;
+  }
+
+  ::v-deep(.ant-calendar-disabled-cell) {
+    cursor: not-allowed;
+  }
+
+  .avalid-date {
+    @apply text-gray-700;
+
+    cursor: pointer;
+    text-align: center;
+  }
+
+  .disabled {
+    background-color: #eee;
+    color: #b0b0b0;
+    text-align: center;
+  }
+
+  .selected-date {
+    background-color: rgba(@primary-color, 0.25);
+    color: @primary-color;
   }
 </style>

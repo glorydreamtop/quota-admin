@@ -253,11 +253,11 @@ export function checkInDOM(target: HTMLElement, dom: HTMLElement | coordinateInf
   }
 }
 
-type domCallbackType = (ele: HTMLElement) => void;
+type domCallbackType = (ele: Element) => void;
 
 export function domForeach(doms: HTMLCollectionOf<Element>, callback: domCallbackType) {
-  for (let index = 0; index < doms.length; index++) {
-    const element = doms.item(index)! as HTMLElement;
+  const arr = Array.from(doms);
+  arr.forEach((element) => {
     callback(element);
-  }
+  });
 }
