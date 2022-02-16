@@ -419,7 +419,9 @@
   }
 
   .card-theme {
-    @apply w-50 h-32 flex-col pt-1 p-2 shadow-md overflow-x-hidden;
+    @apply w-50 flex-col pt-1 p-2 shadow-md overflow-x-hidden;
+
+    aspect-ratio: 1.618/1;
 
     .quota-title {
       @apply text-lg leading-5 font-medium whitespace-nowrap;
@@ -429,7 +431,7 @@
     }
 
     .quota-sourceCode {
-      @apply w-fit text-teal-100;
+      @apply w-fit text-gray-300;
     }
 
     .quota-unit-sourceType {

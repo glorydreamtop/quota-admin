@@ -1,12 +1,12 @@
 <template>
-  <div class="h-full pr-2 overflow-y-scroll border-l-gray-300 flex w-1/3" ref="container">
+  <div class="pr-2 border-l-gray-300 flex w-1/3" ref="container">
     <div class="w-20px h-full relative border-l group line hover-gray-shadow" @click="hide">
       <Icon
         class="absolute -left-4px group-hover:-left-3px top-1/2 !text-26px !text-gray-400"
         :icon="`ant-design:${containerHidden ? 'left' : 'right'}-outlined`"
       />
     </div>
-    <Collapse class="flex-grow main" v-model:activeKey="collapseKey" :bordered="false">
+    <Collapse class="flex-grow overflow-y-scroll" v-model:activeKey="collapseKey" :bordered="false">
       <CollapsePanel key="rectSetting">
         <template #header>
           <Divider orientation="left">{{ t('quotaView.advance.rectSetting.title') }}</Divider>

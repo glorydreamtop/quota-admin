@@ -5,7 +5,7 @@
         <div class="title" v-for="name in info.header" :key="name">
           <span>{{ name }}</span>
           <Icon
-            v-if="name !== t('quotaView.toolbar.quotaDataTableHeader.date')"
+            v-if="name !== dateKey"
             icon="ant-design:plus-square-outlined"
             @click="addData(name)"
             class="!text-gray-400"
@@ -63,6 +63,7 @@
   const { t } = useI18n();
   const { createMessage } = useMessage();
   const { config } = toRefs(props);
+  const dateKey = t('quotaView.toolbar.quotaDataTableHeader.date');
   watch(
     config,
     () => {
@@ -101,12 +102,12 @@
     name: '',
     value: '',
     date: '',
-    dateColName: t('quotaView.toolbar.quotaDataTableHeader.date'),
+    dateColName: dateKey,
   });
   function showEdit(data: Recordable<any>, name: string) {
     editData.name = name;
     editData.value = data[name];
-    editData.date = data[t('quotaView.toolbar.quotaDataTableHeader.date')];
+    editData.date = data[dateKey];
   }
   async function updateQuotaData(rowData: Recordable<any>) {
     const jsonObj = JSON.stringify([
@@ -169,8 +170,8 @@
               locale,
               class: '!w-30',
               size: 'small',
-              value: data.date,
-              format: 'YYYY-MM-DD',
+              defaultValue: data.date,
+              valueFormat: 'YYYY-MM-DD',
               onChange: (value: string) => {
                 data.date = value;
               },
@@ -194,14 +195,12 @@
         try {
           info.loading = true;
           await importJson({ jsonObj, importPara: 0 });
-          const line = info.quotaDataLine;
+          const line = info.quotaDataLine.sort((a, b) => a[dateKey] - b[dateKey]);
           for (let i = 1; i < line.length; i++) {
             const e = line[i];
             if (
-              dayjs(line[i - 1][t('quotaView.toolbar.quotaDataTableHeader.date')]).isAfter(
-                dayjs(data.date),
-              ) &&
-              dayjs(e[t('quotaView.toolbar.quotaDataTableHeader.date')]).isBefore(dayjs(data.date))
+              dayjs(line[i - 1][dateKey]).isAfter(dayjs(data.date)) &&
+              dayjs(e[dateKey]).isBefore(dayjs(data.date))
             ) {
             }
           }

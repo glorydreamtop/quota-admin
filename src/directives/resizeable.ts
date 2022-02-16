@@ -1,5 +1,6 @@
+import { useResizeObserver } from '@vueuse/core';
 import { floor } from 'lodash-es';
-import type { Directive, DirectiveBinding, App, CSSProperties } from 'vue';
+import { Directive, DirectiveBinding, App, CSSProperties, nextTick } from 'vue';
 import { h, render } from 'vue';
 import { on, off } from '../utils/domUtils';
 import Icon from '/@/components/Icon';
@@ -87,4 +88,21 @@ export function setupResizeDirective(app: App) {
   app.directive('resizeable', resizeDirective);
 }
 
-export default resizeDirective;
+const autoSizeDirective: Directive = {
+  mounted(el: HTMLElement) {
+    nextTick(() => {
+      useResizeObserver(el, (entries) => {
+        const entry = entries[0];
+        const { width, height } = entry.contentRect;
+        console.log(height);
+
+        el.style.width = `${width}px`;
+        el.style.height = `${height}px`;
+      });
+    });
+  },
+};
+
+export function setupAutoSizeDirective(app: App) {
+  app.directive('autosize', autoSizeDirective);
+}
