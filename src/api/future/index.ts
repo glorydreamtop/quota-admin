@@ -40,8 +40,13 @@ export function getProOrConValidDate(params: { contract?: string; productId?: st
   });
 }
 
-export function getHoldShares(params: any) {
-  return defHttp.request<RankResult[]>({
+export function getHoldShares(params: {
+  contract?: string;
+  productId?: string;
+  memberName: string;
+  tradeDate: string;
+}) {
+  return defHttp.request<RankResult>({
     url: Api.GetHoldShares,
     method: 'GET',
     params,

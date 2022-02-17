@@ -1,7 +1,9 @@
 <template>
   <div class="h-layout-full flex flex-col gap-4 p-4 w-full">
     <div class="flex items-center h-3/5 gap-4">
-      <div class="w-60 h-full bg-white shadow-md p-4 flex flex-col gap-2">
+      <div
+        class="w-60 h-full bg-white shadow-md p-4 flex flex-col gap-2 overflow-y-scroll no-scroll-bar"
+      >
         <RadioGroup size="small" v-model:value="searchParams.type" button-style="solid">
           <RadioButton value="contract">{{ t('monitor.futureRank.contract') }}</RadioButton>
           <RadioButton value="productId">{{ t('monitor.futureRank.productName') }}</RadioButton>
@@ -12,7 +14,7 @@
           show-search
           :options="searchParams.searchResult"
           @search="handleSearch"
-          @select="handleSelect"
+          @select="handleSelect($event, false)"
           :placeholder="t('monitor.futureRank.serachPlaceholder')"
         />
         <div class="h-8 pl-2">{{ rankParams.tradeDate }}</div>
@@ -24,6 +26,7 @@
           :show-today="false"
           v-model:value="rankParams.tradeDate"
           open
+          @change="handleSelect($event, true)"
         >
           <div ref="calendar" class="-mt-2"></div>
           <template #dateRender="{ current }">
@@ -41,20 +44,48 @@
       <div
         class="flex justify-start gap-4 flex-grow h-full children:bg-white children:shadow-md children:h-full children:flex-grow"
       >
-        <TopList :data-list="rankList.done" />
-        <TopList :data-list="rankList.buy" />
-        <TopList :data-list="rankList.sale" />
+        <TopList :data-list="rankList.done" @openDetail="openDetail">
+          <div class="flex text-center h-10 items-center sticky top-0 bg-white shadow-md">
+            <div class="w-10">{{ t('monitor.futureRank.rankIndex') }}</div>
+            <div class="flex flex-grow divide-x divide-gray-200">
+              <div class="w-1/3">{{ t('monitor.futureRank.memberName') }}</div>
+              <div class="w-1/3">{{ t('monitor.futureRank.openDone') }}</div>
+              <div class="w-1/3">{{ t('monitor.futureRank.change') }}</div>
+            </div>
+          </div>
+        </TopList>
+        <TopList :data-list="rankList.buy">
+          <div class="flex text-center h-10 items-center sticky top-0 bg-white shadow-md">
+            <div class="w-10">{{ t('monitor.futureRank.rankIndex') }}</div>
+            <div class="flex flex-grow divide-x divide-gray-200">
+              <div class="w-1/3">{{ t('monitor.futureRank.memberName') }}</div>
+              <div class="w-1/3">{{ t('monitor.futureRank.openBuy') }}</div>
+              <div class="w-1/3">{{ t('monitor.futureRank.change') }}</div>
+            </div>
+          </div>
+        </TopList>
+        <TopList :data-list="rankList.sale">
+          <div class="flex text-center h-10 items-center sticky top-0 bg-white shadow-md">
+            <div class="w-10">{{ t('monitor.futureRank.rankIndex') }}</div>
+            <div class="flex flex-grow divide-x divide-gray-200">
+              <div class="w-1/3">{{ t('monitor.futureRank.memberName') }}</div>
+              <div class="w-1/3">{{ t('monitor.futureRank.openSale') }}</div>
+              <div class="w-1/3">{{ t('monitor.futureRank.change') }}</div>
+            </div>
+          </div>
+        </TopList>
       </div>
     </div>
     <div class="flex-grow bg-white shadow-md flex items-center justify-between p-4 w-full">
       <RankChart class="w-1/2" :data-list="rankList.buy" :title="chartTitle.buy" :size="10" />
       <RankChart class="w-1/2" :data-list="rankList.sale" :title="chartTitle.sale" :size="10" />
     </div>
+    <DetailModal @register="registerModal" />
   </div>
 </template>
 
 <script lang="ts" setup>
-  import { reactive, watch, ref } from 'vue';
+  import { reactive, ref } from 'vue';
   import TopList from './components/TopList.vue';
   import RankChart from './components/RankChart.vue';
   import { RankResult } from '/@/api/future/model';
@@ -66,6 +97,8 @@
   import { useDebounceFn } from '@vueuse/shared';
   import { cloneDeep } from 'lodash-es';
   import dayjs from 'dayjs';
+  import { useModal } from '/@/components/Modal';
+  import DetailModal from './components/DetailModal.vue';
 
   const RadioGroup = Radio.Group;
   const RadioButton = Radio.Button;
@@ -77,27 +110,19 @@
     buy: [] as RankResult,
     sale: [] as RankResult,
   });
+  // 查询排名列表所需参数
   const rankParams = reactive({
     tradeDate: daysAgo(1),
     contract: '',
-    productId: 'RB',
+    productId: '',
   });
-  watch(
-    rankParams,
-    async (val, pre) => {
-      if (val.contract !== pre.contract || val.productId !== pre.productId) {
-        await updateValidDate();
-      }
-      await getRankList();
-    },
-    { deep: true },
-  );
   const chartTitle = reactive({
-    buy: '买入',
-    sale: '持卖量',
+    buy: `${t('monitor.futureRank.openBuy')}Top10`,
+    sale: `${t('monitor.futureRank.openSale')}Top10`,
   });
   async function getRankList() {
     const params = cloneDeep(rankParams);
+    // 去掉空参数
     for (const key in params) {
       if (Object.prototype.hasOwnProperty.call(params, key) && params[key] === '') {
         Reflect.deleteProperty(params, key);
@@ -114,6 +139,7 @@
     searchResult: [] as LabelValueOptions,
   });
   async function search() {
+    // 搜索列表构建
     searchParams.searchResult = (
       await getSearchInfoList({
         type: searchParams.typeList.indexOf(searchParams.type),
@@ -128,14 +154,24 @@
     });
   }
   const handleSearch = useDebounceFn(search, 300);
-  async function handleSelect(value: string) {
-    rankParams.productId = '';
-    rankParams.contract = '';
-    rankParams[searchParams.type] = searchParams.searchResult.find(
-      (item) => item.value === value,
-    )!.key;
+  async function handleSelect(value: string, datePicker = false) {
+    if (!datePicker) {
+      rankParams.productId = '';
+      rankParams.contract = '';
+      rankParams[searchParams.type] = searchParams.searchResult.find(
+        (item) => item.value === value,
+      )!.key;
+      await updateValidDate();
+    }
+    const name = searchParams.key;
+    chartTitle.buy = `${rankParams.tradeDate} ${name} ${t('monitor.futureRank.openBuy')}Top10`;
+    console.log(chartTitle.buy);
+
+    chartTitle.sale = `${rankParams.tradeDate} ${name} ${t('monitor.futureRank.openSale')}Top10`;
+    await getRankList();
   }
-  function disabledDate(cur: dayjs.Dayjs) {
+  // 不可用日期
+  function disabledDate(cur: dayjs.Dayjs): boolean {
     const date = cur.format('YYYY-MM-DD');
     return !avalidDate.value.includes(date);
   }
@@ -147,11 +183,25 @@
       })
     ).map((day) => formatToDate(day));
   }
-  getRankList();
-  updateValidDate();
   const calendar = ref();
   function getCalendarContainer() {
     return calendar.value;
+  }
+  const [registerModal, { openModal, setModalProps }] = useModal();
+  function openDetail(memberName: string) {
+    setModalProps({
+      title: `${memberName}-${searchParams.key} ${rankParams.tradeDate} ${t(
+        'monitor.futureRank.openInterestDetail',
+      )}`,
+      width: 1000,
+      height: 500,
+      minHeight: 500,
+    });
+    openModal(true, {
+      memberName,
+      tradeDate: rankParams.tradeDate,
+      [searchParams.type]: rankParams[searchParams.type],
+    });
   }
 </script>
 
@@ -173,6 +223,7 @@
   .avalid-date {
     @apply text-gray-700;
 
+    transition: all 0.2s;
     cursor: pointer;
     text-align: center;
   }
@@ -184,6 +235,8 @@
   }
 
   .selected-date {
+    border-radius: 4px;
+    border: rgba(@primary-color, 0.5) solid 1px;
     background-color: rgba(@primary-color, 0.25);
     color: @primary-color;
   }

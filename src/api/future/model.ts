@@ -11,6 +11,7 @@ export interface RankMember {
   memberName: string;
   volume: number;
   volumeChange: number;
+  rankType?: 0 | 1 | -1;
 }
 
 export type RankResult = RankMember[];

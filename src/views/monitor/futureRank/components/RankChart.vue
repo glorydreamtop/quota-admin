@@ -18,6 +18,12 @@
   const chartRef = ref();
   const chartData = computed(() => dataList.value.slice(0, size.value));
   const { setOptions } = useECharts(chartRef);
+  setOptions({
+    title: {
+      text: title.value,
+      left: 'center',
+    },
+  });
   watch(
     dataList,
     (v) => {

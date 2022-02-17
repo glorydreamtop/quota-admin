@@ -66,8 +66,12 @@
   background-image: @bg-linear-primary;
 }
 
-.ant-menu-light.context-menu{
-  box-shadow: 3px 3px 3px rgba(0,0,0,.15)!important;
-
+.ant-menu-light.context-menu {
   @apply text-gray-600;
+
+  box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.15) !important;
+}
+
+.no-scroll-bar::-webkit-scrollbar {
+  display: none !important;
 }
