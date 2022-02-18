@@ -12,6 +12,10 @@ export interface RankMember {
   volume: number;
   volumeChange: number;
   rankType?: 0 | 1 | -1;
+  productId: string;
+  productName: string;
+  contract: string;
+  tradeDate: string;
 }
 
 export type RankResult = RankMember[];

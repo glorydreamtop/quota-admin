@@ -144,6 +144,8 @@
         if (unref(fullScreenRef)) {
           return omit(attr, ['height', 'title']);
         }
+        console.log(attr);
+
         return omit(attr, 'title');
       });
 
@@ -176,6 +178,8 @@
 
       // 取消事件
       async function handleCancel(e: Event) {
+        console.log(e);
+
         e?.stopPropagation();
         // 过滤自定义关闭按钮的空白区域
         if ((e.target as HTMLElement)?.classList?.contains(prefixCls + '-close--custom')) return;

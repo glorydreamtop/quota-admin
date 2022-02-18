@@ -102,7 +102,7 @@
   }
   interface eventBusType {
     event: any;
-    target: 'title' | 'yAxis' | 'series';
+    target: 'title' | 'yAxis' | 'series' | 'xAxis';
     eventType: 'dblclick' | 'contextmenu';
   }
   // 监听事件的列表

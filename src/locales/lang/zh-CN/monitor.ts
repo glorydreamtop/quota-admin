@@ -15,6 +15,9 @@ export default {
       salechartTtile: '空头占比',
       donechartTtile: '综合占比',
       linechartTtile: '建仓过程',
+      bull: '多头',
+      bear: '空头',
+      calc: '净多头',
     },
   },
 };

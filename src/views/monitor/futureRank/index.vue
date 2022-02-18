@@ -46,7 +46,7 @@
       >
         <TopList :data-list="rankList.done" @openDetail="openDetail">
           <div class="flex text-center h-10 items-center sticky top-0 bg-white shadow-md">
-            <div class="w-10">{{ t('monitor.futureRank.rankIndex') }}</div>
+            <div class="w-20">{{ t('monitor.futureRank.rankIndex') }}</div>
             <div class="flex flex-grow divide-x divide-gray-200">
               <div class="w-1/3">{{ t('monitor.futureRank.memberName') }}</div>
               <div class="w-1/3">{{ t('monitor.futureRank.openDone') }}</div>
@@ -54,9 +54,9 @@
             </div>
           </div>
         </TopList>
-        <TopList :data-list="rankList.buy">
+        <TopList :data-list="rankList.buy" @openDetail="openDetail">
           <div class="flex text-center h-10 items-center sticky top-0 bg-white shadow-md">
-            <div class="w-10">{{ t('monitor.futureRank.rankIndex') }}</div>
+            <div class="w-20">{{ t('monitor.futureRank.rankIndex') }}</div>
             <div class="flex flex-grow divide-x divide-gray-200">
               <div class="w-1/3">{{ t('monitor.futureRank.memberName') }}</div>
               <div class="w-1/3">{{ t('monitor.futureRank.openBuy') }}</div>
@@ -64,9 +64,9 @@
             </div>
           </div>
         </TopList>
-        <TopList :data-list="rankList.sale">
+        <TopList :data-list="rankList.sale" @openDetail="openDetail">
           <div class="flex text-center h-10 items-center sticky top-0 bg-white shadow-md">
-            <div class="w-10">{{ t('monitor.futureRank.rankIndex') }}</div>
+            <div class="w-20">{{ t('monitor.futureRank.rankIndex') }}</div>
             <div class="flex flex-grow divide-x divide-gray-200">
               <div class="w-1/3">{{ t('monitor.futureRank.memberName') }}</div>
               <div class="w-1/3">{{ t('monitor.futureRank.openSale') }}</div>
@@ -96,7 +96,6 @@
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useDebounceFn } from '@vueuse/shared';
   import { cloneDeep } from 'lodash-es';
-  import dayjs from 'dayjs';
   import { useModal } from '/@/components/Modal';
   import DetailModal from './components/DetailModal.vue';
 
@@ -171,7 +170,7 @@
     await getRankList();
   }
   // 不可用日期
-  function disabledDate(cur: dayjs.Dayjs): boolean {
+  function disabledDate(cur: any): boolean {
     const date = cur.format('YYYY-MM-DD');
     return !avalidDate.value.includes(date);
   }
@@ -188,19 +187,20 @@
     return calendar.value;
   }
   const [registerModal, { openModal, setModalProps }] = useModal();
-  function openDetail(memberName: string) {
+  function openDetail(memberName: string, productId: string) {
     setModalProps({
       title: `${memberName}-${searchParams.key} ${rankParams.tradeDate} ${t(
         'monitor.futureRank.openInterestDetail',
       )}`,
-      width: 1000,
+      width: 1200,
       height: 500,
       minHeight: 500,
+      footer: null,
     });
     openModal(true, {
       memberName,
       tradeDate: rankParams.tradeDate,
-      [searchParams.type]: rankParams[searchParams.type],
+      productId,
     });
   }
 </script>

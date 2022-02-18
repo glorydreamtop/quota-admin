@@ -53,8 +53,12 @@ export function getHoldShares(params: {
   });
 }
 
-export function getBuildShares(params: any) {
-  return defHttp.request<RankResult[]>({
+export function getBuildShares(params: {
+  productId?: string;
+  memberName: string;
+  rankType: number;
+}) {
+  return defHttp.request<RankResult>({
     url: Api.GetBuildShares,
     method: 'GET',
     params,

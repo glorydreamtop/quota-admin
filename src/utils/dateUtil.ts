@@ -16,6 +16,10 @@ export function formatToDate(date?: dayisInput, format = DATE_FORMAT): string {
   return dayjs(date).format(format);
 }
 
+export function toTimeStamp(date?: dayisInput) {
+  return dayjs(date).unix();
+}
+
 export function today() {
   return formatToDate();
 }
