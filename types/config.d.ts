@@ -99,6 +99,8 @@ export interface ProjectConfig {
   // Theme color
   themeColor: string;
 
+  colorScheme: string[];
+
   // The main interface is displayed in full screen, the menu is not displayed, and the top
   fullContent: boolean;
   // content width

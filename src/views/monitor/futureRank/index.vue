@@ -94,7 +94,7 @@
   import { daysAgo, formatToDate } from '/@/utils/dateUtil';
   import { Radio, AutoComplete, DatePicker } from 'ant-design-vue';
   import { useI18n } from '/@/hooks/web/useI18n';
-  import { useDebounceFn } from '@vueuse/shared';
+  import { useThrottleFn } from '@vueuse/shared';
   import { cloneDeep } from 'lodash-es';
   import { useModal } from '/@/components/Modal';
   import DetailModal from './components/DetailModal.vue';
@@ -152,7 +152,7 @@
       }
     });
   }
-  const handleSearch = useDebounceFn(search, 300);
+  const handleSearch = useThrottleFn(search, 800);
   async function handleSelect(value: string, datePicker = false) {
     if (!datePicker) {
       rankParams.productId = '';
@@ -164,8 +164,6 @@
     }
     const name = searchParams.key;
     chartTitle.buy = `${rankParams.tradeDate} ${name} ${t('monitor.futureRank.openBuy')}Top10`;
-    console.log(chartTitle.buy);
-
     chartTitle.sale = `${rankParams.tradeDate} ${name} ${t('monitor.futureRank.openSale')}Top10`;
     await getRankList();
   }
@@ -210,6 +208,10 @@
     width: 100%;
     box-shadow: none;
     border: 1px solid #e0e0e0;
+  }
+
+  ::v-deep(.ant-calendar-picker-container) {
+    z-index: unset;
   }
 
   ::v-deep(.ant-calendar-input-wrap) {
