@@ -29,7 +29,7 @@ function createConfig(params: CreateConfigParams) {
       });
     `.replace(/\s/g, '');
     fs.mkdirp(getRootPath(OUTPUT_DIR));
-    writeFileSync(getRootPath(`${OUTPUT_DIR}/${configFileName}`), configStr);
+    writeFileSync(getRootPath(`${OUTPUT_DIR}/config/${configFileName}`), configStr);
 
     console.log(chalk.cyan(`✨ [${pkg.name}]`) + ` - configuration file is build successfully:`);
     console.log(chalk.gray(OUTPUT_DIR + '/' + chalk.green(configFileName)) + '\n');
