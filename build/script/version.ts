@@ -4,14 +4,16 @@ const fs = require('fs'); //文件读取模块
 const versionPath = 'version.txt'; //version路径
 const commit = execSync('git show -s --format=%H').toString().trim(); //当前提交的版本号
 
-export function getVersion() {
+function getVersion() {
   const now = new Date();
-  const version = `v${now.getFullYear()}${now.getMonth()}${now.getDate()}-${now.getHours()}${now.getMinutes()}${now.getSeconds()}`;
+  const version = `${now.getFullYear()}${(now.getMonth() + 1)
+    .toString()
+    .padStart(2, '0')}${now.getDate()}-${now.getHours()}${now.getMinutes()}${now.getSeconds()}`;
 
   const constant = fs.readFileSync('./build/constant.ts').toString() + '\n';
-  constant.replace(/v\d{8}\-\d+/g, version);
+  const str = constant.replace(/\d+\-\d+/g, version);
 
-  fs.writeFileSync('./build/constant.ts', constant);
+  fs.writeFileSync('./build/constant.ts', str);
 
   let versionStr = ''; //版本信息字符串
 
