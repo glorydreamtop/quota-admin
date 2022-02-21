@@ -15,11 +15,13 @@
   import { reactive, ref } from 'vue';
   import { getBuildShares, getHoldShares } from '/@/api/future';
   import { useModalInner, BasicModal } from '/@/components/Modal';
+  import { useRootSetting } from '/@/hooks/setting/useRootSetting';
   import { useECharts } from '/@/hooks/web/useECharts';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { toTimeStamp } from '/@/utils/dateUtil';
 
   const { t } = useI18n();
+  const { getColorScheme } = useRootSetting();
 
   interface chartData {
     title: string;
@@ -73,7 +75,7 @@
           return `${name}\n${percent}%`;
         },
       },
-      color: ['#AD1129', '#073691'],
+      color: getColorScheme.value,
       series: [
         {
           name: '',
@@ -91,6 +93,11 @@
     return base;
   }
   const [registerModal] = useModalInner(async (params) => {
+    for (const key in chartData) {
+      if (Object.prototype.hasOwnProperty.call(chartData, key)) {
+        chartData[key].data = [];
+      }
+    }
     try {
       loading.value = true;
       const res = await getHoldShares(params);
@@ -271,7 +278,7 @@
             t('monitor.futureRank.modal.calc'),
           ],
         },
-        color: ['#AD1129', '#073691', '#31868f'],
+        color: getColorScheme.value,
         series: [
           {
             name: t('monitor.futureRank.modal.bull'),

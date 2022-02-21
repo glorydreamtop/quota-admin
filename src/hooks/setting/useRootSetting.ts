@@ -39,6 +39,8 @@ export function useRootSetting() {
 
   const getThemeColor = computed(() => appStore.getProjectConfig.themeColor);
 
+  const getColorScheme = computed(() => appStore.getProjectConfig.colorScheme);
+
   const getShowBreadCrumbIcon = computed(() => appStore.getProjectConfig.showBreadCrumbIcon);
 
   const getFullContent = computed(() => appStore.getProjectConfig.fullContent);
@@ -88,6 +90,7 @@ export function useRootSetting() {
     getContentMode,
     getLockTime,
     getThemeColor,
+    getColorScheme,
     getDarkMode,
     setDarkMode,
     getShowDarkModeToggle,

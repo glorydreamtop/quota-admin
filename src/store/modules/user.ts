@@ -1,5 +1,6 @@
 import type { UserInfo } from '/#/store';
 import type { ErrorMessageMode } from '/#/axios';
+import { getColorScheme } from '/@/api/color';
 import { defineStore } from 'pinia';
 import { store } from '/@/store';
 import { PageEnum } from '/@/enums/pageEnum';
@@ -14,6 +15,7 @@ import { usePermissionStore } from '/@/store/modules/permission';
 import { RouteRecordRaw } from 'vue-router';
 import { PAGE_NOT_FOUND_ROUTE } from '/@/router/routes/basic';
 import { h } from 'vue';
+import { useAppStoreWithOut } from './app';
 
 interface UserState {
   userInfo: Nullable<UserInfo>;
@@ -125,6 +127,12 @@ export const useUserStore = defineStore({
       const { roleIdList } = userInfo;
       this.setUserInfo(userInfo);
       this.setRoleList(roleIdList);
+      const { colors } = await getColorScheme({ id: 22 });
+      const scheme = colors.split(',');
+      const appStore = useAppStoreWithOut();
+      appStore.setProjectConfig({
+        colorScheme: scheme,
+      });
       return userInfo;
     },
     /**
