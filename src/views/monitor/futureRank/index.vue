@@ -17,7 +17,7 @@
           @select="handleSelect($event, false)"
           :placeholder="t('monitor.futureRank.serachPlaceholder')"
         />
-        <div class="h-8 pl-2">{{
+        <div class="h-8 pl-2 text-primary">{{
           rankParams.tradeDate || t('monitor.futureRank.timePlaceholder')
         }}</div>
         <DatePicker
@@ -93,7 +93,7 @@
   import { RankResult } from '/@/api/future/model';
   import { getFutureRankList, getProOrConValidDate, getSearchInfoList } from '/@/api/future';
   import { openInterestEnum } from '/@/enums/monitorEnum';
-  import { daysAgo, formatToDate } from '/@/utils/dateUtil';
+  import { formatToDate } from '/@/utils/dateUtil';
   import { Radio, AutoComplete, DatePicker } from 'ant-design-vue';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useThrottleFn } from '@vueuse/shared';
@@ -113,7 +113,7 @@
   });
   // 查询排名列表所需参数
   const rankParams = reactive({
-    tradeDate: daysAgo(1),
+    tradeDate: '',
     contract: '',
     productId: '',
   });
