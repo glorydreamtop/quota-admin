@@ -17,7 +17,9 @@
           @select="handleSelect($event, false)"
           :placeholder="t('monitor.futureRank.serachPlaceholder')"
         />
-        <div class="h-8 pl-2">{{ rankParams.tradeDate }}</div>
+        <div class="h-8 pl-2">{{
+          rankParams.tradeDate || t('monitor.futureRank.timePlaceholder')
+        }}</div>
         <DatePicker
           :getCalendarContainer="getCalendarContainer"
           valueFormat="YYYY-MM-DD"

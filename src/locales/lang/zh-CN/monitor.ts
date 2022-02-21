@@ -3,6 +3,7 @@ export default {
     productName: '品种',
     contract: '合约',
     serachPlaceholder: '搜索品种、合约',
+    timePlaceholder: '请先选择品种或合约',
     memberName: '会员',
     rankIndex: '排名',
     openBuy: '持买仓量',

@@ -41,7 +41,7 @@ specifiers:
   '@vueuse/shared': ^6.7.4
   '@zxcvbn-ts/core': ^1.0.0-beta.0
   aegis-web-sdk: ^1.24.45
-  ant-design-vue: 2.2.6
+  ant-design-vue: 2.2.8
   autoprefixer: ^10.4.0
   axios: ^0.24.0
   commitizen: ^4.2.4
@@ -130,7 +130,7 @@ dependencies:
   '@vueuse/shared': 6.9.2_vue@3.2.26
   '@zxcvbn-ts/core': 1.2.0
   aegis-web-sdk: 1.24.48
-  ant-design-vue: 2.2.6_095859896ec76c1f97b322e01cbf47cb
+  ant-design-vue: 2.2.8_095859896ec76c1f97b322e01cbf47cb
   axios: 0.24.0
   crypto-js: 4.1.1
   dayjs: 1.10.7
@@ -3051,8 +3051,8 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  /ant-design-vue/2.2.6_095859896ec76c1f97b322e01cbf47cb:
-    resolution: {integrity: sha512-WgZow4FtrsAZON01wv+ObuXWL1Elaq/fhPRdmOEfFx5f8azTDBYL75A8dVl59TNBKW8FdSGBTl9PZYzW5eO6Gw==}
+  /ant-design-vue/2.2.8_095859896ec76c1f97b322e01cbf47cb:
+    resolution: {integrity: sha512-3graq9/gCfJQs6hznrHV6sa9oDmk/D1H3Oo0vLdVpPS/I61fZPk8NEyNKCHpNA6fT2cx6xx9U3QS63uuyikg/Q==}
     peerDependencies:
       '@vue/compiler-sfc': '>=3.1.0'
       vue: '>=3.1.0'
