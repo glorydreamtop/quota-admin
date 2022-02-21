@@ -1,0 +1,1 @@
+import{_ as e}from"./index.86e9d70c.js";import{D as t,F as n,G as o}from"./vendor.2e1d877b.js";import"http://at.alicdn.com/t/font_2948274_sdqssf53jp.js";const a=t({name:"FrameBlank"});function r(s,c,p,d,m,_){return n(),o("div")}var j=e(a,[["render",r]]);export{j as default};
