@@ -13,7 +13,7 @@ export function configHtmlPlugin(env: ViteEnv, isBuild: boolean) {
   const path = VITE_PUBLIC_PATH.endsWith('/') ? VITE_PUBLIC_PATH : `${VITE_PUBLIC_PATH}/`;
 
   const getAppConfigSrc = () => {
-    return `${path || '/'}${GLOB_CONFIG_FILE_NAME}?v=${pkg.version}-${new Date().getTime()}`;
+    return `${path || '/'}config/${GLOB_CONFIG_FILE_NAME}?v=${pkg.version}-${new Date().getTime()}`;
   };
 
   const htmlPlugin: Plugin[] = html({
