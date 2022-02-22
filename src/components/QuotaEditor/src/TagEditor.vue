@@ -67,13 +67,25 @@
   import { Select, Tag } from 'ant-design-vue';
   import { useModalInner, BasicModal } from '../../Modal';
   import { useI18n } from '/@/hooks/web/useI18n';
-  import { getTagLike } from '/@/api/tags';
+  import { addTagToQuota, getTagLike } from '/@/api/tags';
   import type { TagOption } from '/@/api/tags';
   import { useDebounceFn } from '@vueuse/shared';
   import { useRootSetting } from '/@/hooks/setting/useRootSetting';
   import { fade } from '/@/utils/color';
   import { LabeledValue } from 'ant-design-vue/lib/select';
+  import { QuotaItem } from '/#/quota';
 
+  interface Params {
+    tagName: string;
+    loading: boolean;
+    searchResult: TagOption[];
+    tagList: TagOption[];
+    repeatTag: {
+      id: number;
+      tagName: string;
+    };
+    quotaList: QuotaItem[];
+  }
   const { t } = useI18n();
   const SelectOption = Select.Option;
   const modalProps: Partial<ModalProps> = reactive({
@@ -89,15 +101,16 @@
     return getColorScheme.value.map((color) => fade(color, 30));
   });
 
-  const params = reactive({
+  const params: Params = reactive({
     tagName: '',
     loading: false,
-    searchResult: [] as TagOption[],
-    tagList: [] as TagOption[],
+    searchResult: [],
+    tagList: [],
     repeatTag: {
       id: 0,
       tagName: '',
     },
+    quotaList: [],
   });
   async function searchTag(tagName: string) {
     params.tagName = tagName;
@@ -107,8 +120,6 @@
   }
   const handleSearch = useDebounceFn(searchTag, 800);
   function handleSelect(_, node: LabeledValue) {
-    console.log(arguments);
-
     if (params.tagList.some((tag) => tag.id === node.value)) {
       params.repeatTag = { tagName: node.label as string, id: node.value as number };
       setTimeout(() => {
@@ -118,12 +129,19 @@
       params.tagList.push({ tagName: node.label as string, id: node.value as number });
     }
   }
-  function updateQuotaTag() {}
+  async function updateQuotaTag() {
+    await addTagToQuota({
+      idList: params.tagList.map((tag) => tag.id),
+      indexList: params.quotaList.map((item) => item.id),
+    });
+  }
   function cancel() {
     closeModal();
   }
 
-  const [registerModal, { closeModal }] = useModalInner();
+  const [registerModal, { closeModal }] = useModalInner((quotaList: QuotaItem[]) => {
+    params.quotaList = quotaList;
+  });
 </script>
 
 <style lang="less" scoped>
