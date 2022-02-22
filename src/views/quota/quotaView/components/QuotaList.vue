@@ -280,20 +280,6 @@
   function handleContext(e: MouseEvent, item: SelectedQuotaItem) {
     const menuList = [
       {
-        label: t('quotaView.quotaCard.contextMenu.edit'),
-        icon: 'ant-design:edit-outlined',
-        handler: () => {
-          openEditModal(true, {
-            record: item,
-            index: selectedQuota.value.findIndex((_item) => item.id === _item.id),
-          });
-          setEditModal({
-            title: t('quotaView.quotaSetting.modalTitle'),
-            minHeight: 300,
-          });
-        },
-      },
-      {
         label: t('quotaView.quotaCard.contextMenu.copyShortName'),
         icon: 'ant-design:copy-outlined',
         handler: () => {
@@ -305,7 +291,7 @@
         },
       },
       {
-        label: t('quotaView.quotaCard.contextMenu.saveInMyFolder'),
+        label: t('quotaView.quotaCard.contextMenu.copyAndSave'),
         icon: 'ant-design:folder-add-outlined',
         handler: () => {
           // setQuotaSave({
@@ -318,6 +304,23 @@
         },
       },
     ];
+    if (item.sourceType === SourceTypeEnum.formula) {
+      menuList.unshift({
+        label: t('quotaView.quotaCard.contextMenu.formulaEdit'),
+        icon: 'ant-design:edit-outlined',
+        handler: () => {
+          openEditModal(true, {
+            record: item,
+            index: selectedQuota.value.findIndex((_item) => item.id === _item.id),
+          });
+          setEditModal({
+            title: t('quotaView.quotaCard.contextMenu.formulaEdit'),
+            minHeight: 200,
+            width: 1000,
+          });
+        },
+      });
+    }
     createContextMenu({
       event: e,
       items: menuList,

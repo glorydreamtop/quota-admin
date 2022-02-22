@@ -58,6 +58,12 @@ export function colorIsDark(color: string) {
   return r * 0.299 + g * 0.578 + b * 0.114 < 192;
 }
 
+export function fade(color: string, amount: number) {
+  color = color.indexOf('#') >= 0 ? color.substring(1, color.length) : color;
+  amount = Math.trunc((255 * amount) / 100);
+  return `#${color}${amount.toString(16)}`;
+}
+
 /**
  * Darkens a HEX color given the passed percentage
  * @param {string} color The color to process

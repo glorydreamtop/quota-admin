@@ -96,7 +96,7 @@
   import { formatToDate } from '/@/utils/dateUtil';
   import { Radio, AutoComplete, DatePicker } from 'ant-design-vue';
   import { useI18n } from '/@/hooks/web/useI18n';
-  import { useThrottleFn } from '@vueuse/shared';
+  import { useDebounceFn } from '@vueuse/shared';
   import { cloneDeep } from 'lodash-es';
   import { useModal } from '/@/components/Modal';
   import DetailModal from './components/DetailModal.vue';
@@ -154,7 +154,7 @@
       }
     });
   }
-  const handleSearch = useThrottleFn(search, 800);
+  const handleSearch = useDebounceFn(search, 1000);
   async function handleSelect(value: string, datePicker = false) {
     if (!datePicker) {
       rankParams.productId = '';

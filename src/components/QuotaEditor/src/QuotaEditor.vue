@@ -25,8 +25,6 @@
 
   const [registerForm, { setFieldsValue, validateFields, getFieldsValue, resetFields }] = useForm({
     schemas: schemas,
-    showAdvancedButton: true,
-    alwaysShowLines: 5,
     showResetButton: false,
     showSubmitButton: false,
     layout: 'horizontal',
@@ -36,12 +34,12 @@
 
   const modalProps: Partial<ModalProps> = reactive({
     title: t('quota.quotaEditorModal.title'),
+    okText: t('common.saveText'),
   });
   async function updateQuotaInfo() {
     try {
       await validateFields();
       const form = getFieldsValue() as QuotaItem;
-      form.categoryIdList = [form.categoryId!];
       if (quotaId.value !== 0) {
         form.id = quotaId.value;
       }

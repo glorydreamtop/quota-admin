@@ -14,12 +14,12 @@ export const schemas = computed<FormSchema[]>(() => {
       component: 'Input',
     },
     {
-      field: 'categoryId',
+      field: 'categoryIdList',
       label: t('quota.quotaEditorModal.form.categoryId'),
       required: true,
-      dynamicDisabled: true,
       component: 'TreeSelect',
       componentProps: {
+        multiple: true,
         replaceFields: {
           title: 'name',
           value: 'id',
@@ -131,5 +131,110 @@ export const schemas = computed<FormSchema[]>(() => {
       label: t('quota.quotaEditorModal.form.unit'),
       component: 'Input',
     },
+    {
+      field: 'code',
+      label: t('quota.quotaEditorModal.form.code'),
+      component: 'Input',
+    },
+    {
+      field: 'sourceDescription',
+      label: t('quota.quotaEditorModal.form.sourceDescription'),
+      component: 'Input',
+    },
+    {
+      field: 'description',
+      label: t('quota.quotaEditorModal.form.description'),
+      component: 'Input',
+    },
+    {
+      field: 'tableName',
+      label: t('quota.quotaEditorModal.form.tableName'),
+      component: 'Select',
+      componentProps: {
+        options: [
+          {
+            value: 'T_AGRI',
+          },
+          {
+            value: 'T_CHEMI',
+          },
+          {
+            value: 'T_D',
+          },
+          {
+            value: 'T_METAL',
+          },
+          {
+            value: 'T_UDATA',
+          },
+          {
+            value: 'T_YS',
+          },
+        ],
+      },
+    },
+    {
+      field: 'industry',
+      label: t('quota.quotaEditorModal.form.industry'),
+      component: 'Select',
+      componentProps: {
+        options: [
+          {
+            value: '宏观',
+          },
+          {
+            value: '化工',
+          },
+          {
+            value: '黑色',
+          },
+          {
+            value: '有色',
+          },
+          {
+            value: '农产品',
+          },
+          {
+            value: '贵金属',
+          },
+          {
+            value: '股指',
+          },
+          {
+            value: '国债',
+          },
+          {
+            value: '量化',
+          },
+        ],
+      },
+    },
+    {
+      field: 'priority',
+      component: 'InputNumber',
+      label: t('quota.quotaEditorModal.form.priority'),
+      componentProps: {
+        min: 1,
+        max: 1000,
+      },
+    },
+    // {
+    //   field: 'status',
+    //   component: 'RadioGroup',
+    //   label: t('quota.quotaEditorModal.form.status'),
+    //   defaultValue: 1,
+    //   componentProps: {
+    //     options: [
+    //       {
+    //         label: '启用',
+    //         value: 1,
+    //       },
+    //       {
+    //         label: '禁用',
+    //         value: 0,
+    //       },
+    //     ],
+    //   },
+    // },
   ];
 });

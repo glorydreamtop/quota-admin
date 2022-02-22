@@ -52,7 +52,7 @@
       const getStyle = computed((): CSSProperties => {
         const { axis, items, styles, width } = props;
         const { x, y } = axis || { x: 0, y: 0 };
-        const menuHeight = (items || []).length * 40;
+        const menuHeight = (items || []).length * 32;
         const menuWidth = width;
         const body = document.body;
 

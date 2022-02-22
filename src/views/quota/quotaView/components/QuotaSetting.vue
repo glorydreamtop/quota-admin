@@ -1,13 +1,13 @@
 <template>
   <BasicModal @register="register" @ok="ok" @cancel="close">
     <div class="w-full flex flex-col gap-4 children:flex children:gap-2 children:items-center">
-      <div class="">
+      <div>
         <span class="min-w-4em">{{ t('quotaView.quotaSetting.name') }}</span>
-        <Input class="!w-80" v-model:value="quotaSetting.name" />
+        <Input v-model:value="quotaSetting.name" />
       </div>
       <div v-show="quotaSetting.sourceType !== 'formula'">
         <span class="min-w-4em">{{ t('quotaView.quotaSetting.sourceCode') }}</span>
-        <Input class="!w-80" v-model:value="quotaSetting.sourceCode">
+        <Input v-model:value="quotaSetting.sourceCode">
           <template #suffix>
             <span class="text-primary">{{
               t(`quota.sourceType.${quotaSetting['sourceType']}`)
@@ -19,7 +19,7 @@
         <div>
           <span class="min-w-4em">{{ t('quotaView.quotaSetting.formula') }}</span>
           <Editor
-            class="w-80"
+            class="w-full"
             v-model:formula="quotaSetting.sourceCode"
             @updateEndOffset="updateEndOffset"
           />

@@ -144,7 +144,7 @@ export default {
       startSelect: '开始选择',
       removePoint: '智能抹去',
       xFilter: 'X轴范围',
-      xTip: '输入X轴的范围如 2015-02-03<x<2015-03-01,或x=2019-02-01，多段用逗号分隔',
+      xTip: '输入X轴的范围如 2015-02-03<x<2015-03-01,或x=2019-02-01，多段用逗号分隔，这些日期命中的点将不会在图中显示',
       seriesFilter: '所属序列',
       seriesTip: '先绘图再选择数据所属序列，可多选',
       addBtn: '添加',
@@ -169,12 +169,18 @@ export default {
     formulaTip: '这只是一个公式，不是公式指标',
     formulaWithoutId: '临时公式',
     contextMenu: {
-      edit: '编辑指标',
+      formulaEdit: '编辑公式',
       copyId: '拷贝指标ID',
       copyShortName: '拷贝指标简称',
-      saveInMyFolder: '保存到个人',
+      copyAndSave: '另存为新指标',
       noShortName: '该指标没有录入简称',
     },
+  },
+  tagEdit: {
+    modalTitle: '标签编辑',
+    searchPlaceholder: '搜索可用标签或创建',
+    tagList: '标签池',
+    createTag: '创建',
   },
   management: {
     search: {

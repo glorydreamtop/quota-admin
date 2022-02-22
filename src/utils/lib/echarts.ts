@@ -28,7 +28,7 @@ import {
   GraphicComponent,
 } from 'echarts/components';
 
-import { CanvasRenderer } from 'echarts/renderers';
+import { SVGRenderer } from 'echarts/renderers';
 
 echarts.use([
   LegendComponent,
@@ -44,7 +44,7 @@ echarts.use([
   ScatterChart,
   MapChart,
   RadarChart,
-  CanvasRenderer,
+  SVGRenderer,
   PictorialBarChart,
   RadarComponent,
   ToolboxComponent,

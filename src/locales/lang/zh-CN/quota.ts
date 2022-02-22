@@ -28,10 +28,11 @@ export default {
     clearData: '清空数据',
     delQuotaTip: '删除指标将会影响所有引用它的公式指标和图表，确认删除吗？',
     delQuotaDataTip: '请输入要清空数据的日期范围',
-    delQuotaDataInfo:{
-      amount:'共',
-      rowsCount: '条数据'
+    delQuotaDataInfo: {
+      amount: '共',
+      rowsCount: '条数据',
     },
+    editQuotaTag: '编辑标签',
     importQuota: '导入指标(Excel)',
     getQuotaExcel: '下载指标模板',
     uploadQuotaExcel: '上传指标文件',
@@ -59,6 +60,15 @@ export default {
       frequency: '更新频率',
       shortName: '名称缩写',
       unit: '数据单位',
+      code: '代码',
+      commodity: '商品品种',
+      tagInfoList: '标签',
+      description: '指标描述',
+      sourceDescription: '来源说明',
+      tableName: '数据表名',
+      industry: '行业链条',
+      priority: '优先级',
+      status: '指标状态',
     },
   },
 };

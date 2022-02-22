@@ -4,6 +4,7 @@
     <ToolBar :loading="loading[treeType]" @getData="getData" />
     <QuotaEditor @register="registerQuotaEditor" />
     <ClearDataModal @register="registerClearData" />
+    <TagEditor @register="registerTagEditor" />
     <Tabs v-model:activeKey="treeType" class="tabs" centered>
       <TabPane :key="CategoryTreeType.sysQuota" :tab="t('quota.sysQuota')">
         <BasicTree
@@ -101,7 +102,7 @@
     computed,
   } from 'vue';
   import { QuotaSearch, ToolBar } from '../index';
-  import { QuotaEditor } from '/@/components/QuotaEditor';
+  import { QuotaEditor, TagEditor } from '/@/components/QuotaEditor';
   import { BasicTree } from '/@/components/Tree/index';
   import type { ContextMenuItem } from '/@/components/Tree/index';
   import type { TreeItem, TreeActionType } from '/@/components/Tree/index';
@@ -373,6 +374,7 @@
     useModal();
 
   const [registerClearData, { openModal: openClearData }] = useModal();
+  const [registerTagEditor, { openModal: openTagEditor }] = useModal();
   function beforeRightClick({
     dataRef,
   }: {
@@ -459,6 +461,13 @@
               },
             });
             openQuotaEditor(true, dataRef);
+          },
+        },
+        {
+          label: t('quota.actions.editQuotaTag'),
+          icon: '',
+          handler: () => {
+            openTagEditor(true, dataRef);
           },
         },
         {

@@ -9,7 +9,7 @@ import { useBreakpoint } from '/@/hooks/event/useBreakpoint';
 import echarts from '/@/utils/lib/echarts';
 import { useRootSetting } from '/@/hooks/setting/useRootSetting';
 
-export function useECharts(elRef: Ref<HTMLDivElement>) {
+export function useECharts(elRef: Ref<HTMLDivElement | HTMLCanvasElement>) {
   const { getDarkMode } = useRootSetting();
   let chartInstance: echarts.EChartsType | null = null;
   let resizeFn: Fn = resize;
@@ -35,7 +35,7 @@ export function useECharts(elRef: Ref<HTMLDivElement>) {
     }
 
     chartInstance = echarts.init(el, {
-      renderer: 'canvas',
+      renderer: 'svg',
     });
     const { removeEvent } = useEventListener({
       el: window,
