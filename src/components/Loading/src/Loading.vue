@@ -49,7 +49,7 @@
           container: loadingEl.value!.getElementsByClassName('container')[0],
           loop: true,
           autoplay: false,
-          path: '/src/assets/lottie/load2.json',
+          path: '/src/assets/lottie/load4.json',
         });
       });
       watch(loading, (v) => {
