@@ -92,6 +92,9 @@ export async function useSeasonalChart(
     icon: 'roundRect',
   };
   const quota = quotaDataList[0];
+  if (quota.data.length === 0) {
+    await Promise.reject(new Error('empty data'));
+  }
   const startMonth = chartConfig.timeConfig.startMonth!;
   const changeStart = startMonth > 1;
   quota.data.forEach((data) => {
@@ -193,6 +196,9 @@ export async function useNormalChart(chartConfig: normalChartConfigType): Promis
   };
 
   const quotaDataList = await getQuotaData(fetchParams);
+  if (quotaDataList.some((quota) => quota.data.length === 0)) {
+    await Promise.reject(new Error('empty data'));
+  }
   useSortMonth({ chartConfig, quotaDataList });
   useNormalized({ chartConfig, quotaDataList });
   useRemovePoint({ chartConfig, quotaDataList });
@@ -220,6 +226,9 @@ export async function useNormalChart(chartConfig: normalChartConfigType): Promis
     xAxis: {
       type: 'time',
       triggerEvent: true,
+      axisLabel: {
+        hideOverlap: true,
+      },
     },
     yAxis: chartConfig.yAxis?.map((y) => {
       const _y = useScientificNotation(y);

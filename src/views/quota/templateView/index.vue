@@ -26,6 +26,9 @@
   import { useUniqueField } from '../quotaTable/components/helper';
   import { onMountedOrActivated } from '/@/hooks/core/onMountedOrActivated';
   import { useResizeObserver } from '@vueuse/core';
+  import { chartConfigType } from '/#/chart';
+  import { timeConfigEnum } from '/@/enums/chartEnum';
+  import { today, yearsAgo } from '/@/utils/dateUtil';
 
   const templateList = ref<TemplateDOM[]>([]);
   const selectedTemplateList = ref<TemplateDOM[]>([]);
@@ -65,6 +68,13 @@
       height: '300px',
       // margin: '0 auto',
     };
+    if (node.version! < 3) {
+      const config = node.config as chartConfigType;
+      if (config.timeConfig.type === timeConfigEnum.default) {
+        config.timeConfig.endDate = today();
+        config.timeConfig.startDate = yearsAgo(5);
+      }
+    }
     insertDOM(templateList, selectedTemplateList, node);
     console.log(node);
   }

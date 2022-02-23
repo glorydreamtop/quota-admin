@@ -9,7 +9,7 @@ import {
   structuralChartConfigType,
 } from '/#/chart';
 import { quotaDataPastUnitTypeEnum } from '/@/api/quota';
-import { structuralOffsetUnitEnum, timeConfigEnum } from '/@/enums/chartEnum';
+import { chartTypeEnum, structuralOffsetUnitEnum, timeConfigEnum } from '/@/enums/chartEnum';
 import { formatToDate } from '/@/utils/dateUtil';
 import { SelectedQuotaItem } from '/@/views/quota/quotaView/components/hooks';
 
@@ -256,7 +256,7 @@ export function huiChart() {
       timeConfig: {
         startDate: o.startDate,
         endDate: o.endDate,
-        type: o.titleType,
+        type: o.timeType,
       },
       valueFormatter: {
         afterDot: o.decimal,
@@ -275,6 +275,10 @@ export function huiChart() {
     };
     if (o.lastMulti.multi) {
       config.timeConfig.pastValue = o.lastMulti.number;
+    }
+    if (o.type === chartTypeEnum.pie) {
+      config.timeConfig.pastValue = 1;
+      config.timeConfig.pastUnit = quotaDataPastUnitTypeEnum.last;
     }
     if (o.structXLabel.ifStruct) {
       (config as structuralChartConfigType).structuralOffset = o.structXLabel.list
