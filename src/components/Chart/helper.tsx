@@ -268,10 +268,11 @@ export async function useLastestQuotaData({
       const series = options.series as SeriesOption[];
       series.forEach((item, idx) => {
         const data = item.data as [number, number][];
+        const dataLen = data.length;
         for (let index = 0; index < data.length; index++) {
           const e = data[index];
           // 查找每年的这一天，某年当天无数据则沿用前一天，或直到这年数据的最后一个
-          if (e[0] <= lastDate && lastDate < (data[index + 1] || data[index])[0]) {
+          if (index + 1 === dataLen || (e[0] <= lastDate && lastDate < data[index + 1][0])) {
             lastestData.push({
               name: item.name as string,
               date: formatToDate(e[0], 'MM-DD'),

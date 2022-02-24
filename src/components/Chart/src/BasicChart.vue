@@ -3,9 +3,12 @@
     <div ref="chartElRef" class="w-full h-full" @contextmenu="originContextmenu"></div>
     <div v-if="noChart" class="no-chart flex flex-col items-center">
       <img src="../../../assets/svg/no-chart.svg" />
-      <span v-if="config.title" class="whitespace-nowrap mt-2 text-gray-400">{{
-        config.title
-      }}</span>
+      <span
+        v-if="config.title"
+        class="whitespace-nowrap mt-2 text-gray-400 flex flex-col items-center"
+        ><span>{{ config.title }}</span
+        ><span v-if="renderError">{{ t('common.renderError') }}</span>
+      </span>
     </div>
   </div>
 </template>
@@ -53,6 +56,7 @@
   const { createMessage } = useMessage();
   const { t } = useI18n();
   const noChart = ref(true);
+  const renderError = ref(false);
   const chartTypeHooks = {
     [chartTypeEnum.seasonal]: useSeasonalChart,
     [chartTypeEnum.normal]: useNormalChart,
@@ -82,9 +86,11 @@
         options.animationEasing = 'quinticIn';
         setOptions(options);
         noChart.value = false;
+        renderError.value = false;
       } catch (error) {
         console.log(error);
         noChart.value = true;
+        renderError.value = true;
         createMessage.warn(t('common.renderError'));
       } finally {
         loading.value = false;
