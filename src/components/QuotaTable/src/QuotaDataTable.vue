@@ -1,9 +1,12 @@
 <template>
   <div class="h-full w-full overflow-x-hidden" v-loading="info.loading">
     <div class="overflow-x-scroll h-full">
-      <div class="bg-gray-100 flex items-center justify-start min-w-full w-fit">
+      <div
+        class="bg-gray-100 flex items-center justify-between min-w-full"
+        :style="{ width: `calc(${8 * info.header.length}rem + 8px)` }"
+      >
         <div class="title" v-for="name in info.header" :key="name">
-          <span>{{ name }}</span>
+          <span class="truncate">{{ name }}</span>
           <Icon
             v-if="name !== dateKey"
             icon="ant-design:plus-square-outlined"
@@ -24,7 +27,8 @@
               <span @dblclick="showEdit(item, name)">{{ item[name] }}</span>
               <Input
                 @blur="updateQuotaData(item)"
-                class="edit-data"
+                autofocus
+                class="edit-quotadata-input"
                 v-if="editData.name === name && editData.date === item[editData.dateColName]"
                 size="small"
                 v-model:value="editData.value"
@@ -38,7 +42,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { toRefs, watch, reactive, h, computed } from 'vue';
+  import { toRefs, watch, reactive, h, computed, nextTick } from 'vue';
   import { VScroll } from '/@/components/VirtualScroll';
   import { chartConfigType } from '/#/chart';
   import { useDownloadXLSX } from './helper';
@@ -104,10 +108,12 @@
     date: '',
     dateColName: dateKey,
   });
-  function showEdit(data: Recordable<any>, name: string) {
+  async function showEdit(data: Recordable<any>, name: string) {
     editData.name = name;
     editData.value = data[name];
     editData.date = data[dateKey];
+    await nextTick();
+    (document.getElementsByClassName('edit-quotadata-input')[0] as HTMLInputElement).focus();
   }
   async function updateQuotaData(rowData: Recordable<any>) {
     const jsonObj = JSON.stringify([
@@ -222,9 +228,6 @@
     min-width: @column-width;
     height: @column-height;
     line-height: @column-height;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
   }
 
   .vscroll {
@@ -232,24 +235,30 @@
     // width: 100%;
     max-width: unset !important;
     min-width: 100%;
+
+    ::v-deep(.virtual-scroll__container) {
+      & > div:nth-child(even) {
+        @apply bg-gray-50;
+      }
+    }
   }
 
   .vscroll-item {
-    @apply flex items-center border-b border-light-700 text-gray-600;
+    @apply flex items-center border-b border-light-700 text-gray-600 justify-between;
 
     height: @column-height;
     line-height: @column-height;
     position: relative !important;
 
     & > div {
-      width: @column-width;
+      // width: @column-width;
       min-width: @column-width;
       text-align: center;
       user-select: none;
     }
   }
 
-  .edit-data {
+  .edit-quotadata-input {
     position: absolute;
     width: @column-width;
     text-align: center;

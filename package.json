@@ -74,6 +74,7 @@
     "vue-types": "^4.1.1",
     "vuedraggable": "^4.1.0",
     "vxe-table": "^4.0.30-beta.0",
+    "windicss": "3.4.2",
     "xe-utils": "3",
     "xlsx": "^0.17.4"
   },
@@ -146,7 +147,7 @@
     "vite-plugin-svg-icons": "^1.0.5",
     "vite-plugin-theme": "^0.8.1",
     "vite-plugin-vue-setup-extend": "^0.1.0",
-    "vite-plugin-windicss": "^1.4.12",
+    "vite-plugin-windicss": "1.7.1",
     "vue-eslint-parser": "^8.0.1",
     "vue-tsc": "^0.28.10"
   },
