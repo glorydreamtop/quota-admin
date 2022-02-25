@@ -10,6 +10,7 @@ export async function changeTheme(color: string) {
     tinycolor,
     color,
   });
+  console.log(colors);
 
   return await replaceStyleVariables({
     colorVariables: [...getThemeColors(color), ...colors],

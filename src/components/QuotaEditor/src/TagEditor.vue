@@ -11,25 +11,20 @@
           @select="handleSelect"
           :default-active-first-option="false"
           optionLabelProp="label"
+          :options="params.searchResult.map((tag) => ({ label: tag.tagName, value: tag.id }))"
         >
           <template v-if="params.loading" #notFoundContent>
             <Icon class="loading" icon="ant-design:loading-outlined" />
           </template>
-          <!-- <SelectOption
-            :value="item.id"
-            :label="item.tagName"
-            :key="item.id"
-          >
-            {{ item.tagName }}</SelectOption
-          > -->
-          <SelectOption
-            v-for="item in params.searchResult"
-            :value="item.id"
-            :label="item.tagName"
-            :key="item.id"
-          >
-            {{ item.tagName }}</SelectOption
-          >
+          <template #dropdownRender="{ menuNode }">
+            <div class="py-1 px-3 flex justify-between bg-primary hover:bg-gray-100 cursor-pointer">
+              <span class="truncate">{{ params.tagName }}</span>
+              <Button :disabled="!params.tagName" type="primary" size="small">{{
+                t('quotaView.tagEdit.createTag')
+              }}</Button>
+            </div>
+            <VNodes :vnodes="menuNode" />
+          </template>
         </Select>
       </div>
 
@@ -64,7 +59,7 @@
 <script lang="ts" setup>
   import { computed, reactive } from 'vue';
   import type { ModalProps } from 'ant-design-vue';
-  import { Select, Tag } from 'ant-design-vue';
+  import { Select, Tag, Button } from 'ant-design-vue';
   import { useModalInner, BasicModal } from '../../Modal';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { addTagToQuota, getTagLike } from '/@/api/tags';
@@ -76,6 +71,7 @@
   import { QuotaItem } from '/#/quota';
 
   interface Params {
+    searchName: string;
     tagName: string;
     loading: boolean;
     searchResult: TagOption[];
@@ -87,7 +83,9 @@
     quotaList: QuotaItem[];
   }
   const { t } = useI18n();
-  const SelectOption = Select.Option;
+  function VNodes(_, { attrs }) {
+    return attrs.vnodes;
+  }
   const modalProps: Partial<ModalProps> = reactive({
     title: t('quotaView.tagEdit.modalTitle'),
     okText: t('common.saveText'),
@@ -102,6 +100,7 @@
   });
 
   const params: Params = reactive({
+    searchName: '',
     tagName: '',
     loading: false,
     searchResult: [],
@@ -113,6 +112,7 @@
     quotaList: [],
   });
   async function searchTag(tagName: string) {
+    params.searchName = tagName;
     params.tagName = tagName;
     params.loading = true;
     params.searchResult = await getTagLike(tagName);

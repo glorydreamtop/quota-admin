@@ -150,7 +150,7 @@
               `${dateFomatter(item)} ${item.frequency ? `${item.frequency}更` : ''}`
             }}</span>
           </span>
-          <span class="flex justify-between text-purple-100 children:w-fit">
+          <span class="flex justify-between text-primary-100 children:w-fit">
             <Tooltip destroyTooltipOnHide>
               <template #title>
                 <span class="text-xs">{{ t('quotaView.management.edit') }}</span>

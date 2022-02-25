@@ -3,7 +3,7 @@
     <Icon
       v-repeat-click="getData"
       :class="[
-        'cursor-pointer !text-purple-600 animate__animated',
+        'cursor-pointer !text-primary-600 animate__animated',
         loading ? ' animate__flash' : '',
       ]"
       :size="20"
@@ -11,7 +11,7 @@
     />
     <Icon
       v-repeat-click="openModal"
-      class="cursor-pointer !text-purple-600"
+      class="cursor-pointer !text-primary-600"
       :size="20"
       icon="ant-design:cloud-upload-outlined"
     />

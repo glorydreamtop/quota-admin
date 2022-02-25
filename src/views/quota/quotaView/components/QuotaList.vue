@@ -78,7 +78,7 @@
             class="cursor-move drag-handler"
           />
           <span
-            class="text-purple-300 w-4em text-center cursor-pointer select-none"
+            class="text-primary-300 w-4em text-center cursor-pointer select-none"
             @click.stop
             @dblclick="copy(item.id.toString(), 'id')"
             >{{ isFormula(item) ? t('quotaView.quotaCard.formulaWithoutId') : item.id }}</span
@@ -106,11 +106,11 @@
           }}</span></span
         >
         <!-- 单位和来源 -->
-        <span class="flex justify-between text-purple-100 quota-unit-sourceType">
+        <span class="flex justify-between text-primary-100 quota-unit-sourceType">
           <span class="unit" @click.stop>{{ item.unit }}</span>
           <span class="sourceType" @click.stop>{{ typeFomatter(item.sourceType) }}</span>
         </span>
-        <span class="flex justify-between text-purple-100 children:w-fit">
+        <span class="flex justify-between text-primary-100 children:w-fit">
           <Tooltip>
             <template #title>
               <span class="text-xs">{{

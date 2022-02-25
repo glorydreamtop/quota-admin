@@ -30,7 +30,7 @@
             <span
               v-for="item in quotaList"
               :key="item.id"
-              class="rounded-sm overflow-hidden cursor-pointer bg-purple-400 text-white px-1 relative"
+              class="rounded-sm overflow-hidden cursor-pointer bg-primary-400 text-white px-1 relative"
             >
               <span @click="fillFormula(item, 'id')">{{ item.shortName || item.name }}</span>
               <span

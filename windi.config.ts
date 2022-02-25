@@ -1,5 +1,5 @@
 import { defineConfig } from 'vite-plugin-windicss';
-import { primaryColor } from './build/config/themeConfig';
+import { generateAntColors, primaryColor } from './build/config/themeConfig';
 
 export default defineConfig({
   darkMode: 'class',
@@ -17,6 +17,7 @@ export default defineConfig({
       },
       colors: {
         primary: primaryColor,
+        ...createPrimaryColorScheme(),
       },
       cursor: {
         'nw-resize': 'nw-resize',
@@ -87,4 +88,20 @@ function createEnterPlugin(maxOutput = 7) {
     });
   };
   return { handler };
+}
+
+function createPrimaryColorScheme() {
+  const colors = generateAntColors(primaryColor);
+  return {
+    'primary-50': colors[0],
+    'primary-100': colors[1],
+    'primary-200': colors[2],
+    'primary-300': colors[3],
+    'primary-400': colors[4],
+    'primary-500': colors[5],
+    'primary-600': colors[6],
+    'primary-700': colors[7],
+    'primary-800': colors[8],
+    'primary-900': colors[9],
+  };
 }
