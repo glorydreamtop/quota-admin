@@ -423,7 +423,7 @@
     aspect-ratio: 16/9;
 
     .quota-id {
-      @apply flex items-center gap-1 absolute top-0 left-0 py-2px pl-1 pr-2 mb-1 bg-primary w-fit;
+      @apply flex items-center gap-1 absolute top-0 left-0 py-2px px-1 mb-1 bg-primary w-fit rounded-br-md;
 
       .drag-handler {
         @apply !text-white;
@@ -431,14 +431,14 @@
     }
 
     .quota-title {
-      @apply mt-5 text-xl leading-tight font-bold tracking-1px whitespace-nowrap;
+      @apply mt-5 text-xl leading-tight font-bold tracking-1px whitespace-nowrap border-b border-primary-400 pb-2px pr-1 w-fit;
 
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
     .quota-sourceCode {
-      @apply mt-1 w-fit text-primary-100 border-t border-primary-400;
+      @apply mt-1 w-fit text-primary-100;
     }
 
     .quota-unit-sourceType {
