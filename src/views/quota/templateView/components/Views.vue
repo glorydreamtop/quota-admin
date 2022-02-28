@@ -2,7 +2,7 @@
   <div class="w-full overflow-y-scroll p-2" id="page-box">
     <div
       :class="[
-        'pages bg-white overflow-hidden shadow-lg shadow-gray-700 flex flex-col items-center gap-4',
+        'pages bg-white overflow-hidden shadow-lg shadow-gray-300 flex flex-col items-center gap-4',
         pageSetting.pagination ? 'mb-8' : '',
       ]"
       v-for="(page, pageIdx) in paginationInfo.pages"

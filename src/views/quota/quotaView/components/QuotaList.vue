@@ -60,7 +60,6 @@
       <div
         @click="handleSelected(item)"
         @contextmenu="handleContext($event, item)"
-        v-ripple
         v-loading="loading"
         :class="[
           item.selected ? 'bg-linear-primary' : 'bg-notselected',
@@ -71,26 +70,26 @@
         :key="item.id"
         :data-quotaId="item.id"
       >
-        <span :class="['flex items-center gap-1', cardUI ? 'mb-1' : '']">
+        <span :class="['flex items-center gap-1 quota-id', cardUI ? 'mb-1' : '']">
           <Icon
             icon="akar-icons:drag-horizontal"
             color="#5eead4"
             class="cursor-move drag-handler"
           />
           <span
-            class="text-primary-300 w-4em text-center cursor-pointer select-none"
+            class="w-4em text-center cursor-pointer select-none"
             @click.stop
             @dblclick="copy(item.id.toString(), 'id')"
             >{{ isFormula(item) ? t('quotaView.quotaCard.formulaWithoutId') : item.id }}</span
           >
         </span>
 
-        <span v-show="!cardUI" class="text-gray-200 text-center">{{
+        <span v-show="!cardUI" class="quota-id text-center">{{
           `${index + 1}`.padStart(2, '0')
         }}</span>
 
         <!-- 全称 -->
-        <Tooltip :placement="cardUI ? 'bottomLeft' : 'top'">
+        <Tooltip :placement="cardUI ? 'bottomLeft' : 'top'" :mouseEnterDelay="0.5">
           <template #title>{{ item.name }}</template>
           <span class="text-white cursor-default select-none quota-title"
             ><span class="w-fit" @click.stop @dblclick="copy(item.name, 'name')">{{
@@ -105,32 +104,34 @@
             item.sourceCode
           }}</span></span
         >
-        <!-- 单位和来源 -->
-        <span class="flex justify-between text-primary-100 quota-unit-sourceType">
-          <span class="unit" @click.stop>{{ item.unit }}</span>
-          <span class="sourceType" @click.stop>{{ typeFomatter(item.sourceType) }}</span>
-        </span>
-        <span class="flex justify-between text-primary-100 children:w-fit">
-          <Tooltip>
-            <template #title>
-              <span class="text-xs">{{
-                !isFormula(item)
-                  ? `${t('quotaView.quotaCard.updateOn')}${item.timeLastUpdate}`
-                  : t('quotaView.quotaCard.formulaTip')
-              }}</span>
-            </template>
-            <span class="w-fit whitespace-nowrap" @click.stop>{{
-              `${dateFomatter(item)} ${item.frequency ? `${item.frequency}更` : ''}`
-            }}</span>
-          </Tooltip>
-          <span class="del-icon">
-            <Icon
-              @click="handleIcon(item, 'del')"
-              class="mr-1 cursor-pointer"
-              icon="ant-design:delete-outlined"
-            />
+        <div class="mt-auto bg-mask">
+          <span class="flex justify-between quota-unit-sourceType">
+            <span class="unit" @click.stop>{{ item.unit }}</span>
+            <span class="sourceType" @click.stop>{{ typeFomatter(item.sourceType) }}</span>
           </span>
-        </span>
+          <span class="flex justify-between children:w-fit quota-date">
+            <Tooltip :mouseEnterDelay="0.5">
+              <template #title>
+                <span class="text-xs">{{
+                  !isFormula(item)
+                    ? `${t('quotaView.quotaCard.updateOn')}${item.timeLastUpdate}`
+                    : t('quotaView.quotaCard.formulaTip')
+                }}</span>
+              </template>
+              <span class="w-fit whitespace-nowrap" @click.stop>{{
+                `${dateFomatter(item)} ${item.frequency ? `${item.frequency}更` : ''}`
+              }}</span>
+            </Tooltip>
+            <span class="del-icon">
+              <Icon
+                @click="handleIcon(item, 'del')"
+                class="mr-1 cursor-pointer"
+                icon="ant-design:delete-outlined"
+              />
+            </span>
+          </span>
+        </div>
+        <!-- 单位和来源 -->
       </div>
     </transition-group>
 
@@ -153,7 +154,6 @@
   import { isNullAndUnDef } from '/@/utils/is';
   import { useCopyToClipboard } from '/@/hooks/web/useCopyToClipboard';
   import { useContextMenu } from '/@/hooks/web/useContextMenu';
-  import vRipple from '/@/directives/ripple';
   import { onMountedOrActivated } from '/@/hooks/core/onMountedOrActivated';
   // import { usePointerSlideIn } from '/@/hooks/web/useAnimation';
   import { useQuotaListContext, useSelectedQuotaListContext } from './hooks';
@@ -400,8 +400,8 @@
   }
 
   .quota-list-item {
-    transition-property: transform, background-color;
-    transition-duration: 0.8s;
+    transition-property: transform;
+    transition-duration: 0.3s;
     transition-timing-function: ease;
   }
 
@@ -426,6 +426,10 @@
 
     aspect-ratio: 1.618/1;
 
+    .quota-id {
+      @apply text-primary-100;
+    }
+
     .quota-title {
       @apply text-lg leading-5 font-medium whitespace-nowrap;
 
@@ -434,16 +438,18 @@
     }
 
     .quota-sourceCode {
-      @apply w-fit text-gray-300;
+      @apply w-fit text-primary-100 border-b border-primary-400;
     }
 
     .quota-unit-sourceType {
-      @apply mt-auto;
-
       .unit,
       .sourceType {
-        @apply w-30 text-center w-fit;
+        @apply w-30 text-center w-fit text-primary-100;
       }
+    }
+
+    .quota-date {
+      @apply text-primary-100;
     }
   }
 
@@ -475,6 +481,47 @@
   }
 
   .bg-notselected {
-    @apply bg-cool-gray-400;
+    @apply bg-primary-100;
+
+    transform: scale(0.95) translateY(-4px);
+    transition-delay: 0.5s;
+    animation: no-selected 0.5s;
+
+    .quota-id {
+      @apply text-primary-400;
+    }
+
+    .quota-title {
+      @apply text-primary;
+    }
+
+    .quota-sourceCode {
+      @apply text-primary-300;
+    }
+
+    .quota-unit-sourceType {
+      .unit,
+      .sourceType {
+        @apply text-primary-500;
+      }
+    }
+
+    .quota-date {
+      @apply text-primary-500;
+    }
+  }
+
+  @keyframes no-selected {
+    0% {
+      transform: scale(1);
+    }
+
+    30% {
+      transform: scale(0.95) translateY(4px);
+    }
+
+    100% {
+      transform: scale(0.95) translateY(-4px);
+    }
   }
 </style>

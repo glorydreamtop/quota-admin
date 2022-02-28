@@ -8,15 +8,19 @@
           <RadioButton value="contract">{{ t('monitor.futureRank.contract') }}</RadioButton>
           <RadioButton value="productId">{{ t('monitor.futureRank.productName') }}</RadioButton>
         </RadioGroup>
-        <AutoComplete
-          size="small"
+        <Select
           v-model:value="searchParams.key"
           show-search
+          :default-active-first-option="false"
           :options="searchParams.searchResult"
           @search="handleSearch"
           @select="handleSelect($event, false)"
           :placeholder="t('monitor.futureRank.serachPlaceholder')"
-        />
+        >
+          <template v-if="searchParams.loading" #notFoundContent>
+            <Icon class="loading" icon="ant-design:loading-outlined" />
+          </template>
+        </Select>
         <div class="h-8 pl-2 text-primary">{{
           rankParams.tradeDate || t('monitor.futureRank.timePlaceholder')
         }}</div>
@@ -94,10 +98,10 @@
   import { getFutureRankList, getProOrConValidDate, getSearchInfoList } from '/@/api/future';
   import { openInterestEnum } from '/@/enums/monitorEnum';
   import { formatToDate } from '/@/utils/dateUtil';
-  import { Radio, AutoComplete, DatePicker } from 'ant-design-vue';
+  import { Radio, Select, DatePicker } from 'ant-design-vue';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useDebounceFn } from '@vueuse/shared';
-  import { cloneDeep } from 'lodash-es';
+  import { cloneDeep, last } from 'lodash-es';
   import { useModal } from '/@/components/Modal';
   import DetailModal from './components/DetailModal.vue';
 
@@ -138,21 +142,29 @@
     key: '',
     typeList: ['productId', 'contract'],
     searchResult: [] as LabelValueOptions,
+    loading: false,
   });
-  async function search() {
-    // 搜索列表构建
-    searchParams.searchResult = (
-      await getSearchInfoList({
-        type: searchParams.typeList.indexOf(searchParams.type),
-        key: searchParams.key,
-      })
-    ).map((item) => {
-      if (typeof item === 'string') {
-        return { value: item, label: item, key: item };
-      } else {
-        return { value: item.productName, label: item.productName, key: item.productId };
-      }
-    });
+  async function search(key: string) {
+    searchParams.key = key;
+    searchParams.loading = true;
+    try {
+      // 搜索列表构建
+      searchParams.searchResult = (
+        await getSearchInfoList({
+          type: searchParams.typeList.indexOf(searchParams.type),
+          key,
+        })
+      ).map((item) => {
+        if (typeof item === 'string') {
+          return { value: item, label: item, key: item };
+        } else {
+          return { value: item.productName, label: item.productName, key: item.productId };
+        }
+      });
+    } catch (error) {
+    } finally {
+      searchParams.loading = true;
+    }
   }
   const handleSearch = useDebounceFn(search, 1000);
   async function handleSelect(value: string, datePicker = false) {
@@ -163,6 +175,7 @@
         (item) => item.value === value,
       )!.key;
       await updateValidDate();
+      rankParams.tradeDate === '' && (rankParams.tradeDate = formatToDate(last(avalidDate.value)!));
     }
     const name = searchParams.key;
     chartTitle.buy = `${rankParams.tradeDate} ${name} ${t('monitor.futureRank.openBuy')}Top10`;
@@ -243,5 +256,19 @@
     border: rgba(@primary-color, 0.5) solid 1px;
     background-color: rgba(@primary-color, 0.25);
     color: @primary-color;
+  }
+
+  .loading {
+    animation: rotate 1s linear infinite;
+  }
+
+  @keyframes rotate {
+    0% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
   }
 </style>

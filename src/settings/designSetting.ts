@@ -14,7 +14,7 @@ export const APP_PRESET_COLOR_LIST: string[] = [
   '#ee4f12',
   '#0096c7',
   '#9c27b0',
-  '#ff9800',
+  '#f56a00',
 ];
 
 // header preset color
