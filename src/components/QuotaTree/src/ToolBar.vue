@@ -2,16 +2,13 @@
   <div class="toolbar">
     <Icon
       v-repeat-click="getData"
-      :class="[
-        'cursor-pointer !text-primary-600 animate__animated',
-        loading ? ' animate__flash' : '',
-      ]"
+      :class="['cursor-pointer !text-primary animate__animated', loading ? ' animate__flash' : '']"
       :size="20"
       icon="CloudSync|svg"
     />
     <Icon
       v-repeat-click="openModal"
-      class="cursor-pointer !text-primary-600"
+      class="cursor-pointer !text-primary"
       :size="20"
       icon="ant-design:cloud-upload-outlined"
     />

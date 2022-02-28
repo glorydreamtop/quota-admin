@@ -62,27 +62,23 @@
         @contextmenu="handleContext($event, item)"
         v-loading="loading"
         :class="[
-          item.selected ? 'bg-linear-primary' : 'bg-notselected',
+          item.selected ? 'card-selected' : 'card-notselected',
           cardUI ? 'card-theme' : 'list-theme',
-          'text-xs rounded-sm flex sortable quota-list-item',
+          'sortable quota-list-item',
         ]"
         v-for="(item, index) in selectedQuota"
         :key="item.id"
         :data-quotaId="item.id"
       >
-        <span :class="['flex items-center gap-1 quota-id', cardUI ? 'mb-1' : '']">
-          <Icon
-            icon="akar-icons:drag-horizontal"
-            color="#5eead4"
-            class="cursor-move drag-handler"
-          />
+        <div class="quota-id">
+          <Icon icon="akar-icons:drag-horizontal" class="cursor-move drag-handler" />
           <span
             class="w-4em text-center cursor-pointer select-none"
             @click.stop
             @dblclick="copy(item.id.toString(), 'id')"
             >{{ isFormula(item) ? t('quotaView.quotaCard.formulaWithoutId') : item.id }}</span
           >
-        </span>
+        </div>
 
         <span v-show="!cardUI" class="quota-id text-center">{{
           `${index + 1}`.padStart(2, '0')
@@ -422,29 +418,37 @@
   }
 
   .card-theme {
-    @apply w-50 flex-col pt-1 p-2 shadow-md overflow-x-hidden;
+    @apply relative w-56 flex flex-col bg-primary-50 border border-primary-100 px-2 py-1 shadow-md shadow-primary-50 overflow-x-hidden text-xs rounded-md;
 
-    aspect-ratio: 1.618/1;
+    aspect-ratio: 16/9;
 
     .quota-id {
-      @apply text-primary-100;
+      @apply flex items-center gap-1 absolute top-0 left-0 py-2px pl-1 pr-2 mb-1 bg-primary w-fit;
+
+      .drag-handler {
+        @apply !text-white;
+      }
     }
 
     .quota-title {
-      @apply text-lg leading-5 font-medium whitespace-nowrap;
+      @apply mt-5 text-xl leading-tight font-bold tracking-1px whitespace-nowrap;
 
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
     .quota-sourceCode {
-      @apply w-fit text-primary-100 border-b border-primary-400;
+      @apply mt-1 w-fit text-primary-100 border-t border-primary-400;
     }
 
     .quota-unit-sourceType {
       .unit,
       .sourceType {
-        @apply w-30 text-center w-fit text-primary-100;
+        @apply w-30 text-center w-fit text-primary-400;
+      }
+
+      .sourceType {
+        @apply bg-primary !text-white rounded-sm px-4px py-2px transform -translate-y-1;
       }
     }
 
@@ -480,10 +484,33 @@
     }
   }
 
-  .bg-notselected {
-    @apply bg-primary-100;
+  .card-selected {
+    .quota-id {
+      @apply text-white;
+    }
 
-    transform: scale(0.95) translateY(-4px);
+    .quota-title {
+      @apply text-primary;
+    }
+
+    .quota-sourceCode {
+      @apply text-primary-400;
+    }
+
+    // .quota-unit-sourceType {
+    //   .unit,
+    //   .sourceType {
+    //     @apply text-primary-400;
+    //   }
+    // }
+
+    .quota-date {
+      @apply text-primary-400;
+    }
+  }
+
+  .card-notselected {
+    transform: scale(0.95) translateY(-3px);
     transition-delay: 0.5s;
     animation: no-selected 0.5s;
 
@@ -521,7 +548,7 @@
     }
 
     100% {
-      transform: scale(0.95) translateY(-4px);
+      transform: scale(0.95) translateY(-3px);
     }
   }
 </style>
