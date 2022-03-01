@@ -1,5 +1,5 @@
 <template>
-  <div class="relative flex h-48 p-4 bg-white shadow-md min-h-48">
+  <div class="relative flex h-48 p-4 bg-white shadow-md shadow-primary-50 min-h-48">
     <div
       class="flex flex-wrap w-auto gap-2 pr-2 border-r border-gray-300 write-vertical-left pt-2px"
     >
@@ -51,8 +51,8 @@
       tag="div"
       name="quota-list"
       :class="[
-        'rounded-md overflow-y-scroll flex-grow relative pl-4',
-        cardUI ? 'flex gap-4 flex-wrap content-start' : 'w-0',
+        'rounded-md overflow-y-scroll select-none flex-grow relative pl-2',
+        cardUI ? 'flex gap-2 flex-wrap content-start' : 'w-0',
       ]"
       ref="quotaBox"
     >
@@ -87,15 +87,14 @@
         <!-- 全称 -->
         <Tooltip :placement="cardUI ? 'bottomLeft' : 'top'" :mouseEnterDelay="0.5">
           <template #title>{{ item.name }}</template>
-          <span class="text-white cursor-default select-none quota-title"
+          <span class="quota-title"
             ><span class="w-fit" @click.stop @dblclick="copy(item.name, 'name')">{{
               item.name
             }}</span></span
           >
         </Tooltip>
         <!-- sourceCode -->
-        <span
-          class="max-w-full overflow-x-hidden text-white cursor-default cursor-pointer select-none overflow-ellipsis quota-sourceCode"
+        <span class="quota-sourceCode"
           ><span class="w-fit" @click.stop @dblclick="copy(item.sourceCode, 'sourceCode')">{{
             item.sourceCode
           }}</span></span
@@ -421,9 +420,10 @@
     @apply relative w-56 flex flex-col bg-primary-50 border border-primary-100 px-2 py-1 shadow-md shadow-primary-50 overflow-x-hidden text-xs rounded-md;
 
     aspect-ratio: 16/9;
+    transition: filter 0.2s;
 
     .quota-id {
-      @apply flex items-center gap-1 absolute top-0 left-0 py-2px px-1 mb-1 bg-primary w-fit rounded-br-md;
+      @apply flex items-center gap-1 absolute top-0 left-0 py-2px px-1 mb-1 w-fit rounded-br-md text-white bg-primary;
 
       .drag-handler {
         @apply !text-white;
@@ -431,14 +431,14 @@
     }
 
     .quota-title {
-      @apply mt-5 text-xl leading-tight font-bold tracking-1px whitespace-nowrap border-b border-primary-400 pb-2px pr-1 w-fit;
+      @apply mt-5 cursor-pointer select-none text-xl leading-tight font-bold tracking-1px  text-primary whitespace-nowrap border-b border-primary-200 pb-2px pr-1 w-fit max-w-full overflow-x-hidden;
 
       overflow: hidden;
       text-overflow: ellipsis;
     }
 
     .quota-sourceCode {
-      @apply mt-1 w-fit text-primary-100;
+      @apply mt-1 w-fit text-primary-400;
     }
 
     .quota-unit-sourceType {
@@ -453,89 +453,21 @@
     }
 
     .quota-date {
-      @apply text-primary-100;
+      @apply text-primary-400;
     }
   }
 
-  .list-theme {
-    @apply w-auto min-w-700px gap-4 p-2 text-sm mb-1;
-
-    .drag-handler {
-      @apply items-center;
-    }
-
-    .quota-title {
-      @apply w-80  min-w-60 text-center truncate;
-    }
-
-    .quota-sourceCode {
-      @apply w-40 min-w-30 text-center truncate;
-    }
-
-    .quota-unit-sourceType {
-      .unit,
-      .sourceType {
-        @apply w-30 text-center;
-      }
-    }
-
-    .del-icon {
-      @apply ml-8;
-    }
-  }
-
-  .card-selected {
+  .card-theme.card-selected {
     .quota-id {
-      @apply text-white;
-    }
-
-    .quota-title {
-      @apply text-primary;
-    }
-
-    .quota-sourceCode {
-      @apply text-primary-400;
-    }
-
-    // .quota-unit-sourceType {
-    //   .unit,
-    //   .sourceType {
-    //     @apply text-primary-400;
-    //   }
-    // }
-
-    .quota-date {
-      @apply text-primary-400;
+      // @apply text-white bg-primary;
     }
   }
 
   .card-notselected {
-    transform: scale(0.95) translateY(-3px);
-    transition-delay: 0.5s;
-    animation: no-selected 0.5s;
-
-    .quota-id {
-      @apply text-primary-400;
-    }
-
-    .quota-title {
-      @apply text-primary;
-    }
-
-    .quota-sourceCode {
-      @apply text-primary-300;
-    }
-
-    .quota-unit-sourceType {
-      .unit,
-      .sourceType {
-        @apply text-primary-500;
-      }
-    }
-
-    .quota-date {
-      @apply text-primary-500;
-    }
+    @apply filter grayscale-75;
+    // .quota-id {
+    //   @apply text-primary bg-primary-100;
+    // }
   }
 
   @keyframes no-selected {
