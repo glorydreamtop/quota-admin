@@ -22,7 +22,7 @@
     theme: propTypes.oneOf(Object.values(IconThemeEnum)).def(IconThemeEnum.FILLED),
     size: propTypes.oneOfType([propTypes.string, propTypes.number]).def(16),
     spin: propTypes.bool.def(false),
-    fill: propTypes.string.def('currentColor'),
+    fill: propTypes.string,
     park: propTypes.bool.def(false),
   });
   const { icon, theme, size, spin, fill } = toRefs(props);
