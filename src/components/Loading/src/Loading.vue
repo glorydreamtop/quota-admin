@@ -48,8 +48,9 @@
         anim = useLottie({
           container: loadingEl.value!.getElementsByClassName('container')[0],
           loop: true,
+          render: 'canvas',
           autoplay: false,
-          path: '/src/assets/lottie/load4.json',
+          path: 'https://assets6.lottiefiles.com/packages/lf20_pz34kys6.json',
         });
       });
       watch(loading, (v) => {
@@ -106,8 +107,10 @@
   }
 
   .container {
-    width: 120px;
-    height: 120px;
+    width: 30%;
+    height: auto;
+    max-width: 200px;
+    max-height: 200px;
 
     ::v-deep(image) {
       transform: scale(2);

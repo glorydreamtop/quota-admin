@@ -46,3 +46,10 @@ export enum RouterTransitionEnum {
   FADE_BOTTOM = 'fade-bottom',
   FADE_SCALE = 'fade-scale',
 }
+
+export enum IconThemeEnum {
+  FILLED = 'filled',
+  OUTLINE = 'outline',
+  TWO = 'two-tone',
+  MULLTI = 'multi-color',
+}
