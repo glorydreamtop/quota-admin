@@ -111,4 +111,8 @@ export default {
 
     nocaptchaImgUrl: '未获取到图形验证码',
   },
+  user: {
+    noEmail: '暂未绑定企业邮箱',
+    noPhone: '暂未绑定手机',
+  },
 };
