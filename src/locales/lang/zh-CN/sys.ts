@@ -114,5 +114,10 @@ export default {
   user: {
     noEmail: '暂未绑定企业邮箱',
     noPhone: '暂未绑定手机',
+    userName: '用户名',
+    mobile: '手机号码',
+    mail: '企业邮箱',
+    createTime: '创建时间',
+    role: '角色',
   },
 };

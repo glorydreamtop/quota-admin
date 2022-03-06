@@ -36,6 +36,8 @@ export interface UserInfo {
   desc?: string;
   homePath?: string;
   roleIdList: number[];
+  wechatUsername: string;
+  mobile: string;
 }
 
 export interface BeforeMiniState {
