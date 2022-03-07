@@ -127,7 +127,7 @@ export const useUserStore = defineStore({
       const { roleIdList } = userInfo;
       this.setUserInfo(userInfo);
       this.setRoleList(roleIdList);
-      const { colors } = await getColorScheme({ id: 22 });
+      const { colors } = await getColorScheme({ id: 72 });
       const scheme = colors.split(',');
       const appStore = useAppStoreWithOut();
       appStore.setProjectConfig({
