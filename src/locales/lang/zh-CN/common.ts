@@ -12,6 +12,7 @@ export default {
   inputText: '请输入',
   chooseText: '请选择',
   editText: '编辑',
+  action: '操作',
 
   redo: '刷新',
   back: '返回',
