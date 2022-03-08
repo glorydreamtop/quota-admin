@@ -236,6 +236,10 @@ export function setRem() {
   };
 }
 
+export function getRem(): number {
+  return Number(getComputedStyle(document.body, null).getPropertyValue('font-size').slice(0, -2));
+}
+
 interface coordinateInfo {
   x: number;
   y: number;

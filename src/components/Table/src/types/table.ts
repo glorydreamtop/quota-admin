@@ -419,7 +419,7 @@ export interface BasicColumn extends ColumnProps {
       | unknown[]
       | (((props: Record<string, unknown>) => unknown[]) & (() => unknown[]) & (() => unknown[]));
   }[];
-
+  _customRender?: any;
   //
   flag?: 'INDEX' | 'DEFAULT' | 'CHECKBOX' | 'RADIO' | 'ACTION';
   customTitle?: VueNode;

@@ -1,59 +1,34 @@
 <template>
   <div class="relative flex h-48 p-4 bg-white shadow-md shadow-primary-50 min-h-48">
-    <div
-      class="flex flex-wrap w-auto gap-2 pr-2 border-r border-gray-300 write-vertical-left pt-2px"
-    >
+    <div class="flex flex-col flex-wrap w-auto gap-2 pr-2 border-r border-gray-300 pt-2px">
       <Tooltip placement="left">
         <template #title>{{ t('quotaView.quotaList.formula') }}</template>
-        <Button size="small" @click="addFormula">
-          <template #icon>
-            <Icon icon="carbon:function-math" size="20" />
-          </template>
-        </Button>
+        <Icon icon="carbon:function-math" size="20" @click="addFormula" />
       </Tooltip>
       <Tooltip placement="left">
         <template #title>{{ t('quotaView.quotaList.delChecked') }}</template>
-        <Button size="small" @click="clear" data-type="delete" class="delete-shake">
-          <template #icon>
-            <Icon icon="ant-design:delete-outlined" size="20" />
-          </template>
-        </Button>
+        <Icon
+          icon="ant-design:delete-outlined"
+          size="20"
+          @click="clear"
+          data-type="delete"
+          class="delete-shake"
+        />
       </Tooltip>
       <Tooltip placement="left">
         <template #title>{{ t('quotaView.quotaList.checkAll') }}</template>
-        <Button size="small" @click="checkAll">
-          <template #icon>
-            <Icon icon="ant-design:check-outlined" size="20" />
-          </template>
-        </Button>
-      </Tooltip>
-      <Tooltip placement="left">
-        <template #title>{{
-          cardUI ? t('quotaView.quotaList.listUI') : t('quotaView.quotaList.cardUI')
-        }}</template>
-        <Button size="small" @click="changeUI">
-          <template #icon>
-            <Icon icon="ant-design:swap-outlined" size="20" />
-          </template>
-        </Button>
+        <Icon icon="ant-design:check-outlined" size="20" @click="checkAll" />
       </Tooltip>
       <Tooltip placement="left">
         <template #title>{{ t('quotaView.quotaList.updateQuota') }}</template>
-        <Button size="small" @click="updateQuota">
-          <template #icon>
-            <Icon icon="ant-design:sync-outlined" size="20" />
-          </template>
-        </Button>
+        <Icon icon="ant-design:sync-outlined" size="20" @click="updateQuota" />
       </Tooltip>
     </div>
     <!-- 列表start -->
     <transition-group
       tag="div"
       name="quota-list"
-      :class="[
-        'rounded-md overflow-y-scroll select-none flex-grow relative pl-2',
-        cardUI ? 'flex gap-2 flex-wrap content-start' : 'w-0',
-      ]"
+      class="flex gap-2 flex-wrap content-start rounded-md overflow-y-scroll select-none flex-grow relative pl-2"
       ref="quotaBox"
     >
       <!-- 一个卡片 -->
@@ -62,11 +37,10 @@
         @contextmenu="handleContext($event, item)"
         v-loading="loading"
         :class="[
-          item.selected ? 'card-selected' : 'card-notselected',
-          cardUI ? 'card-theme' : 'list-theme',
-          'sortable quota-list-item',
+          item.selected ? 'card-themecard-selected' : 'card-notselected',
+          'sortable quota-list-item card-theme',
         ]"
-        v-for="(item, index) in selectedQuota"
+        v-for="item in selectedQuota"
         :key="item.id"
         :data-quotaId="item.id"
       >
@@ -80,12 +54,8 @@
           >
         </div>
 
-        <span v-show="!cardUI" class="quota-id text-center">{{
-          `${index + 1}`.padStart(2, '0')
-        }}</span>
-
         <!-- 全称 -->
-        <Tooltip :placement="cardUI ? 'bottomLeft' : 'top'" :mouseEnterDelay="0.5">
+        <Tooltip placement="bottomLeft" :mouseEnterDelay="0.5">
           <template #title>{{ item.name }}</template>
           <span class="quota-title"
             ><span class="w-fit" @click.stop @dblclick="copy(item.name, 'name')">{{
@@ -137,7 +107,7 @@
 <script lang="ts" setup>
   import { nextTick, ref, unref } from 'vue';
   import type { QuotaItem } from '/#/quota';
-  import { Button, Tooltip } from 'ant-design-vue';
+  import { Tooltip } from 'ant-design-vue';
   import { useModal } from '/@/components/Modal';
   import { useWatchArray, typeFomatter } from '/@/utils/helper/commonHelper';
   import { cloneDeep, remove } from 'lodash-es';
@@ -169,11 +139,6 @@
   const { t } = useI18n();
   function handleSelected(item: SelectedQuotaItem) {
     item.selected = !item.selected;
-  }
-  const cardUI = ref(true);
-  // 切换卡片or列表
-  function changeUI() {
-    cardUI.value = !cardUI.value;
   }
   // 全选/取消全选
   function checkAll() {

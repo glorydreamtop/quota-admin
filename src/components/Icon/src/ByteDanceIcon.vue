@@ -1,43 +1,72 @@
 <template>
-  <IconifyIcon v-bind="{ ...$attrs, ...$props }" v-if="!park" />
-  <IconPark
-    v-else
-    :class="$attrs.class"
-    :type="icon"
-    :theme="theme"
-    :size="iconSize"
-    :spin="spin"
-    :fill="fill"
-    :strokeWidth="4"
-  />
+  <IconifyIcon v-bind="{ ...$attrs, ...$props, color }" v-if="!park" />
+  <span v-else ref="elRef" :class="$attrs.class"></span>
 </template>
 <script lang="ts" setup>
-  import { IconPark } from '@icon-park/vue-next/es/all';
+  import * as IconMap from '@icon-park/vue-next/es/map';
   import { IconThemeEnum } from '/@/enums/appEnum';
-  import { computed, toRefs } from 'vue';
+  import { computed, ref, watch, render, createVNode, onMounted } from 'vue';
   import { propTypes } from '/@/utils/propTypes';
   import IconifyIcon from './Icon.vue';
-  import { isString } from '/@/utils/is';
+  import { isArray } from '/@/utils/is';
   import '@icon-park/vue-next/styles/index.css';
+
   const props = defineProps({
     icon: propTypes.string.isRequired,
     theme: propTypes.oneOf(Object.values(IconThemeEnum)).def(IconThemeEnum.MULLTI),
-    size: propTypes.oneOfType([propTypes.string, propTypes.number]).def(20),
+    size: propTypes.oneOfType([propTypes.string, propTypes.number]).def(16),
     spin: propTypes.bool.def(false),
-    fill: propTypes
+    color: propTypes
       .oneOfType([propTypes.arrayOf(propTypes.string), propTypes.string])
       .def(['#309cf6', '#118EF8', '#FFF', '#13f19c']),
     park: propTypes.bool.def(false),
   });
-  const { icon, theme, size, spin, fill } = toRefs(props);
-  const iconSize = computed(() => {
-    console.log(size.value);
-
-    if (isString(size.value)) {
-      return /^\d+$/.test(size.value) ? Number(size.value) : size.value;
-    } else {
-      return size.value;
+  const color = computed(() => (isArray(props.color) ? props.color[0] : props.color));
+  const elRef = ref<Element>();
+  function toPascalCase(val) {
+    return val.replace(/(^\w|-\w)/g, function (c) {
+      return c.slice(-1).toUpperCase();
+    });
+  }
+  function setStyle() {
+    const parent = elRef.value!.parentElement!.className;
+    const inPrimaryBtn = /-btn-primary/i.test(parent);
+    if (inPrimaryBtn) {
+      return {
+        fill: '#fff',
+        theme: IconThemeEnum.OUTLINE,
+        size: 16,
+        class: 'mr-2px',
+      };
     }
-  });
+    const inDefaultBtn = /-btn/i.test(parent);
+    if (inDefaultBtn) {
+      return {
+        theme: IconThemeEnum.OUTLINE,
+        size: 16,
+        class: 'mr-2px',
+      };
+    }
+    return {};
+  }
+  async function update() {
+    if (!props.park) return;
+    const params = {
+      theme: props.theme,
+      size: props.size,
+      fill: isArray(props.color) ? props.color : [props.color],
+      spin: props.spin,
+      ...setStyle(),
+    };
+    const type = toPascalCase(props.icon);
+    if (!(type in IconMap)) {
+      throw new Error(''.concat(type, ' is not a valid icon type name'));
+    }
+    // await nextTick();
+    render(createVNode(IconMap[type], params), elRef.value!);
+  }
+  watch(() => props, update, { flush: 'post' });
+
+  onMounted(update);
 </script>
 <style lang="less"></style>

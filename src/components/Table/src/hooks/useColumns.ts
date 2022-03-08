@@ -168,6 +168,7 @@ export function useColumns(
 
         // edit table
         if ((edit || editRow) && !isDefaultAction) {
+          column._customRender = column.customRender;
           column.customRender = renderEditCell(column);
         }
         return column;

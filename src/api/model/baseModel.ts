@@ -1,6 +1,7 @@
 export interface BasicPageParams {
   currPage: number;
   pageSize: number;
+  [key: string]: any;
 }
 
 export interface BasicFetchResult<T> {

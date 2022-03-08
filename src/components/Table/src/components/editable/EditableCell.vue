@@ -5,7 +5,7 @@
       :class="{ [`${prefixCls}__normal`]: true, 'ellipsis-cell': column.ellipsis }"
       @click="handleEdit"
     >
-      <div class="cell-content" :title="column.ellipsis ? getValues ?? '' : ''">
+      <div class="cell-content" ref="cellElRef" :title="column.ellipsis ? getValues ?? '' : ''">
         {{ getValues ? getValues : '&nbsp;' }}
       </div>
       <FormOutlined :class="`${prefixCls}__normal-icon`" v-if="!column.editRow" />
@@ -35,7 +35,7 @@
   </div>
 </template>
 <script lang="ts">
-  import type { CSSProperties, PropType } from 'vue';
+  import { CSSProperties, PropType, render } from 'vue';
   import { computed, defineComponent, nextTick, ref, toRaw, unref, watchEffect } from 'vue';
   import type { BasicColumn } from '../../types/table';
   import type { EditRecordRow } from './index';
@@ -78,6 +78,7 @@
       const table = useTableContext();
       const isEdit = ref(false);
       const elRef = ref();
+      const cellElRef = ref<Element>();
       const ruleVisible = ref(false);
       const ruleMessage = ref('');
       const optionsRef = ref<LabelValueOptions>([]);
@@ -136,6 +137,12 @@
 
         const component = unref(getComponent);
         if (!component.includes('Select')) {
+          if (props.column._customRender) {
+            nextTick(() => {
+              cellElRef.value!.innerHTML = '';
+              render(props.column._customRender?.({ record: props.record }), cellElRef.value!);
+            });
+          }
           return value;
         }
 
@@ -281,7 +288,7 @@
 
         set(record, dataKey, value);
         //const record = await table.updateTableData(index, dataKey, value);
-        needEmit && table.emit?.('edit-end', { record, index, key, value });
+        needEmit && table.emit?.('edit-end', { record, index, key: dataKey, value });
         isEdit.value = false;
       }
 
@@ -382,6 +389,7 @@
         handleChange,
         handleCancel,
         elRef,
+        cellElRef,
         getComponent,
         getRule,
         onClickOutside,
@@ -446,6 +454,11 @@
       > .ant-select {
         min-width: calc(100% - 50px);
       }
+    }
+
+    &__action {
+      display: flex;
+      align-items: center;
     }
 
     &__icon {

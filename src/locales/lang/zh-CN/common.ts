@@ -13,7 +13,7 @@ export default {
   chooseText: '请选择',
   editText: '编辑',
   action: '操作',
-
+  createText: '新建',
   redo: '刷新',
   back: '返回',
 
