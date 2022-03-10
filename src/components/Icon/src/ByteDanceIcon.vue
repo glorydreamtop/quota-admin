@@ -23,7 +23,7 @@
   });
   const color = computed(() => (isArray(props.color) ? props.color[0] : props.color));
   const elRef = ref<Element>();
-  function toPascalCase(val) {
+  function toPascalCase(val: string) {
     return val.replace(/(^\w|-\w)/g, function (c) {
       return c.slice(-1).toUpperCase();
     });

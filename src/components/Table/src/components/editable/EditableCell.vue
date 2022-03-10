@@ -6,7 +6,7 @@
       @click="handleEdit"
     >
       <div class="cell-content" ref="cellElRef" :title="column.ellipsis ? getValues ?? '' : ''">
-        {{ getValues ? getValues : '&nbsp;' }}
+        <span v-if="!$props.column?._customRender">{{ getValues ? getValues : '&nbsp;' }}</span>
       </div>
       <FormOutlined :class="`${prefixCls}__normal-icon`" v-if="!column.editRow" />
     </div>
@@ -35,7 +35,7 @@
   </div>
 </template>
 <script lang="ts">
-  import { CSSProperties, PropType, render } from 'vue';
+  import { CSSProperties, onMounted, PropType, render } from 'vue';
   import { computed, defineComponent, nextTick, ref, toRaw, unref, watchEffect } from 'vue';
   import type { BasicColumn } from '../../types/table';
   import type { EditRecordRow } from './index';
@@ -137,12 +137,6 @@
 
         const component = unref(getComponent);
         if (!component.includes('Select')) {
-          if (props.column._customRender) {
-            nextTick(() => {
-              cellElRef.value!.innerHTML = '';
-              render(props.column._customRender?.({ record: props.record }), cellElRef.value!);
-            });
-          }
           return value;
         }
 
@@ -201,7 +195,7 @@
           currentValueRef.value = (e as ChangeEvent).target.value;
         } else if (component === 'Checkbox') {
           currentValueRef.value = (e as ChangeEvent).target.checked;
-        } else if (isString(e) || isBoolean(e) || isNumber(e)) {
+        } else if (isString(e) || isBoolean(e) || isNumber(e) || isArray(e)) {
           currentValueRef.value = e;
         }
         const onChange = props.column?.editComponentProps?.onChange;
@@ -287,6 +281,12 @@
         }
 
         set(record, dataKey, value);
+        // 自定义渲染的话，编辑完刷新一下
+        if (props.column._customRender) {
+          nextTick(() => {
+            render(props.column._customRender({ record: props.record }), cellElRef.value!);
+          });
+        }
         //const record = await table.updateTableData(index, dataKey, value);
         needEmit && table.emit?.('edit-end', { record, index, key: dataKey, value });
         isEdit.value = false;
@@ -379,6 +379,12 @@
           }
         };
       }
+
+      onMounted(() => {
+        if (props.column._customRender) {
+          render(props.column._customRender({ record: props.record }), cellElRef.value!);
+        }
+      });
 
       return {
         isEdit,

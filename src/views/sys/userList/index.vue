@@ -1,7 +1,7 @@
 <template>
   <div class="h-layout-full p-4 flex flex-col gap-4">
     <div class="flex gap-4 bg-white p-4 shadow-md shadow-primary-50">
-      <Button type="primary">
+      <Button type="primary" disabled>
         <template #icon>
           <Icon icon="plus" park />
         </template>
@@ -34,18 +34,8 @@
     </div>
     <div class="bg-white p-4 shadow-md shadow-primary-50">
       <BasicTable @register="registerTable" @edit-end="editCellEnd">
-        <template #roleList="{ record }">
-          <span class="flex gap-1 justify-center">
-            <Tag
-              v-for="(roleId, index) in record.roleIdList"
-              :key="roleId"
-              :color="colors[index]"
-              >{{ roleNameFilter(roleId) }}</Tag
-            >
-          </span>
-        </template>
-        <template #action>
-          <TableAction :actions="actions" />
+        <template #action="{ record }">
+          <TableAction :actions="actions(record)" />
         </template>
       </BasicTable>
     </div>
@@ -53,21 +43,20 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, computed, reactive } from 'vue';
+  import { ref, reactive, h } from 'vue';
   import { getUserList, updateUserInfo } from '/@/api/sys/user';
   import { getRoleListById } from '/@/api/sys/role';
   import type { BasicPageParams } from '/@/api/model/baseModel';
   import { onMountedOrActivated } from '/@/hooks/core/onMountedOrActivated';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { Icon } from '/@/components/Icon';
-  import { Tag, Input, Select, Button } from 'ant-design-vue';
-  import { getColumns } from './columns';
-  import { BasicTable, useTable, TableAction } from '/@/components/Table';
-  import { useRootSetting } from '/@/hooks/setting/useRootSetting';
-  import { fade } from '/@/utils/color';
+  import { Input, Select, Button } from 'ant-design-vue';
+  import { getColumns, userListEventBus } from './columns';
+  import { BasicTable, useTable, TableAction, ActionItem } from '/@/components/Table';
   import { getRem } from '/@/utils/domUtils';
   import { isEmpty, isNull } from '/@/utils/is';
   import { useMessage } from '/@/hooks/web/useMessage';
+  import { UserInfo } from '/#/store';
 
   const { t } = useI18n();
   const { createMessage } = useMessage();
@@ -97,14 +86,43 @@
       slots: { customRender: 'action' },
     },
   });
-  const actions = ref([
-    {
-      label: t('common.editText'),
-    },
-    {
-      label: t('common.delText'),
-    },
-  ]);
+  const actions = function (record: UserInfo): ActionItem[] {
+    const resetPwdText = ref('');
+    return [
+      {
+        icon: 'ant-design:lock-outlined',
+        label: t('sys.user.resetPwd'),
+        popConfirm: {
+          title: () => {
+            // @ts-ignore
+            return h(Input, {
+              type: 'text',
+              size: 'small',
+              defaultValue: resetPwdText,
+              placeholder: t('sys.login.passwordPlaceholder'),
+              onInput: ({ target }) => (resetPwdText.value = target.value),
+            });
+          },
+          confirm: async () => {
+            if (!resetPwdText.value) return;
+            const msg = await updateUserInfo({
+              userId: record.userId,
+              password: resetPwdText.value,
+            });
+            createMessage.success(msg);
+            resetPwdText.value = '';
+          },
+          cancel: () => {
+            resetPwdText.value = '';
+          },
+        },
+      },
+      {
+        icon: 'ant-design:delete-outlined',
+        label: t('common.delText'),
+      },
+    ];
+  };
   const roleList = ref<LabelValueOptions>([]);
   async function getUserListData(pageParams: BasicPageParams) {
     const res = await getUserList({
@@ -124,26 +142,19 @@
     try {
       const { list } = await getRoleListById();
       roleList.value = list.map((item) => ({ label: item.roleName, value: item.roleId }));
+      userListEventBus.emit('roleListUpdate', roleList.value);
     } catch (error) {
       console.log(error);
     } finally {
       loadingState.roleSelect = false;
     }
   }
-  async function editCellEnd({ key, value }) {
+  async function editCellEnd({ key, value, record }) {
     if (isEmpty(value) || isNull(value)) return;
-    const msg = await updateUserInfo({ [key]: value });
+    // 带上userId，他们的token解不出来userId，绝了
+    const msg = await updateUserInfo({ [key]: value, userId: record.userId });
     createMessage.success(msg);
   }
-  // id翻译成角色名字
-  function roleNameFilter(id: number) {
-    return roleList.value.find((role) => role.value === id)?.label || null;
-  }
-  const { getColorScheme } = useRootSetting();
-
-  const colors = computed(() => {
-    return getColorScheme.value.map((color) => fade(color, 60));
-  });
   async function filterUserList() {
     reload();
   }

@@ -38,6 +38,8 @@ export interface UserInfo {
   roleIdList: number[];
   wechatUsername: string;
   mobile: string;
+  status: number;
+  password: string;
 }
 
 export interface BeforeMiniState {

@@ -119,5 +119,9 @@ export default {
     mail: '企业邮箱',
     createTime: '创建时间',
     role: '角色',
+    status: '状态',
+    off: '禁用',
+    on: '启用',
+    resetPwd: '重置密码',
   },
 };

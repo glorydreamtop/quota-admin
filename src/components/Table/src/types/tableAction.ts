@@ -1,5 +1,6 @@
 import { ButtonProps } from 'ant-design-vue/es/button/buttonTypes';
 import { TooltipProps } from 'ant-design-vue/es/tooltip/Tooltip';
+import { VNodeTypes } from 'vue';
 import { RoleEnum } from '/@/enums/roleEnum';
 export interface ActionItem extends ButtonProps {
   onClick?: Fn;
@@ -17,7 +18,7 @@ export interface ActionItem extends ButtonProps {
 }
 
 export interface PopConfirm {
-  title: string;
+  title: string | VNodeTypes;
   okText?: string;
   cancelText?: string;
   confirm: Fn;
