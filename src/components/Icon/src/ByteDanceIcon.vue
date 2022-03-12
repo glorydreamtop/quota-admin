@@ -2,10 +2,15 @@
   <IconifyIcon v-bind="{ ...$attrs, ...$props, color }" v-if="!park" />
   <span v-else ref="elRef" :class="$attrs.class"></span>
 </template>
+<script lang="ts">
+  export default defineComponent({
+    name: 'Icon',
+  });
+</script>
 <script lang="ts" setup>
   import * as IconMap from '@icon-park/vue-next/es/map';
   import { IconThemeEnum } from '/@/enums/appEnum';
-  import { computed, ref, watch, render, createVNode, onMounted } from 'vue';
+  import { computed, ref, watch, render, createVNode, onMounted, defineComponent } from 'vue';
   import { propTypes } from '/@/utils/propTypes';
   import IconifyIcon from './Icon.vue';
   import { isArray } from '/@/utils/is';

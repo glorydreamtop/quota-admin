@@ -123,5 +123,9 @@ export default {
     off: '禁用',
     on: '启用',
     resetPwd: '重置密码',
+    editUserModal: {
+      createTitle: '创建用户',
+      editTitle: '编辑用户',
+    },
   },
 };
