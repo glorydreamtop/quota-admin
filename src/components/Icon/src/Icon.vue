@@ -84,6 +84,18 @@
           fs = parseInt(size, 10);
         }
 
+        const parent = elRef.value?.parentElement!.className;
+        if (parent) {
+          const inPrimaryBtn = /-btn-primary/i.test(parent);
+          if (inPrimaryBtn) {
+            return {
+              fontSize: `${fs}px`,
+              color: '#fff',
+              display: 'inline-flex',
+            };
+          }
+        }
+
         return {
           fontSize: `${fs}px`,
           color: color,
@@ -111,7 +123,7 @@
     }
   }
 
-  span.iconify {
+  .ant span.iconify {
     display: block;
     min-width: 1em;
     min-height: 1em;

@@ -66,22 +66,30 @@ export function getBuildShares(params: {
 }
 
 export function getExchangeList() {
-  return defHttp.request<RankResult[]>({
+  return defHttp.request<{ [key: string]: string }>({
     url: Api.GetExchangeList,
     method: 'GET',
   });
 }
 
-export function getHoldSharesAnalyse(params: any) {
-  return defHttp.request<RankResult[]>({
+export function getHoldSharesAnalyse(params: {
+  memberName: string;
+  exchange: string;
+  tradeDate: string;
+}) {
+  return defHttp.request<RankResult>({
     url: Api.GetHoldSharesAnalyse,
     method: 'GET',
     params,
   });
 }
 
-export function getMemberHoldSharesWorth(params: any) {
-  return defHttp.request<RankResult[]>({
+export function getMemberHoldSharesWorth(params: {
+  memberName: string;
+  exchange: string;
+  tradeDate: string;
+}) {
+  return defHttp.request<RankResult>({
     url: Api.GetMemberHoldSharesWorth,
     method: 'GET',
     params,
@@ -89,14 +97,14 @@ export function getMemberHoldSharesWorth(params: any) {
 }
 
 export function getSearchMemberList() {
-  return defHttp.request<RankResult[]>({
+  return defHttp.request<string[]>({
     url: Api.GetSearchMemberList,
     method: 'GET',
   });
 }
 
-export function getMemberValidDate(params: any) {
-  return defHttp.request<RankResult[]>({
+export function getMemberValidDate(params: { memberName: string; exchange: string }) {
+  return defHttp.request<string[]>({
     url: Api.GetMemberValidDate,
     method: 'GET',
     params,

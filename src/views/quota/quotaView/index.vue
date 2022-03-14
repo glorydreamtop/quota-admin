@@ -1,6 +1,9 @@
 <template>
   <div class="flex justify-start items-center h-layout-full p-4 gap-4 w-full overflow-hidden">
-    <div class="h-full min-w-75 w-75 relative border shadow-md" v-resizeable:show="`x`">
+    <div
+      class="h-full min-w-75 w-75 relative border shadow-md shadow-primary-50"
+      v-resizeable:show="`x`"
+    >
       <QuotaTree :show-search="true" class="h-full w-full enter-y" @selectNode="selectNode" />
     </div>
     <div class="flex flex-col h-full flex-grow gap-4">

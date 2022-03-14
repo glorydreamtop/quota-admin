@@ -1,5 +1,7 @@
 <template>
-  <div class="flex flex-grow p-4 overflow-hidden bg-white shadow-md relative min-w-fit">
+  <div
+    class="flex flex-grow p-4 overflow-hidden bg-white shadow-md shadow-primary-50 relative min-w-fit"
+  >
     <div class="relative flex-grow">
       <ToolBar @paint="paint" @event="handleEvent" />
       <Teleport to="body" :disabled="!fullscreen">

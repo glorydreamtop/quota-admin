@@ -21,4 +21,12 @@ export default {
       calc: '净多头',
     },
   },
+  futureAnalysis: {
+    futuresDealer: '期货',
+    exchange: '交易所',
+    exchangeDate: '交易日',
+    share: '持仓分析',
+    money: '资金分析',
+  },
+  getAvailableDateError: '日期查询失败，请刷新重试',
 };

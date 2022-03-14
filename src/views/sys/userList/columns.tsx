@@ -27,9 +27,10 @@ export function getColumns(): BasicColumn[] {
     {
       title: t('sys.user.userName'),
       dataIndex: 'username',
-      width: 160,
+      width: 120,
       edit: true,
       editComponent: 'Input',
+      fixed: 'left',
     },
     {
       title: t('sys.user.role'),
@@ -57,7 +58,6 @@ export function getColumns(): BasicColumn[] {
     {
       title: t('sys.user.mail'),
       dataIndex: 'wechatUsername',
-      width: 250,
       edit: true,
       editComponent: 'Input',
       customRender: ({ record }) => {
@@ -89,7 +89,7 @@ export function getColumns(): BasicColumn[] {
     {
       title: t('sys.user.createTime'),
       dataIndex: 'createTime',
-      width: 250,
+      width: 200,
     },
     {
       title: t('sys.user.status'),
