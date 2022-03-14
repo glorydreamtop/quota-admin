@@ -29,4 +29,5 @@ export default {
     money: '资金分析',
   },
   getAvailableDateError: '日期查询失败，请刷新重试',
+  getAvailableDate: '正在检索可用日期...',
 };

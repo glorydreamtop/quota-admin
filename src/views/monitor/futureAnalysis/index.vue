@@ -1,6 +1,9 @@
 <template>
   <div class="h-layout-full p-4 flex flex-col gap-4">
-    <div class="w-full p-4 bg-white shadow-md shadow-primary-50 flex gap-4 justify-start">
+    <div
+      class="w-full p-4 bg-white shadow-md shadow-primary-50 flex gap-4 justify-start items-center"
+      v-loading="!state.allowQueryDate"
+    >
       <span>
         <span class="label">{{ t('monitor.futureAnalysis.futuresDealer') }}</span>
         <Select class="w-32" :options="params.memberList" v-model:value="params.memberName" />
@@ -18,12 +21,22 @@
           v-model:value="params.tradeDate"
         />
       </span>
-      <Button type="primary" @click="getDetails" :disabled="state.allowQuery">
+      <Button type="primary" @click="getDetails" :disabled="!state.allowQuery">
         <template #icon>
           <Icon icon="ant-design:search-outlined" />
         </template>
         <span>{{ t('common.queryText') }}</span>
       </Button>
+      <div
+        v-show="!state.allowQuery"
+        :class="[
+          'italic text-gray-400',
+          !state.allowQuery
+            ? 'animate__animated animate__slow animate__flash animate__infinite'
+            : '',
+        ]"
+        >{{ t('monitor.getAvailableDate') }}</div
+      >
     </div>
     <div
       class="w-full bg-white shadow-md shadow-primary-50 flex-grow"
@@ -88,22 +101,33 @@
   });
   const state = reactive({
     loading: false,
-    allowQuery: true,
+    allowQuery: false,
+    allowQueryDate: true,
   });
   async function init() {
-    params.memberList = (await getSearchMemberList()).map((name) => ({ label: name, value: name }));
-    const exchange = await getExchangeList();
-    params.exchangeList = Object.keys(exchange).map((key) => ({
-      label: exchange[key],
-      value: key,
-    }));
+    state.allowQueryDate = false;
+    try {
+      params.memberList = (await getSearchMemberList()).map((name) => ({
+        label: name,
+        value: name,
+      }));
+      const exchange = await getExchangeList();
+      params.exchangeList = Object.keys(exchange).map((key) => ({
+        label: exchange[key],
+        value: key,
+      }));
+    } catch (error) {
+      createMessage.error(error);
+    } finally {
+      state.allowQueryDate = true;
+    }
   }
 
   async function getAvailableDate() {
-    state.allowQuery = true;
+    state.allowQuery = false;
     try {
       params.availableDate = await getMemberValidDate(pick(params, ['memberName', 'exchange']));
-      state.allowQuery = false;
+      state.allowQuery = true;
     } catch (error) {
       createMessage.error(t('monitor.getAvailableDateError'));
     }
