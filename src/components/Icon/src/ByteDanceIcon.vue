@@ -34,8 +34,8 @@
     });
   }
   function setStyle() {
-    const parent = elRef.value!.parentElement!.className;
-    const inPrimaryBtn = /-btn-primary/i.test(parent);
+    const parent = elRef.value!.parentElement!;
+    const inPrimaryBtn = /-btn-primary/i.test(parent.className);
     if (inPrimaryBtn) {
       return {
         fill: '#fff',
@@ -44,10 +44,19 @@
         class: 'mr-2px',
       };
     }
-    const inDefaultBtn = /-btn/i.test(parent);
+    const inDefaultBtn = /-btn/i.test(parent.className);
     if (inDefaultBtn) {
       return {
         theme: IconThemeEnum.OUTLINE,
+        size: 16,
+        class: 'mr-2px',
+      };
+    }
+    const inDisabledBtn = parent.hasAttribute('disabled');
+    if (inDisabledBtn) {
+      return {
+        theme: IconThemeEnum.OUTLINE,
+        color: '#fcfcfc',
         size: 16,
         class: 'mr-2px',
       };

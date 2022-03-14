@@ -17,7 +17,7 @@
           @select="handleSelect($event, false)"
           :placeholder="t('monitor.futureRank.serachPlaceholder')"
         >
-          <template v-if="searchParams.loading" #notFoundContent>
+          <template v-if="state.loadingData" #notFoundContent>
             <Icon class="loading" icon="ant-design:loading-outlined" />
           </template>
         </Select>
@@ -34,7 +34,12 @@
           open
           @change="handleSelect($event, true)"
         >
-          <div ref="calendar" class="-mt-2"></div>
+          <div
+            ref="calendar"
+            class="-mt-2"
+            v-loading="state.loadingDate"
+            :loading-tip="t('monitor.getAvailableDate')"
+          ></div>
           <template #dateRender="{ current }">
             <div
               :class="[
@@ -93,7 +98,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { reactive, ref } from 'vue';
+  import { nextTick, onMounted, reactive, ref } from 'vue';
   import TopList from './components/TopList.vue';
   import RankChart from './components/RankChart.vue';
   import { RankResult } from '/@/api/future/model';
@@ -111,6 +116,11 @@
   const RadioButton = Radio.Button;
 
   const { t } = useI18n();
+
+  const state = reactive({
+    loadingDate: false,
+    loadingData: false,
+  });
 
   const rankList = reactive({
     done: [] as RankResult,
@@ -144,11 +154,10 @@
     key: '',
     typeList: ['productId', 'contract'],
     searchResult: [] as LabelValueOptions,
-    loading: false,
   });
   async function search(key: string) {
     searchParams.key = key;
-    searchParams.loading = true;
+    state.loadingData = true;
     try {
       // 搜索列表构建
       searchParams.searchResult = (
@@ -165,7 +174,7 @@
       });
     } catch (error) {
     } finally {
-      searchParams.loading = true;
+      state.loadingData = true;
     }
   }
   const handleSearch = useDebounceFn(search, 1000);
@@ -184,6 +193,11 @@
     chartTitle.sale = `${rankParams.tradeDate} ${name} ${t('monitor.futureRank.openSale')}Top10`;
     await getRankList();
   }
+  const calendar = ref<HTMLDivElement>();
+
+  function getCalendarContainer() {
+    return calendar.value;
+  }
   // 不可用日期
   function disabledDate(cur: any): boolean {
     const date = cur.format('YYYY-MM-DD');
@@ -191,15 +205,13 @@
   }
   const avalidDate = ref(['']);
   async function updateValidDate() {
+    state.loadingDate = true;
     avalidDate.value = (
       await getProOrConValidDate({
         [searchParams.type]: rankParams[searchParams.type],
       })
     ).map((day) => formatToDate(day));
-  }
-  const calendar = ref();
-  function getCalendarContainer() {
-    return calendar.value;
+    state.loadingDate = false;
   }
   const [registerModal, { openModal, setModalProps }] = useModal();
   function openDetail(memberName: string, productId: string) {
@@ -218,6 +230,13 @@
       productId,
     });
   }
+  onMounted(async () => {
+    await nextTick();
+    const height = calendar.value?.getElementsByClassName(
+      'ant-calendar-picker-container-content',
+    )[0]!.clientHeight;
+    calendar.value!.style.height = `${height}px`;
+  });
 </script>
 
 <style lang="less" scoped>

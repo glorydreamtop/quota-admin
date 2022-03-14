@@ -12,9 +12,6 @@ interface Fn {
   (): void;
 }
 
-export function useLoading(props: Partial<LoadingProps>): [Fn, Fn, (string) => void];
-export function useLoading(opt: Partial<UseLoadingOptions>): [Fn, Fn, (string) => void];
-
 export function useLoading(
   opt: Partial<LoadingProps> | Partial<UseLoadingOptions>,
 ): [Fn, Fn, (string) => void] {

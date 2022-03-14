@@ -28,7 +28,7 @@
         <span>{{ t('common.queryText') }}</span>
       </Button>
       <div
-        v-show="!state.allowQuery"
+        v-show="!state.allowQuery && state.allowQueryDate"
         :class="[
           'italic text-gray-400',
           !state.allowQuery
