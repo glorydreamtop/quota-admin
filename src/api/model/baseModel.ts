@@ -1,9 +1,9 @@
-export interface BasicPageParams {
+interface PageParams {
   currPage: number;
   pageSize: number;
-  [key: string]: any;
 }
 
+export type BasicPageParams<T = {}> = PageParams & T;
 export interface BasicFetchResult<T> {
   list: T[];
   totalCount: number;

@@ -54,7 +54,7 @@ export function getUserInfo(params?: IdModel) {
 /**
  * @description: getUserList
  */
-export function getUserList(params?: BasicPageParams) {
+export function getUserList(params?: BasicPageParams<Partial<UserInfo>>) {
   return defHttp.request<BasicFetchResult<UserInfo>>({
     url: Api.GetUserList,
     method: 'GET',

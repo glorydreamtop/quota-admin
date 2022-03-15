@@ -80,7 +80,7 @@
       },
     ];
   };
-  async function getUserListData(pageParams: BasicPageParams<Partial<UserInfo>>) {
+  async function getUserListData(pageParams: BasicPageParams) {
     const res = await getUserList({
       ...pageParams,
     });
