@@ -31,19 +31,20 @@ export function getColumns(): BasicColumn[] {
         const url = record.reportFile;
         if (!isNull(url) && !isEmpty(url)) {
           return (
-            <Icon
-              icon="file-pdf-one"
-              line={2}
-              color={pdfColor}
-              class="cursor-pointer"
-              onClick={downloadByUrl.bind(null, {
-                url,
-                fileName: `${record.reportName}.pdf`,
-                sameSite: false,
-              })}
-              size={28}
-              park
-            />
+            <div class="text-center w-3/5 mx-auto cursor-pointer">
+              <Icon
+                icon="file-pdf-one"
+                line={2}
+                color={pdfColor}
+                onClick={downloadByUrl.bind(null, {
+                  url,
+                  fileName: `${record.reportName}.pdf`,
+                  sameSite: false,
+                })}
+                size={28}
+                park
+              />
+            </div>
           );
         }
       },
@@ -56,15 +57,16 @@ export function getColumns(): BasicColumn[] {
         const url = record.reportScreenshot;
         if (!isNull(url) && !isEmpty(url)) {
           return (
-            <Icon
-              icon="picture"
-              class="cursor-pointer"
-              color={jpgColor}
-              line={2}
-              onClick={openWindow.bind(null, url)}
-              size={28}
-              park
-            />
+            <div class="text-center w-3/5 mx-auto cursor-pointer">
+              <Icon
+                icon="picture"
+                color={jpgColor}
+                line={2}
+                onClick={openWindow.bind(null, url)}
+                size={28}
+                park
+              />
+            </div>
           );
         }
       },
