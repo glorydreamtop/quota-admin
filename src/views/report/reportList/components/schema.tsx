@@ -1,15 +1,7 @@
-import { ref } from 'vue';
-import { userListEventBus } from '../columns';
 import { FormSchema } from '/@/components/Form';
 import { useI18n } from '/@/hooks/web/useI18n';
 
 const { t } = useI18n();
-
-const roleList = ref<LabelValueOptions>([]);
-
-userListEventBus.on('roleListUpdate', (v) => {
-  roleList.value = v;
-});
 
 export function getSchemas(): FormSchema[] {
   return [
@@ -25,7 +17,6 @@ export function getSchemas(): FormSchema[] {
       componentProps: {
         mode: 'tags',
         optionLabelProp: 'label',
-        options: roleList,
       },
     },
     {

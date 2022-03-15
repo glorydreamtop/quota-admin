@@ -42,7 +42,11 @@ export function deepMerge<T = any>(src: any = {}, target: any = {}): T {
 
 export function openWindow(
   url: string,
-  opt?: { target?: TargetContext | string; noopener?: boolean; noreferrer?: boolean },
+  opt?: {
+    target?: TargetContext | string;
+    noopener?: boolean;
+    noreferrer?: boolean;
+  },
 ) {
   const { target = '__blank', noopener = true, noreferrer = true } = opt || {};
   const feature: string[] = [];
@@ -50,7 +54,7 @@ export function openWindow(
   noopener && feature.push('noopener=yes');
   noreferrer && feature.push('noreferrer=yes');
 
-  window.open(url, target, feature.join(','));
+  window.open(url, target, feature.join(','))!;
 }
 
 // dynamic use hook props

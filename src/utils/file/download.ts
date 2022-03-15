@@ -55,15 +55,17 @@ export function downloadByData(data: BlobPart, filename: string, mime?: string, 
  * Download file according to file address
  * @param {*} sUrl
  */
-export function downloadByUrl({
+export async function downloadByUrl({
   url,
   target = '_blank',
   fileName,
+  sameSite = true,
 }: {
   url: string;
   target?: TargetContext;
   fileName?: string;
-}): boolean {
+  sameSite?: boolean;
+}): Promise<boolean> {
   const isChrome = window.navigator.userAgent.toLowerCase().indexOf('chrome') > -1;
   const isSafari = window.navigator.userAgent.toLowerCase().indexOf('safari') > -1;
 
@@ -73,7 +75,12 @@ export function downloadByUrl({
   }
   if (isChrome || isSafari) {
     const link = document.createElement('a');
-    link.href = url;
+    if (sameSite) {
+      link.href = url;
+    } else {
+      link.href = await xhrDownload(url);
+    }
+
     link.target = target;
 
     if (link.download !== undefined) {
@@ -84,6 +91,10 @@ export function downloadByUrl({
       const e = document.createEvent('MouseEvents');
       e.initEvent('click', true, true);
       link.dispatchEvent(e);
+      if (!sameSite) {
+        window.URL.revokeObjectURL(link.href);
+      }
+
       return true;
     }
   }
@@ -93,4 +104,23 @@ export function downloadByUrl({
 
   openWindow(url, { target });
   return true;
+}
+
+async function xhrDownload(url: string): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', url, true);
+    xhr.responseType = 'blob';
+    xhr.onload = function () {
+      if (xhr.status === 200) {
+        resolve(window.URL.createObjectURL(xhr.response));
+      } else {
+        reject();
+      }
+    };
+    xhr.onerror = function () {
+      reject();
+    };
+    xhr.send();
+  });
 }

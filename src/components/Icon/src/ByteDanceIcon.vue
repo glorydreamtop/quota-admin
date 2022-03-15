@@ -25,6 +25,7 @@
       .oneOfType([propTypes.arrayOf(propTypes.string), propTypes.string])
       .def(['#309cf6', '#118EF8', '#FFF', '#13f19c']),
     park: propTypes.bool.def(false),
+    line: propTypes.number.def(4),
   });
   const color = computed(() => (isArray(props.color) ? props.color[0] : props.color));
   const elRef = ref<Element>();
@@ -68,6 +69,7 @@
     const params = {
       theme: props.theme,
       size: props.size,
+      strokeWidth: props.line,
       fill: isArray(props.color) ? props.color : [props.color],
       spin: props.spin,
       ...setStyle(),

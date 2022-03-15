@@ -1,8 +1,8 @@
 <template>
   <div class="h-layout-full p-4 flex flex-col gap-4">
-    <ToolBar @update-user-list="updateUserList" />
+    <!-- <ToolBar @update-user-list="updateUserList" /> -->
     <div class="bg-white p-4 shadow-md shadow-primary-50">
-      <BasicTable @register="registerTable" @edit-end="editCellEnd">
+      <BasicTable @register="registerTable">
         <template #action="{ record }">
           <TableAction :actions="actions(record)" />
         </template>
@@ -12,76 +12,65 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, h } from 'vue';
-  import { getUserList, updateUserInfo } from '/@/api/sys/user';
+  import { h } from 'vue';
   import type { BasicPageParams } from '/@/api/model/baseModel';
   import { useI18n } from '/@/hooks/web/useI18n';
-  import ToolBar from './components/ToolBar.vue';
-  import { Input } from 'ant-design-vue';
+  // import ToolBar from './components/ToolBar.vue';
   import { getColumns } from './columns';
   import { BasicTable, useTable, TableAction, ActionItem } from '/@/components/Table';
   import { getRem } from '/@/utils/domUtils';
-  import { isEmpty, isNull } from '/@/utils/is';
   import { useMessage } from '/@/hooks/web/useMessage';
-  import { UserInfo } from '/#/store';
+  import { getReportList, delReport } from '/@/api/report';
 
   const { t } = useI18n();
   const { createMessage } = useMessage();
 
-  const [registerTable, { setPagination, reload }] = useTable({
+  const [registerTable, { setPagination }] = useTable({
     columns: getColumns(),
-    api: getUserListData,
-    bordered: true,
+    api: getRoportListData,
     pagination: {
       pageSize: 100,
     },
     resizeHeightOffset: getRem() * 1,
     actionColumn: {
-      width: 160,
       title: t('common.action'),
       dataIndex: 'action',
       slots: { customRender: 'action' },
+      fixed: 'right',
     },
   });
-  const actions = function (record: UserInfo): ActionItem[] {
-    const resetPwdText = ref('');
+  const actions = function (record): ActionItem[] {
     return [
       {
-        icon: 'ant-design:lock-outlined',
-        label: t('sys.user.resetPwd'),
-        popConfirm: {
-          title: () => {
-            // @ts-ignore
-            return h(Input, {
-              type: 'text',
-              size: 'small',
-              defaultValue: resetPwdText,
-              placeholder: t('sys.login.passwordPlaceholder'),
-              onInput: ({ target }) => (resetPwdText.value = target.value),
-            });
-          },
-          confirm: async () => {
-            if (!resetPwdText.value) return;
-            const msg = await updateUserInfo({
-              userId: record.userId,
-              password: resetPwdText.value,
-            });
-            createMessage.success(msg);
-            resetPwdText.value = '';
-          },
-          cancel: () => {
-            resetPwdText.value = '';
-          },
-        },
+        icon: 'ant-design:link-outlined',
+        label: t('report.reportList.actions.openLink'),
+        onClick: () => {},
+      },
+      {
+        icon: 'ant-design:link-outlined',
+        label: t('report.reportList.actions.copyLink'),
+        onClick: () => {},
       },
       {
         icon: 'ant-design:delete-outlined',
-        label: t('common.delText'),
+        popConfirm: {
+          title: () => {
+            // @ts-ignore
+            return h('div', { class: 'flex flex-col items-center' }, [
+              h('span', t('report.reportList.actions.delReportConfirm')),
+              h('span', { class: 'font-bold' }, `《${record.reportName}》`),
+            ]);
+          },
+          confirm: async () => {
+            const res = await delReport({ id: record.id });
+            createMessage.success(res);
+          },
+        },
       },
     ];
   };
-  async function getUserListData(pageParams: BasicPageParams) {
-    const res = await getUserList({
+  async function getRoportListData(pageParams: BasicPageParams) {
+    const res = await getReportList({
       ...pageParams,
     });
     setPagination({
@@ -91,18 +80,6 @@
     });
     return res;
   }
-
-  async function editCellEnd({ key, value, record }) {
-    if (isEmpty(value) || isNull(value)) return;
-    // 带上userId，他们的token解不出来userId，绝了
-    const msg = await updateUserInfo({ [key]: value, userId: record.userId });
-    createMessage.success(msg);
-  }
-  async function updateUserList(searchInfo: Partial<UserInfo>) {
-    reload({
-      searchInfo,
-    });
-  }
 </script>
 
 <style lang="less" scoped>
@@ -110,5 +87,9 @@
     &::after {
       content: ':';
     }
+  }
+
+  ::v-deep(.report-name) {
+    @apply font-bold;
   }
 </style>

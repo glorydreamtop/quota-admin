@@ -2,7 +2,7 @@ import { defHttp } from '/@/utils/http/axios';
 
 import { ContentTypeEnum, ResultEnum } from '/@/enums/httpEnum';
 import { TreeType } from '/@/enums/quotaEnum';
-import { BasicPageParams } from '../model/baseModel';
+import { BasicPageParams, IdModel } from '../model/baseModel';
 
 enum Api {
   DelTemplate = '/template/templateDelete',
@@ -130,9 +130,9 @@ export function getReportList(params: BasicPageParams<reportListParams>) {
 }
 
 /**
- * @description: 删除报告模板
+ * @description: 删除报告
  */
-export function DelReportTemplate(params) {
+export function delReport(params: IdModel) {
   return defHttp.request({
     url: Api.DelReportTemplate,
     method: 'GET',

@@ -16,4 +16,4 @@ export interface IdModel {
   id: number;
 }
 
-export type BasicIdParams<T> = IdModel & T;
+export type BasicIdParams<T = {}> = IdModel & T;

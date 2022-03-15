@@ -35,13 +35,11 @@
 </template>
 
 <script lang="ts" setup>
-  import { onMounted, reactive, ref } from 'vue';
+  import { reactive, ref } from 'vue';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { Button, Select, Input } from 'ant-design-vue';
   import { Icon } from '/@/components/Icon';
   import { useModal } from '/@/components/Modal';
-  import { getRoleListById } from '/@/api/sys/role';
-  import { userListEventBus } from '../columns';
   import EditUser from './EditUser.vue';
 
   const emits = defineEmits<{
@@ -62,19 +60,6 @@
 
   const roleList = ref<LabelValueOptions>([]);
 
-  async function updateRoleNameList() {
-    loadingState.roleSelect = true;
-    try {
-      const { list } = await getRoleListById();
-      roleList.value = list.map((item) => ({ label: item.roleName, value: item.roleId }));
-      userListEventBus.emit('roleListUpdate', roleList.value);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      loadingState.roleSelect = false;
-    }
-  }
-
   function resetFilter() {
     filterOptions.roleId = undefined;
     filterOptions.username = '';
@@ -89,10 +74,6 @@
   function createUser() {
     openUserModal(true);
   }
-
-  onMounted(async () => {
-    await updateRoleNameList();
-  });
 </script>
 
 <style lang="less" scoped></style>
