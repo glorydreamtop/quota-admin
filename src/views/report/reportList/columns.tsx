@@ -28,12 +28,14 @@ export function getColumns(): BasicColumn[] {
       title: t('report.reportList.list.reportFile'),
       dataIndex: 'reportFile',
       width: 100,
+      className: 'report-pdf',
       customRender: ({ record }) => {
         const url = record.reportFile;
         if (!isNull(url) && !isEmpty(url)) {
           return (
-            <div class="text-center w-3/5 mx-auto cursor-pointer">
+            <>
               <Icon
+                class="pdf-file"
                 icon="ant-design:file-pdf-twotone"
                 color={pdfColor}
                 onClick={downloadByUrl.bind(null, {
@@ -43,7 +45,8 @@ export function getColumns(): BasicColumn[] {
                 })}
                 size={28}
               />
-            </div>
+              <Icon class="pdf-redo" icon="ant-design:redo-outlined" size={22} />
+            </>
           );
         }
       },

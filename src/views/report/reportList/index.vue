@@ -89,11 +89,49 @@
     }
   }
 
-  ::v-deep(.ant-table-body .report-name) {
-    @apply font-bold;
-  }
+  ::v-deep(.ant-table-body) {
+    .report-name {
+      @apply font-bold;
+    }
 
-  ::v-deep(.ant-table-body .report-id) {
-    @apply text-gray-400 italic;
+    .report-id {
+      @apply text-gray-400 italic;
+    }
+
+    .report-pdf {
+      position: relative;
+
+      .pdf-file {
+        position: absolute;
+        left: calc(50% - 14px);
+        top: calc(50% - 14px);
+        z-index: 99;
+        background-color: @white;
+        transition: background-color 0.2s;
+        display: inline-block !important;
+      }
+
+      .pdf-redo {
+        position: absolute;
+        left: calc(50% - 11px);
+        top: calc(50% - 11px);
+        z-index: 9;
+        display: inline-block !important;
+        transform: translateX(0) rotate(0deg);
+        transition: transform 0.5s ease-in-out 0.5s;
+      }
+
+      &:hover {
+        .pdf-redo {
+          transform: translateX(110%) rotate(160deg);
+        }
+      }
+    }
+
+    .ant-table-row:hover {
+      .pdf-file {
+        background-color: @table-selected-row-bg;
+      }
+    }
   }
 </style>
