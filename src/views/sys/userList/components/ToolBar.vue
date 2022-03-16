@@ -2,7 +2,7 @@
   <div class="flex gap-4 bg-white p-4 shadow-md shadow-primary-50">
     <Button type="primary" @click="createUser">
       <template #icon>
-        <Icon icon="plus" park />
+        <Icon icon="ant-design:plus-outlined" />
       </template>
       <span>{{ t('common.createText') }}</span>
     </Button>
@@ -24,7 +24,7 @@
     <span class="flex gap-1 items-center">
       <Button @click="filterUserList" type="primary">
         <template #icon>
-          <Icon icon="find" park />
+          <Icon icon="ant-design:search-outlined" />
         </template>
         <span>{{ t('common.queryText') }}</span>
       </Button>

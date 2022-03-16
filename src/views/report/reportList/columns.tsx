@@ -17,6 +17,7 @@ export function getColumns(): BasicColumn[] {
       dataIndex: 'id',
       width: 120,
       fixed: 'left',
+      className: 'report-id',
     },
     {
       title: t('report.reportList.list.reportName'),
@@ -33,8 +34,7 @@ export function getColumns(): BasicColumn[] {
           return (
             <div class="text-center w-3/5 mx-auto cursor-pointer">
               <Icon
-                icon="file-pdf-one"
-                line={2}
+                icon="ant-design:file-pdf-twotone"
                 color={pdfColor}
                 onClick={downloadByUrl.bind(null, {
                   url,
@@ -42,7 +42,6 @@ export function getColumns(): BasicColumn[] {
                   sameSite: false,
                 })}
                 size={28}
-                park
               />
             </div>
           );
@@ -59,12 +58,10 @@ export function getColumns(): BasicColumn[] {
           return (
             <div class="text-center w-3/5 mx-auto cursor-pointer">
               <Icon
-                icon="picture"
+                icon="ant-design:file-image-twotone"
                 color={jpgColor}
-                line={2}
                 onClick={openWindow.bind(null, url)}
                 size={28}
-                park
               />
             </div>
           );

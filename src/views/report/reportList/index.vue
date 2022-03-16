@@ -42,12 +42,12 @@
   const actions = function (record): ActionItem[] {
     return [
       {
-        icon: 'ant-design:link-outlined',
+        icon: 'ant-design:eye-outlined',
         label: t('report.reportList.actions.openLink'),
         onClick: () => {},
       },
       {
-        icon: 'ant-design:link-outlined',
+        icon: 'ant-design:share-alt-outlined',
         label: t('report.reportList.actions.copyLink'),
         onClick: () => {},
       },
@@ -89,7 +89,11 @@
     }
   }
 
-  ::v-deep(.report-name) {
+  ::v-deep(.ant-table-body .report-name) {
     @apply font-bold;
+  }
+
+  ::v-deep(.ant-table-body .report-id) {
+    @apply text-gray-400 italic;
   }
 </style>

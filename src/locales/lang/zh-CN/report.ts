@@ -12,7 +12,7 @@ export default {
     actions: {
       delReport: '删除报告',
       delReportConfirm: '删除后不可恢复，确认删除吗？',
-      openLink: '查看报告',
+      openLink: '查看',
       copyLink: '分享',
     },
   },
