@@ -16,6 +16,7 @@ import { useErrorLogStoreWithOut } from '/@/store/modules/errorLog';
 import { useI18n } from '/@/hooks/web/useI18n';
 import { joinTimestamp, formatRequestDate } from './helper';
 import { useUserStoreWithOut } from '/@/store/modules/user';
+import { isProdMode } from '../../env';
 
 const globSetting = useGlobSetting();
 const urlPrefix = globSetting.urlPrefix;
@@ -245,10 +246,11 @@ function createAxios(opt?: Partial<CreateAxiosOptions>) {
 }
 export const defHttp = createAxios();
 
-// other api url
-// export const otherHttp = createAxios({
-//   requestOptions: {
-//     apiUrl: 'xxx',
-//     urlPrefix: 'xxx',
-//   },
-// });
+//报告处理中间件服务
+export const nodeHttp = createAxios({
+  timeout: 120 * 1000,
+  requestOptions: {
+    // apiUrl: 'http://42.192.126.245:5000', //测试
+    apiUrl: isProdMode() ? 'http://212.129.255.129:5001' : 'http://212.129.255.129:5000',
+  },
+});

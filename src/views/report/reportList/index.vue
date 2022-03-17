@@ -73,6 +73,9 @@
     const res = await getReportList({
       ...pageParams,
     });
+    res.list.forEach((report) => {
+      report.createTime.replace('T', ' ');
+    });
     setPagination({
       pageSize: res.pageSize,
       current: res.currPage,
@@ -116,21 +119,18 @@
         left: calc(50% - 11px);
         top: calc(50% - 11px);
         z-index: 9;
-        display: inline-block !important;
-        transform: translateX(0) rotate(0deg);
-        transition: transform 0.5s ease-in-out 0.5s;
-      }
-
-      &:hover {
-        .pdf-redo {
-          transform: translateX(110%) rotate(160deg);
-        }
+        transform: translateX(120deg) rotate(0deg);
+        transition: transform 0.5s ease-in-out 0.3s;
       }
     }
 
     .ant-table-row:hover {
       .pdf-file {
         background-color: @table-selected-row-bg;
+      }
+
+      .pdf-redo {
+        transform: translateX(120%) rotate(280deg);
       }
     }
   }

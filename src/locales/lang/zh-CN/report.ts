@@ -14,6 +14,7 @@ export default {
       delReportConfirm: '删除后不可恢复，确认删除吗？',
       openLink: '查看',
       copyLink: '分享',
+      redoPDF: '重新生成',
     },
   },
 };

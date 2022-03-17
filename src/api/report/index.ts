@@ -1,4 +1,4 @@
-import { defHttp } from '/@/utils/http/axios';
+import { defHttp, nodeHttp } from '/@/utils/http/axios';
 
 import { ContentTypeEnum, ResultEnum } from '/@/enums/httpEnum';
 import { TreeType } from '/@/enums/quotaEnum';
@@ -143,7 +143,7 @@ export function delReport(params: IdModel) {
 /**
  * @description: 查询报告
  */
-export function GetReportById(params) {
+export function getReportById(params) {
   return defHttp.request({
     url: Api.GetReportById,
     method: 'GET',
@@ -154,13 +154,21 @@ export function GetReportById(params) {
 /**
  * @description: 发布报告
  */
-export function PublishReport(params) {
+export function publishReport(params) {
   return defHttp.request<ResultEnum.TYPE>({
     url: Api.PublishReport,
     method: 'POST',
     params,
-    headers: {
-      'Content-Type': ContentTypeEnum.JSON,
-    },
+  });
+}
+
+/**
+ * @description: 生成报告PDF
+ */
+export function generatePDF(params: IdModel) {
+  return nodeHttp.request<{ pdfurl: string; jpgurl: string }>({
+    url: Api.Report2PDF,
+    method: 'GET',
+    params,
   });
 }

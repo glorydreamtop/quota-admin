@@ -1,10 +1,13 @@
 import { BasicColumn } from '/@/components/Table';
+import { Tooltip } from 'ant-design-vue';
 import { useI18n } from '/@/hooks/web/useI18n';
 import { isEmpty, isNull } from '/@/utils/is';
 import { Icon } from '/@/components/Icon';
 import { openWindow } from '/@/utils';
 import { downloadByUrl } from '/@/utils/file/download';
 import { useRootSetting } from '/@/hooks/setting/useRootSetting';
+import { generatePDF } from '/@/api/report';
+import { ref } from 'vue';
 
 const { t } = useI18n();
 const { getColorScheme } = useRootSetting();
@@ -45,7 +48,16 @@ export function getColumns(): BasicColumn[] {
                 })}
                 size={28}
               />
-              <Icon class="pdf-redo" icon="ant-design:redo-outlined" size={22} />
+              <Tooltip title={t('report.reportList.actions.redoPDF')}>
+                <div class="pdf-redo">
+                  <Icon
+                    icon="ant-design:redo-outlined"
+                    spin={Reflect.has(makePDFTaskPool.value, record.id)}
+                    size={22}
+                    onClick={makePDF.bind(null, record.id)}
+                  />
+                </div>
+              </Tooltip>
             </>
           );
         }
@@ -86,4 +98,17 @@ export function getColumns(): BasicColumn[] {
       width: 160,
     },
   ];
+}
+
+const makePDFTaskPool = ref<{ [id: number]: Symbol }>({});
+
+async function makePDF(id: number) {
+  if (makePDFTaskPool.value[id]) return;
+  try {
+    makePDFTaskPool.value[id] = Symbol();
+    await generatePDF({ id });
+  } catch {
+  } finally {
+    Reflect.deleteProperty(makePDFTaskPool.value, id);
+  }
 }
