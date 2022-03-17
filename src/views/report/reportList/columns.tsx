@@ -8,6 +8,7 @@ import { downloadByUrl } from '/@/utils/file/download';
 import { useRootSetting } from '/@/hooks/setting/useRootSetting';
 import { generatePDF } from '/@/api/report';
 import { ref } from 'vue';
+import { sleep } from '/@/utils/helper/commonHelper';
 
 const { t } = useI18n();
 const { getColorScheme } = useRootSetting();
@@ -34,6 +35,8 @@ export function getColumns(): BasicColumn[] {
       className: 'report-pdf',
       customRender: ({ record }) => {
         const url = record.reportFile;
+        const doing = Reflect.has(makePDFTaskPool.value, record.id);
+        const locked = Reflect.has(makePDFLocked.value, record.id);
         if (!isNull(url) && !isEmpty(url)) {
           return (
             <>
@@ -49,10 +52,12 @@ export function getColumns(): BasicColumn[] {
                 size={28}
               />
               <Tooltip title={t('report.reportList.actions.redoPDF')}>
-                <div class="pdf-redo">
+                <div
+                  class={`pdf-redo ${locked ? (doing ? 'pdf-redo-doing' : 'pdf-redo-done') : ''}`}
+                >
                   <Icon
                     icon="ant-design:redo-outlined"
-                    spin={Reflect.has(makePDFTaskPool.value, record.id)}
+                    spin={doing}
                     size={22}
                     onClick={makePDF.bind(null, record.id)}
                   />
@@ -101,14 +106,18 @@ export function getColumns(): BasicColumn[] {
 }
 
 const makePDFTaskPool = ref<{ [id: number]: Symbol }>({});
+const makePDFLocked = ref<{ [id: number]: Symbol }>({});
 
 async function makePDF(id: number) {
   if (makePDFTaskPool.value[id]) return;
   try {
     makePDFTaskPool.value[id] = Symbol();
+    makePDFLocked.value[id] = Symbol();
     await generatePDF({ id });
   } catch {
   } finally {
     Reflect.deleteProperty(makePDFTaskPool.value, id);
+    await sleep(1000);
+    Reflect.deleteProperty(makePDFLocked.value, id);
   }
 }

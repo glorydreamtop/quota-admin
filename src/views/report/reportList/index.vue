@@ -119,8 +119,16 @@
         left: calc(50% - 11px);
         top: calc(50% - 11px);
         z-index: 9;
-        transform: translateX(120deg) rotate(0deg);
+        transform: translateX(0) rotate(0deg);
         transition: transform 0.5s ease-in-out 0.3s;
+
+        &.pdf-redo-doing {
+          transform: translateX(120%) rotate(280deg);
+        }
+
+        &.pdf-redo-done {
+          transform: translateX(0) rotate(0deg);
+        }
       }
     }
 
@@ -131,6 +139,10 @@
 
       .pdf-redo {
         transform: translateX(120%) rotate(280deg);
+
+        &.pdf-redo-done {
+          transform: translateX(0) rotate(0deg);
+        }
       }
     }
   }
