@@ -1,12 +1,12 @@
 import { defineStore } from 'pinia';
-import { CategoryTreeModel, QuotaItem } from '/#/quota';
-import { TreeItem } from '/@/components/Tree';
-
-type treeModel = Partial<CategoryTreeModel & TreeItem & QuotaItem>;
+import { CategoryTreeModel } from '/#/quota';
+import { getQuotaTree } from '/@/api/quota';
+import { CategoryTreeType } from '/@/enums/quotaEnum';
 
 interface QuotaTreeState {
-  sysQuotaTree: treeModel;
-  userQuotaTree: treeModel;
+  sysQuotaTree: CategoryTreeModel[];
+  userQuotaTree: CategoryTreeModel[];
+  productTree: CategoryTreeModel[];
 }
 
 export const useQuotaTreeStore = defineStore({
@@ -14,21 +14,31 @@ export const useQuotaTreeStore = defineStore({
   state: (): QuotaTreeState => ({
     sysQuotaTree: [],
     userQuotaTree: [],
+    productTree: [],
   }),
   getters: {
-    geteSysQuotaTree(): treeModel {
+    getSysQuotaTree(): CategoryTreeModel[] {
       return this.sysQuotaTree;
     },
-    geteUserQuotaTree(): treeModel {
+    getUserQuotaTree(): CategoryTreeModel[] {
       return this.userQuotaTree;
+    },
+    getProductTree(): CategoryTreeModel[] {
+      return this.productTree;
     },
   },
   actions: {
-    setSysQuotaTree(treeData: treeModel) {
-      this.sysQuotaTree = treeData;
+    async setSysQuotaTree(): Promise<CategoryTreeModel[]> {
+      this.sysQuotaTree = await getQuotaTree({ type: CategoryTreeType.sysQuota });
+      return this.sysQuotaTree;
     },
-    setUserQuotaTree(treeData: treeModel) {
-      this.userQuotaTree = treeData;
+    async setUserQuotaTree(): Promise<CategoryTreeModel[]> {
+      this.userQuotaTree = await getQuotaTree({ type: CategoryTreeType.userQuota });
+      return this.userQuotaTree;
+    },
+    async seteProductTree(): Promise<CategoryTreeModel[]> {
+      this.productTree = await getQuotaTree({ type: CategoryTreeType.product });
+      return this.productTree;
     },
   },
 });

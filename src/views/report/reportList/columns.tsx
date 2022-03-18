@@ -41,7 +41,7 @@ export function getColumns(): BasicColumn[] {
           return (
             <>
               <Icon
-                class="pdf-file"
+                class="pdf-file cursor-pointer"
                 icon="ant-design:file-pdf-twotone"
                 color={pdfColor}
                 onClick={downloadByUrl.bind(null, {
@@ -53,7 +53,7 @@ export function getColumns(): BasicColumn[] {
               />
               <Tooltip title={t('report.reportList.actions.redoPDF')}>
                 <div
-                  class={`pdf-redo ${locked ? (doing ? 'pdf-redo-doing' : 'pdf-redo-done') : ''}`}
+                  class={`pdf-redo cursor-pointer ${locked ? 'pdf-redo-doing' : 'pdf-redo-done'}`}
                 >
                   <Icon
                     icon="ant-design:redo-outlined"

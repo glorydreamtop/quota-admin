@@ -1,6 +1,6 @@
 import { cloneDeep, remove } from 'lodash-es';
 import { CSSProperties, reactive, ref, toRaw } from 'vue';
-import { VxeGridInstance, VxeTableDefines } from 'vxe-table';
+import { VxeGridEventProps, VxeGridInstance, VxeGridProps, VxeTableDefines } from 'vxe-table';
 import { TableConfigType } from '/#/table';
 import { onMountedOrActivated } from '/@/hooks/core/onMountedOrActivated';
 
@@ -11,6 +11,8 @@ import { useI18n } from '/@/hooks/web/useI18n';
 
 const { t } = useI18n();
 const tableConfigKey: InjectionKey<TableConfigType> = Symbol();
+const XGridKey: InjectionKey<VxeGridInstance> = Symbol();
+const gridOptionsKey: InjectionKey<VxeGridProps & VxeGridEventProps> = Symbol();
 
 export function createTableConfigContext(context: TableConfigType) {
   return createContext<TableConfigType>(context, tableConfigKey, { native: true });
@@ -20,16 +22,33 @@ export function useTableConfigContext() {
   return useContext<TableConfigType>(tableConfigKey);
 }
 
+export function createXGridContext(context: Ref<VxeGridInstance>) {
+  return createContext<Ref<VxeGridInstance>>(context, XGridKey, { native: true });
+}
+
+export function useXGridContext() {
+  return useContext<Ref<VxeGridInstance>>(XGridKey);
+}
+
+export function createGridOptionsContext(context: VxeGridProps & VxeGridEventProps) {
+  return createContext<VxeGridProps & VxeGridEventProps>(context, gridOptionsKey, { native: true });
+}
+
+export function useGridOptionsContext() {
+  return useContext<VxeGridProps & VxeGridEventProps>(gridOptionsKey);
+}
+
 type useAddColMethods = [
   VxeTableDefines.ColumnOptions,
   { addCol: (columnIndex: number) => void; removeCol: (columnIndex: number) => void },
 ];
 
-export function useAddCol(
-  xGrid: Ref<VxeGridInstance>,
-  tableConfig: TableConfigType,
-): useAddColMethods {
-  const col: VxeTableDefines.ColumnOptions = reactive({
+interface HookState {
+  col: VxeTableDefines.ColumnOptions;
+}
+
+const hookState: HookState = reactive({
+  col: {
     field: '',
     title: '新列',
     editRender: {
@@ -40,27 +59,33 @@ export function useAddCol(
       default: 'normal-cell-text',
       edit: 'normal-cell-text-editor',
     },
-  });
+  },
+});
+
+export function useAddCol(
+  xGrid: Ref<VxeGridInstance>,
+  tableConfig: TableConfigType,
+): useAddColMethods {
   const usedStr = ['a', 'b', 'c', 'd', 'e'];
   const { getUniqueField } = useUniqueField(usedStr);
   function addCol(columnIndex = tableConfig.columns.length) {
-    col.field = getUniqueField();
+    hookState.col.field = getUniqueField();
     // 插入新列给tableConfig
     tableConfig.columns.splice(columnIndex, 0, {
-      title: col.title,
-      field: col.field,
+      title: hookState.col.title,
+      field: hookState.col.field,
       headerType: 0,
     });
     // 生成table所需列信息
     const colInfoArr = tableConfig.columns.map((_col) => {
-      const colCfg = cloneDeep(toRaw(col));
+      const colCfg = cloneDeep(toRaw(hookState.col));
       colCfg.title = _col.title;
       colCfg.field = _col.field;
       return colCfg;
     });
     // 给tableConfig每一行数据加上这个新列字段
     tableConfig.data.forEach((data) => {
-      data[col.field!] = {
+      data[hookState.col.field!] = {
         val: '-',
         qData: '',
         type: 0,
@@ -68,8 +93,8 @@ export function useAddCol(
     });
     const $grid = xGrid.value;
     $grid.loadColumn(colInfoArr);
-    col.field = '';
-    col.title = '新列';
+    hookState.col.field = '';
+    hookState.col.title = '新列';
   }
   function removeCol(columnIndex: number) {
     const $grid = xGrid.value;
@@ -87,14 +112,14 @@ export function useAddCol(
     // 移除这个列
     tableConfig.columns.splice(columnIndex, 1);
     const colInfoArr = tableConfig.columns.map((_col) => {
-      const colCfg = cloneDeep(toRaw(col));
+      const colCfg = cloneDeep(toRaw(hookState.col));
       colCfg.title = _col.title;
       colCfg.field = _col.field;
       return colCfg;
     });
     $grid.loadColumn(colInfoArr);
   }
-  return [col, { addCol, removeCol }];
+  return [hookState.col, { addCol, removeCol }];
 }
 
 type useAddSpaceRowMethods = {

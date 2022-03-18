@@ -12,7 +12,9 @@ export interface CategoryTreeModel {
   type: 'DictCategory';
   key: number;
   parentId: Nullable<number>;
-  icon?: 'flat-color-icons:opened-folder' | 'flat-color-icons:folder';
+  isLeaf?: boolean;
+  slots?: { [x: string]: any };
+  icon?: 'flat-color-icons:opened-folder' | 'flat-color-icons:folder' | 'flat-color-icons:file';
 }
 
 export interface QuotaItem {

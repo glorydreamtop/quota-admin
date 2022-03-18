@@ -1,28 +1,29 @@
 <template>
   <div class="flex gap-4 bg-white p-4 shadow-md shadow-primary-50">
-    <Button type="primary" @click="createUser">
+    <Button type="primary" @click="createReport">
       <template #icon>
         <Icon icon="ant-design:plus-outlined" />
       </template>
-      <span>{{ t('common.createText') }}</span>
+      <span>{{ t('report.reportList.createReport') }}</span>
     </Button>
     <span class="flex items-center gap-1">
-      <span class="label">{{ t('sys.user.userName') }}</span>
+      <span class="label">{{ t('report.reportList.list.userName') }}</span>
       <Input allow-clear class="max-w-40" v-model:value="filterOptions.username" />
     </span>
     <span class="flex items-center gap-1">
-      <span class="label">{{ t('sys.user.role') }}</span>
-      <Select
+      <span class="label">{{ t('report.reportList.list.productName') }}</span>
+      <TreeSelect
         class="!w-40"
-        v-model:value="filterOptions.roleId"
-        :options="roleList"
-        :loading="loadingState.roleSelect"
+        v-model:value="filterOptions.productId"
+        :tree-data="store.getProductTree"
+        :replaceFields="replaceFields"
+        :loading="loadingState.productSelect"
         option-label-prop="label"
         allow-clear
       />
     </span>
     <span class="flex gap-1 items-center">
-      <Button @click="filterUserList" type="primary">
+      <Button @click="filterReportList" type="primary">
         <template #icon>
           <Icon icon="ant-design:search-outlined" />
         </template>
@@ -30,50 +31,52 @@
       </Button>
       <Button @click="resetFilter">{{ t('common.resetText') }}</Button>
     </span>
-    <EditUser @register="registerUserModal" />
   </div>
 </template>
 
 <script lang="ts" setup>
-  import { reactive, ref } from 'vue';
+  import { reactive } from 'vue';
   import { useI18n } from '/@/hooks/web/useI18n';
-  import { Button, Select, Input } from 'ant-design-vue';
+  import { Button, TreeSelect, Input } from 'ant-design-vue';
   import { Icon } from '/@/components/Icon';
-  import { useModal } from '/@/components/Modal';
-  import EditUser from './EditUser.vue';
+  import { useQuotaTreeStore } from '/@/store/modules/quotaTree';
 
   const emits = defineEmits<{
-    (event: 'updateUserList', options: typeof filterOptions): void;
+    (event: 'updateReportList', options: typeof filterOptions): void;
   }>();
 
   const { t } = useI18n();
+  const store = useQuotaTreeStore();
 
   const loadingState = reactive({
-    roleSelect: false,
+    productSelect: false,
     userTable: false,
   });
 
   const filterOptions = reactive({
     username: '',
-    roleId: undefined,
+    productId: undefined,
   });
 
-  const roleList = ref<LabelValueOptions>([]);
+  const replaceFields = {
+    title: 'name',
+    value: 'id',
+    key: 'id',
+  };
 
   function resetFilter() {
-    filterOptions.roleId = undefined;
+    filterOptions.productId = undefined;
     filterOptions.username = '';
-    filterUserList();
+    filterReportList();
   }
 
-  function filterUserList() {
-    emits('updateUserList', filterOptions);
-  }
-
-  const [registerUserModal, { openModal: openUserModal }] = useModal();
-  function createUser() {
-    openUserModal(true);
+  function filterReportList() {
+    emits('updateReportList', filterOptions);
   }
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+  .label::after {
+    content: ':';
+  }
+</style>

@@ -16,6 +16,7 @@ import { RouteRecordRaw } from 'vue-router';
 import { PAGE_NOT_FOUND_ROUTE } from '/@/router/routes/basic';
 import { h } from 'vue';
 import { useAppStoreWithOut } from './app';
+import { useQuotaTreeStore } from './quotaTree';
 
 interface UserState {
   userInfo: Nullable<UserInfo>;
@@ -133,6 +134,11 @@ export const useUserStore = defineStore({
       appStore.setProjectConfig({
         colorScheme: scheme,
       });
+      const treeStore = useQuotaTreeStore();
+      // 这三个接口查询时间长甚至可能会失败，不要await
+      treeStore.setSysQuotaTree();
+      treeStore.setUserQuotaTree();
+      treeStore.seteProductTree();
       return userInfo;
     },
     /**

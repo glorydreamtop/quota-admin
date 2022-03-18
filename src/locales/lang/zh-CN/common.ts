@@ -16,7 +16,7 @@ export default {
   createText: '新建',
   redo: '刷新',
   back: '返回',
-
+  apply: '应用',
   light: '亮色主题',
   dark: '黑暗主题',
 

@@ -97,7 +97,6 @@
     defineProps,
     toRefs,
     nextTick,
-    watch,
     h,
     computed,
   } from 'vue';
@@ -109,7 +108,6 @@
   import { Tabs, Input } from 'ant-design-vue';
   import ClearDataModal from './ClearDataModal.vue';
   import {
-    getQuotaTree,
     getDirQuota,
     requestUpdateQuotaData,
     moveQuota,
@@ -123,7 +121,7 @@
   import Icon from '/@/components/Icon';
   import { findNode, findPath, forEach } from '/@/utils/helper/treeHelper';
   import { useMessage } from '/@/hooks/web/useMessage';
-  import { cloneDeep, uniq } from 'lodash-es';
+  import { uniq } from 'lodash-es';
   import { useTimeoutFn } from '/@/hooks/core/useTimeout';
   import { useHighLight, useMultiSelect, useTreeCURD } from '../hooks';
   import { useCopyToClipboard } from '/@/hooks/web/useCopyToClipboard';
@@ -181,33 +179,26 @@
       showLine: false,
     },
   });
-  watch(
-    () => treeProps[CategoryTreeType.sysQuota].treeData,
-    (v) => {
-      quotaTreeStore.setSysQuotaTree(v!);
-    },
-    {
-      deep: true,
-    },
-  );
-  watch(
-    () => treeProps[CategoryTreeType.userQuota].treeData,
-    (v) => {
-      quotaTreeStore.setUserQuotaTree(v!);
-    },
-    {
-      deep: true,
-    },
-  );
   const loading = reactive({
     [CategoryTreeType.sysQuota]: false,
     [CategoryTreeType.userQuota]: false,
   });
-  async function getData(type: QuotaType = unref(treeType)) {
+  async function getData(type: QuotaType = unref(treeType), update = true) {
     loading[treeType.value] = true;
     const expandedKeys = getTreeInstance(treeType.value)?.getExpandedKeys() || null;
     try {
-      const res = (await getQuotaTree({ type })) as Partial<CategoryTreeModel & TreeItem>[];
+      let res;
+      if (update) {
+        res =
+          type === CategoryTreeType.sysQuota
+            ? await quotaTreeStore.setSysQuotaTree()
+            : await quotaTreeStore.setUserQuotaTree();
+      } else {
+        res =
+          type === CategoryTreeType.sysQuota
+            ? quotaTreeStore.getSysQuotaTree
+            : quotaTreeStore.getUserQuotaTree;
+      }
       forEach(res, (item) => {
         item.isLeaf = !item.folder;
         item.slots = { title: 'title' };
@@ -577,18 +568,8 @@
     getData();
   }
   onMounted(() => {
-    treeProps[CategoryTreeType.sysQuota].treeData = cloneDeep(
-      quotaTreeStore.geteSysQuotaTree,
-    ) as TreeItem[];
-    treeProps[CategoryTreeType.userQuota].treeData = cloneDeep(
-      quotaTreeStore.geteUserQuotaTree,
-    ) as TreeItem[];
-    if (treeProps[CategoryTreeType.sysQuota].treeData?.length === 0) {
-      getData(CategoryTreeType.sysQuota);
-    }
-    if (treeProps[CategoryTreeType.userQuota].treeData?.length === 0) {
-      getData(CategoryTreeType.userQuota);
-    }
+    getData(CategoryTreeType.sysQuota, false);
+    getData(CategoryTreeType.userQuota, false);
   });
 </script>
 

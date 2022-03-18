@@ -16,5 +16,6 @@ export default {
       copyLink: '分享',
       redoPDF: '重新生成',
     },
+    createReport: '创建报告',
   },
 };

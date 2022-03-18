@@ -1,6 +1,6 @@
 <template>
   <div class="h-layout-full p-4 flex flex-col gap-4">
-    <!-- <ToolBar @update-user-list="updateUserList" /> -->
+    <ToolBar @update-report-list="updateReportList" />
     <div class="bg-white p-4 shadow-md shadow-primary-50">
       <BasicTable @register="registerTable">
         <template #action="{ record }">
@@ -15,7 +15,7 @@
   import { h } from 'vue';
   import type { BasicPageParams } from '/@/api/model/baseModel';
   import { useI18n } from '/@/hooks/web/useI18n';
-  // import ToolBar from './components/ToolBar.vue';
+  import ToolBar from './components/ToolBar.vue';
   import { getColumns } from './columns';
   import { BasicTable, useTable, TableAction, ActionItem } from '/@/components/Table';
   import { getRem } from '/@/utils/domUtils';
@@ -25,7 +25,7 @@
   const { t } = useI18n();
   const { createMessage } = useMessage();
 
-  const [registerTable, { setPagination }] = useTable({
+  const [registerTable, { setPagination, reload }] = useTable({
     columns: getColumns(),
     api: getRoportListData,
     pagination: {
@@ -83,6 +83,11 @@
     });
     return res;
   }
+  function updateReportList(searchInfo) {
+    reload({
+      searchInfo,
+    });
+  }
 </script>
 
 <style lang="less" scoped>
@@ -139,10 +144,6 @@
 
       .pdf-redo {
         transform: translateX(120%) rotate(280deg);
-
-        &.pdf-redo-done {
-          transform: translateX(0) rotate(0deg);
-        }
       }
     }
   }

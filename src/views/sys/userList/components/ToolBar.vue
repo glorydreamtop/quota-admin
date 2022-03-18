@@ -95,4 +95,8 @@
   });
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+  .label::after {
+    content: ':';
+  }
+</style>

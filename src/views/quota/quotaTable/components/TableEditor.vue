@@ -1,63 +1,7 @@
 <template>
   <div class="p-4 bg-white">
     <VxeGrid v-bind="gridOptions" ref="xGrid">
-      <template #toolbar-buttons>
-        <div class="flex items-center gap-2">
-          <Popover trigger="click">
-            <template #content>
-              <div class="flex gap-1">
-                <Input size="small" v-model:value="colValue.title" />
-                <Button size="small" type="primary" @click="addCol(tableConfig.columns.length)">{{
-                  t('common.okText')
-                }}</Button>
-              </div>
-            </template>
-            <Button size="small">{{ t('table.addCol') }}</Button>
-          </Popover>
-          <Button size="small" @click="addSpaceRow(tableConfig.data.length)">{{
-            t('table.addRow')
-          }}</Button>
-          <DatePicker
-            size="small"
-            class="!w-auto"
-            v-model:value="tableConfig.timeConfig.endDate"
-            valueFormat="YYYY-MM-DD"
-          >
-            <Button class="flex items-center gap-1" size="small">
-              <span>{{ t('table.endDate') }}：</span>
-              <span class="flex items-center gap-1 cursor-pointer">
-                <span>{{ tableConfig.timeConfig.endDate }}</span>
-                <Icon class="!text-primary" icon="ant-design:field-time-outlined" />
-              </span>
-            </Button>
-          </DatePicker>
-          <Button size="small" type="primary" @click="saveTable">{{ t('common.saveText') }}</Button>
-          <Popover trigger="click">
-            <template #content>
-              <div class="flex flex-col items-center">
-                <div class="flex gap-2">
-                  <div
-                    v-for="item in tableConfigSchemaList"
-                    :key="item.preview"
-                    :class="[
-                      'flex flex-col items-center gap-2 border',
-                      defaultTableConfig.name === item.name ? ' border-primary' : '',
-                    ]"
-                    @click="defaultTableConfig = item"
-                  >
-                    <img class="h-40 w-70" :src="item.preview" alt="" />
-                    <span class="text-gray-400">{{ item.name }}</span>
-                  </div>
-                </div>
-                <Button size="small" class="mt-4 w-60" type="primary" @click="applyConfig">{{
-                  t('common.okText')
-                }}</Button>
-              </div>
-            </template>
-            <Button size="small">{{ t('table.template') }}</Button>
-          </Popover>
-        </div>
-      </template>
+      <template #toolbar-buttons> </template>
       <template #normal-title-text="{ column, columnIndex }">
         <div class="flex items-center justify-center gap-1">
           <span>{{ column.title }}</span>
@@ -151,7 +95,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, reactive, nextTick, toRaw } from 'vue';
+  import { ref, reactive, nextTick } from 'vue';
   import type {
     VxeGridProps,
     VxeGridInstance,
@@ -159,17 +103,19 @@
     VxeTableDefines,
     VxeGridDefines,
   } from 'vxe-table';
-  import { Button, Popover, Input, DatePicker, Tooltip } from 'ant-design-vue';
+  import { Popover, Input, Tooltip } from 'ant-design-vue';
   import { useI18n } from '/@/hooks/web/useI18n';
   import {
     createTableConfigContext,
+    createXGridContext,
+    createGridOptionsContext,
     useAddCol,
     useAddRow,
     useAreaSelect,
     useTimeStrFilter,
   } from './helper';
   import type { TableConfigType } from '/#/table';
-  import { cloneDeep, maxBy, mergeWith, minBy, parseInt, remove } from 'lodash-es';
+  import { maxBy, minBy, parseInt, remove } from 'lodash-es';
   import { useModal } from '/@/components/Modal';
   import CellSetting from './CellSetting.vue';
   import Icon from '/@/components/Icon';
@@ -177,14 +123,16 @@
   import { CellTypeEnum, HeaderCellTypeEnum } from '/@/enums/tableEnum';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { formatToDate } from '/@/utils/dateUtil';
-  import { TableConfigSchema, tableConfigSchemaList } from './tableSchema';
+
   const [
     registerCellSettingModal,
     { openModal: openCellSettingModal, setModalProps: setCellSettingModalProps },
   ] = useModal();
   const { t } = useI18n();
   const { createMessage } = useMessage();
+
   const xGrid = ref({} as VxeGridInstance);
+  createXGridContext(xGrid);
   const gridOptions = reactive<VxeGridProps & VxeGridEventProps>({
     border: true,
     resizable: true,
@@ -343,7 +291,7 @@
     },
     onEditClosed: updateCellData,
   });
-
+  createGridOptionsContext(gridOptions);
   const tableConfig: TableConfigType = reactive({
     title: '',
     timeConfig: {
@@ -354,14 +302,13 @@
     data: [],
   });
   createTableConfigContext(tableConfig);
-  const [colValue, { addCol, removeCol }] = useAddCol(xGrid, tableConfig);
+  const [, { addCol, removeCol }] = useAddCol(xGrid, tableConfig);
   const { addSpaceRow, removeRow } = useAddRow(xGrid, tableConfig);
   const [timeStrTip, { timeStrFilter, vaildTimeStr }] = useTimeStrFilter(tableConfig);
   const { getAreaCells } = useAreaSelect(xGrid, (cells) => {
     selectedCells.value = cells;
   });
   const selectedCells = ref<any[]>([]);
-
   // 关掉表头编辑
   function closeTitleEditor({
     column,
@@ -456,60 +403,6 @@
         ? HeaderCellTypeEnum.date
         : HeaderCellTypeEnum.normal;
     vaildTimeStr(e);
-  }
-  function saveTable() {
-    const $table = xGrid.value;
-    const mergeCells = $table.getMergeCells();
-    tableConfig.mergeCells = cloneDeep(toRaw(mergeCells));
-    console.log(tableConfig);
-  }
-  const defaultTableConfig = ref<TableConfigSchema>({});
-  function transfer(table: TableConfigType) {
-    const gridOptions: VxeGridProps & VxeGridEventProps = {
-      columns: [],
-      data: [],
-    };
-    for (let i = 0; i < table.columns.length; i++) {
-      const col = table.columns[i];
-      const column = {
-        field: col.field,
-        title: col.title,
-        editRender: {
-          name: 'input',
-        },
-        slots: {
-          header: 'normal-title-text',
-          default: 'normal-cell-text',
-          edit: 'normal-cell-text-editor',
-        },
-      };
-      gridOptions.columns?.push(column);
-    }
-    for (let i = 0; i < table.data.length; i++) {
-      const data = {};
-      const origin = table.data[i];
-      Object.keys(origin).forEach((key) => {
-        data[key] = origin[key].val;
-      });
-      gridOptions.data?.push(data);
-    }
-    return gridOptions;
-  }
-  async function applyConfig() {
-    gridOptions.columns = [];
-    gridOptions.data = [];
-    tableConfig.columns = [];
-    tableConfig.data = [];
-    mergeWith(gridOptions, cloneDeep(transfer(defaultTableConfig.value)), (target, src) => {
-      if (target instanceof Array) {
-        return reactive(src);
-      }
-    });
-    mergeWith(tableConfig, cloneDeep(defaultTableConfig.value), (target, src) => {
-      if (target instanceof Array) {
-        return reactive(src);
-      }
-    });
   }
 </script>
 

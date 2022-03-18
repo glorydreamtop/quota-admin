@@ -25,7 +25,7 @@ export const schemas = computed<FormSchema[]>(() => {
           value: 'id',
         },
         optionLabelProp: 'label',
-        treeData: quotaTreeStore.geteSysQuotaTree,
+        treeData: quotaTreeStore.getSysQuotaTree,
       },
     },
     {

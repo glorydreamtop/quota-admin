@@ -221,7 +221,7 @@
 
 <script lang="ts" setup>
   import { nextTick, ref, reactive, unref, watch, computed, h } from 'vue';
-  import type { QuotaItem } from '/#/quota';
+  import type { CategoryTreeModel, QuotaItem } from '/#/quota';
   import { Button, Tooltip, Modal, Popover, TreeSelect, Input } from 'ant-design-vue';
   import { typeFomatter } from '/@/utils/helper/commonHelper';
   import { remove, cloneDeep } from 'lodash-es';
@@ -278,7 +278,7 @@
     });
   }
   const loading = ref(false);
-  const treeProps = reactive({
+  const treeProps = reactive<{ treeData: CategoryTreeModel[]; val: unknown }>({
     treeData: [],
     val: undefined,
   });
@@ -506,7 +506,7 @@
   // 批量移动
   function moveQuotaTo() {
     treeProps.treeData = filter(
-      [...store.geteSysQuotaTree, ...store.geteUserQuotaTree],
+      [...store.getSysQuotaTree, ...store.getUserQuotaTree],
       (node) => node.folder,
     );
   }

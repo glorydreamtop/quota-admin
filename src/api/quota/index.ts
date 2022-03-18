@@ -51,7 +51,7 @@ export enum quotaDataPastUnitTypeEnum {
  * @description: getCategoryTree
  */
 export function getQuotaTree(params: {
-  type: CategoryTreeType.sysQuota | CategoryTreeType.userQuota;
+  type: CategoryTreeType.sysQuota | CategoryTreeType.userQuota | CategoryTreeType.product;
 }) {
   return defHttp.get<CategoryTreeModel[]>({
     url: Api.GetCategoryTree,
