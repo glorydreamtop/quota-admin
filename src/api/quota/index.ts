@@ -217,7 +217,12 @@ export function importJson(params: importJsonParams) {
   });
 }
 
-export function delQuotaData(params: { indexId: number; startDate: string; endDate: string }) {
+export function delQuotaData(params: {
+  indexId?: number;
+  indexList?: string;
+  startDate: string;
+  endDate: string;
+}) {
   return defHttp.get<ResultEnum.TYPE>({
     url: Api.DelQuotaData,
     params,

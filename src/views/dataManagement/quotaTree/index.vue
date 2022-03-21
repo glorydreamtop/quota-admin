@@ -10,21 +10,23 @@
 <script lang="ts" setup>
   import { ref } from 'vue';
   import { QuotaTree } from '/@/components/QuotaTree';
-  import { createQuotaListContext, SelectedQuotaItem } from './hooks';
+  import { createSelectedQuotaContext, createQuotaListContext, SelectedQuotaItem } from './hooks';
   import QuotaPool from './components/QuotaPool.vue';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { useI18n } from '/@/hooks/web/useI18n';
 
+  const selectedQuotaList = ref<SelectedQuotaItem[]>([]);
   const quotaList = ref<SelectedQuotaItem[]>([]);
   const { createMessage } = useMessage();
   const { t } = useI18n();
+  createSelectedQuotaContext(selectedQuotaList);
   createQuotaListContext(quotaList);
   function selectNode(quota: SelectedQuotaItem) {
     quota.selected = true;
-    if (quotaList.value.some((q) => q.id === quota.id)) {
+    if (selectedQuotaList.value.some((q) => q.id === quota.id)) {
       createMessage.warn(t('quotaView.uniqSelectedQuotaMessage'));
     } else {
-      quotaList.value.push(quota);
+      selectedQuotaList.value.push(quota);
     }
   }
 </script>
