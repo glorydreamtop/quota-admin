@@ -1,7 +1,9 @@
 <template>
   <div class="p-4 bg-white">
     <VxeGrid v-bind="gridOptions" ref="xGrid">
-      <template #toolbar-buttons> </template>
+      <template #toolbar-buttons>
+        <ToolBar />
+      </template>
       <template #normal-title-text="{ column, columnIndex }">
         <div class="flex items-center justify-center gap-1">
           <span>{{ column.title }}</span>
@@ -118,6 +120,7 @@
   import { maxBy, minBy, parseInt, remove } from 'lodash-es';
   import { useModal } from '/@/components/Modal';
   import CellSetting from './CellSetting.vue';
+  import ToolBar from './ToolBar.vue';
   import Icon from '/@/components/Icon';
   import { getSingleQuotaData } from '/@/api/quota';
   import { CellTypeEnum, HeaderCellTypeEnum } from '/@/enums/tableEnum';

@@ -79,6 +79,9 @@
 
   const [colValue, { addCol }] = useAddCol(xGrid, tableConfig);
   const { addSpaceRow } = useAddRow(xGrid, tableConfig);
+  // const popoverVisible = reactive({
+
+  // })
   function saveTable() {
     const $table = xGrid.value;
     const mergeCells = $table.getMergeCells();
@@ -86,6 +89,7 @@
     console.log(tableConfig);
   }
   const defaultTableConfig = ref<TableConfigSchema>({});
+  // 模板转换成vxe-table的props
   function transfer(table: TableConfigType) {
     const gridOptions: VxeGridProps & VxeGridEventProps = {
       columns: [],
@@ -117,6 +121,7 @@
     }
     return gridOptions;
   }
+  // 应用模板
   async function applyConfig() {
     gridOptions.columns = [];
     gridOptions.data = [];
