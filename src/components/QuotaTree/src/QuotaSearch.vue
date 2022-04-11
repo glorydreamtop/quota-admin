@@ -24,6 +24,7 @@
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useMessage } from '/@/hooks/web/useMessage';
   import type { searchItemType } from '../types';
+  import { buildShortUUID } from '/@/utils/uuid';
 
   const { t } = useI18n();
   const { createMessage } = useMessage();
@@ -40,6 +41,7 @@
         return {
           label: item.shortName || item.name,
           value: `[${item.id}]${item.shortName || item.name}`,
+          key: buildShortUUID(),
           categoryId: item.categoryId!,
         };
       });

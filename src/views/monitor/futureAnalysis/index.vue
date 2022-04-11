@@ -117,7 +117,7 @@
         value: key,
       }));
     } catch (error) {
-      createMessage.error(error);
+      console.log(error);
     } finally {
       state.allowQueryDate = true;
     }

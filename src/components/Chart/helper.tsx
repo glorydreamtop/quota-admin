@@ -518,68 +518,111 @@ export function setSeriesInfo(
   seriesInfo: any,
   options: EChartsOption,
 ) {
-  const seriesIndex = seriesInfo.seriesIndex;
-  const series = options.series![seriesIndex];
-  switch (type) {
-    case chartTypeEnum.normal:
-      info.name = series.name;
-      if (series.type === 'line') {
-        if (has(series, 'areaStyle')) {
-          info.seriesType = echartSeriesTypeEnum.area;
-        } else if (series.smooth === true) {
-          info.seriesType = echartSeriesTypeEnum.smoothLine;
-        } else if (series.smooth === false) {
-          info.seriesType = echartSeriesTypeEnum.line;
-        }
-        info.size = series.lineStyle.width;
-        info.lineType = series.lineStyle.type;
-        info.shadow = series.lineStyle.shadowColor !== undefined;
-      } else if (series.type === 'bar') {
-        info.seriesType = echartSeriesTypeEnum.bar;
+  function caseNormal() {
+    const seriesIndex = seriesInfo.seriesIndex;
+    const series = options.series![seriesIndex];
+    info.name = series.name;
+    if (series.type === 'line') {
+      if (has(series, 'areaStyle')) {
+        info.seriesType = echartSeriesTypeEnum.area;
+      } else if (series.smooth === true) {
+        info.seriesType = echartSeriesTypeEnum.smoothLine;
+      } else if (series.smooth === false) {
+        info.seriesType = echartSeriesTypeEnum.line;
       }
-      info.yAxisIndex = series.yAxisIndex + 1;
-      info.xAxisIndex = series.xAxisIndex + 1;
-      break;
-    case chartTypeEnum.seasonal:
-      info.name = series.name;
-      if (series.type === 'line') {
-        if (has(series, 'areaStyle')) {
-          info.seriesType = echartSeriesTypeEnum.area;
-        } else if (series.smooth === true) {
-          info.seriesType = echartSeriesTypeEnum.smoothLine;
-        } else if (series.smooth === false) {
-          info.seriesType = echartSeriesTypeEnum.line;
-        }
-        info.size = series.lineStyle.width;
-        info.lineType = series.lineStyle.type;
-        info.shadow = series.lineStyle.shadowColor !== undefined;
-      } else if (series.type === 'bar') {
-        info.seriesType = echartSeriesTypeEnum.bar;
-      }
-      info.yAxisIndex = (series.yAxisIndex ?? 0) + 1;
-      info.xAxisIndex = (series.xAxisIndex ?? 0) + 1;
-    case chartTypeEnum.bar:
-      if (series.type === 'line') {
-        if (has(series, 'areaStyle')) {
-          info.seriesType = echartSeriesTypeEnum.area;
-        } else if (series.smooth === true) {
-          info.seriesType = echartSeriesTypeEnum.smoothLine;
-        } else if (series.smooth === false) {
-          info.seriesType = echartSeriesTypeEnum.line;
-        }
-        info.size = series.lineStyle.width;
-        info.lineType = series.lineStyle.type;
-        info.shadow = series.lineStyle.shadowColor !== undefined;
-      } else if (series.type === 'bar') {
-        info.name = seriesInfo.seriesName;
-        info.seriesType = echartSeriesTypeEnum.bar;
-        info.shadow = series.lineStyle.shadowColor !== undefined;
-      }
-      info.yAxisIndex = (series.yAxisIndex ?? 0) + 1;
-      info.xAxisIndex = (series.xAxisIndex ?? 0) + 1;
-    default:
-      break;
+      info.size = series.lineStyle.width;
+      info.lineType = series.lineStyle.type;
+      info.shadow = series.lineStyle.shadowColor !== undefined;
+    } else if (series.type === 'bar') {
+      info.seriesType = echartSeriesTypeEnum.bar;
+    }
+    info.yAxisIndex = series.yAxisIndex + 1;
+    info.xAxisIndex = series.xAxisIndex + 1;
   }
+  function caseSeasonal() {
+    const seriesIndex = seriesInfo.seriesIndex;
+    const series = options.series![seriesIndex];
+    info.name = series.name;
+    if (series.type === 'line') {
+      if (has(series, 'areaStyle')) {
+        info.seriesType = echartSeriesTypeEnum.area;
+      } else if (series.smooth === true) {
+        info.seriesType = echartSeriesTypeEnum.smoothLine;
+      } else if (series.smooth === false) {
+        info.seriesType = echartSeriesTypeEnum.line;
+      }
+      info.size = series.lineStyle.width;
+      info.lineType = series.lineStyle.type;
+      info.shadow = series.lineStyle.shadowColor !== undefined;
+    } else if (series.type === 'bar') {
+      info.seriesType = echartSeriesTypeEnum.bar;
+    }
+    info.yAxisIndex = (series.yAxisIndex ?? 0) + 1;
+    info.xAxisIndex = (series.xAxisIndex ?? 0) + 1;
+  }
+  function caseBar() {
+    const seriesIndex = seriesInfo.seriesIndex;
+    const series = options.series![seriesIndex];
+    if (series.type === 'line') {
+      if (has(series, 'areaStyle')) {
+        info.seriesType = echartSeriesTypeEnum.area;
+      } else if (series.smooth === true) {
+        info.seriesType = echartSeriesTypeEnum.smoothLine;
+      } else if (series.smooth === false) {
+        info.seriesType = echartSeriesTypeEnum.line;
+      }
+      info.size = series.lineStyle.width;
+      info.lineType = series.lineStyle.type;
+      info.shadow = series.lineStyle.shadowColor !== undefined;
+    } else if (series.type === 'bar') {
+      info.name = seriesInfo.seriesName;
+      info.seriesType = echartSeriesTypeEnum.bar;
+      info.shadow = series.lineStyle.shadowColor !== undefined;
+    }
+    info.yAxisIndex = (series.yAxisIndex ?? 0) + 1;
+    info.xAxisIndex = (series.xAxisIndex ?? 0) + 1;
+  }
+  function caseStructral() {
+    const seriesIndex = seriesInfo.seriesIndex;
+    const series = options.series![seriesIndex];
+    info.name = series.name;
+    if (series.type === 'line') {
+      if (has(series, 'areaStyle')) {
+        info.seriesType = echartSeriesTypeEnum.area;
+      } else if (series.smooth === true) {
+        info.seriesType = echartSeriesTypeEnum.smoothLine;
+      } else if (series.smooth === false) {
+        info.seriesType = echartSeriesTypeEnum.line;
+      }
+      info.size = series.lineStyle.width;
+      info.lineType = series.lineStyle.type;
+      info.shadow = series.lineStyle.shadowColor !== undefined;
+    } else if (series.type === 'bar') {
+      info.seriesType = echartSeriesTypeEnum.bar;
+    }
+    info.yAxisIndex = series.yAxisIndex + 1;
+    info.xAxisIndex = series.xAxisIndex + 1;
+  }
+  function caseRadar() {
+    const dataIndex = seriesInfo.dataIndex;
+    const data = options.series![0][dataIndex];
+    info.name = data.name;
+    info.seriesType = echartSeriesTypeEnum.radar;
+    if (has(data, 'areaStyle')) {
+      info.seriesType = echartSeriesTypeEnum.area;
+    }
+    info.size = data.lineStyle.width;
+    info.lineType = data.lineStyle.type;
+    info.shadow = data.lineStyle.shadowColor !== undefined;
+  }
+  const fns = {
+    [chartTypeEnum.normal]: caseNormal,
+    [chartTypeEnum.seasonal]: caseSeasonal,
+    [chartTypeEnum.structural]: caseStructral,
+    [chartTypeEnum.bar]: caseBar,
+    [chartTypeEnum.normalRadar]: caseRadar,
+  };
+  return fns[type].call(null);
 }
 
 // 选择series类型

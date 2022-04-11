@@ -33,7 +33,7 @@
 
     <!-- action  -->
     <div :class="`${prefixCls}-action`">
-      <div class="font-bold text-primary mr-2">{{ version }}</div>
+      <div class="font-bold text-red-500 mr-2">{{ version }}</div>
       <AppSearch :class="`${prefixCls}-action__item `" v-if="getShowSearch" />
 
       <ErrorAction v-if="getUseErrorHandle" :class="`${prefixCls}-action__item error-action`" />

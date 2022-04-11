@@ -95,6 +95,11 @@ export async function useSeasonalChart(
   if (quota.data.length === 0) {
     await Promise.reject(new Error('empty data'));
   }
+  const yearLenth = dayjs(chartConfig.timeConfig.endDate).diff(
+    dayjs(chartConfig.timeConfig.startDate),
+    'years',
+  );
+  const color = (await useColor({ chartConfig })).slice(0, yearLenth).reverse();
   const startMonth = chartConfig.timeConfig.startMonth!;
   const changeStart = startMonth > 1;
   quota.data.forEach((data) => {
@@ -117,22 +122,24 @@ export async function useSeasonalChart(
       year = 2020;
     }
     const s = series.find((ser) => ser.name === name);
+
     if (s) {
       (s.data as [number, number][]).push([dayjs(time).year(year).hour(0).unix() * 1000, v]);
     } else {
+      const seriesSetting = chartConfig.seriesSetting.find((ser) => ser.name === name);
       legend.data?.push(name);
       series.push({
         name: name,
         symbol: 'none',
         type: 'line',
         connectNulls: false,
-        // ...selectSeriesType(quotaDataList, color, seriesSetting),
+        ...selectSeriesType(quotaDataList, color, seriesSetting),
         triggerLineEvent: true,
         data: [[dayjs(time).year(year).hour(0).unix() * 1000, v]],
       });
     }
   });
-  const color = (await useColor({ chartConfig })).slice(0, series.length).reverse();
+
   for (let i = 0; i < 3; i++) {
     series[series.length - i - 1].lineStyle = {
       width: 3,
@@ -470,13 +477,20 @@ export async function useStructuralChart(chartConfig: structuralChartConfigType)
   const dataset: DatasetComponentOption = {
     source: [],
   };
+  const color = await useColor({ chartConfig });
   const firstLine = ['qoutaName'];
+  console.log(chartConfig.seriesSetting);
+
   for (let index = 0; index < structuralOffsetArr.length; index++) {
+    const name = `-${structuralOffsetArr[index]}D`;
+    const seriesSetting = chartConfig.seriesSetting.find((ser) => ser.name === name);
     series.push({
       type: 'line',
       seriesLayoutBy: 'column',
+      name,
+      ...selectSeriesType(quotaDataList, color, seriesSetting),
     });
-    firstLine.push(`-${structuralOffsetArr[index]}D`);
+    firstLine.push(name);
   }
   dataset.source = [firstLine];
   quotaDataList.forEach((quota) => {
@@ -486,7 +500,6 @@ export async function useStructuralChart(chartConfig: structuralChartConfigType)
     ];
     (dataset.source as any[]).push(source);
   });
-  const color = await useColor({ chartConfig });
   const options: EChartsOption = {
     title: titleConfig(chartConfig),
     xAxis: {

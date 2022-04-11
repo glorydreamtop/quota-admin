@@ -11,7 +11,7 @@
             class="!w-6em"
             size="small"
             v-model:value="info.seriesType"
-            :options="compOptions.seriesTypeList"
+            :options="availableSeriesType"
           />
         </span>
         <span v-if="info.lineType !== undefined">
@@ -20,7 +20,7 @@
             class="!w-6em"
             size="small"
             v-model:value="info.lineType"
-            :options="compOptions.lineTypeList"
+            :options="lineTypeList"
           />
         </span>
         <span v-if="info.size !== undefined">
@@ -61,10 +61,10 @@
 <script lang="ts" setup>
   import { reactive, ref, watch, toRaw, computed } from 'vue';
   import { Popover, Button, Switch, Select, InputNumber } from 'ant-design-vue';
-  import { cloneDeep, merge } from 'lodash-es';
+  import { cloneDeep, difference, merge } from 'lodash-es';
   import { useI18n } from '/@/hooks/web/useI18n';
   import type { normalChartConfigType, seriesSettingType } from '/#/chart';
-  import { echartLineTypeEnum, echartSeriesTypeEnum } from '/@/enums/chartEnum';
+  import { chartTypeEnum, echartLineTypeEnum, echartSeriesTypeEnum } from '/@/enums/chartEnum';
   import { EChartsOption } from 'echarts';
   import { setSeriesInfo } from '../helper';
 
@@ -88,31 +88,65 @@
       yAxisMax: props.chartConfig.yAxis.length,
     };
   });
-  const compOptions = reactive({
-    seriesTypeList: [
+  // 某图表类型不允许将seriesType切换的黑名单
+  const disableSeriesType = {
+    [chartTypeEnum.normal]: [echartSeriesTypeEnum.radar, echartSeriesTypeEnum.pie],
+    [chartTypeEnum.seasonal]: [echartSeriesTypeEnum.radar, echartSeriesTypeEnum.pie],
+    [chartTypeEnum.bar]: [echartSeriesTypeEnum.radar, echartSeriesTypeEnum.pie],
+    [chartTypeEnum.normalRadar]: [
+      echartSeriesTypeEnum.area,
       echartSeriesTypeEnum.line,
-      echartSeriesTypeEnum.bar,
       echartSeriesTypeEnum.scatter,
       echartSeriesTypeEnum.smoothLine,
-      echartSeriesTypeEnum.area,
-      echartSeriesTypeEnum.radar,
       echartSeriesTypeEnum.pie,
-    ].map((name) => {
+      echartSeriesTypeEnum.bar,
+    ],
+    [chartTypeEnum.quantileRadar]: [
+      echartSeriesTypeEnum.area,
+      echartSeriesTypeEnum.line,
+      echartSeriesTypeEnum.scatter,
+      echartSeriesTypeEnum.smoothLine,
+      echartSeriesTypeEnum.pie,
+      echartSeriesTypeEnum.bar,
+    ],
+    [chartTypeEnum.structural]: [echartSeriesTypeEnum.radar, echartSeriesTypeEnum.pie],
+    [chartTypeEnum.pie]: [
+      echartSeriesTypeEnum.area,
+      echartSeriesTypeEnum.line,
+      echartSeriesTypeEnum.scatter,
+      echartSeriesTypeEnum.smoothLine,
+      echartSeriesTypeEnum.radar,
+      echartSeriesTypeEnum.bar,
+    ],
+  };
+  const availableSeriesType = computed(() => {
+    return difference(
+      [
+        echartSeriesTypeEnum.line,
+        echartSeriesTypeEnum.bar,
+        echartSeriesTypeEnum.scatter,
+        echartSeriesTypeEnum.smoothLine,
+        echartSeriesTypeEnum.area,
+        echartSeriesTypeEnum.radar,
+        echartSeriesTypeEnum.pie,
+      ],
+      disableSeriesType[props.chartConfig.type],
+    ).map((name) => {
       return {
         label: t(`quotaView.seriesEdit.seriesTypeList.${name}`),
         value: name,
       };
-    }),
-    lineTypeList: [
-      echartLineTypeEnum.solid,
-      echartLineTypeEnum.dashed,
-      echartLineTypeEnum.dotted,
-    ].map((name) => {
-      return {
-        label: t(`quotaView.seriesEdit.lineTypeList.${name}`),
-        value: name,
-      };
-    }),
+    });
+  });
+  const lineTypeList = computed(() => {
+    return [echartLineTypeEnum.solid, echartLineTypeEnum.dashed, echartLineTypeEnum.dotted].map(
+      (name) => {
+        return {
+          label: t(`quotaView.seriesEdit.lineTypeList.${name}`),
+          value: name,
+        };
+      },
+    );
   });
   // function getWhiteList(type:string){
   //   let whiteList = [];

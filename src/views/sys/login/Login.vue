@@ -32,23 +32,7 @@
         <div class="flex w-full h-full py-5 xl:h-auto xl:py-0 xl:my-0 xl:w-6/12">
           <div
             :class="`${prefixCls}-form`"
-            class="
-              relative
-              w-full
-              px-5
-              py-8
-              mx-auto
-              my-auto
-              rounded-md
-              shadow-md
-              xl:ml-16 xl:bg-transparent
-              sm:px-8
-              xl:p-4 xl:shadow-none
-              sm:w-3/4
-              lg:w-2/4
-              xl:w-auto
-              enter-x
-            "
+            class="relative w-full px-5 py-8 mx-auto my-auto rounded-md shadow-md xl:ml-16 xl:bg-transparent sm:px-8 xl:p-4 xl:shadow-none sm:w-3/4 lg:w-2/4 xl:w-auto enter-x"
           >
             <LoginForm />
             <!-- <ForgetPasswordForm />
@@ -58,6 +42,18 @@
           </div>
         </div>
       </div>
+    </div>
+    <div class="icp">
+      <a
+        target="_blank"
+        href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=33010202002169"
+      >
+        <img src="/src/assets/images/icp.png" style="float: left" />
+        <span>浙公网安备 33010202002169号</span>
+      </a>
+      <a href="https://beian.miit.gov.cn" target="_blank" rel="noopener noreferrer"
+        >浙ICP备2022009116号</a
+      >
     </div>
   </div>
 </template>
@@ -237,6 +233,21 @@
     .ant-divider-inner-text {
       font-size: 12px;
       color: @text-color-secondary;
+    }
+  }
+
+  .icp {
+    position: absolute;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+
+    a {
+      color: inherit;
     }
   }
 </style>
