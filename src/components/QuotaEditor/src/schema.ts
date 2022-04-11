@@ -1,10 +1,27 @@
 import { computed } from 'vue';
 import { FormSchema } from '../../Form';
+import { TreeItem } from '../../Tree';
 import { SourceTypeEnum, SourceTypeNameEnum } from '/@/enums/quotaEnum';
 import { useI18n } from '/@/hooks/web/useI18n';
 import { useQuotaTreeStore } from '/@/store/modules/quotaTree';
+import { treeMap } from '/@/utils/helper/treeHelper';
+import { isNull } from '/@/utils/is';
 const { t } = useI18n();
 const quotaTreeStore = useQuotaTreeStore();
+
+const productTreeData = computed<TreeItem>(() => {
+  return treeMap(quotaTreeStore.getProductTree, {
+    conversion: (node) => {
+      return {
+        name: node.name,
+        code: node.code,
+        isLeaf: !isNull(node.code),
+        selectable: !isNull(node.code),
+      };
+    },
+  });
+});
+
 export const schemas = computed<FormSchema[]>(() => {
   return [
     {
@@ -27,11 +44,6 @@ export const schemas = computed<FormSchema[]>(() => {
         optionLabelProp: 'label',
         treeData: quotaTreeStore.getSysQuotaTree,
       },
-    },
-    {
-      field: 'sourceCode',
-      label: t('quota.quotaEditorModal.form.sourceCode'),
-      component: 'Input',
     },
     {
       field: 'sourceType',
@@ -89,6 +101,11 @@ export const schemas = computed<FormSchema[]>(() => {
       },
     },
     {
+      field: 'sourceCode',
+      label: t('quota.quotaEditorModal.form.sourceCode'),
+      component: 'Input',
+    },
+    {
       field: 'frequency',
       label: t('quota.quotaEditorModal.form.frequency'),
       defaultValue: '日',
@@ -122,23 +139,31 @@ export const schemas = computed<FormSchema[]>(() => {
       },
     },
     {
-      field: 'shortName',
-      label: t('quota.quotaEditorModal.form.shortName'),
-      component: 'Input',
-    },
-    {
       field: 'unit',
       label: t('quota.quotaEditorModal.form.unit'),
       component: 'Input',
     },
+    // {
+    //   field: 'sourceDescription',
+    //   label: t('quota.quotaEditorModal.form.sourceDescription'),
+    //   component: 'Input',
+    // },
     {
-      field: 'code',
-      label: t('quota.quotaEditorModal.form.code'),
-      component: 'Input',
+      field: 'commodity',
+      label: t('quota.quotaEditorModal.form.commodity'),
+      component: 'TreeSelect',
+      componentProps: {
+        replaceFields: {
+          title: 'name',
+          value: 'code',
+        },
+        optionLabelProp: 'label',
+        treeData: productTreeData,
+      },
     },
     {
-      field: 'sourceDescription',
-      label: t('quota.quotaEditorModal.form.sourceDescription'),
+      field: 'shortName',
+      label: t('quota.quotaEditorModal.form.shortName'),
       component: 'Input',
     },
     {
@@ -207,15 +232,6 @@ export const schemas = computed<FormSchema[]>(() => {
             value: '量化',
           },
         ],
-      },
-    },
-    {
-      field: 'priority',
-      component: 'InputNumber',
-      label: t('quota.quotaEditorModal.form.priority'),
-      componentProps: {
-        min: 1,
-        max: 1000,
       },
     },
     // {
