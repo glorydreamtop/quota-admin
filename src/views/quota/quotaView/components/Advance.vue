@@ -11,22 +11,22 @@
         <template #header>
           <Divider orientation="left">{{ t('quotaView.advance.rectSetting.title') }}</Divider>
         </template>
-        <div class="grid grid-cols-2 pl-8">
+        <div class="grid grid-cols-2 pr-8 justify-items-end">
           <span class="label">
+            <span>{{ t('quotaView.advance.rectSetting.lastest') }}</span>
             <Switch
               :checked-children="t('quotaView.advance.show')"
               :un-checked-children="t('quotaView.advance.hide')"
               v-model:checked="chartConfig.showLastest"
             />
-            <span>{{ t('quotaView.advance.rectSetting.lastest') }}</span>
           </span>
           <span class="label">
+            <span>{{ t('quotaView.advance.rectSetting.highest') }}</span>
             <Switch
               :checked-children="t('quotaView.advance.show')"
               :un-checked-children="t('quotaView.advance.hide')"
               v-model:checked="chartConfig.showHighest"
             />
-            <span>{{ t('quotaView.advance.rectSetting.highest') }}</span>
           </span>
         </div>
       </CollapsePanel>
@@ -34,21 +34,23 @@
         <template #header>
           <Divider orientation="left">{{ t('quotaView.advance.valueFormatter.title') }}</Divider>
         </template>
-        <div class="flex flex-wrap gap-2 pl-8">
+        <div class="grid grid-cols-2 pr-8 justify-items-end">
           <span class="label">
+            <span>{{ t('quotaView.advance.valueFormatter.afterDot') }}</span>
             <InputNumber
               size="small"
-              class="!w-12 min-w-12"
+              class="!w-14 min-w-14"
               :min="0"
               v-model:value="chartConfig.valueFormatter.afterDot"
-            /><span>{{ t('quotaView.advance.valueFormatter.afterDot') }}</span>
+            />
           </span>
           <span class="label">
+            <span>{{ t('quotaView.advance.valueFormatter.normalized') }}</span>
             <Switch
               v-model:checked="chartConfig.valueFormatter.normalized"
               :checked-children="t('quotaView.advance.use')"
               :un-checked-children="t('quotaView.advance.stop')"
-            /><span>{{ t('quotaView.advance.valueFormatter.normalized') }}</span>
+            />
           </span>
         </div>
       </CollapsePanel>
@@ -215,11 +217,8 @@
         <template #header>
           <Divider orientation="left">{{ t('quotaView.advance.dataEdit.title') }}</Divider>
         </template>
-        <div
-          class="children:mb-2 children:flex children:items-center children:gap-3"
-          v-if="showSettingFilter('removePoint')"
-        >
-          <div>
+        <div class="grid gap-2" v-if="showSettingFilter('removePoint')">
+          <div class="label">
             <span>{{ t('quotaView.advance.dataEdit.removePoint') }}</span>
             <Tooltip>
               <template #title>
@@ -228,25 +227,23 @@
               <Icon icon="ant-design:question-circle-outlined" />
             </Tooltip>
           </div>
-          <div>
+          <div class="label">
             <div class="min-w-4em">{{ t('quotaView.advance.dataEdit.xFilter') }}</div>
             <TextArea v-model:value="removePoint.xRange" />
           </div>
-          <div>
+          <div class="label">
             <div class="min-w-4em">{{ t('quotaView.advance.dataEdit.seriesFilter') }}</div>
-            <div class="flex items-center flex-grow gap-3">
-              <Select
-                :placeholder="t('quotaView.advance.dataEdit.seriesTip')"
-                class="flex-grow"
-                v-model:value="removePoint.seriesName"
-                :options="seriesOptions"
-              />
-              <Button type="primary" @click="addFilterGroup">{{
-                t('quotaView.advance.dataEdit.addBtn')
-              }}</Button>
-            </div>
+            <Select
+              :placeholder="t('quotaView.advance.dataEdit.seriesTip')"
+              class="flex-grow"
+              v-model:value="removePoint.seriesName"
+              :options="seriesOptions"
+            />
+            <Button type="primary" @click="addFilterGroup">{{
+              t('quotaView.advance.dataEdit.addBtn')
+            }}</Button>
           </div>
-          <div class="items-baseline">
+          <div class="items-baseline label">
             <div class="min-w-4em">{{ t('quotaView.advance.dataEdit.filterGroup') }}</div>
             <div class="!children:mb-3">
               <span
@@ -465,11 +462,7 @@
 
 <style lang="less" scoped>
   .label {
-    @apply flex items-center;
-
-    > span {
-      @apply ml-2;
-    }
+    @apply flex items-center gap-2;
   }
 
   .ant-collapse {

@@ -21,6 +21,7 @@ import SeriesEdit from './src/SeriesEditor.vue';
 import { getColorScheme } from '/@/api/color';
 import { NormalChartSeriesOption } from './tranfer';
 import { isNumber, isArray } from '/@/utils/is';
+import { fade } from '/@/utils/color';
 
 const { t } = useI18n();
 export async function fetchQuotaData(params: getQuotaDataParams) {
@@ -605,12 +606,9 @@ export function setSeriesInfo(
   }
   function caseRadar() {
     const dataIndex = seriesInfo.dataIndex;
-    const data = options.series![0][dataIndex];
+    const data = options.series![0].data[dataIndex];
     info.name = data.name;
     info.seriesType = echartSeriesTypeEnum.radar;
-    if (has(data, 'areaStyle')) {
-      info.seriesType = echartSeriesTypeEnum.area;
-    }
     info.size = data.lineStyle.width;
     info.lineType = data.lineStyle.type;
     info.shadow = data.lineStyle.shadowColor !== undefined;
@@ -621,13 +619,14 @@ export function setSeriesInfo(
     [chartTypeEnum.structural]: caseStructral,
     [chartTypeEnum.bar]: caseBar,
     [chartTypeEnum.normalRadar]: caseRadar,
+    [chartTypeEnum.quantileRadar]: caseRadar,
   };
-  return fns[type].call(null);
+  return fns[type as keyof typeof fns].call(null);
 }
 
 // 选择series类型
 export function selectSeriesType(
-  quotaDataList: getQuotaDataResult[],
+  nameList: { name: string }[],
   color: string[],
   seriesSetting?: seriesSettingType,
 ): NormalChartSeriesOption {
@@ -639,7 +638,7 @@ export function selectSeriesType(
     if (seriesSetting?.shadow) {
       Object.assign(lineStyle, {
         shadowBlur: 2,
-        shadowColor: color[quotaDataList.findIndex((q) => q.name === seriesSetting?.name)],
+        shadowColor: color[nameList.findIndex((q) => q.name === seriesSetting?.name)],
         shadowOffsetX: 2,
         shadowOffsetY: 2,
       });
@@ -653,39 +652,50 @@ export function selectSeriesType(
     };
   }
   const typeMap = {
-    [echartSeriesTypeEnum.line]: {
+    [echartSeriesTypeEnum.line]: () => ({
       type: 'line',
       symbol: 'none',
       lineStyle: getLineStyle(),
       ...getAxisIndex(),
       triggerLineEvent: true,
-    },
-    [echartSeriesTypeEnum.smoothLine]: {
+    }),
+    [echartSeriesTypeEnum.smoothLine]: () => ({
       type: 'line',
       smooth: true,
       symbol: 'none',
       lineStyle: getLineStyle(),
       ...getAxisIndex(),
       triggerLineEvent: true,
-    },
-    [echartSeriesTypeEnum.area]: {
+    }),
+    [echartSeriesTypeEnum.area]: () => ({
       type: 'line',
       smooth: false,
       symbol: 'none',
-      areaStyle: {},
+      areaStyle: {
+        color: fade(color[nameList.findIndex((q) => q.name === seriesSetting?.name)], 30),
+      },
       lineStyle: getLineStyle(),
       ...getAxisIndex(),
       triggerLineEvent: true,
-    },
-    [echartSeriesTypeEnum.scatter]: {
+    }),
+    [echartSeriesTypeEnum.scatter]: () => ({
       type: 'scatter',
-    },
-    [echartSeriesTypeEnum.bar]: {
+    }),
+    [echartSeriesTypeEnum.bar]: () => ({
       type: 'bar',
       ...getAxisIndex(),
-    },
+    }),
+    [echartSeriesTypeEnum.radar]: () => ({
+      lineStyle: getLineStyle(),
+      triggerLineEvent: true,
+    }),
+    [echartSeriesTypeEnum.pie]: () => ({
+      triggerLineEvent: false,
+    }),
   };
-  return typeMap[seriesSetting?.seriesType ?? echartSeriesTypeEnum.line] as NormalChartSeriesOption;
+  return typeMap[
+    seriesSetting?.seriesType ?? echartSeriesTypeEnum.line
+  ]() as NormalChartSeriesOption;
 }
 
 export function useRemovePoint({

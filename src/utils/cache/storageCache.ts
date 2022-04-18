@@ -1,10 +1,18 @@
-import { cacheCipher } from '/@/settings/encryptionSetting';
-
+import { cacheCipher, DEFAULT_CACHE_TIME } from '/@/settings/encryptionSetting';
 import type { EncryptionParams } from '/@/utils/cipher';
-
 import { AesEncryption } from '/@/utils/cipher';
-
 import { isNullOrUnDef } from '/@/utils/is';
+import type { LockInfo, UserInfo } from '/#/store';
+import type { ProjectConfig } from '/#/config';
+import type { RouteLocationNormalized } from 'vue-router';
+import {
+  TOKEN_KEY,
+  USER_INFO_KEY,
+  ROLES_KEY,
+  LOCK_INFO_KEY,
+  PROJ_CFG_KEY,
+  MULTIPLE_TABS_KEY,
+} from '/@/enums/cacheEnum';
 
 export interface CreateStorageParams extends EncryptionParams {
   prefixKey: string;
@@ -17,7 +25,7 @@ export const createStorage = ({
   storage = sessionStorage,
   key = cacheCipher.key,
   iv = cacheCipher.iv,
-  timeout = null,
+  timeout = 7 * 24 * 60 * 60,
   hasEncrypt = true,
 }: Partial<CreateStorageParams> = {}) => {
   if (hasEncrypt && [key.length, iv.length].some((item) => item !== 16)) {
@@ -32,7 +40,7 @@ export const createStorage = ({
    * @class Cache
    * @example
    */
-  const WebStorage = class WebStorage {
+  class WebStorage {
     private storage: Storage;
     private prefixKey?: string;
     private encryption: AesEncryption;
@@ -109,6 +117,39 @@ export const createStorage = ({
     clear(): void {
       this.storage.clear();
     }
-  };
+  }
   return new WebStorage();
+};
+
+type Options = Partial<CreateStorageParams>;
+
+export const createSessionStorage = (options: Options = {}) => {
+  return createStorage({ ...options, timeout: DEFAULT_CACHE_TIME, storage: sessionStorage });
+};
+
+export const createLocalStorage = (options: Options = {}) => {
+  return createStorage({ ...options, timeout: DEFAULT_CACHE_TIME, storage: localStorage });
+};
+
+interface BasicStore {
+  [TOKEN_KEY]: string | number | null | undefined;
+  [USER_INFO_KEY]: UserInfo;
+  [ROLES_KEY]: string[];
+  [LOCK_INFO_KEY]: LockInfo;
+  [PROJ_CFG_KEY]: ProjectConfig;
+  [MULTIPLE_TABS_KEY]: RouteLocationNormalized[];
+}
+
+export type BasicKeys = keyof BasicStore;
+
+const ls = createLocalStorage();
+const ss = createSessionStorage();
+
+export const webStorage = {
+  ls,
+  ss,
+  clearAll: () => {
+    ls.clear();
+    ss.clear();
+  },
 };

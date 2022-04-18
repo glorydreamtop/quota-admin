@@ -28,7 +28,7 @@
     <transition-group
       tag="div"
       name="quota-list"
-      class="flex gap-2 flex-wrap content-start rounded-md overflow-y-scroll select-none flex-grow relative pl-2"
+      class="flex gap-4 flex-wrap content-start rounded-md overflow-y-scroll select-none flex-grow relative pl-2"
       ref="quotaBox"
     >
       <!-- 一个卡片 -->
@@ -72,7 +72,6 @@
         <div class="mt-auto bg-mask">
           <span class="flex justify-between quota-unit-sourceType">
             <span class="unit" @click.stop>{{ item.unit }}</span>
-            <span class="sourceType" @click.stop>{{ typeFomatter(item.sourceType) }}</span>
           </span>
           <span class="flex justify-between children:w-fit quota-date">
             <Tooltip :mouseEnterDelay="0.5">
@@ -96,7 +95,7 @@
             </span>
           </span>
         </div>
-        <!-- 单位和来源 -->
+        <div class="sourceType" @click.stop>{{ typeFomatter(item.sourceType) }}</div>
       </div>
     </transition-group>
 
@@ -382,7 +381,7 @@
   }
 
   .card-theme {
-    @apply relative w-56 flex flex-col bg-primary-50 border border-primary-100 px-2 py-1 shadow-md shadow-primary-50 overflow-x-hidden text-xs rounded-md;
+    @apply relative w-56 flex flex-col bg-primary-50 border border-primary-100 px-2 py-1 shadow-md shadow-primary-50 text-xs rounded-md;
 
     aspect-ratio: 16/9;
     transition: filter 0.2s;
@@ -407,18 +406,28 @@
     }
 
     .quota-unit-sourceType {
-      .unit,
-      .sourceType {
+      .unit {
         @apply w-30 text-center w-fit text-primary-400;
-      }
-
-      .sourceType {
-        @apply bg-primary !text-white rounded-sm px-4px py-2px transform -translate-y-1;
       }
     }
 
     .quota-date {
       @apply text-primary-400;
+    }
+
+    .sourceType {
+      @apply absolute bg-primary !text-white pl-1 pr-2 py-2px top-2 -right-2;
+
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: -6px;
+        right: 0;
+        // 伪类三角形
+        border-style: solid;
+        border-width: 6px 8px 0 0;
+        border-color: #c2c2c2 transparent transparent #c2c2c2;
+      }
     }
   }
 

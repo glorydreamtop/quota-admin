@@ -1,1 +1,0 @@
-const o=[];for(let t=0;t<=15;t++)o[t]=t.toString(16);function n(){let t="";for(let e=1;e<=36;e++)e===9||e===14||e===19||e===24?t+="-":e===15?t+=4:e===20?t+=o[Math.random()*4|8]:t+=o[Math.random()*16|0];return t.replace(/-/g,"")}let r=0;function i(t=""){const e=Math.floor(Math.random()*1e5);return r++,t+"_"+e+r}export{i as a,n as b};

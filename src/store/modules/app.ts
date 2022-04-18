@@ -12,7 +12,7 @@ import { store } from '/@/store';
 
 import { ThemeEnum } from '/@/enums/appEnum';
 import { APP_DARK_MODE_KEY_, PROJ_CFG_KEY } from '/@/enums/cacheEnum';
-import { Persistent } from '/@/utils/cache/persistent';
+import { webStorage } from '/@/utils/cache/storageCache';
 import { darkMode } from '/@/settings/designSetting';
 import { resetRouter } from '/@/router';
 import { deepMerge } from '/@/utils';
@@ -32,7 +32,7 @@ export const useAppStore = defineStore({
   state: (): AppState => ({
     darkMode: undefined,
     pageLoading: false,
-    projectConfig: Persistent.getLocal(PROJ_CFG_KEY),
+    projectConfig: webStorage.ls.get(PROJ_CFG_KEY),
     beforeMiniInfo: {},
   }),
   getters: {
@@ -80,12 +80,12 @@ export const useAppStore = defineStore({
 
     setProjectConfig(config: DeepPartial<ProjectConfig>): void {
       this.projectConfig = deepMerge(this.projectConfig || {}, config);
-      Persistent.setLocal(PROJ_CFG_KEY, this.projectConfig);
+      webStorage.ls.set(PROJ_CFG_KEY, this.projectConfig);
     },
 
     async resetAllState() {
       resetRouter();
-      Persistent.clearAll();
+      webStorage.clearAll();
     },
     async setPageLoadingAction(loading: boolean): Promise<void> {
       if (loading) {

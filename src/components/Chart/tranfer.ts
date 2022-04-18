@@ -366,12 +366,19 @@ export async function useRadarChart(chartConfig: radarChartConfigType) {
       data: [],
     },
   ];
+  const color = await useColor({ chartConfig });
   for (let index = 0; index < chartConfig.timeConfig.pastValue!; index++) {
     (series[0].data as any[]).push({
       value: [] as number[],
       name: useRecentLegend(chartConfig.timeConfig.pastValue!, index),
     });
   }
+  const radarData = series[0].data as any[];
+  const radarDataName = radarData.map((item) => item.name);
+  radarData.forEach((item) => {
+    const seriesSetting = chartConfig.seriesSetting.find((ser) => ser.name === item.name);
+    Object.assign(item, selectSeriesType(radarDataName, color, seriesSetting));
+  });
   const radar: RadarComponentOption = {
     indicator: [],
     axisTick: {
@@ -397,7 +404,6 @@ export async function useRadarChart(chartConfig: radarChartConfigType) {
       (series[0].data as any[])[index].value.push(data[1]);
     }
   }
-  const color = await useColor({ chartConfig });
   const options: EChartsOption = {
     title: titleConfig(chartConfig),
     radar,
@@ -648,12 +654,19 @@ export async function useQuantileRadarChart(chartConfig: quantileRadarChartConfi
       data: [],
     },
   ];
+  const color = await useColor({ chartConfig });
   for (let index = 0; index < quantileOffset.length; index++) {
     (series[0].data as any[]).push({
       value: [] as number[],
       name: `${quantileOffset[index]}${t('quotaView.chart.quantile')}`,
     });
   }
+  const radarData = series[0].data as any[];
+  const radarDataName = radarData.map((item) => item.name);
+  radarData.forEach((item) => {
+    const seriesSetting = chartConfig.seriesSetting.find((ser) => ser.name === item.name);
+    Object.assign(item, selectSeriesType(radarDataName, color, seriesSetting));
+  });
   const radar: RadarComponentOption = {
     indicator: [],
     axisTick: {
@@ -693,7 +706,6 @@ export async function useQuantileRadarChart(chartConfig: quantileRadarChartConfi
       min: minVal[index],
     });
   }
-  const color = await useColor({ chartConfig });
   const options: EChartsOption = {
     title: titleConfig(chartConfig),
     radar,

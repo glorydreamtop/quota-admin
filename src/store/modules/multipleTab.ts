@@ -5,7 +5,7 @@ import { defineStore } from 'pinia';
 import { store } from '/@/store';
 
 import { useGo, useRedo } from '/@/hooks/web/usePage';
-import { Persistent } from '/@/utils/cache/persistent';
+import { webStorage } from '/@/utils/cache/storageCache';
 
 import { PageEnum } from '/@/enums/pageEnum';
 import { PAGE_NOT_FOUND_ROUTE, REDIRECT_ROUTE } from '/@/router/routes/basic';
@@ -43,7 +43,7 @@ export const useMultipleTabStore = defineStore({
     // Tabs that need to be cached
     cacheTabList: new Set(),
     // multiple tab list
-    tabList: cacheTab ? Persistent.getLocal(MULTIPLE_TABS_KEY) || [] : [],
+    tabList: cacheTab ? webStorage.ls.get(MULTIPLE_TABS_KEY) || [] : [],
     // Index of the last moved tab
     lastDragEndIndex: 0,
   }),
@@ -168,7 +168,7 @@ export const useMultipleTabStore = defineStore({
         this.tabList.push(route);
       }
       this.updateCacheTab();
-      cacheTab && Persistent.setLocal(MULTIPLE_TABS_KEY, this.tabList);
+      cacheTab && webStorage.ls.set(MULTIPLE_TABS_KEY, this.tabList);
     },
 
     async closeTab(tab: RouteLocationNormalized, router: Router) {

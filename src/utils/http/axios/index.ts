@@ -140,14 +140,12 @@ const transform: AxiosTransform = {
   /**
    * @description: 请求拦截器处理
    */
-  requestInterceptors: (config, options) => {
+  requestInterceptors: (config) => {
     // 请求之前处理config
     const token = getToken();
     if (token && (config as Recordable)?.requestOptions?.withToken !== false) {
       // token
-      config.headers.token = options.authenticationScheme
-        ? `${options.authenticationScheme} ${token}`
-        : token;
+      config.headers.token = token;
     }
     return config;
   },

@@ -10,7 +10,7 @@ import type {
   treeSelectParams,
   treePropsModel,
 } from './types';
-import { Ref, reactive } from 'vue';
+import { Ref } from 'vue';
 import { updateCategory, delCategory as delCategoryById } from '/@/api/quota';
 import { CategoryTreeType } from '/@/enums/quotaEnum';
 import mitt from '/@/utils/mitt';

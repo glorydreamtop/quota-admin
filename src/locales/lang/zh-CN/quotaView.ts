@@ -92,7 +92,7 @@ export default {
     },
     valueFormatter: {
       title: '数字格式设置',
-      afterDot: '位小数',
+      afterDot: '小数位数',
       normalized: '初值归一',
     },
     timeSeries: {
