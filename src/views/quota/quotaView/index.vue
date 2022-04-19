@@ -15,11 +15,9 @@
 
 <script lang="ts" setup>
   import { QuotaTree } from '/@/components/QuotaTree';
-  // import { TemplateTree } from '/@/components/TemplateTree';
   import QuotaList from './components/QuotaList.vue';
   import ChartGenerator from './components/ChartGenerator.vue';
   import { reactive, ref } from 'vue';
-  // import { useRoute } from 'vue-router';
   import {
     createChartConfigContext,
     createChartOriginDataContext,

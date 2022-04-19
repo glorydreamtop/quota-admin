@@ -1,6 +1,6 @@
 <template>
-  <div class="relative flex h-48 p-4 bg-white shadow-md shadow-primary-50 min-h-48">
-    <div class="flex flex-col flex-wrap w-auto gap-2 pr-2 border-r border-gray-300 pt-2px">
+  <div class="relative flex h-40 p-4 bg-white shadow-md shadow-primary-50 min-h-40">
+    <div class="flex flex-col flex-wrap w-auto gap-3 pr-2 border-r border-gray-300 pt-2px">
       <Tooltip placement="left">
         <template #title>{{ t('quotaView.quotaList.formula') }}</template>
         <Icon icon="carbon:function-math" size="20" @click="addFormula" />
@@ -381,7 +381,7 @@
   }
 
   .card-theme {
-    @apply relative w-56 flex flex-col bg-primary-50 border border-primary-100 px-2 py-1 shadow-md shadow-primary-50 text-xs rounded-md;
+    @apply relative w-52 flex flex-col bg-primary-50 border border-primary-100 px-2 py-1 shadow-md shadow-primary-50 text-xs;
 
     aspect-ratio: 16/9;
     transition: filter 0.2s;

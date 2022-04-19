@@ -11,6 +11,7 @@ import { updateColorWeak } from '/@/logics/theme/updateColorWeak';
 import { updateGrayMode } from '/@/logics/theme/updateGrayMode';
 import { updateDarkTheme } from '/@/logics/theme/dark';
 import { changeTheme } from '/@/logics/theme';
+import { isMobile } from '/@/utils/is';
 
 import { useAppStore } from '/@/store/modules/app';
 import { useLocaleStore } from '/@/store/modules/locale';
@@ -21,9 +22,11 @@ import { primaryColor } from '../../build/config/themeConfig';
 import { webStorage } from '/@/utils/cache/storageCache';
 import { deepMerge } from '/@/utils';
 import { ThemeEnum } from '/@/enums/appEnum';
+import { setCssVar } from './theme/util';
 
 // Initial project configuration
 export function initAppConfigStore() {
+  initDPR();
   const localeStore = useLocaleStore();
   const appStore = useAppStore();
   let projCfg: ProjectConfig = webStorage.ls.get(PROJ_CFG_KEY) as ProjectConfig;
@@ -82,3 +85,13 @@ export function clearObsoleteStorage() {
     });
   });
 }
+
+// 适配小屏幕且缩放比大于1的设备
+export const initDPR = () => {
+  const screenWidth = window.screen.width;
+  setCssVar('--full-vh', '100vh');
+  if (screenWidth < 1920 && !isMobile()) {
+    // setCssVar('--full-vh', `${(1920 / screenWidth) * 100}vh`);
+    // document.documentElement.style.setProperty('zoom', `${(screenWidth / 1920) * 100}%`);
+  }
+};

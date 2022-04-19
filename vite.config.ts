@@ -3,6 +3,8 @@ import pkg from './package.json';
 import moment from 'moment';
 import { loadEnv } from 'vite';
 import { resolve } from 'path';
+import { homedir } from 'os';
+import { readFileSync } from 'fs';
 import { generateModifyVars } from './build/generate/generateModifyVars';
 import { createProxy } from './build/vite/proxy';
 import { wrapperEnv } from './build/utils';
@@ -58,6 +60,11 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       port: VITE_PORT,
       // Load proxy configuration from .env
       proxy: createProxy(VITE_PROXY),
+      https: {
+        key: readFileSync(resolve(`${homedir}/.office-addin-dev-certs/localhost.key`)),
+        cert: readFileSync(resolve(`${homedir}/.office-addin-dev-certs/localhost.crt`)),
+        ca: readFileSync(resolve(`${homedir}/.office-addin-dev-certs/ca.crt`)),
+      },
     },
     build: {
       target: 'modules',

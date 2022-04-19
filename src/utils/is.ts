@@ -92,8 +92,24 @@ export const isServer = typeof window === 'undefined';
 
 export const isClient = !isServer;
 
+export function isMobile(): boolean {
+  return !!navigator.userAgent.match(
+    /(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i,
+  );
+}
+
 export function isUrl(path: string): boolean {
   const reg =
     /(((^https?:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+(?::\d+)?|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)$/;
   return reg.test(path);
+}
+
+export function isEmail(s: string): boolean {
+  const reg = /^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/;
+  return reg.test(s);
+}
+
+export function isPhone(s: string): boolean {
+  const reg = /^1[3,4,5,7,8,9]\d{9}$/;
+  return reg.test(s);
 }

@@ -9,7 +9,7 @@
   import type { CSSProperties } from 'vue';
   import { defineComponent, computed } from 'vue';
   import { useDesign } from '/@/hooks/web/useDesign';
-  import 'http://at.alicdn.com/t/font_2948274_sdqssf53jp.js';
+  import 'https://at.alicdn.com/t/font_2948274_sdqssf53jp.js';
 
   export default defineComponent({
     name: 'SvgIcon',
