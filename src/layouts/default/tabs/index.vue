@@ -1,5 +1,5 @@
 <template>
-  <div :class="getWrapClass">
+  <div :class="[getWrapClass, 'shadow-md pl-4 pr-2 flex']">
     <Tabs
       type="editable-card"
       size="small"

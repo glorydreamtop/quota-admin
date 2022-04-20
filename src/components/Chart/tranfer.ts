@@ -287,12 +287,16 @@ export async function useBarChart(chartConfig: barChartConfigType) {
     maxLength = max([quotaDataList[index].data.length, maxLength])!;
   }
   const firstLine = ['qoutaName'];
+  const color = await useColor({ chartConfig });
   for (let index = 0; index < maxLength; index++) {
+    const legendName = useRecentLegend(maxLength, index);
+    const seriesSetting = chartConfig.seriesSetting.find((ser) => ser.name === legendName);
     series.push({
       type: 'bar',
       seriesLayoutBy: 'column',
+      ...selectSeriesType(quotaDataList, color, seriesSetting),
     });
-    firstLine.push(useRecentLegend(maxLength, index));
+    firstLine.push(legendName);
   }
   dataset.source = [firstLine];
   quotaDataList.forEach((quota) => {
@@ -302,7 +306,7 @@ export async function useBarChart(chartConfig: barChartConfigType) {
     ];
     (dataset.source as any[]).push(source);
   });
-  const color = await useColor({ chartConfig });
+
   const options: EChartsOption = {
     title: titleConfig(chartConfig),
     xAxis: {

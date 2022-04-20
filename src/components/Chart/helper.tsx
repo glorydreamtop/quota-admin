@@ -578,7 +578,7 @@ export function setSeriesInfo(
     } else if (series.type === 'bar') {
       info.name = seriesInfo.seriesName;
       info.seriesType = echartSeriesTypeEnum.bar;
-      info.shadow = series.lineStyle.shadowColor !== undefined;
+      info.shadow = false;
     }
     info.yAxisIndex = (series.yAxisIndex ?? 0) + 1;
     info.xAxisIndex = (series.xAxisIndex ?? 0) + 1;
