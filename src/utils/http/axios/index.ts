@@ -249,6 +249,6 @@ export const nodeHttp = createAxios({
   timeout: 120 * 1000,
   requestOptions: {
     // apiUrl: 'http://42.192.126.245:5000', //测试
-    apiUrl: isProdMode() ? 'http://212.129.255.129:5001' : 'http://212.129.255.129:5000',
+    apiUrl: isProdMode() ? 'http://report-gen.shducheng.net:5001' : '/report-gen-dev',
   },
 });
