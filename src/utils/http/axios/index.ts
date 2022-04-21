@@ -248,7 +248,6 @@ export const defHttp = createAxios();
 export const nodeHttp = createAxios({
   timeout: 120 * 1000,
   requestOptions: {
-    // apiUrl: 'http://42.192.126.245:5000', //测试
     apiUrl: isProdMode() ? 'http://report-gen.shducheng.net:5001' : '/report-gen-dev',
   },
 });

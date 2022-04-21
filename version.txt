@@ -1,0 +1,6 @@
+git:f1c01cdc7b6d6c8b6b5334ae9ece4b60fc0f9230
+作者:glorydream.top<hanwenhui520@gmail.com>
+日期:2022-4-21 17:17
+说明:feat: update serieSetting
+版本号:20220421-174427
+*******************************************************************************

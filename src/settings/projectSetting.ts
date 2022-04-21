@@ -35,6 +35,8 @@ const setting: ProjectConfig = {
   // color
   themeColor: primaryColor,
 
+  colorScheme: [],
+
   // Website gray mode, open for possible mourning dates
   grayMode: false,
 
