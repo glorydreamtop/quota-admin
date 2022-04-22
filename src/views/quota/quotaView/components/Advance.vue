@@ -1,8 +1,8 @@
 <template>
-  <div class="pr-2 border-l-gray-300 flex w-1/3" ref="container">
-    <div class="w-20px h-full relative border-l group line hover-gray-shadow" @click="hide">
+  <div class="pr-2 border-l-gray-300 flex w-380px" ref="container">
+    <div class="w-24px h-full relative border-l group line hover-gray-shadow" @click="hide">
       <Icon
-        class="absolute -left-4px group-hover:-left-3px top-1/2 !text-26px !text-gray-400"
+        class="absolute -left-2px group-hover:-left-1px top-1/2 !text-26px !text-gray-400"
         :icon="`ant-design:${containerHidden ? 'left' : 'right'}-outlined`"
       />
     </div>

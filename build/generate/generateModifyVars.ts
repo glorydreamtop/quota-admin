@@ -35,5 +35,6 @@ export function generateModifyVars(dark = false) {
     'layout-body-background': '#F6F6F6', //  layout bg color
     'app-content-background': 'F6F6F6',
     'font-family': 'PingFang',
+    'layout-header-background': 'transparent',
   };
 }

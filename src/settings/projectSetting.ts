@@ -35,6 +35,8 @@ const setting: ProjectConfig = {
   // color
   themeColor: primaryColor,
 
+  colorScheme: [],
+
   // Website gray mode, open for possible mourning dates
   grayMode: false,
 
@@ -95,9 +97,9 @@ const setting: ProjectConfig = {
     // Menu width
     menuWidth: 210,
     // Menu mode
-    mode: MenuModeEnum.HORIZONTAL,
+    mode: MenuModeEnum.VERTICAL,
     // Menu type
-    type: MenuTypeEnum.TOP_MENU,
+    type: MenuTypeEnum.MIX_SIDEBAR,
     // Menu theme
     theme: ThemeEnum.LIGHT,
     // Split menu
@@ -124,11 +126,11 @@ const setting: ProjectConfig = {
     // Is it possible to drag and drop sorting tabs
     canDrag: true,
     // Turn on quick actions
-    showQuick: true,
+    showQuick: false,
     // Whether to show the refresh button
     showRedo: true,
     // Whether to show the collapse button
-    showFold: true,
+    showFold: false,
   },
 
   // Transition Setting

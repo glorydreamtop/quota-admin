@@ -1,4 +1,4 @@
-import { defHttp } from '/@/utils/http/axios';
+import { defHttp } from '/@/utils/http';
 
 enum Api {
   GetTagLike = '/sys-tag-info/getIndexLike',

@@ -1,4 +1,4 @@
-import { defHttp } from '/@/utils/http/axios';
+import { defHttp } from '/@/utils/http';
 import { LoginParams, LoginResultModel } from './model';
 import { ErrorMessageMode } from '/#/axios';
 import { BasicFetchResult, BasicPageParams, IdModel } from '../model/baseModel';

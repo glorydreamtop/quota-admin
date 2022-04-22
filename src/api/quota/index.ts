@@ -1,4 +1,4 @@
-import { defHttp } from '/@/utils/http/axios';
+import { defHttp } from '/@/utils/http';
 import type { CategoryTreeModel, QuotaItem } from '/#/quota';
 import { CategoryTreeType, SourceTypeEnum } from '/@/enums/quotaEnum';
 import {

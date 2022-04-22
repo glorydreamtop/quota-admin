@@ -27,6 +27,7 @@ import {
   useRemovePoint,
   useScientificNotation,
   selectSeriesType,
+  useSeriesSetting,
 } from './helper';
 import {
   barChartConfigType,
@@ -95,6 +96,7 @@ export async function useSeasonalChart(
   if (quota.data.length === 0) {
     await Promise.reject(new Error('empty data'));
   }
+  // 计算年跨度
   const yearLenth = dayjs(chartConfig.timeConfig.endDate).diff(
     dayjs(chartConfig.timeConfig.startDate),
     'years',
@@ -107,6 +109,7 @@ export async function useSeasonalChart(
     const y = dayjs(time).year();
     const m = dayjs(time).month();
     const v = round(data[1], chartConfig.valueFormatter.afterDot);
+    // 迁移后的年份和序列名字
     let year: number, name: string;
     // 如果变更了起始月份
     if (changeStart) {
@@ -139,7 +142,7 @@ export async function useSeasonalChart(
       });
     }
   });
-
+  // 近3年线条默认加粗
   for (let i = 0; i < 3; i++) {
     series[series.length - i - 1].lineStyle = {
       width: 3,
@@ -220,11 +223,11 @@ export async function useNormalChart(chartConfig: normalChartConfigType): Promis
   const color = await useColor({ chartConfig });
   quotaDataList.forEach((quota) => {
     legend.data!.push(quota.name);
-    const seriesSetting = chartConfig.seriesSetting.find((ser) => ser.name === quota.name);
+    // const seriesSetting = chartConfig.seriesSetting.find((ser) => ser.name === quota.name);
     quota.data.forEach((item) => (item[1] = round(item[1], chartConfig.valueFormatter.afterDot)));
     series.push({
       name: quota.name,
-      ...selectSeriesType(quotaDataList, color, seriesSetting),
+      // ...selectSeriesType(quotaDataList, color, seriesSetting),
       data: quota.data,
     });
   });
@@ -258,6 +261,7 @@ export async function useNormalChart(chartConfig: normalChartConfigType): Promis
     },
     grid: gridConfig,
   };
+  useSeriesSetting({ chartConfig, options });
   useAddGraphicElement({ options });
   // 最新值模块
   useLastestQuotaData({ chartConfig, options, quotaDataList });
@@ -287,12 +291,16 @@ export async function useBarChart(chartConfig: barChartConfigType) {
     maxLength = max([quotaDataList[index].data.length, maxLength])!;
   }
   const firstLine = ['qoutaName'];
+  const color = await useColor({ chartConfig });
   for (let index = 0; index < maxLength; index++) {
+    const legendName = useRecentLegend(maxLength, index);
+    const seriesSetting = chartConfig.seriesSetting.find((ser) => ser.name === legendName);
     series.push({
       type: 'bar',
       seriesLayoutBy: 'column',
+      ...selectSeriesType(quotaDataList, color, seriesSetting),
     });
-    firstLine.push(useRecentLegend(maxLength, index));
+    firstLine.push(legendName);
   }
   dataset.source = [firstLine];
   quotaDataList.forEach((quota) => {
@@ -302,7 +310,7 @@ export async function useBarChart(chartConfig: barChartConfigType) {
     ];
     (dataset.source as any[]).push(source);
   });
-  const color = await useColor({ chartConfig });
+
   const options: EChartsOption = {
     title: titleConfig(chartConfig),
     xAxis: {

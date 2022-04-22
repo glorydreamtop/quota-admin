@@ -578,7 +578,7 @@ export function setSeriesInfo(
     } else if (series.type === 'bar') {
       info.name = seriesInfo.seriesName;
       info.seriesType = echartSeriesTypeEnum.bar;
-      info.shadow = series.lineStyle.shadowColor !== undefined;
+      info.shadow = false;
     }
     info.yAxisIndex = (series.yAxisIndex ?? 0) + 1;
     info.xAxisIndex = (series.xAxisIndex ?? 0) + 1;
@@ -698,6 +698,128 @@ export function selectSeriesType(
   ]() as NormalChartSeriesOption;
 }
 
+export function conver2ecSeriesType(echartSeriesType: echartSeriesTypeEnum) {
+  const typeMap = {
+    [echartSeriesTypeEnum.line]: 'line',
+    [echartSeriesTypeEnum.smoothLine]: 'line',
+    [echartSeriesTypeEnum.area]: 'line',
+    [echartSeriesTypeEnum.scatter]: 'scatter',
+    [echartSeriesTypeEnum.bar]: 'bar',
+    [echartSeriesTypeEnum.radar]: 'radar',
+    [echartSeriesTypeEnum.pie]: 'pie',
+  };
+  return typeMap[echartSeriesType] as 'line' | 'scatter' | 'bar' | 'radar' | 'pie';
+}
+
+// 设置series更多配置
+export function useSeriesSetting({
+  chartConfig,
+  options,
+}: {
+  options: EChartsOption;
+  chartConfig: chartConfigType;
+}) {
+  const series = options.series as SeriesOption[];
+  const seriesSettings = chartConfig.seriesSetting;
+  function getAxisIndex(seriesSetting?: seriesSettingType) {
+    return {
+      xAxisIndex: seriesSetting?.xAxisIndex ?? 0,
+      yAxisIndex: seriesSetting?.yAxisIndex ?? 0,
+    };
+  }
+  // 一份线性series的样式
+  function getSeriesStyle({
+    ser,
+    seriesSetting,
+  }: {
+    ser: SeriesOption;
+    seriesSetting?: seriesSettingType;
+  }) {
+    const seriesIndex = series.findIndex((s) => s.name === ser.name);
+    if (ser.type === 'line') {
+      // 线性
+      const lineStyle = {
+        width: seriesSetting?.size ?? 2,
+        type: seriesSetting?.lineType ?? echartLineTypeEnum.solid,
+      };
+      const smooth = seriesSetting?.seriesType === echartSeriesTypeEnum.smoothLine;
+      if (seriesSetting?.shadow) {
+        Object.assign(lineStyle, {
+          shadowBlur: 3,
+          shadowColor: options.color![seriesIndex] ?? '#000',
+          shadowOffsetX: 2,
+          shadowOffsetY: 2,
+        });
+      }
+      if (seriesSetting?.seriesType === echartSeriesTypeEnum.area) {
+        return {
+          smooth,
+          symbol: 'none',
+          lineStyle,
+          areaStyle: {
+            color: {
+              type: 'linear',
+              x: 0,
+              y: 0,
+              x2: 0,
+              y2: 1,
+              colorStops: [
+                {
+                  offset: 0,
+                  color: options.color![seriesIndex] ?? '#ffffff66',
+                },
+                {
+                  offset: 1,
+                  color: fade(options.color![seriesIndex] ?? '#ffffff66', 30),
+                },
+              ],
+            },
+          },
+        };
+      }
+      return {
+        lineStyle,
+        smooth,
+        symbol: 'none',
+      };
+    }
+    if (ser.type === 'bar') {
+      // 柱状图
+      const barStyle = {
+        label: {
+          show: true,
+          position: 'outside',
+        },
+      };
+      return {
+        ...barStyle,
+      };
+    }
+  }
+  const typeMap = {
+    [chartTypeEnum.normal]: () => {
+      series.forEach((s) => {
+        const seriesSetting = seriesSettings.find((q) => q.name === s.name);
+        s.type = conver2ecSeriesType(seriesSetting?.seriesType ?? echartSeriesTypeEnum.line);
+        Object.assign(s, {
+          triggerLineEvent: true,
+          ...getSeriesStyle({ ser: s, seriesSetting }),
+          ...getAxisIndex(seriesSetting),
+        });
+      });
+    },
+    [chartTypeEnum.seasonal]: () => {},
+    [chartTypeEnum.structural]: () => {},
+    [chartTypeEnum.bar]: () => {},
+    [chartTypeEnum.normalRadar]: () => {},
+    [chartTypeEnum.quantileRadar]: () => {},
+    [chartTypeEnum.pie]: () => {},
+    [chartTypeEnum.fixedbase]: () => {},
+    [chartTypeEnum.seasonalLunar]: () => {},
+  };
+  return typeMap[chartConfig.type as keyof typeof typeMap].call(null);
+}
+
 export function useRemovePoint({
   chartConfig,
   quotaDataList,
@@ -706,7 +828,6 @@ export function useRemovePoint({
   quotaDataList: getQuotaDataResult[];
 }) {
   const rules = chartConfig.removePoint;
-  console.log(rules);
   if (rules !== undefined && rules.length > 0) {
     const filterSeries: { [key: string]: string[] } = {};
     rules?.forEach((item) => {
@@ -721,13 +842,12 @@ export function useRemovePoint({
           if (/x=\d{4}-\d{2}-\d{2}/i.test(item)) {
             return dayjs(item.split('=')[1]).unix() * 1000;
           }
+          // 大于某日期,小于某日期
           if (/\d{4}-\d{2}-\d{2}<x<\d{4}-\d{2}-\d{2}/i.test(item)) {
             return item.split('<x<').map((s) => dayjs(s).unix() * 1000);
           }
         });
         if (r.length > 0) {
-          console.log(r[0]);
-
           quota.data = quota.data.filter((data) => {
             const time = dayjs(data[0]).startOf('d').unix() * 1000;
             for (let i = 0; i < r.length; i++) {
@@ -735,8 +855,6 @@ export function useRemovePoint({
               if (isNumber(s) && s === time) return false;
               if (isArray(s) && time > s[0] && time < s[1]) return false;
             }
-            console.log(time);
-
             return true;
           });
         }

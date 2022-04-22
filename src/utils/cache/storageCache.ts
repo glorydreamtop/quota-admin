@@ -26,7 +26,7 @@ export const createStorage = ({
   key = cacheCipher.key,
   iv = cacheCipher.iv,
   timeout = 7 * 24 * 60 * 60,
-  hasEncrypt = true,
+  hasEncrypt = false,
 }: Partial<CreateStorageParams> = {}) => {
   if (hasEncrypt && [key.length, iv.length].some((item) => item !== 16)) {
     throw new Error('When hasEncrypt is true, the key or iv must be 16 bits!');
