@@ -142,6 +142,10 @@ export interface GlobConfig {
   title: string;
   // Service interface url
   apiUrl: string;
+  jodiUrl: string;
+  vesselUrl: string;
+  monitorUrl: string;
+  nodeUrl: string;
   // Upload url
   uploadUrl?: string;
   //  Service interface url prefix
@@ -154,6 +158,14 @@ export interface GlobEnvConfig {
   VITE_GLOB_APP_TITLE: string;
   // Service interface url
   VITE_GLOB_API_URL: string;
+  // Jodi interface url
+  VITE_GLOB_JODI_URL: string;
+  // vessl interface url
+  VITE_GLOB_VESSEL_URL: string;
+  // node interface url
+  VITE_GLOB_NODE_URL: string;
+  // monitor interface url
+  VITE_GLOB_MONITOR_URL: string;
   // Service interface url prefix
   VITE_GLOB_API_URL_PREFIX?: string;
   // Project abbreviation

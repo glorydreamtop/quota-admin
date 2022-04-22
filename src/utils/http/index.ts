@@ -16,7 +16,7 @@ import { useErrorLogStoreWithOut } from '/@/store/modules/errorLog';
 import { useI18n } from '/@/hooks/web/useI18n';
 import { joinTimestamp, formatRequestDate } from './helper';
 import { useUserStoreWithOut } from '/@/store/modules/user';
-import { isProdMode } from '../../env';
+import { isProdMode } from '../env';
 
 const globSetting = useGlobSetting();
 const urlPrefix = globSetting.urlPrefix;
@@ -244,10 +244,32 @@ function createAxios(opt?: Partial<CreateAxiosOptions>) {
 }
 export const defHttp = createAxios();
 
-//报告处理中间件服务
+//node中间件服务
 export const nodeHttp = createAxios({
   timeout: 120 * 1000,
   requestOptions: {
-    apiUrl: isProdMode() ? 'http://report-gen.shducheng.net:5001' : '/report-gen-dev',
+    apiUrl: isProdMode() ? globSetting.nodeUrl : '/report-gen-dev',
+  },
+});
+
+//jodi服务
+export const jodiHttp = createAxios({
+  timeout: 120 * 1000,
+  requestOptions: {
+    apiUrl: isProdMode() ? globSetting.jodiUrl : '/report-gen-dev',
+  },
+});
+//vessel服务
+export const vesselHttp = createAxios({
+  timeout: 120 * 1000,
+  requestOptions: {
+    apiUrl: isProdMode() ? globSetting.vesselUrl : '/report-gen-dev',
+  },
+});
+//monitor服务
+export const monitorHttp = createAxios({
+  timeout: 120 * 1000,
+  requestOptions: {
+    apiUrl: isProdMode() ? globSetting.monitorUrl : '/report-gen-dev',
   },
 });

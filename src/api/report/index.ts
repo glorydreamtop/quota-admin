@@ -1,4 +1,4 @@
-import { defHttp, nodeHttp } from '/@/utils/http/axios';
+import { defHttp, nodeHttp } from '/@/utils/http';
 
 import { ContentTypeEnum, ResultEnum } from '/@/enums/httpEnum';
 import { TreeType } from '/@/enums/quotaEnum';
