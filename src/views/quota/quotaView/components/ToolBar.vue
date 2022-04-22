@@ -10,16 +10,16 @@
         :options="chartTypeList"
       />
       <Color />
-      <div
-        class="flex justify-center gap-2 border border-gray-300 w-50 hover:border-primary date-picker"
-      >
+      <div class="flex justify-center border border-gray-300 w-50 hover:border-primary date-picker">
         <DatePicker
           size="small"
+          :bordered="false"
+          :allowClear="false"
           v-model:value="chartConfig.timeConfig.startDate"
           value-format="YYYY-MM-DD"
           :showToday="false"
           :placeholer="t('quotaView.toolbar.startDatePicker')"
-          ><span class="cursor-pointer">{{ chartConfig.timeConfig.startDate }}</span>
+        >
           <template #renderExtraFooter>
             <div class="flex items-center">
               <Input
@@ -38,15 +38,19 @@
               }}</span>
             </div>
           </template>
+          <template #suffixIcon> </template>
         </DatePicker>
         <span>~</span>
         <DatePicker
           size="small"
+          :bordered="false"
+          :allowClear="false"
           v-model:value="chartConfig.timeConfig.endDate"
           value-format="YYYY-MM-DD"
           :placeholer="t('quotaView.toolbar.endDatePicker')"
-          ><span class="cursor-pointer">{{ chartConfig.timeConfig.endDate }}</span></DatePicker
         >
+          <template #suffixIcon> </template>
+        </DatePicker>
       </div>
 
       <Icon
@@ -206,6 +210,11 @@
   .date-picker {
     transition: border 300ms;
     border-radius: 2px;
+    padding: 0 4px;
+
+    .ant-picker {
+      padding: 0;
+    }
   }
 
   .disabled {

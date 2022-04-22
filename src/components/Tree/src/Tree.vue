@@ -14,7 +14,8 @@
   } from 'vue';
   import { Tree, Empty } from 'ant-design-vue';
 
-  import { omit, get } from 'lodash-es';
+  import { omit } from 'lodash-es';
+  import Icon from '/@/components/Icon';
   import { isFunction } from '/@/utils/is';
   import { extendSlots, getSlot } from '/@/utils/helper/tsxHelper';
 
@@ -51,13 +52,13 @@
       const [createContextMenu] = useContextMenu();
       const { prefixCls } = useDesign('basic-tree');
 
-      const getReplaceFields = computed((): Required<ReplaceFields> => {
-        const { replaceFields } = props;
+      const getFieldNames = computed((): Required<ReplaceFields> => {
+        const { fieldNames } = props;
         return {
           children: 'children',
           title: 'title',
           key: 'key',
-          ...replaceFields,
+          ...fieldNames,
         };
       });
 
@@ -70,7 +71,7 @@
           selectedKeys: state.selectedKeys,
           checkedKeys: state.checkedKeys,
           checkStrictly: state.checkStrictly,
-          replaceFields: unref(getReplaceFields),
+          fieldNames: unref(getFieldNames),
           'onUpdate:expandedKeys': (v: Keys) => {
             state.expandedKeys = v;
             emit('update:expandedKeys', v);
@@ -87,12 +88,14 @@
           },
           onRightClick: handleRightClick,
         };
-        return omit(propsData, 'treeData', 'class');
+        return omit(propsData, 'class');
       });
 
       const getTreeData = computed((): TreeItem[] => unref(treeDataRef));
 
       const getNotFound = computed((): boolean => {
+        console.log(getTreeData.value);
+
         return !getTreeData.value || getTreeData.value.length === 0;
       });
       const {
@@ -103,7 +106,7 @@
         updateNodeByKey,
         getAllKeys,
         getEnabledKeys,
-      } = useTree(treeDataRef, getReplaceFields);
+      } = useTree(treeDataRef, getFieldNames);
 
       async function handleRightClick({ event, node }: Recordable) {
         const { rightMenuList: menuList = [], beforeRightClick } = props;
@@ -246,40 +249,53 @@
 
       expose(instance);
 
-      function renderTreeNode({ data, level }: { data: TreeItem[] | undefined; level: number }) {
-        if (!data) {
-          return null;
-        }
-        return data.map((item) => {
-          const { key: keyField, children: childrenField } = unref(getReplaceFields);
-          const propsData = omit(item, 'title');
-          propsData.dataRef = item;
-          const children = get(item, childrenField) || [];
-          return (
-            <Tree.TreeNode {...propsData} node={toRaw(item)} key={get(item, keyField)}>
-              {{
-                title: () => (
-                  <span
-                    class={`${prefixCls}-title`}
-                    onClick={handleClickNode.bind(null, item[keyField], item.isLeaf)}
-                  >
-                    {getSlot(slots, item.slots?.title, item)}
-                  </span>
-                ),
-                default: () => renderTreeNode({ data: children, level: level + 1 }),
-              }}
-            </Tree.TreeNode>
-          );
-        });
+      function renderTreeNode(item) {
+        console.log(item);
+
+        return (
+          <span
+            class={`${prefixCls}-title`}
+            onClick={handleClickNode.bind(null, item.key, item.isLeaf)}
+          >
+            {slots.title ? getSlot(slots, 'title', item) : item.title}
+          </span>
+        );
+        // return data.map((item) => {
+        //   const { key: keyField, children: childrenField } = unref(getFieldNames);
+        //   const propsData = omit(item, 'title');
+        //   propsData.dataRef = item;
+        //   const children = get(item, childrenField) || [];
+        //   return (
+        //     <Tree.TreeNode {...propsData} node={toRaw(item)} key={get(item, keyField)}>
+        //       {{
+        //         title: () => (
+        //           <span
+        //             class={`${prefixCls}-title`}
+        //             onClick={handleClickNode.bind(null, item[keyField], item.isLeaf)}
+        //           >
+        //             {getSlot(slots, item.slots?.title, item)}
+        //           </span>
+        //         ),
+        //         default: () => renderTreeNode({ data: children, level: level + 1 }),
+        //       }}
+        //     </Tree.TreeNode>
+        //   );
+        // });
       }
       return () => {
+        // const { key: keyField, title: titleField } = unref(getFieldNames);
         return (
           <div class={[prefixCls, attrs.class]}>
             <Tree {...unref(getBindValues)} showIcon={false} v-show={!unref(getNotFound)}>
               {{
-                // switcherIcon: () => <DownOutlined />,
-                default: () => renderTreeNode({ data: unref(getTreeData), level: 1 }),
-                ...extendSlots(slots),
+                switcherIcon: (params) =>
+                  slots.switcherIcon ? (
+                    getSlot(slots, 'switcherIcon', params)
+                  ) : (
+                    <Icon class={params.switcherCls} icon={'ant-design:down-outlined'} />
+                  ),
+                title: (item) => renderTreeNode(item),
+                ...extendSlots(slots, ['title', 'switcherIcon']),
               }}
             </Tree>
             <div v-show={unref(getNotFound)} class="pt-8">

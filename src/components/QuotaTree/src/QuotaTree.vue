@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white tail" ref="quotaTreeRef">
+  <div class="bg-white" ref="quotaTreeRef">
     <QuotaSearch v-if="showSearch" @select="handleSelect" />
     <ToolBar :loading="loading[treeType]" @getData="getData" />
     <QuotaEditor @register="registerQuotaEditor" />
@@ -16,9 +16,6 @@
           @drop="drop"
           @select="handleTreeSelect"
         >
-          <template #switcherIcon
-            ><Icon style="opacity: 0.3" icon="ant-design:down-outlined"
-          /></template>
           <template #title="item">
             <span
               class="w-full"
@@ -55,9 +52,6 @@
           @drop="drop"
           @select="handleTreeSelect"
         >
-          <template #switcherIcon
-            ><Icon style="opacity: 0.3" icon="ant-design:down-outlined"
-          /></template>
           <template #title="item">
             <span
               class="w-full"
@@ -156,7 +150,7 @@
   const treeProps: treePropsModel = reactive({
     [CategoryTreeType.sysQuota]: {
       treeData: [],
-      replaceFields: {
+      fieldNames: {
         title: 'name',
       },
       blockNode: true,
@@ -168,7 +162,7 @@
     },
     [CategoryTreeType.userQuota]: {
       treeData: [],
-      replaceFields: {
+      fieldNames: {
         title: 'name',
       },
       blockNode: true,
@@ -201,7 +195,6 @@
       }
       forEach(res, (item) => {
         item.isLeaf = !item.folder;
-        item.slots = { title: 'title' };
         item.icon = item.folder ? 'flat-color-icons:folder' : 'flat-color-icons:file';
         // 恢复之前的展开状态
         if (
@@ -245,7 +238,6 @@
       item.icon = 'flat-color-icons:file';
       item.isLeaf = true;
       item.key = item.id;
-      item.slots = { title: 'title' };
       item.categoryId = key;
       return item;
     });
@@ -574,8 +566,8 @@
 </script>
 
 <style lang="less" scoped>
-  ::v-deep(.ant-tabs .ant-tabs-top-content) {
-    height: calc(100% - 66px);
+  ::v-deep(.ant-tabs .ant-tabs-content-top) {
+    height: 100%;
 
     .ant-tabs-tabpane {
       overflow-y: scroll;
@@ -598,28 +590,6 @@
     &-focused {
       box-shadow: none !important;
       border: none !important;
-    }
-  }
-
-  .tail {
-    position: relative;
-
-    &::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      width: 100%;
-      height: 10%;
-      background-image: linear-gradient(
-        fade(@white, 5%),
-        fade(@white, 30%),
-        fade(@white, 50%),
-        fade(@white, 70%),
-        fade(@white, 90%),
-        fade(@white, 100%),
-        @white
-      );
-      pointer-events: none;
     }
   }
 
