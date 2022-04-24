@@ -65,7 +65,7 @@ export function useTableScroll(
     if (!tableEl) return;
 
     if (!bodyEl) {
-      bodyEl = tableEl.querySelector('.ant-table-body');
+      bodyEl = tableEl.querySelector('.ant-table-tbody');
       if (!bodyEl) return;
     }
 

@@ -35,7 +35,7 @@
     actionColumn: {
       title: t('common.action'),
       dataIndex: 'action',
-      slots: { customRender: 'action' },
+      // slots: { customRender: 'action' },
       fixed: 'right',
     },
   });

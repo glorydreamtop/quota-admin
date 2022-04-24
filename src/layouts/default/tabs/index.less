@@ -35,21 +35,17 @@ html[data-theme='light'] {
   }
 
   .ant-tabs.ant-tabs-card {
-    .ant-tabs-card-bar {
-      height: @multiple-height;
-      margin: 0;
-      // background-color: @component-background;
-      border: 0;
-      box-shadow: none;
+    // .ant-tabs-card-bar {
+    height: @multiple-height;
+    margin: 0;
+    // background-color: @component-background;
+    border: 0;
+    box-shadow: none;
 
-      .ant-tabs-nav-container {
-        height: @multiple-height;
-        padding-top: 2px;
-
-        .ant-tabs-nav {
-          margin-top: 3px;
-        }
-      }
+    .ant-tabs-nav-list {
+      height: calc(@multiple-height - 4px);
+      padding-top: 2px;
+      margin-top: 4px;
 
       .ant-tabs-tab {
         height: calc(@multiple-height - 10px);
@@ -62,17 +58,18 @@ html[data-theme='light'] {
         // transition: none;
 
         &:hover {
-          .ant-tabs-close-x {
-            opacity: 1;
+          .ant-tabs-tab-remove {
+            svg {
+              fill: @primary-color;
+            }
           }
         }
 
-        .ant-tabs-close-x {
-          width: 8px;
-          height: 12px;
-          font-size: 12px;
+        .ant-tabs-tab-remove {
+          // width: 8px;
+          // height: 12px;
+          // font-size: 12px;
           color: inherit;
-          opacity: 0;
           transition: none;
 
           &:hover {
@@ -99,16 +96,16 @@ html[data-theme='light'] {
         }
       }
 
-      .ant-tabs-tab-active {
+      .ant-tabs-tab.ant-tabs-tab-active {
         position: relative;
         padding-left: 18px;
-        color: @white !important;
+        color: @white;
         background: @primary-color;
         border: 0;
         // transition: none;
 
-        .ant-tabs-close-x {
-          opacity: 1;
+        .ant-tabs-tab-btn {
+          color: @white;
         }
 
         svg {
@@ -116,6 +113,12 @@ html[data-theme='light'] {
           fill: @white;
         }
       }
+
+      .ant-tabs-tab-remove {
+        padding: 0;
+        margin-left: 4px;
+      }
+      // }
     }
 
     .ant-tabs-nav > div:nth-child(1) {
@@ -146,11 +149,11 @@ html[data-theme='light'] {
     display: inline-flex;
   }
 
-  &--hide-close {
-    .ant-tabs-close-x {
-      opacity: 0 !important;
-    }
-  }
+  // &--hide-close {
+  //   .ant-tabs-close-x {
+  //     opacity: 0 !important;
+  //   }
+  // }
 
   &-content {
     &__extra-quick,

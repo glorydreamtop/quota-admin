@@ -31,7 +31,6 @@
       const getIsEdit = computed(() => !!props.column?.edit);
       const getTitle = computed(() => props.column?.customTitle);
       const getHelpMessage = computed(() => props.column?.helpMessage);
-
       return { prefixCls, getIsEdit, getTitle, getHelpMessage };
     },
   });

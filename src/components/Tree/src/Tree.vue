@@ -94,8 +94,6 @@
       const getTreeData = computed((): TreeItem[] => unref(treeDataRef));
 
       const getNotFound = computed((): boolean => {
-        console.log(getTreeData.value);
-
         return !getTreeData.value || getTreeData.value.length === 0;
       });
       const {
@@ -250,8 +248,6 @@
       expose(instance);
 
       function renderTreeNode(item) {
-        console.log(item);
-
         return (
           <span
             class={`${prefixCls}-title`}

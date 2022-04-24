@@ -16,9 +16,8 @@
         class="!w-40"
         v-model:value="filterOptions.productId"
         :tree-data="store.getProductTree"
-        :replaceFields="replaceFields"
+        :field-names="replaceFields"
         :loading="loadingState.productSelect"
-        option-label-prop="label"
         allow-clear
       />
     </span>
@@ -58,11 +57,11 @@
     productId: undefined,
   });
 
-  const replaceFields = {
-    title: 'name',
+  const replaceFields = reactive({
+    label: 'name',
     value: 'id',
     key: 'id',
-  };
+  });
 
   function resetFilter() {
     filterOptions.productId = undefined;
@@ -73,6 +72,8 @@
   function filterReportList() {
     emits('updateReportList', filterOptions);
   }
+
+  function createReport() {}
 </script>
 
 <style lang="less" scoped>
