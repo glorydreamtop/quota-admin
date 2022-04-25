@@ -18,7 +18,6 @@
         :tree-data="store.getProductTree"
         :replaceFields="replaceFields"
         :loading="loadingState.productSelect"
-        option-label-prop="label"
         allow-clear
       />
     </span>
@@ -59,7 +58,7 @@
   });
 
   const replaceFields = {
-    title: 'name',
+    label: 'name',
     value: 'id',
     key: 'id',
   };
