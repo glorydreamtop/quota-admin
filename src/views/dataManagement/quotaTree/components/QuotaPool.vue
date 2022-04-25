@@ -159,22 +159,17 @@
   import { useLoading } from '/@/components/Loading';
   import { Icon } from '/@/components/Icon';
   import { useMessage } from '/@/hooks/web/useMessage';
-  import { useSortable } from '/@/hooks/web/useSortable';
-  import { isNullAndUnDef } from '/@/utils/is';
   import { emitter } from '/@/components/QuotaTree/hooks';
   import { useCopyToClipboard } from '/@/hooks/web/useCopyToClipboard';
-  import { onMountedOrActivated } from '/@/hooks/core/onMountedOrActivated';
   import { useQuotaListContext, useSelectedQuotaContext } from '../hooks';
   import type { SelectedQuotaItem } from '../hooks';
   import ClearModal from './ClearModal.vue';
   import ToolBar from './ToolBar.vue';
   import QuotaEditor from '/@/components/QuotaEditor/src/QuotaEditor.vue';
-  import { domForeach } from '/@/utils/domUtils';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { formatToDate } from '/@/utils/dateUtil';
   import { delQuota, getQuotaInfo, requestUpdateQuotaData } from '/@/api/quota';
   import { useModal } from '/@/components/Modal';
-  import { useResizeObserver } from '@vueuse/core';
 
   // 所有从树中选中的指标
   const selectedQuota = useSelectedQuotaContext();
@@ -326,51 +321,6 @@
       absolute: true,
     },
     target: loadingRef,
-  });
-  onMountedOrActivated(async () => {
-    await nextTick();
-    const boxdom: HTMLDivElement = unref(quotaBox)!.$el;
-    const toolbardom: HTMLDivElement = (loadingRef.value as HTMLElement).getElementsByClassName(
-      'toolbar',
-    )[0];
-    useResizeObserver(toolbardom, () => {
-      boxdom.style.height = `calc(100% - ${toolbardom.clientHeight}px)`;
-    });
-    // 支持拖动排序
-    const { initSortable } = useSortable(boxdom, {
-      handle: '.drag-handler',
-      draggable: '.sortable',
-      dataIdAttr: 'data-quotaId',
-      dragoverBubble: true,
-      onStart: () => {
-        domForeach(boxdom.getElementsByClassName('sortable'), (element) => {
-          element.classList.remove('quota-list-item', 'spaceInDown', 'magictime');
-        });
-      },
-      // setData: (dt) => {
-      //   const d = document.createElement('div');
-      //   dt.setDragImage(d, 2, 2);
-      // },
-      onEnd: (evt) => {
-        domForeach(boxdom.getElementsByClassName('sortable'), (element) => {
-          element.classList.add('quota-list-item');
-        });
-        const { oldIndex, newIndex } = evt;
-        if (isNullAndUnDef(oldIndex) || isNullAndUnDef(newIndex) || oldIndex === newIndex) {
-          return;
-        }
-        // Sort column
-        const columns = selectedQuota.value;
-        if (oldIndex > newIndex) {
-          columns.splice(newIndex, 0, columns[oldIndex]);
-          columns.splice(oldIndex + 1, 1);
-        } else {
-          columns.splice(newIndex + 1, 0, columns[oldIndex]);
-          columns.splice(oldIndex, 1);
-        }
-      },
-    });
-    initSortable();
   });
 </script>
 

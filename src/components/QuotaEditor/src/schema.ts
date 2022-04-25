@@ -37,7 +37,7 @@ export const schemas = computed<FormSchema[]>(() => {
       component: 'TreeSelect',
       componentProps: {
         multiple: true,
-        replaceFields: {
+        fieldNames: {
           title: 'name',
           value: 'id',
         },

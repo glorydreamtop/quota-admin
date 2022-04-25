@@ -37,7 +37,7 @@ export const basicProps = {
   },
   defaultExpandAll: propTypes.bool.def(false),
 
-  replaceFields: {
+  fieldNames: {
     type: Object as PropType<ReplaceFields>,
   },
 
@@ -76,7 +76,7 @@ export const basicProps = {
   // 自定义数据过滤判断方法(注: 不是整个过滤方法，而是内置过滤的判断方法，用于增强原本仅能通过title进行过滤的方式)
   filterFn: {
     type: Function as PropType<
-      (searchValue: any, node: TreeItem, replaceFields: ReplaceFields) => boolean
+      (searchValue: any, node: TreeItem, fieldNames: ReplaceFields) => boolean
     >,
     default: null,
   },
@@ -98,7 +98,7 @@ export const treeNodeProps = {
     type: Array as PropType<ActionItem[]>,
     default: () => [],
   },
-  replaceFields: {
+  fieldNames: {
     type: Object as PropType<ReplaceFields>,
   },
   treeData: {

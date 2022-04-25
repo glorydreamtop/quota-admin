@@ -37,7 +37,7 @@
                 class="w-90"
                 v-model:value="treeProps.val"
                 :treeData="treeProps.treeData"
-                :replaceFields="{ title: 'name', value: 'id' }"
+                :fieldNames="{ title: 'name', value: 'id' }"
                 optionLabelProp="label"
               />
               <Button
