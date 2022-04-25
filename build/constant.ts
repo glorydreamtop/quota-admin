@@ -3,6 +3,6 @@
  */
 export const GLOB_CONFIG_FILE_NAME = '_app.config.js';
 
-export const OUTPUT_DIR = 'web';
+export const OUTPUT_DIR = 'dist';
 
-export const ASSESTS_DIR = 'v20220421-174427';
+export const ASSESTS_DIR = 'v20220425-173959';

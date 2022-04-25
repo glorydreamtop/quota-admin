@@ -1,6 +1,13 @@
+git:f41b718df469025cae6e58d8683e4ebd33602e5b
+作者:glorydream.top<hanwenhui520@gmail.com>
+日期:2022-4-25 10:31
+说明:chore: update package.json
+版本号:20220425-141920
+*******************************************************************************
 git:f1c01cdc7b6d6c8b6b5334ae9ece4b60fc0f9230
 作者:glorydream.top<hanwenhui520@gmail.com>
 日期:2022-4-21 17:17
 说明:feat: update serieSetting
 版本号:20220421-174427
 *******************************************************************************
+
