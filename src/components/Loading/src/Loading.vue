@@ -50,7 +50,7 @@
           loop: true,
           render: 'canvas',
           autoplay: false,
-          path: 'https://assets6.lottiefiles.com/packages/lf20_pz34kys6.json',
+          path: 'https://assets4.lottiefiles.com/packages/lf20_OdNgAj.json',
         });
       });
       watch(loading, (v) => {
@@ -111,6 +111,8 @@
     height: auto;
     max-width: 200px;
     max-height: 200px;
+    min-width: 100px;
+    min-height: 100px;
 
     ::v-deep(image) {
       transform: scale(2);

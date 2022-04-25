@@ -9,9 +9,10 @@ export async function getSentence() {
 }
 
 interface lottieParams {
-  container: HTMLElement;
+  container: Element;
   loop: boolean;
   autoplay: boolean;
+  render?: 'svg' | 'canvas';
   path: string;
 }
 export function useLottie({ container, loop, autoplay, path }: lottieParams) {
