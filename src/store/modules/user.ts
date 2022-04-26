@@ -125,6 +125,8 @@ export const useUserStore = defineStore({
     async getUserInfoAction(): Promise<UserInfo | null> {
       if (!this.getToken) return null;
       const userInfo = await getUserInfo();
+      console.log(userInfo);
+
       const { roleIdList } = userInfo;
       this.setUserInfo(userInfo);
       this.setRoleList(roleIdList);

@@ -280,7 +280,7 @@
   } from 'ant-design-vue';
   import { useI18n } from '/@/hooks/web/useI18n';
   import Icon from '/@/components/Icon';
-  import { echartMitter, useChartConfigContext, useSortMonthAndYear, useYAxisEdit } from './hooks';
+  import { echartMitter, useSortMonthAndYear, useYAxisEdit } from './hooks';
   import YAxisEdit from '/@/components/Chart/src/YAxisEditor.vue';
   import { onMounted, reactive, ref, toRaw, unref, watch } from 'vue';
   import { quotaDataPastUnitTypeEnum } from '/@/api/quota';
@@ -288,7 +288,7 @@
   import { chartTypeEnum, structuralOffsetUnitEnum } from '/@/enums/chartEnum';
   import { remove, uniq } from 'lodash-es';
   import { EChartsOption, LineSeriesOption } from 'echarts';
-  import { normalChartConfigType } from '/#/chart';
+  import { chartConfigType, normalChartConfigType } from '/#/chart';
 
   const RadioGroup = Radio.Group;
   const RadioButton = Radio.Button;
@@ -297,7 +297,31 @@
   const container = ref<HTMLElement>();
   const { t } = useI18n();
   const { createMessage } = useMessage();
-  const chartConfig = useChartConfigContext();
+  // const chartConfig = useChartConfigContext();
+
+  const props = defineProps<{
+    config: chartConfigType;
+  }>();
+  const emit = defineEmits<{
+    (event: 'update:config', config: chartConfigType): void;
+  }>();
+  const chartConfig = reactive({
+    ...props.config,
+  });
+  watch(
+    () => props.config,
+    (newVal) => {
+      Object.assign(chartConfig, newVal);
+    },
+    { deep: true, immediate: true },
+  );
+  watch(
+    chartConfig,
+    (newVal) => {
+      emit('update:config', newVal);
+    },
+    { deep: true, immediate: true },
+  );
   const collapseKey = ref('dataEdit');
   function showSettingFilter(modelName: string) {
     const filter = {
