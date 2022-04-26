@@ -16,7 +16,7 @@
         class="!w-40"
         v-model:value="filterOptions.productId"
         :tree-data="store.getProductTree"
-        :replaceFields="replaceFields"
+        :fieldNames="replaceFields"
         :loading="loadingState.productSelect"
         allow-clear
       />

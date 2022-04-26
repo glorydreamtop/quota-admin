@@ -153,7 +153,7 @@ export const schemas = computed<FormSchema[]>(() => {
       label: t('quota.quotaEditorModal.form.commodity'),
       component: 'TreeSelect',
       componentProps: {
-        replaceFields: {
+        fieldNames: {
           title: 'name',
           value: 'code',
         },

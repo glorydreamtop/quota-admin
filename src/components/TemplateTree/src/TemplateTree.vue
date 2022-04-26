@@ -91,7 +91,7 @@
   const treeProps: treePropsModel = reactive({
     [CategoryTreeType.sysTemplate]: {
       treeData: [],
-      replaceFields: {
+      fieldNames: {
         title: 'name',
       },
       blockNode: true,
@@ -101,7 +101,7 @@
     },
     [CategoryTreeType.userTemplate]: {
       treeData: [],
-      replaceFields: {
+      fieldNames: {
         title: 'name',
       },
       blockNode: true,

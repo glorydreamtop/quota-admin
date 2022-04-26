@@ -36,7 +36,7 @@ export interface multiSelectHooksParams {
 
 export type treeProp = Partial<{
   treeData: TreeItem[];
-  replaceFields: ReplaceFields;
+  fieldNames: ReplaceFields;
   blockNode: boolean;
   clickRowToExpand: boolean;
   loadData: Fn;
