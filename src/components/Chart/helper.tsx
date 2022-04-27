@@ -19,7 +19,6 @@ import YAxisEdit from './src/YAxisEditor.vue';
 import XAxisEdit from './src/XAxisEditor.vue';
 import SeriesEdit from './src/SeriesEditor.vue';
 import { getColorScheme } from '/@/api/color';
-import { NormalChartSeriesOption } from './tranfer';
 import { isNumber, isArray } from '/@/utils/is';
 import { fade } from '/@/utils/color';
 
@@ -624,80 +623,6 @@ export function setSeriesInfo(
   return fns[type as keyof typeof fns].call(null);
 }
 
-// 选择series类型
-export function selectSeriesType(
-  nameList: { name: string }[],
-  color: string[],
-  seriesSetting?: seriesSettingType,
-): NormalChartSeriesOption {
-  function getLineStyle() {
-    const lineStyle = {
-      width: seriesSetting?.size ?? 2,
-      type: seriesSetting?.lineType ?? echartLineTypeEnum.solid,
-    };
-    if (seriesSetting?.shadow) {
-      Object.assign(lineStyle, {
-        shadowBlur: 2,
-        shadowColor: color[nameList.findIndex((q) => q.name === seriesSetting?.name)],
-        shadowOffsetX: 2,
-        shadowOffsetY: 2,
-      });
-    }
-    return lineStyle;
-  }
-  function getAxisIndex() {
-    return {
-      xAxisIndex: seriesSetting?.xAxisIndex ?? 0,
-      yAxisIndex: seriesSetting?.yAxisIndex ?? 0,
-    };
-  }
-  const typeMap = {
-    [echartSeriesTypeEnum.line]: () => ({
-      type: 'line',
-      symbol: 'none',
-      lineStyle: getLineStyle(),
-      ...getAxisIndex(),
-      triggerLineEvent: true,
-    }),
-    [echartSeriesTypeEnum.smoothLine]: () => ({
-      type: 'line',
-      smooth: true,
-      symbol: 'none',
-      lineStyle: getLineStyle(),
-      ...getAxisIndex(),
-      triggerLineEvent: true,
-    }),
-    [echartSeriesTypeEnum.area]: () => ({
-      type: 'line',
-      smooth: false,
-      symbol: 'none',
-      areaStyle: {
-        color: fade(color[nameList.findIndex((q) => q.name === seriesSetting?.name)], 30),
-      },
-      lineStyle: getLineStyle(),
-      ...getAxisIndex(),
-      triggerLineEvent: true,
-    }),
-    [echartSeriesTypeEnum.scatter]: () => ({
-      type: 'scatter',
-    }),
-    [echartSeriesTypeEnum.bar]: () => ({
-      type: 'bar',
-      ...getAxisIndex(),
-    }),
-    [echartSeriesTypeEnum.radar]: () => ({
-      lineStyle: getLineStyle(),
-      triggerLineEvent: true,
-    }),
-    [echartSeriesTypeEnum.pie]: () => ({
-      triggerLineEvent: false,
-    }),
-  };
-  return typeMap[
-    seriesSetting?.seriesType ?? echartSeriesTypeEnum.line
-  ]() as NormalChartSeriesOption;
-}
-
 export function conver2ecSeriesType(echartSeriesType: echartSeriesTypeEnum) {
   const typeMap = {
     [echartSeriesTypeEnum.line]: 'line',
@@ -808,9 +733,39 @@ export function useSeriesSetting({
         });
       });
     },
-    [chartTypeEnum.seasonal]: () => {},
-    [chartTypeEnum.structural]: () => {},
-    [chartTypeEnum.bar]: () => {},
+    [chartTypeEnum.seasonal]: () => {
+      series.forEach((s) => {
+        const seriesSetting = seriesSettings.find((q) => q.name === s.name);
+        s.type = conver2ecSeriesType(seriesSetting?.seriesType ?? echartSeriesTypeEnum.line);
+        Object.assign(s, {
+          triggerLineEvent: true,
+          ...getSeriesStyle({ ser: s, seriesSetting }),
+          ...getAxisIndex(seriesSetting),
+        });
+      });
+    },
+    [chartTypeEnum.structural]: () => {
+      series.forEach((s) => {
+        const seriesSetting = seriesSettings.find((q) => q.name === s.name);
+        s.type = conver2ecSeriesType(seriesSetting?.seriesType ?? echartSeriesTypeEnum.line);
+        Object.assign(s, {
+          triggerLineEvent: true,
+          ...getSeriesStyle({ ser: s, seriesSetting }),
+          ...getAxisIndex(seriesSetting),
+        });
+      });
+    },
+    [chartTypeEnum.bar]: () => {
+      series.forEach((s) => {
+        const seriesSetting = seriesSettings.find((q) => q.name === s.name);
+        s.type = conver2ecSeriesType(seriesSetting?.seriesType ?? echartSeriesTypeEnum.bar);
+        Object.assign(s, {
+          triggerLineEvent: true,
+          ...getSeriesStyle({ ser: s, seriesSetting }),
+          ...getAxisIndex(seriesSetting),
+        });
+      });
+    },
     [chartTypeEnum.normalRadar]: () => {},
     [chartTypeEnum.quantileRadar]: () => {},
     [chartTypeEnum.pie]: () => {},

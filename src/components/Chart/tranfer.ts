@@ -26,7 +26,6 @@ import {
   useColor,
   useRemovePoint,
   useScientificNotation,
-  selectSeriesType,
   useSeriesSetting,
 } from './helper';
 import {
@@ -129,14 +128,12 @@ export async function useSeasonalChart(
     if (s) {
       (s.data as [number, number][]).push([dayjs(time).year(year).hour(0).unix() * 1000, v]);
     } else {
-      const seriesSetting = chartConfig.seriesSetting.find((ser) => ser.name === name);
       legend.data?.push(name);
       series.push({
         name: name,
         symbol: 'none',
         type: 'line',
         connectNulls: false,
-        ...selectSeriesType(quotaDataList, color, seriesSetting),
         triggerLineEvent: true,
         data: [[dayjs(time).year(year).hour(0).unix() * 1000, v]],
       });
@@ -191,6 +188,7 @@ export async function useSeasonalChart(
     },
     grid: gridConfig,
   };
+  useSeriesSetting({ chartConfig, options });
   useAddGraphicElement({ options });
   // 最新值模块
   useLastestQuotaData({ chartConfig, options, quotaDataList });
@@ -223,11 +221,9 @@ export async function useNormalChart(chartConfig: normalChartConfigType): Promis
   const color = await useColor({ chartConfig });
   quotaDataList.forEach((quota) => {
     legend.data!.push(quota.name);
-    // const seriesSetting = chartConfig.seriesSetting.find((ser) => ser.name === quota.name);
     quota.data.forEach((item) => (item[1] = round(item[1], chartConfig.valueFormatter.afterDot)));
     series.push({
       name: quota.name,
-      // ...selectSeriesType(quotaDataList, color, seriesSetting),
       data: quota.data,
     });
   });
@@ -294,11 +290,9 @@ export async function useBarChart(chartConfig: barChartConfigType) {
   const color = await useColor({ chartConfig });
   for (let index = 0; index < maxLength; index++) {
     const legendName = useRecentLegend(maxLength, index);
-    const seriesSetting = chartConfig.seriesSetting.find((ser) => ser.name === legendName);
     series.push({
       type: 'bar',
       seriesLayoutBy: 'column',
-      ...selectSeriesType(quotaDataList, color, seriesSetting),
     });
     firstLine.push(legendName);
   }
@@ -348,6 +342,7 @@ export async function useBarChart(chartConfig: barChartConfigType) {
     },
     grid: gridConfig,
   };
+  useSeriesSetting({ chartConfig, options });
   useAddGraphicElement({ options });
   // 最新值模块
   useLastestQuotaData({ chartConfig, options, quotaDataList });
@@ -381,12 +376,6 @@ export async function useRadarChart(chartConfig: radarChartConfigType) {
       name: useRecentLegend(chartConfig.timeConfig.pastValue!, index),
     });
   }
-  const radarData = series[0].data as any[];
-  const radarDataName = radarData.map((item) => item.name);
-  radarData.forEach((item) => {
-    const seriesSetting = chartConfig.seriesSetting.find((ser) => ser.name === item.name);
-    Object.assign(item, selectSeriesType(radarDataName, color, seriesSetting));
-  });
   const radar: RadarComponentOption = {
     indicator: [],
     axisTick: {
@@ -493,16 +482,12 @@ export async function useStructuralChart(chartConfig: structuralChartConfigType)
   };
   const color = await useColor({ chartConfig });
   const firstLine = ['qoutaName'];
-  console.log(chartConfig.seriesSetting);
-
   for (let index = 0; index < structuralOffsetArr.length; index++) {
     const name = `-${structuralOffsetArr[index]}D`;
-    const seriesSetting = chartConfig.seriesSetting.find((ser) => ser.name === name);
     series.push({
       type: 'line',
       seriesLayoutBy: 'column',
       name,
-      ...selectSeriesType(quotaDataList, color, seriesSetting),
     });
     firstLine.push(name);
   }
@@ -551,6 +536,7 @@ export async function useStructuralChart(chartConfig: structuralChartConfigType)
     },
     grid: gridConfig,
   };
+  useSeriesSetting({ options, chartConfig });
   useAddGraphicElement({ options });
   // 最新值模块
   useLastestQuotaData({ chartConfig, options, quotaDataList });
@@ -669,12 +655,6 @@ export async function useQuantileRadarChart(chartConfig: quantileRadarChartConfi
       name: `${quantileOffset[index]}${t('quotaView.chart.quantile')}`,
     });
   }
-  const radarData = series[0].data as any[];
-  const radarDataName = radarData.map((item) => item.name);
-  radarData.forEach((item) => {
-    const seriesSetting = chartConfig.seriesSetting.find((ser) => ser.name === item.name);
-    Object.assign(item, selectSeriesType(radarDataName, color, seriesSetting));
-  });
   const radar: RadarComponentOption = {
     indicator: [],
     axisTick: {

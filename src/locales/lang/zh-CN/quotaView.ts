@@ -106,6 +106,7 @@ export default {
         min: '最小值',
         max: '最大值',
         position: '位置',
+        color: '颜色',
         inverse: '逆序',
         createY: '创建Y轴',
         left: '左',

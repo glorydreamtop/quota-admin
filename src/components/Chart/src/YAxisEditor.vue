@@ -8,12 +8,7 @@
   >
     <template #content>
       <div
-        class="
-          flex flex-col
-          gap-1
-          children:whitespace-nowrap children:flex children:items-center
-          w-30
-        "
+        class="flex flex-col gap-1 children:whitespace-nowrap children:flex children:items-center w-30"
       >
         <div>
           <div class="w-3em text-justify mr-2">
@@ -44,6 +39,19 @@
             :placeholder="t('common.auto')"
             @input="(e) => onInputNumber(e, 'max')"
           />
+        </div>
+        <div>
+          <div class="min-w-3em text-justify mr-2">{{
+            t('quotaView.advance.axisSetting.yAxis.color')
+          }}</div>
+          <div class="color-popover">
+            <div
+              v-for="color in currentColorScheme"
+              :key="color"
+              class="w-2 h-2"
+              :style="{ backgroundColor: color }"
+            ></div>
+          </div>
         </div>
         <div>
           <div class="min-w-3em text-justify mr-2">{{
@@ -134,6 +142,7 @@
   import type { YAXisComponentOption } from 'echarts';
   import Icon from '/@/components/Icon';
   import { isNull } from '/@/utils/is';
+  import { useColor } from '../helper';
   const { t } = useI18n();
 
   const RadioGroup = Radio.Group;
@@ -153,6 +162,9 @@
     offset: 0,
     axisLine: {
       show: true,
+      lineStyle: {
+        color: '#333333',
+      },
     },
     position: 'left',
     axisLabel: {
@@ -181,6 +193,7 @@
   defineExpose({ setVisible });
   watch(visible, (v) => {
     if (v) {
+      getColorScheme();
       if (props.idx === null) {
         // 新增的智能分配到轴比较少的一侧
         const [leftAxis, rightAxis] = partition(props.chartConfig.yAxis!, (item) => {
@@ -197,6 +210,9 @@
           offset: offset,
           axisLine: {
             show: true,
+            lineStyle: {
+              color: '#333333',
+            },
           },
           position: isLeft ? 'left' : 'right',
           axisLabel: {
@@ -242,39 +258,20 @@
     emit('update', config);
     setVisible(false);
   }
-  function del() {
-    const config = cloneDeep(props.chartConfig);
-    // 检查当前轴是否被使用中
-    const hasDep = config.seriesSetting!.find((ser) => ser.yAxisIndex === props.idx);
-    if (hasDep) {
-      createMessage.warn(`[${hasDep.name}]` + t('quotaView.advance.axisSetting.yAxis.cannotdel'));
-      return;
-    }
-    if (config.yAxis.length === 1) {
-      createMessage.warn(t('quotaView.advance.axisSetting.yAxis.lastnotdel'));
-      return;
-    }
-    emit('update', config);
-    setVisible(false);
+  const currentColorScheme = ref<string[]>([]);
+  async function getColorScheme() {
+    currentColorScheme.value = await useColor({ chartConfig: props.chartConfig });
   }
-  // function del() {
-  //   const config = cloneDeep(props.chartConfig);
-  //   // 检查当前轴是否被使用中
-  //   const hasDep = config.quotaList!.find((quota) => quota.setting.yAxisIndex === props.idx);
-  //   if (hasDep) {
-  //     createMessage.warn(
-  //       `[${hasDep.name}]` + t('page.quotaView.advance.axisSetting.yAxis.cannotdel'),
-  //     );
-  //     return;
-  //   }
-  //   if (config.yAxis.length === 1) {
-  //     createMessage.warn(t('page.quotaView.advance.axisSetting.yAxis.lastnotdel'));
-  //     return;
-  //   }
-  //   config.yAxis.splice(props.idx!, 1);
-  //   emit('update', config);
-  //   setVisible(false);
-  // }
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+  .color-popover {
+    @apply flex flex-wrap !w-59px bg-white p-1 shadow shadow-gray-300;
+
+    gap: 2px;
+
+    div {
+      // transform: skew(-10deg);
+    }
+  }
+</style>
