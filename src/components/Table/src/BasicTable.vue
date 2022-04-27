@@ -20,6 +20,7 @@
       :rowClassName="getRowClassName"
       v-show="getEmptyDataIsShowTable"
       @change="handleTableChange"
+      @resize-column="handleResizeColumn"
     >
       <template #headerCell="{ column }">
         <template v-for="col in columns" :key="col.dataIndex">
@@ -94,6 +95,7 @@
       'expanded-rows-change',
       'change',
       'columns-change',
+      'resize-column',
     ],
     setup(props, { attrs, emit, slots, expose }) {
       const tableElRef = ref(null);
@@ -171,6 +173,12 @@
         // 解决通过useTable注册onChange时不起作用的问题
         const { onChange } = unref(getProps);
         onChange && isFunction(onChange) && onChange.call(undefined, ...args);
+      }
+      function handleResizeColumn(w, col) {
+        col.width = w;
+        console.log('resize', w, col);
+
+        emit('resize-column', w, col);
       }
 
       const {
@@ -322,6 +330,7 @@
         handleSearchInfoChange,
         getEmptyDataIsShowTable,
         handleTableChange,
+        handleResizeColumn,
         getRowClassName,
         wrapRef,
         tableAction,

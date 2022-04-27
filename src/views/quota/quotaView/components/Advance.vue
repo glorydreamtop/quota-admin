@@ -1,11 +1,5 @@
 <template>
   <div class="pr-2 border-l-gray-300 flex w-380px" ref="container">
-    <div class="w-24px h-full relative border-l group line hover-gray-shadow" @click="hide">
-      <Icon
-        class="absolute -left-2px group-hover:-left-1px top-1/2 !text-26px !text-gray-400"
-        :icon="`ant-design:${containerHidden ? 'left' : 'right'}-outlined`"
-      />
-    </div>
     <Collapse class="flex-grow overflow-y-scroll" v-model:activeKey="collapseKey" :bordered="false">
       <CollapsePanel key="rectSetting">
         <template #header>
@@ -280,15 +274,23 @@
   } from 'ant-design-vue';
   import { useI18n } from '/@/hooks/web/useI18n';
   import Icon from '/@/components/Icon';
-  import { echartMitter, useSortMonthAndYear, useYAxisEdit } from './hooks';
+  import { useDrawer } from '../helper';
+  import { echartMitter, useChartConfigContext, useSortMonthAndYear, useYAxisEdit } from './hooks';
   import YAxisEdit from '/@/components/Chart/src/YAxisEditor.vue';
-  import { onMounted, reactive, ref, toRaw, unref, watch } from 'vue';
+  import { reactive, ref, toRaw, watch } from 'vue';
   import { quotaDataPastUnitTypeEnum } from '/@/api/quota';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { chartTypeEnum, structuralOffsetUnitEnum } from '/@/enums/chartEnum';
   import { remove, uniq } from 'lodash-es';
   import { EChartsOption, LineSeriesOption } from 'echarts';
-  import { chartConfigType, normalChartConfigType } from '/#/chart';
+  import { normalChartConfigType } from '/#/chart';
+
+  const props = defineProps({
+    float: {
+      type: Boolean,
+      default: false,
+    },
+  });
 
   const RadioGroup = Radio.Group;
   const RadioButton = Radio.Button;
@@ -297,31 +299,7 @@
   const container = ref<HTMLElement>();
   const { t } = useI18n();
   const { createMessage } = useMessage();
-  // const chartConfig = useChartConfigContext();
-
-  const props = defineProps<{
-    config: chartConfigType;
-  }>();
-  const emit = defineEmits<{
-    (event: 'update:config', config: chartConfigType): void;
-  }>();
-  const chartConfig = reactive({
-    ...props.config,
-  });
-  watch(
-    () => props.config,
-    (newVal) => {
-      Object.assign(chartConfig, newVal);
-    },
-    { deep: true, immediate: true },
-  );
-  watch(
-    chartConfig,
-    (newVal) => {
-      emit('update:config', newVal);
-    },
-    { deep: true, immediate: true },
-  );
+  const chartConfig = useChartConfigContext(props.float);
   const collapseKey = ref('dataEdit');
   function showSettingFilter(modelName: string) {
     const filter = {
@@ -440,48 +418,7 @@
       (item) => item.xRange === group.xRange && item.seriesName === group.seriesName,
     );
   }
-  const containerHidden = ref(false);
-  function hide() {
-    const parent = unref(container)!;
-    const line = parent.getElementsByClassName('line')[0] as HTMLElement;
-    const shadow = parent.parentElement?.getElementsByClassName('shadow-box')[0] as HTMLElement;
-    const startWidth = parent.offsetWidth;
-    const remainWidth = line.offsetWidth;
-    if (containerHidden.value) {
-      // 移动本体，缩小影子
-      parent.style.right = '1rem';
-      shadow.style.width = `${startWidth}px`;
-      line.classList.remove('gray-shadow');
-      line.classList.add('hover-gray-shadow');
-      containerHidden.value = false;
-    } else {
-      parent.style.right = `calc(-${startWidth - remainWidth}px + 1rem)`;
-      shadow.style.width = `${remainWidth}px`;
-      line.classList.remove('hover-gray-shadow');
-      line.classList.add('gray-shadow');
-      containerHidden.value = true;
-    }
-  }
-  onMounted(() => {
-    const parent = unref(container)!;
-    const shadow = document.createElement('div') as HTMLElement;
-    const startWidth = `${parent.offsetWidth}px`;
-    const startHeight = `${parent.offsetHeight}px`;
-    Object.assign(shadow.style, {
-      width: startWidth,
-      height: '100%',
-      transition: 'width .3s',
-    });
-    Object.assign(parent.style, {
-      width: startWidth,
-      height: startHeight,
-      position: 'absolute',
-      right: '1rem',
-      transition: 'right .3s',
-    });
-    shadow.className = 'shadow-box';
-    parent.parentElement?.appendChild(shadow);
-  });
+  useDrawer(container);
 </script>
 
 <style lang="less" scoped>
@@ -522,27 +459,38 @@
     margin-right: -4px;
   }
 
-  .line {
+  // 收起配置界面用的css
+  ::v-deep(.line) {
+    @apply hover-gray-shadow w-24px -order-1 h-full relative border-l group;
+
     transition: background-color 0.3s;
+
+    .arrow-icon {
+      @apply absolute -left-2px group-hover:-left-1px top-1/2 !text-26px !text-gray-400;
+
+      transition: transform 0.5s;
+
+      &.rotate {
+        transform: rotate(180deg);
+      }
+    }
 
     &.hover-gray-shadow {
       &:hover {
-        background-color: rgb(242, 245, 250);
+        @apply bg-gray-100;
+
         border-left: none;
       }
     }
 
     &.gray-shadow {
-      background-color: rgb(242, 245, 250);
+      @apply bg-gray-100;
+
       border-left-color: rgb(242, 245, 250);
 
       &:hover {
         border-left: none;
       }
     }
-  }
-
-  .container {
-    transform: translateX(100px);
   }
 </style>

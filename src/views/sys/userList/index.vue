@@ -40,7 +40,6 @@
       width: 160,
       title: t('common.action'),
       dataIndex: 'action',
-      slots: { customRender: 'action' },
     },
   });
   const actions = function (record: UserInfo): ActionItem[] {

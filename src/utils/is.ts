@@ -1,6 +1,7 @@
-const toString = Object.prototype.toString;
+import { useUserStoreWithOut } from '../store/modules/user';
 
 export function is(val: unknown, type: string) {
+  const toString = Object.prototype.toString;
   return toString.call(val) === `[object ${type}]`;
 }
 
@@ -112,4 +113,14 @@ export function isEmail(s: string): boolean {
 export function isPhone(s: string): boolean {
   const reg = /^1[3,4,5,7,8,9]\d{9}$/;
   return reg.test(s);
+}
+
+const userStore = useUserStoreWithOut();
+
+export function isAdmin(): boolean {
+  return userStore.getRoleList.includes(1);
+}
+
+export function isOwner(userId: number): boolean {
+  return userStore.getUserInfo.userId === userId;
 }

@@ -20,7 +20,6 @@ export function getColumns(): BasicColumn[] {
       title: t('report.reportList.list.id'),
       dataIndex: 'id',
       width: 120,
-      fixed: 'left',
       className: 'report-id',
     },
     {
@@ -31,7 +30,7 @@ export function getColumns(): BasicColumn[] {
     {
       title: t('report.reportList.list.reportFile'),
       dataIndex: 'reportFile',
-      width: 100,
+      width: 200,
       className: 'report-pdf',
       customRender: ({ record }) => {
         const url = record.reportFile;
@@ -39,7 +38,7 @@ export function getColumns(): BasicColumn[] {
         const locked = Reflect.has(makePDFLocked.value, record.id);
         if (!isNull(url) && !isEmpty(url)) {
           return (
-            <>
+            <div>
               <Icon
                 class="pdf-file cursor-pointer"
                 icon="ant-design:file-pdf-twotone"
@@ -63,7 +62,7 @@ export function getColumns(): BasicColumn[] {
                   />
                 </div>
               </Tooltip>
-            </>
+            </div>
           );
         }
       },

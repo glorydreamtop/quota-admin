@@ -33,7 +33,7 @@
         </div>
       </Teleport>
     </div>
-    <Advance v-model:config="chartConfig" />
+    <Advance />
   </div>
 </template>
 <script lang="ts" setup>

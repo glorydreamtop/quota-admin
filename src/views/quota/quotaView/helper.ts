@@ -11,6 +11,8 @@ import type {
 import { today, yearsAgo } from '/@/utils/dateUtil';
 import { timeConfigEnum, chartTypeEnum, structuralOffsetUnitEnum } from '/@/enums/chartEnum';
 import { quotaDataPastUnitTypeEnum } from '/@/api/quota';
+import { h, onMounted, Ref, ref, render, unref } from 'vue';
+import Icon from '/@/components/Icon';
 
 export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
   const defaultConfig = {
@@ -235,4 +237,64 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
     } as pieChartConfigType,
   };
   return defaultConfig[type];
+}
+
+export function useDrawer(container: Ref<HTMLElement | undefined>) {
+  const containerHidden = ref(false);
+  const icon = h(Icon, {
+    icon: 'ant-design:right-outlined',
+    class: 'arrow-icon',
+  });
+  const line = h(
+    'div',
+    {
+      onClick: hide,
+      class: 'line',
+    },
+    [icon],
+  );
+  function init() {
+    const parent = unref(container)!;
+    render(line, parent);
+    const shadow = document.createElement('div') as HTMLElement;
+    const startWidth = `${parent.offsetWidth}px`;
+    const startHeight = `${parent.offsetHeight}px`;
+    Object.assign(shadow.style, {
+      width: startWidth,
+      height: '100%',
+      transition: 'width .3s',
+    });
+    Object.assign(parent.style, {
+      width: startWidth,
+      height: startHeight,
+      position: 'absolute',
+      right: '1rem',
+      transition: 'right .3s',
+    });
+    shadow.className = 'shadow-box';
+    parent.parentElement?.appendChild(shadow);
+  }
+  function hide() {
+    const parent = unref(container)!;
+    const line = parent.getElementsByClassName('line')[0] as HTMLElement;
+    const shadow = parent.parentElement?.getElementsByClassName('shadow-box')[0] as HTMLElement;
+    const startWidth = parent.offsetWidth;
+    const remainWidth = line.offsetWidth;
+    if (containerHidden.value) {
+      // 移动本体，缩小影子
+      parent.style.right = '1rem';
+      shadow.style.width = `${startWidth}px`;
+      line.classList.remove('gray-shadow');
+      line.classList.add('hover-gray-shadow');
+      containerHidden.value = false;
+    } else {
+      parent.style.right = `calc(-${startWidth - remainWidth}px + 1rem)`;
+      shadow.style.width = `${remainWidth}px`;
+      line.classList.remove('hover-gray-shadow');
+      line.classList.add('gray-shadow');
+      containerHidden.value = true;
+    }
+    icon.el!.classList.toggle('rotate');
+  }
+  onMounted(init);
 }

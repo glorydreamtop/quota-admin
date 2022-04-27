@@ -17,6 +17,7 @@ export interface SelectedQuotaItem extends QuotaItem {
   selected: boolean;
 }
 
+// 交付给绘图的指标列表
 const quotaKey: InjectionKey<Ref<SelectedQuotaItem[]>> = Symbol();
 
 export function createQuotaListContext(context: Ref<QuotaItem[]>) {
@@ -27,6 +28,7 @@ export function useQuotaListContext() {
   return useContext<Ref<SelectedQuotaItem[]>>(quotaKey);
 }
 
+// 所有从树中选中的指标
 const selectedQuotaKey: InjectionKey<Ref<SelectedQuotaItem[]>> = Symbol();
 
 export function createSelectedQuotaListContext(context: Ref<SelectedQuotaItem[]>) {
@@ -37,14 +39,17 @@ export function useSelectedQuotaListContext() {
   return useContext<Ref<SelectedQuotaItem[]>>(selectedQuotaKey);
 }
 
+// 编辑器中的图表配置
 const chartConfigKey: InjectionKey<chartConfigType> = Symbol();
+// 浮动编辑器中的图表配置
+const floatChartConfigKey: InjectionKey<normalChartConfigType> = Symbol();
 
 export function createChartConfigContext<T = chartConfigType>(context: T) {
   return createContext<T>(context, chartConfigKey, { native: true });
 }
 
-export function useChartConfigContext() {
-  return useContext<chartConfigType>(chartConfigKey);
+export function useChartConfigContext(float = false) {
+  return useContext<chartConfigType>(float ? floatChartConfigKey : chartConfigKey);
 }
 
 const chartOriginDataKey: InjectionKey<Ref<getQuotaDataResult[]>> = Symbol();

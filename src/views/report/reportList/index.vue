@@ -21,6 +21,7 @@
   import { getRem } from '/@/utils/domUtils';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { getReportList, delReport } from '/@/api/report';
+  import { isAdmin, isOwner } from '/@/utils/is';
 
   const { t } = useI18n();
   const { createMessage } = useMessage();
@@ -29,16 +30,17 @@
     columns: getColumns(),
     api: getRoportListData,
     pagination: {
-      pageSize: 100,
+      pageSize: 10,
     },
     resizeHeightOffset: getRem() * 1,
     actionColumn: {
+      width: 200,
       title: t('common.action'),
       dataIndex: 'action',
-      // slots: { customRender: 'action' },
       fixed: 'right',
     },
   });
+
   const actions = function (record): ActionItem[] {
     return [
       {
@@ -53,6 +55,7 @@
       },
       {
         icon: 'ant-design:delete-outlined',
+        disabled: isAdmin() || isOwner(record.userId),
         popConfirm: {
           title: () => {
             // @ts-ignore

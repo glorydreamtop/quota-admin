@@ -173,6 +173,10 @@ export function useColumns(
           column._customRender = column.customRender;
           column.customRender = renderEditCell(column);
         }
+
+        if (!Reflect.has(column, 'resizable')) {
+          column.resizable = true;
+        }
         return column;
       });
   });
