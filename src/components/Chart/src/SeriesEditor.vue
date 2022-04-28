@@ -94,7 +94,6 @@
     [chartTypeEnum.seasonal]: [echartSeriesTypeEnum.radar, echartSeriesTypeEnum.pie],
     [chartTypeEnum.bar]: [echartSeriesTypeEnum.radar, echartSeriesTypeEnum.pie],
     [chartTypeEnum.normalRadar]: [
-      echartSeriesTypeEnum.area,
       echartSeriesTypeEnum.line,
       echartSeriesTypeEnum.scatter,
       echartSeriesTypeEnum.smoothLine,

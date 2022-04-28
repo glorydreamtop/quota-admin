@@ -374,6 +374,10 @@ export async function useRadarChart(chartConfig: radarChartConfigType) {
     (series[0].data as any[]).push({
       value: [] as number[],
       name: useRecentLegend(chartConfig.timeConfig.pastValue!, index),
+      lineStyle: {
+        width: 1,
+        type: 'solid',
+      },
     });
   }
   const radar: RadarComponentOption = {
@@ -420,6 +424,7 @@ export async function useRadarChart(chartConfig: radarChartConfigType) {
     },
     grid: gridConfig,
   };
+  useSeriesSetting({ chartConfig, options });
   useAddGraphicElement({ options });
   // 最新值模块
   useLastestQuotaData({ chartConfig, options, quotaDataList });
@@ -653,6 +658,10 @@ export async function useQuantileRadarChart(chartConfig: quantileRadarChartConfi
     (series[0].data as any[]).push({
       value: [] as number[],
       name: `${quantileOffset[index]}${t('quotaView.chart.quantile')}`,
+      lineStyle: {
+        width: 1,
+        type: 'solid',
+      },
     });
   }
   const radar: RadarComponentOption = {
@@ -713,6 +722,7 @@ export async function useQuantileRadarChart(chartConfig: quantileRadarChartConfi
     },
     grid: gridConfig,
   };
+  useSeriesSetting({ options, chartConfig });
   useAddGraphicElement({ options });
   // 最新值模块
   useLastestQuotaData({ chartConfig, options, quotaDataList });

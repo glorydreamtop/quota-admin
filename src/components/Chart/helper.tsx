@@ -652,15 +652,16 @@ export function useSeriesSetting({
       yAxisIndex: seriesSetting?.yAxisIndex ?? 0,
     };
   }
-  // 一份线性series的样式
+  // 一份series的样式
   function getSeriesStyle({
     ser,
     seriesSetting,
+    index,
   }: {
     ser: SeriesOption;
     seriesSetting?: seriesSettingType;
+    index: number;
   }) {
-    const seriesIndex = series.findIndex((s) => s.name === ser.name);
     if (ser.type === 'line') {
       // 线性
       const lineStyle = {
@@ -671,7 +672,7 @@ export function useSeriesSetting({
       if (seriesSetting?.shadow) {
         Object.assign(lineStyle, {
           shadowBlur: 3,
-          shadowColor: options.color![seriesIndex] ?? '#000',
+          shadowColor: options.color![index] ?? '#000',
           shadowOffsetX: 2,
           shadowOffsetY: 2,
         });
@@ -691,11 +692,11 @@ export function useSeriesSetting({
               colorStops: [
                 {
                   offset: 0,
-                  color: options.color![seriesIndex] ?? '#ffffff66',
+                  color: options.color![index] ?? '#ffffff66',
                 },
                 {
                   offset: 1,
-                  color: fade(options.color![seriesIndex] ?? '#ffffff66', 30),
+                  color: fade(options.color![index] ?? '#ffffff66', 30),
                 },
               ],
             },
@@ -720,54 +721,115 @@ export function useSeriesSetting({
         ...barStyle,
       };
     }
+    if (ser.type === 'radar') {
+      const lineStyle = {
+        width: seriesSetting?.size ?? 2,
+        type: seriesSetting?.lineType ?? echartLineTypeEnum.solid,
+      };
+      if (seriesSetting?.shadow) {
+        Object.assign(lineStyle, {
+          shadowBlur: 3,
+          shadowColor: options.color![index] ?? '#000',
+          shadowOffsetX: 2,
+          shadowOffsetY: 2,
+        });
+      }
+      if (seriesSetting?.seriesType === echartSeriesTypeEnum.area) {
+        return {
+          symbol: 'none',
+          lineStyle,
+          areaStyle: {
+            color: {
+              type: 'radial',
+              x: 0,
+              y: 0,
+              r: 1,
+              colorStops: [
+                {
+                  offset: 0,
+                  color: options.color![index] ?? '#ffffff66',
+                },
+                {
+                  offset: 1,
+                  color: fade(options.color![index] ?? '#ffffff66', 10),
+                },
+              ],
+            },
+          },
+        };
+      }
+      return {
+        lineStyle,
+      };
+    }
   }
   const typeMap = {
     [chartTypeEnum.normal]: () => {
       series.forEach((s) => {
+        const index = series.findIndex((ser) => ser.name === s.name);
         const seriesSetting = seriesSettings.find((q) => q.name === s.name);
         s.type = conver2ecSeriesType(seriesSetting?.seriesType ?? echartSeriesTypeEnum.line);
         Object.assign(s, {
           triggerLineEvent: true,
-          ...getSeriesStyle({ ser: s, seriesSetting }),
+          ...getSeriesStyle({ ser: s, seriesSetting, index }),
           ...getAxisIndex(seriesSetting),
         });
       });
     },
     [chartTypeEnum.seasonal]: () => {
-      series.forEach((s) => {
+      series.forEach((s, index) => {
         const seriesSetting = seriesSettings.find((q) => q.name === s.name);
         s.type = conver2ecSeriesType(seriesSetting?.seriesType ?? echartSeriesTypeEnum.line);
         Object.assign(s, {
           triggerLineEvent: true,
-          ...getSeriesStyle({ ser: s, seriesSetting }),
+          ...getSeriesStyle({ ser: s, seriesSetting, index }),
           ...getAxisIndex(seriesSetting),
         });
       });
     },
     [chartTypeEnum.structural]: () => {
-      series.forEach((s) => {
+      series.forEach((s, index) => {
         const seriesSetting = seriesSettings.find((q) => q.name === s.name);
         s.type = conver2ecSeriesType(seriesSetting?.seriesType ?? echartSeriesTypeEnum.line);
         Object.assign(s, {
           triggerLineEvent: true,
-          ...getSeriesStyle({ ser: s, seriesSetting }),
+          ...getSeriesStyle({ ser: s, seriesSetting, index }),
           ...getAxisIndex(seriesSetting),
         });
       });
     },
     [chartTypeEnum.bar]: () => {
-      series.forEach((s) => {
+      series.forEach((s, index) => {
         const seriesSetting = seriesSettings.find((q) => q.name === s.name);
         s.type = conver2ecSeriesType(seriesSetting?.seriesType ?? echartSeriesTypeEnum.bar);
         Object.assign(s, {
           triggerLineEvent: true,
-          ...getSeriesStyle({ ser: s, seriesSetting }),
+          ...getSeriesStyle({ ser: s, seriesSetting, index }),
           ...getAxisIndex(seriesSetting),
         });
       });
     },
-    [chartTypeEnum.normalRadar]: () => {},
-    [chartTypeEnum.quantileRadar]: () => {},
+    [chartTypeEnum.normalRadar]: () => {
+      (series[0].data as any[]).forEach((s, index) => {
+        const seriesSetting = seriesSettings.find((q) => q.name === s.name);
+        s.type = conver2ecSeriesType(seriesSetting?.seriesType ?? echartSeriesTypeEnum.radar);
+        Object.assign(s, {
+          triggerLineEvent: true,
+          ...getSeriesStyle({ ser: s, seriesSetting, index }),
+        });
+      });
+    },
+    [chartTypeEnum.quantileRadar]: () => {
+      (series[0].data as any[]).forEach((s) => {
+        const index = series.findIndex((ser) => ser.name === s.name);
+        const seriesSetting = seriesSettings.find((q) => q.name === s.name);
+        s.type = conver2ecSeriesType(seriesSetting?.seriesType ?? echartSeriesTypeEnum.radar);
+        Object.assign(s, {
+          triggerLineEvent: true,
+          ...getSeriesStyle({ ser: s, seriesSetting, index }),
+        });
+      });
+    },
     [chartTypeEnum.pie]: () => {},
     [chartTypeEnum.fixedbase]: () => {},
     [chartTypeEnum.seasonalLunar]: () => {},

@@ -30,7 +30,7 @@
     columns: getColumns(),
     api: getRoportListData,
     pagination: {
-      pageSize: 10,
+      pageSize: 20,
     },
     resizeHeightOffset: getRem() * 1,
     actionColumn: {

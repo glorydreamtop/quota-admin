@@ -32,7 +32,7 @@
       ref="quotaBox"
     >
       <!-- 一个卡片 -->
-      <div
+      <QuotaCard
         @click="handleSelected(item)"
         @contextmenu="handleContext($event, item)"
         v-loading="loading"
@@ -42,61 +42,16 @@
         ]"
         v-for="item in selectedQuota"
         :key="item.id"
-        :data-quotaId="item.id"
+        :quota-info="item"
       >
-        <div class="quota-id">
-          <Icon icon="akar-icons:drag-horizontal" class="cursor-move drag-handler" />
-          <span
-            class="w-4em text-center cursor-pointer select-none"
-            @click.stop
-            @dblclick="copy(item.id.toString(), 'id')"
-            >{{ isFormula(item) ? t('quotaView.quotaCard.formulaWithoutId') : item.id }}</span
-          >
-        </div>
-
-        <!-- 全称 -->
-        <Tooltip placement="bottomLeft" :mouseEnterDelay="0.5">
-          <template #title>{{ item.name }}</template>
-          <span class="quota-title"
-            ><span class="w-fit" @click.stop @dblclick="copy(item.name, 'name')">{{
-              item.name
-            }}</span></span
-          >
-        </Tooltip>
-        <!-- sourceCode -->
-        <span class="quota-sourceCode"
-          ><span class="w-fit" @click.stop @dblclick="copy(item.sourceCode, 'sourceCode')">{{
-            item.sourceCode
-          }}</span></span
-        >
-        <div class="mt-auto bg-mask">
-          <span class="flex justify-between quota-unit-sourceType">
-            <span class="unit" @click.stop>{{ item.unit }}</span>
-          </span>
-          <span class="flex justify-between children:w-fit quota-date">
-            <Tooltip :mouseEnterDelay="0.5">
-              <template #title>
-                <span class="text-xs">{{
-                  !isFormula(item)
-                    ? `${t('quotaView.quotaCard.updateOn')}${item.timeLastUpdate}`
-                    : t('quotaView.quotaCard.formulaTip')
-                }}</span>
-              </template>
-              <span class="w-fit whitespace-nowrap" @click.stop>{{
-                `${dateFomatter(item)} ${item.frequency ? `${item.frequency}更` : ''}`
-              }}</span>
-            </Tooltip>
-            <span class="del-icon">
-              <Icon
-                @click="handleIcon(item, 'del')"
-                class="mr-1 cursor-pointer"
-                icon="ant-design:delete-outlined"
-              />
-            </span>
-          </span>
-        </div>
-        <div class="sourceType" @click.stop>{{ typeFomatter(item.sourceType) }}</div>
-      </div>
+        <template #actions>
+          <Icon
+            @click="handleIcon(item, 'del')"
+            class="mr-1 cursor-pointer"
+            icon="ant-design:delete-outlined"
+          />
+        </template>
+      </QuotaCard>
     </transition-group>
 
     <QuotaSetting @register="registerEdit" />
@@ -108,7 +63,8 @@
   import type { QuotaItem } from '/#/quota';
   import { Tooltip } from 'ant-design-vue';
   import { useModal } from '/@/components/Modal';
-  import { useWatchArray, typeFomatter } from '/@/utils/helper/commonHelper';
+  import { QuotaCard } from '/@/components/QuotaCard';
+  import { useWatchArray } from '/@/utils/helper/commonHelper';
   import { cloneDeep, remove } from 'lodash-es';
   import { Icon } from '/@/components/Icon';
   // import QuotaModal from '/@/views/dataManagement/quotaTree/components/QuotaModal.vue';
@@ -125,7 +81,6 @@
   import { domForeach } from '/@/utils/domUtils';
   import QuotaSetting from './QuotaSetting.vue';
   import { useI18n } from '/@/hooks/web/useI18n';
-  import { formatToDate } from '/@/utils/dateUtil';
   import { requestUpdateQuotaData } from '/@/api/quota';
   import { SourceTypeEnum } from '/@/enums/quotaEnum';
 
@@ -189,15 +144,6 @@
     }
     quotaList.value = cur.filter((item) => item.selected);
   });
-  function isFormula(quota: QuotaItem) {
-    return /formula/i.test(quota.id.toString());
-  }
-  function dateFomatter(quota: QuotaItem) {
-    if (isFormula(quota) && quota.sourceType === SourceTypeEnum.formula)
-      return t('quotaView.quotaCard.calculate');
-    if (quota.dateLast === null) return t('common.noData');
-    return formatToDate(quota.dateLast);
-  }
 
   const [registerEdit, { openModal: openEditModal, setModalProps: setEditModal }] = useModal();
   function addFormula() {
@@ -378,83 +324,5 @@
   .quota-list-leave-from {
     opacity: 100%;
     transform: translateY(0);
-  }
-
-  .card-theme {
-    @apply relative w-52 flex flex-col bg-primary-50 border border-primary-100 px-2 py-1 shadow-md shadow-primary-50 text-xs;
-
-    aspect-ratio: 16/9;
-    transition: filter 0.2s;
-
-    .quota-id {
-      @apply flex items-center gap-1 absolute top-0 left-0 py-2px px-1 mb-1 w-fit rounded-br-md text-white bg-primary;
-
-      .drag-handler {
-        @apply !text-white;
-      }
-    }
-
-    .quota-title {
-      @apply mt-5 cursor-pointer select-none text-xl leading-tight font-bold tracking-1px  text-primary whitespace-nowrap border-b border-primary-200 pb-2px pr-1 w-fit max-w-full overflow-x-hidden;
-
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .quota-sourceCode {
-      @apply mt-1 w-fit text-primary-400;
-    }
-
-    .quota-unit-sourceType {
-      .unit {
-        @apply w-30 text-center w-fit text-primary-400;
-      }
-    }
-
-    .quota-date {
-      @apply text-primary-400;
-    }
-
-    .sourceType {
-      @apply absolute bg-primary !text-white pl-1 pr-2 py-2px top-2 -right-2;
-
-      &::after {
-        content: '';
-        position: absolute;
-        bottom: -6px;
-        right: 0;
-        // 伪类三角形
-        border-style: solid;
-        border-width: 6px 8px 0 0;
-        border-color: #c2c2c2 transparent transparent #c2c2c2;
-      }
-    }
-  }
-
-  .card-theme.card-selected {
-    .quota-id {
-      // @apply text-white bg-primary;
-    }
-  }
-
-  .card-notselected {
-    @apply filter grayscale-75;
-    // .quota-id {
-    //   @apply text-primary bg-primary-100;
-    // }
-  }
-
-  @keyframes no-selected {
-    0% {
-      transform: scale(1);
-    }
-
-    30% {
-      transform: scale(0.95) translateY(4px);
-    }
-
-    100% {
-      transform: scale(0.95) translateY(-3px);
-    }
   }
 </style>
