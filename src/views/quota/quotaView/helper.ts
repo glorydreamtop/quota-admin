@@ -46,6 +46,9 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
           offset: 0,
           axisLine: {
             show: true,
+            lineStyle: {
+              color: '#999999',
+            },
           },
           position: 'left',
           axisLabel: {
@@ -85,6 +88,9 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
           offset: 0,
           axisLine: {
             show: true,
+            lineStyle: {
+              color: '#999999',
+            },
           },
           position: 'left',
           axisLabel: {
@@ -123,6 +129,9 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
           offset: 0,
           axisLine: {
             show: true,
+            lineStyle: {
+              color: '#999999',
+            },
           },
           position: 'left',
           axisLabel: {
@@ -204,6 +213,9 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
           offset: 0,
           axisLine: {
             show: true,
+            lineStyle: {
+              color: '#999999',
+            },
           },
           position: 'left',
           axisLabel: {

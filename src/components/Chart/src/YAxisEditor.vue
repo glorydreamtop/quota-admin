@@ -8,7 +8,7 @@
   >
     <template #content>
       <div
-        class="flex flex-col gap-1 children:whitespace-nowrap children:flex children:items-center w-30"
+        class="grid grid-cols-2 gap-1 children:whitespace-nowrap children:flex children:items-center w-60"
       >
         <div>
           <div class="w-3em text-justify mr-2">
@@ -42,19 +42,6 @@
         </div>
         <div>
           <div class="min-w-3em text-justify mr-2">{{
-            t('quotaView.advance.axisSetting.yAxis.color')
-          }}</div>
-          <div class="color-popover">
-            <div
-              v-for="color in currentColorScheme"
-              :key="color"
-              class="w-2 h-2"
-              :style="{ backgroundColor: color }"
-            ></div>
-          </div>
-        </div>
-        <div>
-          <div class="min-w-3em text-justify mr-2">{{
             t('quotaView.advance.axisSetting.yAxis.position')
           }}</div>
           <RadioGroup
@@ -70,6 +57,19 @@
               t('quotaView.advance.axisSetting.yAxis.right')
             }}</RadioButton>
           </RadioGroup>
+        </div>
+        <div class="col-span-2">
+          <div class="min-w-3em text-justify mr-2">{{
+            t('quotaView.advance.axisSetting.yAxis.color')
+          }}</div>
+          <div class="color-popover">
+            <div
+              v-for="color in currentColorScheme"
+              :key="color"
+              :style="{ backgroundColor: color }"
+              @click="colorChange(color)"
+            ></div>
+          </div>
         </div>
         <div>
           <div class="min-w-3em text-justify mr-2">{{
@@ -111,7 +111,7 @@
             <Icon icon="ant-design:question-circle-outlined" />
           </Tooltip>
         </div>
-        <div class="mt-2 flex gap-1">
+        <div class="flex gap-1 col-span-2">
           <Button size="small" block type="primary" @click="confirm">{{
             t('common.okText')
           }}</Button>
@@ -163,7 +163,7 @@
     axisLine: {
       show: true,
       lineStyle: {
-        color: '#333333',
+        color: '#999999',
       },
     },
     position: 'left',
@@ -171,6 +171,9 @@
       formatter: '{value}',
     },
   }) as YAXisComponentOption;
+  const colorChange = (color: string) => {
+    currentCfg.axisLine.lineStyle.color = color;
+  };
   const scientificNotation = ref(0);
   const placementMap = {
     left: 'right',
@@ -211,7 +214,7 @@
           axisLine: {
             show: true,
             lineStyle: {
-              color: '#333333',
+              color: '#999999',
             },
           },
           position: isLeft ? 'left' : 'right',
@@ -266,12 +269,23 @@
 
 <style lang="less" scoped>
   .color-popover {
-    @apply flex flex-wrap !w-59px bg-white p-1 shadow shadow-gray-300;
+    @apply flex flex-wrap relative;
 
-    gap: 2px;
+    gap: 4px;
 
     div {
-      // transform: skew(-10deg);
+      @apply w-4 h-4;
+
+      &::after {
+        content: '\e7fc';
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+
+      &:hover {
+        transform: scale(1.2);
+      }
     }
   }
 </style>

@@ -101,7 +101,7 @@ export function lighten(color: string, amount: number) {
  * @param {number} amount The amount to change the color by
  * @returns {string} The processed part of the color
  */
-function addLight(color: string, amount: number) {
+export function addLight(color: string, amount: number) {
   const cc = parseInt(color, 16) + amount;
   const c = cc > 255 ? 255 : cc;
   return c.toString(16).length > 1 ? c.toString(16) : `0${c.toString(16)}`;
