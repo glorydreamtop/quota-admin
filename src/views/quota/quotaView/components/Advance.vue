@@ -1,6 +1,10 @@
 <template>
-  <div class="pr-2 border-l-gray-300 flex w-380px" ref="container">
-    <Collapse class="flex-grow overflow-y-scroll" v-model:activeKey="collapseKey" :bordered="false">
+  <div class="pr-2 border-l-gray-300 flex w-380px overflow-x-hidden" ref="container">
+    <Collapse
+      class="flex-grow overflow-y-scroll overflow-x-hidden"
+      v-model:activeKey="collapseKey"
+      :bordered="false"
+    >
       <CollapsePanel key="rectSetting">
         <template #header>
           <Divider orientation="left">{{ t('quotaView.advance.rectSetting.title') }}</Divider>

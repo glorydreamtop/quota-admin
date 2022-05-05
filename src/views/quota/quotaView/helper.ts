@@ -265,47 +265,34 @@ export function useDrawer(container: Ref<HTMLElement | undefined>) {
     },
     [icon],
   );
+  let startWidth: number;
   function init() {
     const parent = unref(container)!;
     render(line, parent);
-    const shadow = document.createElement('div') as HTMLElement;
-    const startWidth = `${parent.offsetWidth}px`;
-    const startHeight = `${parent.offsetHeight}px`;
-    Object.assign(shadow.style, {
-      width: startWidth,
-      height: '100%',
+    startWidth = parent.offsetWidth;
+    Object.assign(parent.style, {
+      width: `${startWidth}px`,
+      height: 'calc(100% - 2rem)',
       transition: 'width .3s',
     });
-    Object.assign(parent.style, {
-      width: startWidth,
-      height: startHeight,
-      position: 'absolute',
-      right: '1rem',
-      transition: 'right .3s',
-    });
-    shadow.className = 'shadow-box';
-    parent.parentElement?.appendChild(shadow);
   }
   function hide() {
     const parent = unref(container)!;
     const line = parent.getElementsByClassName('line')[0] as HTMLElement;
-    const shadow = parent.parentElement?.getElementsByClassName('shadow-box')[0] as HTMLElement;
-    const startWidth = parent.offsetWidth;
+    const main = parent.getElementsByClassName('ant-collapse')[0] as HTMLElement;
     const remainWidth = line.offsetWidth;
     if (containerHidden.value) {
-      // 移动本体，缩小影子
-      parent.style.right = '1rem';
-      shadow.style.width = `${startWidth}px`;
-      line.classList.remove('gray-shadow');
-      line.classList.add('hover-gray-shadow');
-      containerHidden.value = false;
+      parent.style.width = `${startWidth}px`;
+      main.style.display = 'block';
     } else {
-      parent.style.right = `calc(-${startWidth - remainWidth}px + 1rem)`;
-      shadow.style.width = `${remainWidth}px`;
-      line.classList.remove('hover-gray-shadow');
-      line.classList.add('gray-shadow');
-      containerHidden.value = true;
+      parent.style.width = `calc(${remainWidth}px + 0.5rem)`;
+      setTimeout(() => {
+        main.style.display = 'none';
+      }, 300);
     }
+    containerHidden.value = !containerHidden.value;
+    line.classList.toggle('gray-shadow');
+    line.classList.toggle('hover-gray-shadow');
     icon.el!.classList.toggle('rotate');
   }
   onMounted(init);
