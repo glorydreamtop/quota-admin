@@ -59,44 +59,6 @@
         size="21"
         icon="save|svg"
       />
-      <Tooltip>
-        <template #title>
-          <span>{{
-            showTableRef ? t('quotaView.toolbar.downloadXLSX') : t('quotaView.toolbar.downloadImg')
-          }}</span>
-        </template>
-        <Icon
-          :class="[
-            'download-icon animate__animated',
-            chartConfig.title.length === 0 ? 'disabled' : '',
-          ]"
-          size="24"
-          icon="download_one|svg"
-          @click="download($event)"
-        />
-      </Tooltip>
-      <Tooltip>
-        <template #title>{{
-          showTableRef ? t('quotaView.toolbar.chartView') : t('quotaView.toolbar.tableView')
-        }}</template>
-        <div
-          class="relative w-29px h-29px"
-          :class="[chartConfig.title.length === 0 ? 'disabled' : '']"
-          @click="showTable"
-        >
-          <Icon
-            :class="['chartmode-icon', showTableRef ? 'front' : 'back']"
-            icon="barchart|svg"
-            size="27"
-          />
-          <Icon
-            :class="['sheetmode-icon -mt-1px', !showTableRef ? 'front' : 'back']"
-            icon="data_sheet|svg"
-            size="29"
-          />
-        </div>
-      </Tooltip>
-      <Icon icon="fullscreen|svg" size="20" @click="fullscreen" />
     </Space>
     <div class="absolute top-0 right-0 overflow-hidden z-9 w-18 h-18" @click="paint">
       <div
@@ -110,8 +72,8 @@
 </template>
 
 <script lang="ts" setup>
-  import { nextTick, reactive, ref } from 'vue';
-  import { Input, Space, DatePicker, Select, Tooltip, Radio } from 'ant-design-vue';
+  import { nextTick, reactive } from 'vue';
+  import { Input, Space, DatePicker, Select, Radio } from 'ant-design-vue';
   import vRipple from '/@/directives/ripple';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useChartConfigContext, useQuotaListContext, useSelectedQuotaListContext } from './hooks';
@@ -121,7 +83,6 @@
   import { cloneDeep } from 'lodash-es';
   import { getChartDefaultConfig } from '../helper';
   import { useMessage } from '/@/hooks/web/useMessage';
-  import { useTimeoutFn } from '@vueuse/shared';
   import dayjs from 'dayjs';
   import { mergeAndRemove } from '/@/utils/helper/commonHelper';
 
@@ -188,21 +149,6 @@
     }
     chartConfig.quotaList = cloneDeep(quotaList.value);
     emit('paint');
-  }
-  async function download({ target }: { target: HTMLElement }) {
-    target.parentElement!.parentElement!.classList.add('animate__bounce');
-    useTimeoutFn(() => {
-      target.parentElement!.parentElement!.classList.remove('animate__bounce');
-      emit('event', showTableRef.value ? 'xlsx' : 'screenshot');
-    }, 1000);
-  }
-  const showTableRef = ref(false);
-  function showTable() {
-    showTableRef.value = !showTableRef.value;
-    emit('event', showTableRef.value ? 'showTable' : 'showChart');
-  }
-  function fullscreen() {
-    emit('event', 'fullscreen');
   }
 </script>
 

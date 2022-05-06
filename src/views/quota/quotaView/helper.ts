@@ -261,10 +261,11 @@ export function useDrawer(container: Ref<HTMLElement | undefined>) {
     'div',
     {
       onClick: hide,
-      class: 'line',
+      class: 'line hover-gray-shadow',
     },
     [icon],
   );
+  let main: HTMLElement;
   let startWidth: number;
   function init() {
     const parent = unref(container)!;
@@ -272,23 +273,23 @@ export function useDrawer(container: Ref<HTMLElement | undefined>) {
     startWidth = parent.offsetWidth;
     Object.assign(parent.style, {
       width: `${startWidth}px`,
-      height: 'calc(100% - 2rem)',
+      height: '100%',
       transition: 'width .3s',
+    });
+    main = parent.getElementsByClassName('drawer-main')[0] as HTMLElement;
+    Object.assign(main.style, {
+      width: `${main.offsetWidth}px`,
+      minWidth: `${main.offsetWidth}px`,
     });
   }
   function hide() {
     const parent = unref(container)!;
     const line = parent.getElementsByClassName('line')[0] as HTMLElement;
-    const main = parent.getElementsByClassName('ant-collapse')[0] as HTMLElement;
     const remainWidth = line.offsetWidth;
     if (containerHidden.value) {
       parent.style.width = `${startWidth}px`;
-      main.style.display = 'block';
     } else {
       parent.style.width = `calc(${remainWidth}px + 0.5rem)`;
-      setTimeout(() => {
-        main.style.display = 'none';
-      }, 300);
     }
     containerHidden.value = !containerHidden.value;
     line.classList.toggle('gray-shadow');

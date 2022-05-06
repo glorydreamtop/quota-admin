@@ -4,34 +4,12 @@
   >
     <div class="relative flex-grow">
       <ToolBar @paint="paint" @event="handleEvent" />
-      <Teleport to="body" :disabled="!fullscreen">
-        <div
-          class="absolute bottom-0 left-0 top-12 right-2 preserve-3d box"
-          :class="[fullscreen ? 'fullscreen' : '']"
-          id="quota-view-chartbox"
-        >
-          <BasicChart
-            :class="['chart-view w-full', showTable ? 'back' : 'front']"
-            :config="config"
-            @update-config="updateConfig"
-            @paint-success="paintSuccess"
-            ref="chartRef"
-          />
-          <QuotaDataTable
-            :class="['table-view', showTable ? 'front' : 'back']"
-            :config="config"
-            ref="tableRef"
-          />
-          <div class="absolute flex gap-4 top-2 right-2">
-            <Icon
-              icon="ant-design:close-circle-filled"
-              v-if="fullscreen"
-              class="!text-gray-400 !text-3xl"
-              @click="handleEvent('fullscreen')"
-            />
-          </div>
-        </div>
-      </Teleport>
+      <DoubleSideChart
+        :config="config"
+        @update-config="updateConfig"
+        @paint-success="paintSuccess"
+        class="absolute top-12 left-0 right-0 bottom-0"
+      />
     </div>
     <Advance />
   </div>
@@ -39,14 +17,13 @@
 <script lang="ts" setup>
   import ToolBar from './ToolBar.vue';
   import Advance from './Advance.vue';
-  import { BasicChart } from '/@/components/Chart';
+  import { DoubleSideChart } from '/@/components/Chart';
   import { echartMitter, useChartConfigContext } from './hooks';
   import { reactive, ref, watchEffect } from 'vue';
   import type { chartConfigType } from '/#/chart';
   import { cloneDeep, mergeWith } from 'lodash-es';
   import { EChartsType } from 'echarts/core';
   import { downloadByBase64 } from '/@/utils/file/download';
-  import { QuotaDataTable } from '/@/components/QuotaTable';
   import { useMagicKeys } from '@vueuse/core';
   import { ECBasicOption } from 'echarts/types/dist/shared';
   import { mergeAndRemove } from '/@/utils/helper/commonHelper';
@@ -67,7 +44,6 @@
     //   }
     // });
     mergeAndRemove(config, chartConfig);
-    console.log(cloneDeep(config));
   }
   function updateConfig(cfg: chartConfigType) {
     mergeWith(chartConfig, cloneDeep(cfg), (target, src) => {
