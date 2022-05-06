@@ -1,6 +1,10 @@
 <template>
-  <div class="pr-2 border-l-gray-300 flex w-380px" ref="container">
-    <Collapse class="flex-grow overflow-y-scroll" v-model:activeKey="collapseKey" :bordered="false">
+  <div class="pr-2 border-l-gray-300 flex w-380px overflow-x-hidden" ref="container">
+    <Collapse
+      class="flex-grow overflow-y-scroll overflow-x-hidden drawer-main"
+      v-model:activeKey="collapseKey"
+      :bordered="false"
+    >
       <CollapsePanel key="rectSetting">
         <template #header>
           <Divider orientation="left">{{ t('quotaView.advance.rectSetting.title') }}</Divider>
@@ -460,37 +464,40 @@
   }
 
   // 收起配置界面用的css
-  ::v-deep(.line) {
-    @apply hover-gray-shadow w-24px -order-1 h-full relative border-l group;
 
+  .drawer-main {
+    transition: opacity 0.2s ease;
+  }
+
+  ::v-deep(.line) {
     transition: background-color 0.3s;
+    width: 20px;
+    min-width: 20px;
+    height: 100%;
+    position: relative;
+    border-left: 1px solid #e8e8e8;
+    order: -1;
 
     .arrow-icon {
-      @apply absolute -left-2px group-hover:-left-1px top-1/2 !text-26px !text-gray-400;
-
+      color: rgba(156, 163, 175, 1) !important;
       transition: transform 0.5s;
+      position: absolute;
+      top: 50%;
+      font-size: 20px;
 
       &.rotate {
         transform: rotate(180deg);
       }
     }
 
-    &.hover-gray-shadow {
-      &:hover {
-        @apply bg-gray-100;
-
-        border-left: none;
-      }
+    &.hover-gray-shadow:hover {
+      background-color: rgba(243, 244, 246, 1);
+      border-left-color: rgba(243, 244, 246, 1);
     }
 
     &.gray-shadow {
-      @apply bg-gray-100;
-
-      border-left-color: rgb(242, 245, 250);
-
-      &:hover {
-        border-left: none;
-      }
+      background-color: rgba(243, 244, 246, 1);
+      border-left-color: rgba(243, 244, 246, 1);
     }
   }
 </style>
