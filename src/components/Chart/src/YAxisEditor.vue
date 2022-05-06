@@ -66,7 +66,11 @@
             <div
               v-for="color in currentColorScheme"
               :key="color"
-              :style="{ backgroundColor: color }"
+              :style="
+                currentCfg.axisLine?.lineStyle?.color === color
+                  ? { ...checkIcon, backgroundColor: color }
+                  : { backgroundColor: color }
+              "
               @click="colorChange(color)"
             ></div>
           </div>
@@ -140,7 +144,7 @@
   import { useI18n } from '/@/hooks/web/useI18n';
   import type { normalChartConfigType } from '/#/chart';
   import type { YAXisComponentOption } from 'echarts';
-  import Icon from '/@/components/Icon';
+  import { Icon, icon2Css } from '/@/components/Icon';
   import { isNull } from '/@/utils/is';
   import { useColor } from '../helper';
   const { t } = useI18n();
@@ -265,6 +269,7 @@
   async function getColorScheme() {
     currentColorScheme.value = await useColor({ chartConfig: props.chartConfig });
   }
+  const checkIcon = icon2Css('ant-design:check-outlined');
 </script>
 
 <style lang="less" scoped>
@@ -277,7 +282,7 @@
       @apply w-4 h-4;
 
       &::after {
-        content: '\e7fc';
+        content: '';
         position: absolute;
         top: 0;
         left: 0;
