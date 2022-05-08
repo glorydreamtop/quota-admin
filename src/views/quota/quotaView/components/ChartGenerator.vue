@@ -3,12 +3,12 @@
     class="flex flex-grow p-4 overflow-hidden bg-white shadow-md shadow-primary-50 relative min-w-fit"
   >
     <div class="relative flex-grow">
-      <ToolBar @paint="paint" @event="handleEvent" />
+      <ToolBar @paint="paint" />
       <DoubleSideChart
+        class="absolute top-10 left-0 right-0 bottom-0"
         :config="config"
         @update-config="updateConfig"
         @paint-success="paintSuccess"
-        class="absolute top-12 left-0 right-0 bottom-0"
       />
     </div>
     <Advance />
@@ -19,23 +19,13 @@
   import Advance from './Advance.vue';
   import { DoubleSideChart } from '/@/components/Chart';
   import { echartMitter, useChartConfigContext } from './hooks';
-  import { reactive, ref, watchEffect } from 'vue';
+  import { reactive } from 'vue';
   import type { chartConfigType } from '/#/chart';
   import { cloneDeep, mergeWith } from 'lodash-es';
-  import { EChartsType } from 'echarts/core';
-  import { downloadByBase64 } from '/@/utils/file/download';
-  import { useMagicKeys } from '@vueuse/core';
-  import { ECBasicOption } from 'echarts/types/dist/shared';
+  import { EChartsCoreOption } from 'echarts/core';
   import { mergeAndRemove } from '/@/utils/helper/commonHelper';
 
   const chartConfig = useChartConfigContext();
-  const showTable = ref(false);
-  const fullscreen = ref(false);
-  const { Escape } = useMagicKeys();
-  watchEffect(() => {
-    // ESC键关闭全屏
-    if (Escape.value) fullscreen.value = false;
-  });
   const config = reactive({}) as chartConfigType;
   function paint() {
     // mergeWith(config, cloneDeep(chartConfig), (target, src) => {
@@ -53,45 +43,8 @@
     });
     paint();
   }
-  const chartRef = ref<
-    {
-      getInstance: () => EChartsType;
-    } & ComponentRef
-  >();
-  const tableRef = ref<
-    {
-      download: () => void;
-    } & ComponentRef
-  >();
-  // 响应工具栏事件
-  async function handleEvent(type: string) {
-    switch (type) {
-      case 'screenshot':
-        const url = (chartRef.value!.getInstance() as EChartsType).getDataURL({
-          type: 'png',
-          pixelRatio: 1,
-          backgroundColor: '#FFF',
-        });
-        await downloadByBase64(url, `${chartConfig.title}.png`);
-        break;
-
-      case 'xlsx':
-        tableRef.value!.download();
-        break;
-      case 'showTable':
-        showTable.value = true;
-        break;
-      case 'showChart':
-        showTable.value = false;
-        break;
-      case 'fullscreen':
-        fullscreen.value = !fullscreen.value;
-      default:
-        break;
-    }
-  }
   // 绘图完成
-  function paintSuccess(options: ECBasicOption) {
+  function paintSuccess(options: EChartsCoreOption) {
     echartMitter.emit('echartOptions', options);
   }
 </script>

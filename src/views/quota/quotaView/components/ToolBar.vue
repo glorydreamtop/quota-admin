@@ -1,6 +1,6 @@
 <template>
   <div class="relative min-w-fit pr-20">
-    <Space align="center">
+    <div class="flex items-center gap-2">
       <Select
         class="w-30"
         size="small"
@@ -10,7 +10,7 @@
         :options="chartTypeList"
       />
       <Color />
-      <div class="flex justify-center border border-gray-300 w-50 hover:border-primary date-picker">
+      <div class="flex justify-center w-50 hover:border-primary date-picker">
         <DatePicker
           size="small"
           :bordered="false"
@@ -59,7 +59,7 @@
         size="21"
         icon="save|svg"
       />
-    </Space>
+    </div>
     <div class="absolute top-0 right-0 overflow-hidden z-9 w-18 h-18" @click="paint">
       <div
         v-ripple
@@ -73,7 +73,7 @@
 
 <script lang="ts" setup>
   import { nextTick, reactive } from 'vue';
-  import { Input, Space, DatePicker, Select, Radio } from 'ant-design-vue';
+  import { Input, DatePicker, Select, Radio } from 'ant-design-vue';
   import vRipple from '/@/directives/ripple';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useChartConfigContext, useQuotaListContext, useSelectedQuotaListContext } from './hooks';
@@ -91,7 +91,6 @@
   const { t } = useI18n();
   const emit = defineEmits<{
     (event: 'paint'): void;
-    (event: 'event', eventName: string): void;
   }>();
   const { createMessage } = useMessage();
   const chartConfig = useChartConfigContext();
@@ -154,8 +153,6 @@
 
 <style lang="less" scoped>
   .date-picker {
-    transition: border 300ms;
-    border-radius: 2px;
     padding: 0 4px;
 
     .ant-picker {
@@ -167,21 +164,5 @@
     filter: grayscale(80%);
     pointer-events: none;
     transition: none;
-  }
-
-  .chartmode-icon,
-  .sheetmode-icon {
-    position: absolute;
-    backface-visibility: hidden;
-    transition: all 0.2s;
-    perspective: 1000;
-
-    &.front {
-      transform: rotateY(-180deg);
-    }
-
-    &.back {
-      transform: rotateY(-360deg);
-    }
   }
 </style>

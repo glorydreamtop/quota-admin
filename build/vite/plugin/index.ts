@@ -1,4 +1,4 @@
-import type { Plugin } from 'vite';
+import type { PluginOption } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import vueJsx from '@vitejs/plugin-vue-jsx';
 import legacy from '@vitejs/plugin-legacy';
@@ -25,7 +25,7 @@ export function createVitePlugins(viteEnv: ViteEnv, isBuild: boolean) {
     VITE_BUILD_COMPRESS_DELETE_ORIGIN_FILE,
   } = viteEnv;
 
-  const vitePlugins: (Plugin | Plugin[])[] = [
+  const vitePlugins: (PluginOption | PluginOption[])[] = [
     // have to
     vue(),
     // have to

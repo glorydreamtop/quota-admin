@@ -40,14 +40,14 @@
   } from '../helper';
   import { cloneDeep } from 'lodash-es';
   import { useMessage } from '/@/hooks/web/useMessage';
-  import { ECBasicOption } from 'echarts/types/dist/shared';
+  import { EChartsCoreOption } from 'echarts/core';
 
   const props = defineProps<{
     config: chartConfigType;
   }>();
   const emit = defineEmits<{
     (event: 'updateConfig', config: chartConfigType): void;
-    (event: 'paintSuccess', options: ECBasicOption): void;
+    (event: 'paintSuccess', options: EChartsCoreOption): void;
   }>();
 
   const { config } = toRefs(props);

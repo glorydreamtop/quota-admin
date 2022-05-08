@@ -1,5 +1,5 @@
 <template>
-  <div class="pr-2 border-l-gray-300 flex w-380px overflow-x-hidden" ref="container">
+  <div class="border-l-gray-300 flex w-380px overflow-x-hidden" ref="container">
     <Collapse
       class="flex-grow overflow-y-scroll overflow-x-hidden drawer-main"
       v-model:activeKey="collapseKey"

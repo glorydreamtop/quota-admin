@@ -11,11 +11,11 @@
           <Icon
             :class="[
               'download-icon animate__animated',
-              config.title?.length === 0 ? 'disabled' : '',
+              (config.title ?? '').length === 0 ? 'disabled' : '',
             ]"
             size="24"
             icon="download_one|svg"
-            @click="download($event)"
+            @click="download"
           />
         </Tooltip>
         <Tooltip>
@@ -24,7 +24,7 @@
           }}</template>
           <div
             class="relative w-29px h-29px"
-            :class="[config.title?.length === 0 ? 'disabled' : '']"
+            :class="[(config.title ?? '').length === 0 ? 'disabled' : '']"
             @click="handleEvent(showTable ? 'showChart' : 'showTable')"
           >
             <Icon
@@ -78,8 +78,7 @@
   import { QuotaDataTable } from '/@/components/QuotaTable';
   import { useMagicKeys } from '@vueuse/core';
   import { chartConfigType } from '../../../../types/chart';
-  import { ECBasicOption } from 'echarts/types/dist/shared';
-  import { EChartsType } from 'echarts/core';
+  import { EChartsCoreOption, EChartsType } from 'echarts/core';
   import { downloadByBase64 } from '/@/utils/file/download';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { Tooltip } from 'ant-design-vue';
@@ -93,7 +92,7 @@
   }>();
   const emit = defineEmits<{
     (event: 'updateConfig', config: chartConfigType): void;
-    (event: 'paintSuccess', options: ECBasicOption): void;
+    (event: 'paintSuccess', options: EChartsCoreOption): void;
   }>();
   const { config } = toRefs(props);
 
@@ -105,11 +104,11 @@
     if (Escape.value) fullscreen.value = false;
   });
 
-  function paintSuccess(cfg: chartConfigType) {
-    emit('paintSuccess', cfg);
+  function updateConfig(cfg: chartConfigType) {
+    emit('updateConfig', cfg);
   }
-  function updateConfig(options: ECBasicOption) {
-    emit('updateConfig', options);
+  function paintSuccess(options: EChartsCoreOption) {
+    emit('paintSuccess', options);
   }
   const chartRef = ref<
     {
@@ -142,13 +141,12 @@
         const canvas = document.createElement('canvas');
         canvas.width = chartRef.value!.getInstance().getWidth() * 2;
         canvas.height = chartRef.value!.getInstance().getHeight() * 2;
-        const img = document.createElement('img');
+        const img = new Image();
         img.onload = function () {
           console.log('aaa');
           canvas.getContext('2d')!.drawImage(img, 0, 0, canvas.width, canvas.height);
           const dataUrl = canvas.toDataURL('image/png');
-          document.body.removeChild(img);
-          downloadByBase64(dataUrl, `${config.title}.png`);
+          downloadByBase64(dataUrl, `${config.value.title}.png`);
         };
         const arr = url.split(',');
         const mime = arr[0].match(/:(.*?);/)![1];
@@ -189,6 +187,12 @@
 
   .box {
     transition: width 0.3s ease;
+  }
+
+  .disabled {
+    filter: grayscale(80%);
+    pointer-events: none;
+    transition: none;
   }
 
   .table-view {

@@ -27,7 +27,7 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
   // The boolean type read by loadEnv is a string. This function can be converted to boolean type
   const viteEnv = wrapperEnv(env);
 
-  const { VITE_PORT, VITE_PUBLIC_PATH, VITE_PROXY, VITE_DROP_CONSOLE } = viteEnv;
+  const { VITE_PORT, VITE_PUBLIC_PATH, VITE_PROXY } = viteEnv;
 
   const isBuild = command === 'build';
 
@@ -58,19 +58,19 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       port: VITE_PORT,
       // Load proxy configuration from .env
       proxy: createProxy(VITE_PROXY),
-      hmr: true,
     },
     build: {
       target: 'modules',
+      cssTarget: 'chrome80',
       outDir: OUTPUT_DIR,
       assetsDir: ASSESTS_DIR,
-      terserOptions: {
-        compress: {
-          keep_infinity: true,
-          // Used to delete console in production environment
-          drop_console: VITE_DROP_CONSOLE,
-        },
-      },
+      // terserOptions: {
+      //   compress: {
+      //     keep_infinity: true,
+      //     // Used to delete console in production environment
+      //     drop_console: VITE_DROP_CONSOLE,
+      //   },
+      // },
       // Turning off brotliSize display can slightly reduce packaging time
       brotliSize: false,
       chunkSizeWarningLimit: 2000,
@@ -97,6 +97,8 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
     optimizeDeps: {
       // @iconify/iconify: The dependency is dynamically and virtually loaded by @purge-icons/generated, so it needs to be specified explicitly
       include: [
+        // '@vue/runtime-core',
+        // '@vue/shared',
         '@iconify/iconify',
         'ant-design-vue',
         // 'ant-design-vue/locale/zh_CN',
@@ -104,7 +106,6 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
         // 'ant-design-vue/locale/en_US.js',
         // 'moment/dist/locale/eu',
       ],
-      exclude: ['vue-demi', 'consolidate'],
     },
   };
 };
