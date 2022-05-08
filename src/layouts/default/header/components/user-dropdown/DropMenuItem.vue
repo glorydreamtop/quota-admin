@@ -18,7 +18,7 @@
     name: 'DropdownMenuItem',
     components: { MenuItem: Menu.Item, Icon },
     props: {
-      // eslint-disable-next-line vue/no-reserved-props
+      // eslint-disable-next-line
       key: propTypes.string,
       text: propTypes.string,
       icon: propTypes.string,

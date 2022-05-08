@@ -9,10 +9,10 @@
           <span>请选择清除区间：</span>
           <Tooltip placement="right">
             <template #title> 请手动完成选择，系统不会预设日期 </template>
-            <Icon icon="ant-design:question-circle-outlined"></Icon>
+            <Icon icon="ant-design:question-circle-outlined" />
           </Tooltip>
         </div>
-        <RangePicker v-model:value="timeRange"></RangePicker>
+        <RangePicker v-model:value="timeRange" />
       </div>
 
       <Button type="danger" size="large" class="mt-4" @click="del"
@@ -29,8 +29,8 @@
   import { Button, DatePicker, Tooltip } from 'ant-design-vue';
   import { BasicModal, useModalInner } from '/@/components/Modal';
   import { delQuotaData } from '/@/api/quota';
-  import moment from 'moment';
   import { useMessage } from '/@/hooks/web/useMessage';
+  import { Dayjs } from 'dayjs';
 
   export default defineComponent({
     components: {
@@ -45,12 +45,16 @@
       const [register, { closeModal }] = useModalInner((_record: QuotaItem[]) => {
         record.value = _record;
       });
-      const timeRange: Ref<moment.Moment[]> = ref([]);
+      const timeRange: Ref<Dayjs[]> = ref([]);
       const { createMessage } = useMessage();
       async function del() {
         const [startDate, endDate] = unref(timeRange).map((t) => t.format('YYYY-MM-DD'));
         try {
-          await delQuotaData({ indexList: record.value.map((q) => q.id).join(','), startDate, endDate });
+          await delQuotaData({
+            indexList: record.value.map((q) => q.id).join(','),
+            startDate,
+            endDate,
+          });
           timeRange.value = [];
           createMessage.success('清除成功');
           closeModal();

@@ -1,6 +1,6 @@
 import type { UserConfig, ConfigEnv } from 'vite';
 import pkg from './package.json';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import { loadEnv } from 'vite';
 import { resolve } from 'path';
 import { generateModifyVars } from './build/generate/generateModifyVars';
@@ -16,7 +16,7 @@ function pathResolve(dir: string) {
 const { dependencies, devDependencies, name, version } = pkg;
 const __APP_INFO__ = {
   pkg: { dependencies, devDependencies, name, version },
-  lastBuildTime: moment().format('YYYY-MM-DD HH:mm:ss'),
+  lastBuildTime: dayjs().format('YYYY-MM-DD HH:mm:ss'),
 };
 
 export default ({ command, mode }: ConfigEnv): UserConfig => {
@@ -27,7 +27,7 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
   // The boolean type read by loadEnv is a string. This function can be converted to boolean type
   const viteEnv = wrapperEnv(env);
 
-  const { VITE_PORT, VITE_PUBLIC_PATH, VITE_PROXY } = viteEnv;
+  const { VITE_PORT, VITE_PUBLIC_PATH, VITE_PROXY, VITE_DROP_CONSOLE } = viteEnv;
 
   const isBuild = command === 'build';
 
@@ -53,14 +53,18 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       ],
     },
     server: {
+      https: true,
       // Listening on all local IPs
       host: true,
       port: VITE_PORT,
       // Load proxy configuration from .env
       proxy: createProxy(VITE_PROXY),
     },
+    esbuild: {
+      pure: VITE_DROP_CONSOLE ? ['console.log', 'debugger'] : [],
+    },
     build: {
-      target: 'modules',
+      target: 'es2017',
       cssTarget: 'chrome80',
       outDir: OUTPUT_DIR,
       assetsDir: ASSESTS_DIR,
@@ -97,14 +101,11 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
     optimizeDeps: {
       // @iconify/iconify: The dependency is dynamically and virtually loaded by @purge-icons/generated, so it needs to be specified explicitly
       include: [
-        // '@vue/runtime-core',
-        // '@vue/shared',
+        '@vue/runtime-core',
+        '@vue/shared',
         '@iconify/iconify',
-        'ant-design-vue',
-        // 'ant-design-vue/locale/zh_CN',
-        'moment/dist/locale/zh-cn',
-        // 'ant-design-vue/locale/en_US.js',
-        // 'moment/dist/locale/eu',
+        'ant-design-vue/es/locale/zh_CN',
+        'ant-design-vue/es/locale/en_US',
       ],
     },
   };

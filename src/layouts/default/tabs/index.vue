@@ -127,8 +127,6 @@
         tabStore.closeTabByKey(targetKey, router);
       }
       return {
-        prefixCls,
-        unClose,
         getWrapClass,
         handleEdit,
         handleChange,

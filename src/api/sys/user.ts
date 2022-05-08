@@ -162,3 +162,16 @@ export function infoAdmin(params: string) {
     method: 'GET',
   });
 }
+
+export function testRetry() {
+  return defHttp.get(
+    { url: Api.TestRetry },
+    {
+      retryRequest: {
+        isOpenRetry: true,
+        count: 5,
+        waitTime: 1000,
+      },
+    },
+  );
+}

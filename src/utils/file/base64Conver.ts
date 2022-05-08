@@ -7,8 +7,7 @@ export function dataURLtoBlob(base64Buf: string): Blob {
   const arr = base64Buf.split(',');
   const typeItem = arr[0];
   const mime = typeItem.match(/:(.*?);/)![1];
-  const isSvgUtf8 = mime === 'image/svg+xml' && base64Buf.indexOf('charset=UTF-8') !== -1;
-  const bstr = window.atob(isSvgUtf8 ? window.btoa(unescape(arr[1])) : arr[1]);
+  const bstr = window.atob(arr[1]);
   let n = bstr.length;
   const u8arr = new Uint8Array(n);
   while (n--) {

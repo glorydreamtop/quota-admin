@@ -1,4 +1,4 @@
-import Icon from './src/ByteDanceIcon.vue';
+import Icon from './src/Icon.vue';
 import SvgIcon from './src/SvgIcon.vue';
 import Iconify from '@purge-icons/generated';
 

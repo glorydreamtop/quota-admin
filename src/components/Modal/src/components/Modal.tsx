@@ -19,17 +19,13 @@ export default defineComponent({
       draggable,
     });
 
-    const handleCancel = (e: Event) => {
+    const onCancel = (e: Event) => {
       emit('cancel', e);
     };
 
     return () => {
-      const propsData = { ...unref(attrs), ...props } as Recordable;
-      return (
-        <Modal {...propsData} onCancel={handleCancel}>
-          {extendSlots(slots)}
-        </Modal>
-      );
+      const propsData = { ...unref(attrs), ...props, onCancel } as Recordable;
+      return <Modal {...propsData}>{extendSlots(slots)}</Modal>;
     };
   },
 });
