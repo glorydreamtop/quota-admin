@@ -119,7 +119,7 @@
     usePageSettingContext,
   } from '../hooks';
   import type { TemplateDOM } from '/#/template';
-  import { BasicChart } from '/@/components/Chart';
+  import { DoubleSideChart } from '/@/components/Chart';
   import BasicText from './Text.vue';
   import BasicImg from './Image.vue';
   import Icon from '/@/components/Icon';
@@ -167,7 +167,7 @@
   );
   const templateList = useTemplateListContext();
   const compTypeMap = {
-    Chart: BasicChart,
+    Chart: DoubleSideChart,
     Text: BasicText,
     Img: BasicImg,
   };

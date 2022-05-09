@@ -13,7 +13,7 @@
               'download-icon animate__animated',
               (config.title ?? '').length === 0 ? 'disabled' : '',
             ]"
-            size="24"
+            size="20"
             icon="download_one|svg"
             @click="download"
           />
@@ -30,16 +30,16 @@
             <Icon
               :class="['chartmode-icon', showTable ? 'front' : 'back']"
               icon="barchart|svg"
-              size="27"
+              size="22"
             />
             <Icon
               :class="['sheetmode-icon -mt-1px', !showTable ? 'front' : 'back']"
               icon="data_sheet|svg"
-              size="29"
+              size="22"
             />
           </div>
         </Tooltip>
-        <Icon icon="fullscreen|svg" size="20" @click="handleEvent('fullscreen')" />
+        <Icon icon="fullscreen|svg" size="16" @click="handleEvent('fullscreen')" />
       </div>
       <div
         class="w-full h-full preserve-3d box"
@@ -54,6 +54,7 @@
           ref="chartRef"
         />
         <QuotaDataTable
+          v-if="loadTable"
           :class="['table-view', showTable ? 'front' : 'back']"
           :config="config"
           ref="tableRef"
@@ -73,7 +74,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, watchEffect, toRefs } from 'vue';
+  import { ref, watchEffect, toRefs, nextTick } from 'vue';
   import BasicChart from './BasicChart.vue';
   import { QuotaDataTable } from '/@/components/QuotaTable';
   import { useMagicKeys } from '@vueuse/core';
@@ -98,6 +99,7 @@
 
   const fullscreen = ref(false);
   const showTable = ref(false);
+  const loadTable = ref(false);
   const { Escape } = useMagicKeys();
   watchEffect(() => {
     // ESC键关闭全屏
@@ -156,6 +158,10 @@
         tableRef.value!.download();
         break;
       case 'showTable':
+        if (!loadTable.value) {
+          loadTable.value = true;
+          await nextTick();
+        }
         showTable.value = true;
         break;
       case 'showChart':
@@ -220,6 +226,7 @@
     align-items: center;
     position: absolute;
     z-index: 19;
+    margin-left: 2rem;
 
     .disabled {
       filter: grayscale(80%);

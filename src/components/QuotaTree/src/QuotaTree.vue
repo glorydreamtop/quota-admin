@@ -304,7 +304,7 @@
       },
     });
   // 树节点的选择，支持多选
-  async function handleTreeSelect(_, e: treeSelectParams) {
+  function handleTreeSelect(_, e: treeSelectParams) {
     if ((e.node.dataRef as CategoryTreeModel).folder) {
       (e.node.dataRef as CategoryTreeModel).icon = e.node.expanded
         ? 'flat-color-icons:opened-folder'
@@ -315,7 +315,8 @@
       e.node.expanded
     ) {
       try {
-        await loadData(e.node.eventKey);
+        // 这是一个异步ajax
+        return loadData(e.node.eventKey);
       } catch (error) {}
       return;
     }

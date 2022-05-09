@@ -13,7 +13,7 @@
   </div>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts" setup name="quotaView">
   import { QuotaTree } from '/@/components/QuotaTree';
   import QuotaList from './components/QuotaList.vue';
   import ChartGenerator from './components/ChartGenerator.vue';
@@ -64,5 +64,4 @@
 
   // }
 </script>
-
 <style lang="less" scoped></style>

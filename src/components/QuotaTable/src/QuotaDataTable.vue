@@ -68,15 +68,6 @@
   const { createMessage } = useMessage();
   const { config } = toRefs(props);
   const dateKey = t('quotaView.toolbar.quotaDataTableHeader.date');
-  watch(
-    config,
-    () => {
-      setQuotaDataTableData();
-    },
-    {
-      deep: true,
-    },
-  );
   const info: quotaDataType = reactive({
     header: [],
     quotaDataLine: [],
@@ -216,6 +207,16 @@
       },
     });
   }
+  watch(
+    config,
+    () => {
+      setQuotaDataTableData();
+    },
+    {
+      deep: true,
+      immediate: true,
+    },
+  );
 </script>
 
 <style lang="less" scoped>

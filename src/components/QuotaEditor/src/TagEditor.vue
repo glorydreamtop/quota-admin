@@ -69,6 +69,7 @@
   import { fade } from '/@/utils/color';
   import { LabeledValue } from 'ant-design-vue/lib/select';
   import { QuotaItem } from '/#/quota';
+  import Icon from '/@/components/Icon';
 
   interface Params {
     searchName: string;
