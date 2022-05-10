@@ -55,9 +55,9 @@
 
       <Icon
         title="暂不开放保存功能"
-        :class="['save-icon ml-2', chartConfig.title.length === 0 ? 'disabled' : '']"
-        size="21"
-        icon="save|svg"
+        :class="['save-icon', chartConfig.title.length === 0 ? 'disabled' : '']"
+        size="28"
+        icon="cunchu|svg"
       />
     </div>
     <div class="absolute top-0 right-0 overflow-hidden z-9 w-18 h-18" @click="paint">
@@ -161,7 +161,6 @@
   }
 
   .disabled {
-    filter: grayscale(80%);
     pointer-events: none;
     transition: none;
   }

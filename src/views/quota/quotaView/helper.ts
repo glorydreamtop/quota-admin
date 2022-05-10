@@ -289,7 +289,7 @@ export function useDrawer(container: Ref<HTMLElement | undefined>) {
     if (containerHidden.value) {
       parent.style.width = `${startWidth}px`;
     } else {
-      parent.style.width = `calc(${remainWidth}px + 0.5rem)`;
+      parent.style.width = `${remainWidth}px`;
     }
     containerHidden.value = !containerHidden.value;
     line.classList.toggle('gray-shadow');

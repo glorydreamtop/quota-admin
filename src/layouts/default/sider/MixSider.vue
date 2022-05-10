@@ -354,6 +354,7 @@
     overflow: hidden;
     background-color: @sider-dark-bg-color;
     transition: all 0.2s ease 0s;
+    box-shadow: #c3c3c385 4px 0px 10px;
 
     &-dom {
       height: 100%;

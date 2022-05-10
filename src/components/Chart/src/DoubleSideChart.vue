@@ -13,8 +13,8 @@
               'download-icon animate__animated',
               (config.title ?? '').length === 0 ? 'disabled' : '',
             ]"
-            size="20"
-            icon="download_one|svg"
+            size="22"
+            icon="xiazai|svg"
             @click="download"
           />
         </Tooltip>
@@ -23,23 +23,23 @@
             showTable ? t('quotaView.toolbar.chartView') : t('quotaView.toolbar.tableView')
           }}</template>
           <div
-            class="relative w-29px h-29px"
+            class="relative w-24px h-24px"
             :class="[(config.title ?? '').length === 0 ? 'disabled' : '']"
             @click="handleEvent(showTable ? 'showChart' : 'showTable')"
           >
             <Icon
               :class="['chartmode-icon', showTable ? 'front' : 'back']"
-              icon="barchart|svg"
-              size="22"
+              icon="fsux_tubiao_zhuzhuangtu|svg"
+              size="24"
             />
             <Icon
               :class="['sheetmode-icon -mt-1px', !showTable ? 'front' : 'back']"
-              icon="data_sheet|svg"
-              size="22"
+              icon="fsux_tubiao_biaoge|svg"
+              size="24"
             />
           </div>
         </Tooltip>
-        <Icon icon="fullscreen|svg" size="16" @click="handleEvent('fullscreen')" />
+        <Icon icon="quanping|svg" size="24" @click="handleEvent('fullscreen')" />
       </div>
       <div
         class="w-full h-full preserve-3d box"
@@ -60,13 +60,13 @@
           ref="tableRef"
         />
 
-        <div class="absolute flex gap-4 top-2 right-2">
-          <Icon
-            icon="ant-design:close-circle-filled"
-            v-if="fullscreen"
-            class="!text-gray-400 !text-3xl"
-            @click="handleEvent('fullscreen')"
-          />
+        <div
+          class="absolute flex items-center gap-4 top-2 right-2 cursor-pointer"
+          v-if="fullscreen"
+          @click="handleEvent('fullscreen')"
+        >
+          <div class="text-white keybord">{{ t('quotaView.toolbar.fullscreen') }}</div>
+          <Icon icon="ant-design:close-circle-outlined" class="!text-gray-600 !text-3xl" />
         </div>
       </div>
     </Teleport>
@@ -195,12 +195,6 @@
     transition: width 0.3s ease;
   }
 
-  .disabled {
-    filter: grayscale(80%);
-    pointer-events: none;
-    transition: none;
-  }
-
   .table-view {
     padding-top: 30px;
   }
@@ -229,7 +223,6 @@
     margin-left: 2rem;
 
     .disabled {
-      filter: grayscale(80%);
       pointer-events: none;
       transition: none;
     }
@@ -249,5 +242,13 @@
         transform: rotateY(-360deg);
       }
     }
+  }
+
+  .keybord {
+    box-shadow: inset 0 -4px 0 darken(@primary-color, 10%);
+    background-color: @primary-color;
+    line-height: 1.2;
+    border-radius: 6px;
+    padding: 6px 10px 8px 10px;
   }
 </style>

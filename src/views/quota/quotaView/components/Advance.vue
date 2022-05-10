@@ -5,6 +5,11 @@
       v-model:activeKey="collapseKey"
       :bordered="false"
     >
+      <CollapsePanel key="base">
+        <template #header>
+          <Divider orientation="left">{{ t('quotaView.advance.baseSetting.title') }}</Divider>
+        </template>
+      </CollapsePanel>
       <CollapsePanel key="rectSetting">
         <template #header>
           <Divider orientation="left">{{ t('quotaView.advance.rectSetting.title') }}</Divider>
@@ -304,7 +309,7 @@
   const { t } = useI18n();
   const { createMessage } = useMessage();
   const chartConfig = useChartConfigContext(props.float);
-  const collapseKey = ref('dataEdit');
+  const collapseKey = ref('base');
   function showSettingFilter(modelName: string) {
     const filter = {
       [chartTypeEnum.normal]: ['yAxisEdit', 'sortMonth', 'pastValue', 'removePoint'],

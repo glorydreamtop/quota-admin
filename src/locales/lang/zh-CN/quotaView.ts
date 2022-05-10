@@ -46,6 +46,7 @@ export default {
     noQuotaListTip: '至少勾选一个指标',
     tableView: '数据表格',
     chartView: '回到图表',
+    fullscreen: '按ESC退出全屏',
     quotaDataTableHeader: {
       date: '日期',
     },
@@ -85,6 +86,9 @@ export default {
     hide: '隐藏',
     use: '启用',
     stop: '停用',
+    baseSetting: {
+      title: '基础设置',
+    },
     rectSetting: {
       title: '模块设置',
       lastest: '最新值',
