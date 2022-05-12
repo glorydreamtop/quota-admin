@@ -9,6 +9,7 @@ import { useI18n } from '/@/hooks/web/useI18n';
 import { cloneDeep } from 'lodash-es';
 import { useMessage } from '/@/hooks/web/useMessage';
 import dayjs from 'dayjs';
+import { chartTypeEnum } from '/@/enums/chartEnum';
 
 const { t } = useI18n();
 const { createMessage } = useMessage();
@@ -183,4 +184,22 @@ export function useSortMonthAndYear(chartConfig: chartConfigType): useSortMonthR
     { monthList, yearList },
     { startMonthChange, sortYearChange, sortMonthChange, updateYears },
   ];
+}
+
+export function useSettingFilter(chartConfig: chartConfigType) {
+  const filter = {
+    [chartTypeEnum.normal]: ['yAxisEdit', 'sortMonth', 'pastValue', 'removePoint'],
+    [chartTypeEnum.seasonal]: ['yAxisEdit', 'sortMonth', 'startMonth', 'sortYear', 'removePoint'],
+    [chartTypeEnum.seasonalLunar]: ['yAxisEdit', 'sortMonth', 'startMonth', 'removePoint'],
+    [chartTypeEnum.normalRadar]: ['pastValue'],
+    [chartTypeEnum.quantileRadar]: ['quantileOffset'],
+    [chartTypeEnum.bar]: ['yAxisEdit', 'pastValue'],
+    [chartTypeEnum.structural]: ['yAxisEdit', 'structuralOffset'],
+    [chartTypeEnum.pie]: ['pastValue'],
+  };
+  return function showSettingFilter(modelName: string) {
+    console.log(filter[chartConfig.type]);
+
+    return filter[chartConfig.type].includes(modelName);
+  };
 }
