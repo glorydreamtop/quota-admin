@@ -285,11 +285,14 @@ export function useDrawer(container: Ref<HTMLElement | undefined>) {
   function hide() {
     const parent = unref(container)!;
     const line = parent.getElementsByClassName('line')[0] as HTMLElement;
+    const saveBtn = parent.getElementsByClassName('save')[0] as HTMLElement;
     const remainWidth = line.offsetWidth;
     if (containerHidden.value) {
       parent.style.width = `${startWidth}px`;
+      saveBtn.style.display = 'flex';
     } else {
       parent.style.width = `${remainWidth}px`;
+      saveBtn.style.display = 'none';
     }
     containerHidden.value = !containerHidden.value;
     line.classList.toggle('gray-shadow');

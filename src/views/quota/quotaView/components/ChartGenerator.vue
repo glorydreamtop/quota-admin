@@ -5,7 +5,7 @@
     <div class="relative flex-grow">
       <ToolBar @paint="paint" />
       <DoubleSideChart
-        class="absolute top-10 left-0 right-0 bottom-0"
+        class="absolute top-0 left-0 right-0 bottom-0"
         :config="config"
         @update-config="updateConfig"
         @paint-success="paintSuccess"

@@ -256,27 +256,6 @@
             {slots.title ? getSlot(slots, 'title', item) : item.title}
           </span>
         );
-        // return data.map((item) => {
-        //   const { key: keyField, children: childrenField } = unref(getFieldNames);
-        //   const propsData = omit(item, 'title');
-        //   propsData.dataRef = item;
-        //   const children = get(item, childrenField) || [];
-        //   return (
-        //     <Tree.TreeNode {...propsData} node={toRaw(item)} key={get(item, keyField)}>
-        //       {{
-        //         title: () => (
-        //           <span
-        //             class={`${prefixCls}-title`}
-        //             onClick={handleClickNode.bind(null, item[keyField], item.isLeaf)}
-        //           >
-        //             {getSlot(slots, item.slots?.title, item)}
-        //           </span>
-        //         ),
-        //         default: () => renderTreeNode({ data: children, level: level + 1 }),
-        //       }}
-        //     </Tree.TreeNode>
-        //   );
-        // });
       }
       return () => {
         // const { key: keyField, title: titleField } = unref(getFieldNames);
@@ -284,17 +263,7 @@
           <div class={[prefixCls, attrs.class]}>
             <Tree {...unref(getBindValues)} showIcon={false} v-show={!unref(getNotFound)}>
               {{
-                switcherIcon: (params) =>
-                  slots.switcherIcon ? (
-                    getSlot(slots, 'switcherIcon', params)
-                  ) : (
-                    <Icon
-                      class={[params.switcherCls, '!text-gray-400'].join(' ')}
-                      icon={'ant-design:down-outlined'}
-                    />
-                  ),
                 title: (item) => renderTreeNode(item),
-                ...extendSlots(slots, ['title', 'switcherIcon']),
               }}
             </Tree>
             <div v-show={unref(getNotFound)} class="pt-8">

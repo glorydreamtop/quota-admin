@@ -198,8 +198,6 @@ export function useSettingFilter(chartConfig: chartConfigType) {
     [chartTypeEnum.pie]: ['pastValue'],
   };
   return function showSettingFilter(modelName: string) {
-    console.log(filter[chartConfig.type]);
-
     return filter[chartConfig.type].includes(modelName);
   };
 }

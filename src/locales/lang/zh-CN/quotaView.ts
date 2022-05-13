@@ -88,6 +88,10 @@ export default {
     stop: '停用',
     baseSetting: {
       title: '基础设置',
+      chartType: '图表类型',
+      startDate: '开始日期',
+      endDate: '结束日期',
+      colorScheme: '颜色方案',
     },
     rectSetting: {
       title: '模块设置',
