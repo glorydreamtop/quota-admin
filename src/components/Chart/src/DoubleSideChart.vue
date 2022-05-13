@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div ref="doubleSideChart">
     <Teleport to="body" :disabled="!fullscreen">
-      <div class="toolbar">
+      <div :class="['toolbar', inReport ? 'autohidden-toolbar gap-1' : 'gap-2']">
         <Tooltip>
           <template #title>
             <span>{{
@@ -40,6 +40,7 @@
           </div>
         </Tooltip>
         <Icon icon="quanping|svg" size="24" @click="handleEvent('fullscreen')" />
+        <!-- <Icon icon="shezhi|svg" size="24" v-show="inReport" @click="handleEvent('setting')" /> -->
       </div>
       <div
         class="w-full h-full preserve-3d box"
@@ -74,7 +75,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, watchEffect, toRefs, nextTick } from 'vue';
+  import { ref, watchEffect, toRefs, nextTick, onMounted } from 'vue';
   import BasicChart from './BasicChart.vue';
   import { QuotaDataTable } from '/@/components/QuotaTable';
   import { useMagicKeys } from '@vueuse/core';
@@ -96,7 +97,12 @@
     (event: 'paintSuccess', options: EChartsCoreOption): void;
   }>();
   const { config } = toRefs(props);
-
+  const doubleSideChart = ref<HTMLDivElement>(null);
+  // 是否在报告中，显示工具栏,否则仅在鼠标移动到图表上显示
+  const inReport = ref(false);
+  onMounted(() => {
+    inReport.value = doubleSideChart.value.parentElement.hasAttribute('data-uniqid');
+  });
   const fullscreen = ref(false);
   const showTable = ref(false);
   const loadTable = ref(false);
@@ -216,7 +222,6 @@
 
   .toolbar {
     display: flex;
-    gap: 0.5rem;
     align-items: center;
     position: absolute;
     z-index: 19;

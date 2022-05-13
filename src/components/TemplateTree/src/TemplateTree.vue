@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white tail">
+  <div class="bg-white">
     <TemplateSearch v-if="showSearch" @select="handleSelect" />
     <Icon
       v-repeat-click="getData"
@@ -121,7 +121,6 @@
       const res = (await getTemplateTree({ type })) as Partial<CategoryTreeModel & TreeItem>[];
       forEach(res, (item) => {
         item.isLeaf = !item.folder;
-        item.slots = { title: 'title' };
         item.icon = 'flat-color-icons:folder';
         if (expandedKeys && expandedKeys.includes(item.key!) && !item.children) {
           loadData(item.key!);
@@ -169,7 +168,6 @@
         item.version = versionEnum.PROChart;
       }
       item.icon = iconFilter(item);
-      item.slots = { title: 'title' };
       item.isLeaf = true;
       item.key = item.id;
       item.categoryId = key;
@@ -318,8 +316,8 @@
 </script>
 
 <style lang="less" scoped>
-  ::v-deep(.ant-tabs .ant-tabs-top-content) {
-    height: calc(100% - 66px);
+  ::v-deep(.ant-tabs .ant-tabs-content-top) {
+    height: 100%;
 
     .ant-tabs-tabpane {
       overflow-y: scroll;
@@ -350,28 +348,6 @@
     &-focused {
       box-shadow: none !important;
       border: none !important;
-    }
-  }
-
-  .tail {
-    position: relative;
-
-    &::after {
-      content: '';
-      position: absolute;
-      bottom: 0;
-      width: 100%;
-      height: 10%;
-      background-image: linear-gradient(
-        fade(@white, 5%),
-        fade(@white, 30%),
-        fade(@white, 50%),
-        fade(@white, 70%),
-        fade(@white, 90%),
-        fade(@white, 100%),
-        @white
-      );
-      pointer-events: none;
     }
   }
 </style>

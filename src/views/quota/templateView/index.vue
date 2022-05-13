@@ -10,9 +10,9 @@
   </div>
 </template>
 
-<script lang="ts" setup>
+<script lang="ts" setup name="templateView">
   import { TemplateTree } from '/@/components/TemplateTree';
-  import Views from './components/Views.vue';
+  import Views from './components/ViewsD.vue';
   import ToolBar from './components/ToolBar.vue';
   import {
     createPageSettingContext,

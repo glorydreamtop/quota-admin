@@ -24,7 +24,7 @@
           ></span
         >
       </div>
-      <!-- <div
+      <div
         class="flex flex-wrap content-start flex-grow w-full overflow-hidden relative"
         @click.self="clearSelectKey"
       >
@@ -53,43 +53,7 @@
             :class="['w-full h-full text-base', element.type === 'Chart' ? 'py-2' : '']"
           />
         </div>
-      </div> -->
-      <Draggable
-        class="flex flex-wrap content-start flex-grow w-full overflow-hidden"
-        @click.self="clearSelectKey"
-        :list="page.list"
-        group="page"
-        handle=".drag-handler"
-        :animation="200"
-        itemKey="uniqId"
-      >
-        <template #item="{ element }">
-          <div
-            @click="selectTemplate(element, $event)"
-            :data-uniqid="element.uniqId"
-            :class="[
-              'border rounded-sm overflow-hidden sortable relative',
-              selectedTemplateDOMList.find((node) => node.uniqId === element.uniqId)
-                ? 'selected'
-                : '',
-              pageSetting.showElementborder ? '' : 'border-light-50',
-            ]"
-            :style="element.pageConfig"
-            v-resizeable:hidden="`xy`"
-          >
-            <Icon
-              icon="akar-icons:drag-horizontal"
-              class="drag-handler cursor-move pl-1 pt-1 !text-primary"
-              @contextmenu="dragHandleMenu"
-            />
-            <component
-              :is="compTypeMap[element.type]"
-              v-model:config="element.config"
-              :class="['w-full h-full text-base', element.type === 'Chart' ? 'py-2' : '']"
-            />
-          </div>
-        </template>
-      </Draggable>
+      </div>
       <div class="pt-1 border-t page-footer">
         <span
           contenteditable
@@ -124,16 +88,16 @@
   import BasicImg from './Image.vue';
   import Icon from '/@/components/Icon';
   import { onMountedOrActivated } from '/@/hooks/core/onMountedOrActivated';
-  import { useI18n } from '/@/hooks/web/useI18n';
+  // import { useI18n } from '/@/hooks/web/useI18n';
   import { useMutationObserver, useResizeObserver, useTimeoutFn } from '@vueuse/core';
   import { cloneDeep, differenceBy, findIndex, isNull, remove } from 'lodash-es';
   import { useWatchArray } from '/@/utils/helper/commonHelper';
   import { useUniqueField } from '../../quotaTable/components/helper';
-  import Draggable from 'vuedraggable';
-  import { useContextMenu } from '/@/hooks/web/useContextMenu';
+  // import Draggable from 'vuedraggable';
+  // import { useContextMenu } from '/@/hooks/web/useContextMenu';
 
-  const { t } = useI18n();
-  const [createContextMenu] = useContextMenu();
+  // const { t } = useI18n();
+  // const [createContextMenu] = useContextMenu();
   const pageSetting = usePageSettingContext();
   const selectedTemplateDOMList = useSelectTemplateListContext();
   const pageStyle: ComputedRef<CSSProperties> = computed(() => {
@@ -238,19 +202,19 @@
   function pageFooterChange(pos: 'left' | 'right', e: InputEvent) {
     pageSetting.footer[pos] = (e.target as HTMLSpanElement).innerText;
   }
-  function dragHandleMenu(event: MouseEvent) {
-    createContextMenu({
-      event,
-      items: [
-        {
-          label: t('templateView.view.dragHandleMenu.wholeLine'),
-        },
-        {
-          label: t('templateView.view.dragHandleMenu.notWholeLine'),
-        },
-      ],
-    });
-  }
+  // function dragHandleMenu(event: MouseEvent) {
+  //   createContextMenu({
+  //     event,
+  //     items: [
+  //       {
+  //         label: t('templateView.view.dragHandleMenu.wholeLine'),
+  //       },
+  //       {
+  //         label: t('templateView.view.dragHandleMenu.notWholeLine'),
+  //       },
+  //     ],
+  //   });
+  // }
   onMountedOrActivated(() => {
     const boxdom = document.getElementById('page-box') as HTMLDivElement;
     // 监听有新页面加入
@@ -368,8 +332,17 @@
     width: 50%;
     transition: border 0.3s;
 
+    ::v-deep(.autohidden-toolbar) {
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
     &:hover {
       .drag-handler {
+        opacity: 1;
+      }
+
+      ::v-deep(.autohidden-toolbar) {
         opacity: 1;
       }
     }
