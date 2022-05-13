@@ -135,7 +135,7 @@
                   class={[
                     chartConfig.timeConfig.sortMonth!.includes(month)
                       ? 'bg-white text-primary'
-                      : 'bg-linear-primary text-white',
+                      : 'bg-primary text-white',
                     'w-full text-center rounded-sm month cursor-pointer',
                   ]}
                   key={month}

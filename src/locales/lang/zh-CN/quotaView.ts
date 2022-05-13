@@ -157,7 +157,7 @@ export default {
       seriesFilter: '所属序列',
       seriesTip: '先绘图再选择数据所属序列，可多选',
       addBtn: '添加',
-      filterGroup: '过滤组',
+      filterGroup: '过滤器',
     },
   },
   chart: {
