@@ -1,93 +1,24 @@
 <template>
-  <div class="relative min-w-fit pr-20">
-    <div class="flex items-center gap-2">
-      <Select
-        class="w-30"
-        size="small"
-        @select="selectType"
-        v-model:value="chartConfig.type"
-        :placeholder="t('quotaView.toolbar.chartTypeSelectPlaceholer')"
-        :options="chartTypeList"
-      />
-      <Color />
-      <div class="flex justify-center w-50 hover:border-primary date-picker">
-        <DatePicker
-          size="small"
-          :bordered="false"
-          :allowClear="false"
-          v-model:value="chartConfig.timeConfig.startDate"
-          value-format="YYYY-MM-DD"
-          :showToday="false"
-          :placeholer="t('quotaView.toolbar.startDatePicker')"
-        >
-          <template #renderExtraFooter>
-            <div class="flex items-center">
-              <Input
-                size="small"
-                class="!w-10 text-center !mr-1"
-                v-model:value="quickDateParams.num"
-              />
-              <RadioGroup button-style="solid" size="small" v-model:value="quickDateParams.unit">
-                <RadioButton value="year">{{ t('quotaView.toolbar.year') }}</RadioButton>
-                <RadioButton value="month">{{ t('quotaView.toolbar.month') }}</RadioButton>
-                <RadioButton value="week">{{ t('quotaView.toolbar.week') }}</RadioButton>
-                <RadioButton value="day">{{ t('quotaView.toolbar.day') }}</RadioButton>
-              </RadioGroup>
-              <span class="ml-auto cursor-pointer text-primary" @click="quickDate">{{
-                t('common.okText')
-              }}</span>
-            </div>
-          </template>
-          <template #suffixIcon> </template>
-        </DatePicker>
-        <span>~</span>
-        <DatePicker
-          size="small"
-          :bordered="false"
-          :allowClear="false"
-          v-model:value="chartConfig.timeConfig.endDate"
-          value-format="YYYY-MM-DD"
-          :placeholer="t('quotaView.toolbar.endDatePicker')"
-        >
-          <template #suffixIcon> </template>
-        </DatePicker>
-      </div>
-
-      <Icon
-        title="暂不开放保存功能"
-        :class="['save-icon', chartConfig.title.length === 0 ? 'disabled' : '']"
-        size="28"
-        icon="cunchu|svg"
-      />
-    </div>
-    <div class="absolute top-0 right-0 overflow-hidden z-9 w-18 h-18" @click="paint">
-      <div
-        v-ripple
-        class="w-36 h-36 !absolute -right-18 -top-18 bg-linear-primary rounded-1 cursor-pointer"
-      >
-        <Icon class="absolute left-7 bottom-7" size="32" color="#fff" icon="ph:paint-brush-light" />
-      </div>
+  <div class="absolute top-0 right-0 overflow-hidden z-9 w-18 h-18" @click="paint">
+    <div
+      v-ripple
+      class="w-36 h-36 !absolute -right-18 -top-18 bg-linear-primary rounded-1 cursor-pointer"
+    >
+      <Icon class="absolute left-7 bottom-7" size="32" color="#fff" icon="ph:paint-brush-light" />
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-  import { nextTick, reactive } from 'vue';
-  import { Input, DatePicker, Select, Radio } from 'ant-design-vue';
+  import { nextTick } from 'vue';
   import vRipple from '/@/directives/ripple';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useChartConfigContext, useQuotaListContext, useSelectedQuotaListContext } from './hooks';
   import { chartTypeEnum } from '/@/enums/chartEnum';
-  import Color from './Color.vue';
   import Icon from '/@/components/Icon';
   import { cloneDeep } from 'lodash-es';
-  import { getChartDefaultConfig } from '../helper';
   import { useMessage } from '/@/hooks/web/useMessage';
-  import dayjs from 'dayjs';
-  import { mergeAndRemove } from '/@/utils/helper/commonHelper';
 
-  const RadioButton = Radio.Button;
-  const RadioGroup = Radio.Group;
   const { t } = useI18n();
   const emit = defineEmits<{
     (event: 'paint'): void;
@@ -96,32 +27,7 @@
   const chartConfig = useChartConfigContext();
   const quotaList = useQuotaListContext();
   const selectedQuotaList = useSelectedQuotaListContext();
-  // 图表类型下拉选择
-  const chartTypeList: LabelValueOptions = reactive([]);
-  for (let v in chartTypeEnum) {
-    chartTypeList.push({
-      label: t(`quotaView.toolbar.chartTypeList.${v}`),
-      value: v,
-      disabled: [chartTypeEnum.seasonalLunar, chartTypeEnum.fixedbase].includes(v as chartTypeEnum),
-    });
-  }
-  const quickDateParams = reactive({
-    num: '1',
-    unit: 'year',
-  });
-  function quickDate() {
-    chartConfig.timeConfig.startDate = dayjs()
-      .subtract(parseInt(quickDateParams.num), quickDateParams.unit)
-      .format('YYYY-MM-DD');
-  }
-  function selectType(type: chartTypeEnum) {
-    // for (const key in chartConfig) {
-    //   Reflect.deleteProperty(chartConfig, key);
-    // }
-    const def = getChartDefaultConfig(type);
-    mergeAndRemove(chartConfig, def);
-    console.log(cloneDeep(chartConfig));
-  }
+
   async function paint() {
     if (quotaList.value.length === 0) {
       createMessage.warn(t('quotaView.toolbar.noQuotaListTip'));
@@ -151,17 +57,4 @@
   }
 </script>
 
-<style lang="less" scoped>
-  .date-picker {
-    padding: 0 4px;
-
-    .ant-picker {
-      padding: 0;
-    }
-  }
-
-  .disabled {
-    pointer-events: none;
-    transition: none;
-  }
-</style>
+<style lang="less" scoped></style>

@@ -1,28 +1,26 @@
 <template>
-  <div>
-    <Select class="min-w-26" size="small" optionLabelProp="label" v-model:value="colorScheme.id">
-      <SelectOption
-        v-for="item in colorSchemeList"
-        :key="item.id"
-        :value="item.id"
-        :label="item.label"
-      >
-        <Popover placement="right">
-          <template #content>
-            <div class="flex color-popover">
-              <div
-                v-for="color in item.value"
-                :key="color"
-                class="w-2 h-4"
-                :style="{ backgroundColor: color }"
-              ></div>
-            </div>
-          </template>
-          <div class="w-full">{{ item.label }}</div>
-        </Popover>
-      </SelectOption>
-    </Select>
-  </div>
+  <Select class="min-w-26" size="small" optionLabelProp="label" v-model:value="colorScheme.id">
+    <SelectOption
+      v-for="item in colorSchemeList"
+      :key="item.id"
+      :value="item.id"
+      :label="item.label"
+    >
+      <Popover placement="right">
+        <template #content>
+          <div class="flex color-popover">
+            <div
+              v-for="color in item.value"
+              :key="color"
+              class="w-2 h-4"
+              :style="{ backgroundColor: color }"
+            ></div>
+          </div>
+        </template>
+        <div class="w-full">{{ item.label }}</div>
+      </Popover>
+    </SelectOption>
+  </Select>
 </template>
 
 <script lang="ts" setup>

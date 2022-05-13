@@ -4,7 +4,7 @@
       <span>{{ t('quotaView.advance.valueFormatter.afterDot') }}</span>
       <InputNumber
         size="small"
-        class="!w-14 min-w-14"
+        class="!w-10 min-w-10"
         :min="0"
         v-model:value="chartConfig.valueFormatter.afterDot"
       />

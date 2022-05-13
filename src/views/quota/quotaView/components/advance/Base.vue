@@ -1,58 +1,91 @@
 <template>
-  <div class="pl-8" v-if="showSettingFilter('yAxisEdit')">
-    <div class="flex items-center gap-2">
-      <YAxisEdit :chart-config="chartConfig" :idx="null" @update="updateConfig">
-        <Button size="small">
-          <template #icon>
-            <Icon icon="ant-design:plus-outlined" />
-          </template>
-          <span>{{ t('quotaView.advance.axisSetting.yAxis.createY') }}</span>
-        </Button>
-      </YAxisEdit>
-      <Tooltip>
-        <template #title>
-          <span>{{ t('quotaView.advance.axisSetting.yAxis.tip2') }}</span>
-        </template>
-        <Icon icon="ant-design:question-circle-outlined" />
-      </Tooltip>
-    </div>
-    <div class="yAxisList">
-      <Tag
-        v-for="yAxis in yAxisIndexList"
-        :key="yAxis.label"
-        :closable="yAxis.closable"
-        @close="delYAxis(yAxis.value)"
-      >
-        {{ yAxis.label }}
-      </Tag>
-    </div>
+  <div class="grid grid-cols-2 grid-rows-2 gap-2 ml-8">
+    <Select
+      size="small"
+      @select="selectType"
+      v-model:value="chartConfig.type"
+      :placeholder="t('quotaView.toolbar.chartTypeSelectPlaceholer')"
+      :options="chartTypeList"
+    />
+    <Color />
+    <DatePicker
+      size="small"
+      :allowClear="false"
+      v-model:value="chartConfig.timeConfig.startDate"
+      value-format="YYYY-MM-DD"
+      :showToday="false"
+      :placeholer="t('quotaView.toolbar.startDatePicker')"
+    >
+      <template #renderExtraFooter>
+        <div class="flex items-center">
+          <Input size="small" class="!w-10 text-center !mr-1" v-model:value="quickDateParams.num" />
+          <RadioGroup button-style="solid" size="small" v-model:value="quickDateParams.unit">
+            <RadioButton value="year">{{ t('quotaView.toolbar.year') }}</RadioButton>
+            <RadioButton value="month">{{ t('quotaView.toolbar.month') }}</RadioButton>
+            <RadioButton value="week">{{ t('quotaView.toolbar.week') }}</RadioButton>
+            <RadioButton value="day">{{ t('quotaView.toolbar.day') }}</RadioButton>
+          </RadioGroup>
+          <span class="ml-auto cursor-pointer text-primary" @click="quickDate">{{
+            t('common.okText')
+          }}</span>
+        </div>
+      </template>
+      <template #suffixIcon> </template>
+    </DatePicker>
+    <DatePicker
+      size="small"
+      :allowClear="false"
+      v-model:value="chartConfig.timeConfig.endDate"
+      value-format="YYYY-MM-DD"
+      :placeholer="t('quotaView.toolbar.endDatePicker')"
+    >
+      <template #suffixIcon> </template>
+    </DatePicker>
   </div>
 </template>
 
 <script lang="ts" setup>
-  import { Tag, Tooltip, Button } from 'ant-design-vue';
-  import Icon from '/@/components/Icon';
-  import YAxisEdit from '/@/components/Chart/src/YAxisEditor.vue';
+  import { DatePicker, Radio, Select } from 'ant-design-vue';
+  import Color from '../Color.vue';
   import { useI18n } from '/@/hooks/web/useI18n';
-  import { useChartConfigContext, useYAxisEdit, useSettingFilter } from '../hooks';
+  import { useChartConfigContext } from '../hooks';
+  import { chartTypeEnum } from '/@/enums/chartEnum';
+  import { reactive } from 'vue';
+  import dayjs from 'dayjs';
+  import { cloneDeep } from 'lodash-es';
+  import { getChartDefaultConfig } from '../../helper';
+  import { mergeAndRemove } from '/@/utils/helper/commonHelper';
 
   const { t } = useI18n();
+  const RadioButton = Radio.Button;
+  const RadioGroup = Radio.Group;
   const chartConfig = useChartConfigContext();
-  const showSettingFilter = useSettingFilter(chartConfig);
-  function updateConfig(config) {
-    Object.assign(chartConfig, config);
+  // 图表类型下拉选择
+  const chartTypeList: LabelValueOptions = [];
+  for (let v in chartTypeEnum) {
+    chartTypeList.push({
+      label: t(`quotaView.toolbar.chartTypeList.${v}`),
+      value: v,
+      disabled: [chartTypeEnum.seasonalLunar, chartTypeEnum.fixedbase].includes(v as chartTypeEnum),
+    });
   }
-  // Y轴编辑
-  const [yAxisIndexList, { delYAxis }] = useYAxisEdit(chartConfig);
+  const quickDateParams = reactive({
+    num: '1',
+    unit: 'year',
+  });
+  function quickDate() {
+    chartConfig.timeConfig.startDate = dayjs()
+      .subtract(parseInt(quickDateParams.num), quickDateParams.unit)
+      .format('YYYY-MM-DD');
+  }
+  function selectType(type: chartTypeEnum) {
+    // for (const key in chartConfig) {
+    //   Reflect.deleteProperty(chartConfig, key);
+    // }
+    const def = getChartDefaultConfig(type);
+    mergeAndRemove(chartConfig, def);
+    console.log(cloneDeep(chartConfig));
+  }
 </script>
 
-<style lang="less" scoped>
-  .yAxisList {
-    margin-top: 0.5rem;
-    margin-bottom: -0.5rem;
-
-    ::v-deep(.ant-tag) {
-      margin-bottom: 0.5rem;
-    }
-  }
-</style>
+<style lang="less" scoped></style>
