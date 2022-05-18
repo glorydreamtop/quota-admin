@@ -209,6 +209,7 @@
   .table-view {
     position: absolute;
     backface-visibility: hidden;
+    transform-style: preserve-3d;
     transition: all 1s;
 
     &.front {

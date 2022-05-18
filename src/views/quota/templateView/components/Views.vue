@@ -1,16 +1,17 @@
 <template>
-  <div class="w-full overflow-y-scroll p-2" id="page-box">
+  <div class="w-full overflow-y-scroll p-2 relative" id="page-box">
     <div
       :class="[
         'pages bg-white overflow-hidden shadow-lg shadow-gray-300 flex flex-col items-center gap-4',
         pageSetting.pagination ? 'mb-8' : '',
       ]"
-      v-for="(page, pageIdx) in paginationInfo.pages"
-      :key="page.id"
-      :data-pageid="page.id"
+      v-for="pageIdx in paginationInfo.totalPage"
+      :key="pageIdx"
+      :data-pageid="pageIdx"
       :style="pageStyle"
       @click.self="clearSelectKey"
     >
+      <!-- 页眉start -->
       <div class="pb-1 border-b page-header" v-show="pageSetting.header.show">
         <span contenteditable @input="pageHeaderChange('left', $event)">{{
           pageSetting.header.left
@@ -24,36 +25,9 @@
           ></span
         >
       </div>
-      <div
-        class="flex flex-wrap content-start flex-grow w-full overflow-hidden relative"
-        @click.self="clearSelectKey"
-      >
-        <div
-          v-for="element in page.list"
-          :key="element.uniqId"
-          @click="selectTemplate(element, $event)"
-          :data-uniqid="element.uniqId"
-          :class="[
-            'border rounded-sm overflow-hidden sortable',
-            selectedTemplateDOMList.find((node) => node.uniqId === element.uniqId)
-              ? 'selected'
-              : '',
-            pageSetting.showElementborder ? '' : 'border-light-50',
-          ]"
-          :style="{ width: element.pageConfig.width, height: element.pageConfig.height }"
-          v-resizeable:hidden="`xy`"
-        >
-          <Icon
-            icon="akar-icons:drag-horizontal"
-            class="drag-handler cursor-move pl-1 pt-1 !text-primary"
-          />
-          <component
-            :is="compTypeMap[element.type]"
-            v-model:config="element.config"
-            :class="['w-full h-full text-base', element.type === 'Chart' ? 'py-2' : '']"
-          />
-        </div>
-      </div>
+      <!-- 页眉end -->
+      <div class="page-main flex-grow"> </div>
+      <!-- 页脚start -->
       <div class="pt-1 border-t page-footer">
         <span
           contenteditable
@@ -70,17 +44,54 @@
           ></span
         >
       </div>
+      <!-- 页脚end -->
+    </div>
+    <div
+      class="flex-grow overflow-hidden absolute grid-line"
+      id="grid-container"
+      @click.self="clearSelectKey"
+      :style="{
+        top: `calc(${pageStyle.paddingTop} + 2rem)`,
+        left: `calc(${pageStyle.paddingLeft} + 0.5rem)`,
+        right: `calc(${pageStyle.paddingRight} + 0.5rem)`,
+        bottom: pageStyle.paddingBottom,
+      }"
+    >
+      <div
+        v-for="element in templateList"
+        :key="element.uniqId"
+        @click="selectTemplate(element, $event)"
+        :data-uniqid="element.uniqId"
+        :class="[
+          'border rounded-sm overflow-hidden sortable',
+          selectedTemplateDOMList.find((node) => node.uniqId === element.uniqId) ? 'selected' : '',
+          pageSetting.showElementborder ? '' : 'border-light-50',
+        ]"
+        :style="{
+          width: element.pageConfig.width,
+          height: element.pageConfig.height,
+          transform: element.pageConfig.transform,
+        }"
+      >
+        <Icon icon="akar-icons:drag-horizontal" class="drag-handler pl-1 pt-1 !text-primary" />
+        <component
+          :is="compTypeMap[element.type]"
+          v-model:config="element.config"
+          :class="['w-full h-full text-base', element.type === 'Chart' ? 'py-2' : '']"
+        />
+      </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-  import { reactive, computed, ref, ComputedRef, watch, nextTick, CSSProperties } from 'vue';
+  import { reactive, computed, ComputedRef, watch, nextTick, CSSProperties } from 'vue';
   import {
     useMultiSelect,
     useTemplateListContext,
     useSelectTemplateListContext,
     usePageSettingContext,
+    useDraggable,
   } from '../hooks';
   import type { TemplateDOM } from '/#/template';
   import { DoubleSideChart } from '/@/components/Chart';
@@ -89,11 +100,10 @@
   import Icon from '/@/components/Icon';
   import { onMountedOrActivated } from '/@/hooks/core/onMountedOrActivated';
   // import { useI18n } from '/@/hooks/web/useI18n';
-  import { useMutationObserver, useResizeObserver, useTimeoutFn } from '@vueuse/core';
-  import { cloneDeep, differenceBy, findIndex, isNull, remove } from 'lodash-es';
-  import { useWatchArray } from '/@/utils/helper/commonHelper';
-  import { useUniqueField } from '../../quotaTable/components/helper';
-  // import Draggable from 'vuedraggable';
+  import { useMutationObserver } from '@vueuse/core';
+  // import { useUniqueField } from '../../quotaTable/components/helper';
+  import { InteractEvent } from '@interactjs/types/index';
+
   // import { useContextMenu } from '/@/hooks/web/useContextMenu';
 
   // const { t } = useI18n();
@@ -108,27 +118,11 @@
       paddingRight: `${pageSetting.paddingRight}px`,
       aspectRatio: pageSetting.pagination
         ? pageSetting.horizontal
-          ? '297/210'
-          : '210/297'
+          ? '300/210'
+          : '210/300'
         : 'unset',
     };
   });
-  const reload = ref(false);
-  watch(
-    () => pageSetting.pagination,
-    () => {
-      const clone = cloneDeep(templateList.value);
-      reload.value = true;
-      templateList.value = [];
-      paginationInfo.pages = [{ list: [], id: getUniqueField() }];
-      reload.value = false;
-      for (let i = 0; i < clone.length; i++) {
-        useTimeoutFn(() => {
-          templateList.value.push(clone[i]);
-        }, 30 * i);
-      }
-    },
-  );
   const templateList = useTemplateListContext();
   const compTypeMap = {
     Chart: DoubleSideChart,
@@ -139,57 +133,22 @@
   function selectTemplate(temp: TemplateDOM, nativeEvent: PointerEvent) {
     insertSelectKey(temp, nativeEvent);
   }
-  const paginationInfo: { pages: { list: TemplateDOM[]; id: string }[]; totalPage: number } =
-    reactive({
-      pages: [],
-      totalPage: 1,
-    });
-  const { getUniqueField } = useUniqueField();
-  useWatchArray(templateList, (v, pre) => {
-    // 是切换页面模式导致的重排则不响应
-    if (reload.value) return;
-    if (pre.length < v.length) {
-      // 新增元素时计算插入位置
-      const diffNode = differenceBy(v, pre, (node) => node.uniqId);
-      for (let i = 0; i < diffNode.length; i++) {
-        const nodeIndex = findIndex(v, (node) => node.uniqId === diffNode[i].uniqId);
-        if (nodeIndex === 0) {
-          paginationInfo.pages[0].list.unshift(diffNode[i]);
-        } else {
-          const beforNode = v[nodeIndex - 1];
-          for (let j = 0; j < paginationInfo.pages.length; j++) {
-            const page = paginationInfo.pages[j];
-            const idx = page.list.findIndex((node) => node.uniqId === beforNode.uniqId);
-            if (idx > -1) {
-              page.list.splice(idx + 1, 0, diffNode[i]);
-              break;
-            }
-          }
-        }
-      }
-    } else if (pre.length > v.length) {
-      const diffNodeUniqId = differenceBy(pre, v, (node) => node.uniqId).map((node) => node.uniqId);
-      for (let i = 0; i < paginationInfo.pages.length; i++) {
-        const page = paginationInfo.pages[i];
-        remove(page.list, (node) => diffNodeUniqId.includes(node.uniqId));
-      }
-      remove(paginationInfo.pages, (page) => page.list.length === 0);
-      if (paginationInfo.pages.length === 0) {
-        paginationInfo.pages = [{ list: [], id: getUniqueField() }];
-      }
-    }
+  const paginationInfo: { totalPage: number } = reactive({
+    totalPage: 1,
   });
-  function checkOverflow(boxdom: HTMLDivElement) {
-    for (let i = 0; i < boxdom.childElementCount; i++) {
-      const child = boxdom.children[i] as HTMLElement;
-      if (
-        child.offsetTop + child.offsetHeight > boxdom.offsetTop + boxdom.offsetHeight ||
-        child.offsetLeft + child.offsetWidth > boxdom.offsetLeft + boxdom.offsetWidth
-      )
-        return i;
-    }
-    return false;
-  }
+  // const { getUniqueField } = useUniqueField();
+
+  // function checkOverflow(boxdom: HTMLDivElement) {
+  //   for (let i = 0; i < boxdom.childElementCount; i++) {
+  //     const child = boxdom.children[i] as HTMLElement;
+  //     if (
+  //       child.offsetTop + child.offsetHeight > boxdom.offsetTop + boxdom.offsetHeight ||
+  //       child.offsetLeft + child.offsetWidth > boxdom.offsetLeft + boxdom.offsetWidth
+  //     )
+  //       return i;
+  //   }
+  //   return false;
+  // }
   watch(
     () => paginationInfo.totalPage,
     async () => {
@@ -215,85 +174,65 @@
   //     ],
   //   });
   // }
+  function getDomConfig(event: InteractEvent) {
+    const target = event.target as HTMLElement;
+    const _dom = templateList.value.find((temp) => temp.uniqId === target.dataset['uniqid'])!;
+    return { target, _dom };
+  }
   onMountedOrActivated(() => {
-    const boxdom = document.getElementById('page-box') as HTMLDivElement;
-    // 监听有新页面加入
+    const boxdom = document.getElementById('grid-container') as HTMLDivElement;
+    const gridSize = 40;
+    // 监听有新模块加入
     useMutationObserver(
       boxdom,
       (mutation) => {
-        mutation.forEach((m) => {
-          if (m.addedNodes.length === 0) return;
-          // 监听单页面内部新节点加入，并使其可拖拽，可拖拽缩放，并收集尺寸信息
-          m.addedNodes.forEach((pagedom: HTMLElement) => {
-            // pagedom.style.height = `${pagedom.offsetHeight}px`;
-            useMutationObserver(
-              pagedom.children[1],
-              (mutation2) => {
-                mutation2.forEach((m2) => {
-                  if (m2.addedNodes.length === 0) return;
-                  m2.addedNodes.forEach((node) => {
-                    useResizeObserver(node, (e) => {
-                      const target = e[0].target as HTMLElement;
-                      if (isNull(target.parentElement)) return;
-                      const _dom = templateList.value.find(
-                        (temp) => temp.uniqId === target.dataset['uniqid'],
-                      )!;
-                      if (_dom) {
-                        _dom.pageConfig.width = target.style.width;
-                        _dom.pageConfig.height = target.style.height;
-                        // 长图模式下不计算布局分页
-                        if (!pageSetting.pagination) return;
-                        const overflow = checkOverflow(target.parentElement!);
-                        if (overflow) {
-                          // 放不下就推到下一页
-                          const nextPagedom = pagedom.nextElementSibling as HTMLElement;
-                          if (nextPagedom) {
-                            for (let i = 0; i < paginationInfo.pages.length; i++) {
-                              const page = paginationInfo.pages[i];
-                              if (page.id === nextPagedom.dataset['pageid']) {
-                                paginationInfo.pages[i].list.unshift(
-                                  paginationInfo.pages[i - 1].list.pop()!,
-                                );
-                                break;
-                              }
-                            }
-                          } else {
-                            paginationInfo.pages.push({ list: [], id: getUniqueField() });
-                            paginationInfo.totalPage++;
-                            // await nextTick();
-                            useTimeoutFn(() => {
-                              for (let i = 0; i < paginationInfo.pages.length; i++) {
-                                const page = paginationInfo.pages[i];
-                                if (
-                                  page.id ===
-                                  (pagedom.nextElementSibling as HTMLElement).dataset['pageid']
-                                ) {
-                                  paginationInfo.pages[i].list.unshift(
-                                    paginationInfo.pages[i - 1].list.pop()!,
-                                  );
-                                  break;
-                                }
-                              }
-                            }, 96);
-                          }
-                        }
-                      }
-                    });
-                  });
-                });
-              },
-              {
-                childList: true,
-              },
-            );
-          });
+        if (mutation[0].addedNodes.length === 0) return;
+        console.log(mutation);
+
+        useDraggable({
+          items: '.sortable',
+          handle: '.drag-handler',
+          onDraggle: (event) => {
+            const { _dom, target } = getDomConfig(event);
+            const transform = target.style.transform;
+            const reg = /translate\((\-?[0-9]+)px, (\-?[0-9]+)px\)/;
+            const match = reg.exec(transform);
+            if (match) {
+              const x = Number(match[1]) + event.dx;
+              const y = Number(match[2]) + event.dy;
+              _dom.pageConfig.transform = `translate(${x}px, ${y}px)`;
+            }
+          },
+          onDraggleEnd: (event) => {
+            const { _dom, target } = getDomConfig(event);
+            const transform = target.style.transform;
+            const reg = /translate\((\-?[0-9]+)px, (\-?[0-9]+)px\)/;
+            const match = reg.exec(transform);
+            if (match) {
+              const x = Number(match[1]) + event.dx;
+              const y = Number(match[2]) + event.dy;
+
+              _dom.pageConfig.transform = `translate(${Math.round(x / gridSize) * gridSize}px, ${
+                Math.round(y / gridSize) * gridSize
+              }px)`;
+            }
+          },
+          onResize: (event) => {
+            const { _dom } = getDomConfig(event);
+            _dom.pageConfig.width = `${event.rect.width}px`;
+            _dom.pageConfig.height = `${event.rect.height}px`;
+          },
+          onResizeEnd: (event) => {
+            const { _dom } = getDomConfig(event);
+            _dom.pageConfig.width = `${Math.round(event.rect.width / gridSize) * gridSize}px`;
+            _dom.pageConfig.height = `${Math.round(event.rect.height / gridSize) * gridSize}px`;
+          },
         });
       },
       {
         childList: true,
       },
     );
-    paginationInfo.pages.push({ list: [], id: getUniqueField() });
   });
 </script>
 
@@ -305,8 +244,7 @@
   .selected {
     @apply shadow-sm shadow-primary;
 
-    position: relative;
-    border-radius: 4px;
+    z-index: 9;
     border: 1px solid;
     border-color: @primary-color;
 
@@ -331,6 +269,8 @@
     box-sizing: border-box;
     width: 50%;
     transition: border 0.3s;
+    background-color: @white;
+    position: absolute;
 
     ::v-deep(.autohidden-toolbar) {
       opacity: 0;
@@ -382,5 +322,17 @@
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
+  }
+
+  #grid-container {
+    // width: calc(100% - 1rem);
+  }
+
+  .grid-line {
+    @line-color: lighten(@primary-color, 40%);
+    @grid-size: 40px;
+    background: -webkit-linear-gradient(top, transparent @grid-size - 1, @line-color 0),
+      -webkit-linear-gradient(left, transparent @grid-size - 1, @line-color 0);
+    background-size: @grid-size @grid-size;
   }
 </style>

@@ -12,7 +12,7 @@
 
 <script lang="ts" setup name="templateView">
   import { TemplateTree } from '/@/components/TemplateTree';
-  import Views from './components/ViewsD.vue';
+  import Views from './components/Views.vue';
   import ToolBar from './components/ToolBar.vue';
   import {
     createPageSettingContext,
@@ -64,9 +64,9 @@
     node.uniqId = getUniqueField();
     node.type = node.version! < 3 ? 'Chart' : 'Table';
     node.pageConfig = {
-      width: '50%',
-      height: '300px',
-      // margin: '0 auto',
+      width: '480px',
+      height: '240px',
+      transform: 'translate(0px, 0px)',
     };
     if (node.version! < 3) {
       const config = node.config as chartConfigType;
