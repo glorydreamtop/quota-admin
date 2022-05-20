@@ -1,9 +1,17 @@
 <template>
   <div class="flex justify-start items-center h-layout-full p-4 gap-4 w-full overflow-hidden">
-    <div class="w-75 h-full border enter-y flex-shrink-0 relative min-w-75" v-resizeable:show="`x`">
-      <TemplateTree :show-search="false" class="h-full w-full" @selectNode="selectNode" />
+    <div
+      ref="container"
+      class="absolute top-32 z-49 border w-60 flex justify-end bg-white drawer overflow-hidden"
+      :style="{ height: `calc(100% - 9rem)` }"
+    >
+      <TemplateTree
+        :show-search="false"
+        class="h-full w-full drawer-main"
+        @selectNode="selectNode"
+      />
     </div>
-    <div class="flex-grow h-full enter-y bg-gray-100 flex flex-col">
+    <div class="h-full bg-gray-100 flex flex-col w-full">
       <ToolBar />
       <Views class="views-box" />
     </div>
@@ -14,6 +22,7 @@
   import { TemplateTree } from '/@/components/TemplateTree';
   import Views from './components/Views.vue';
   import ToolBar from './components/ToolBar.vue';
+
   import {
     createPageSettingContext,
     createSelectTemplateListContext,
@@ -24,8 +33,7 @@
   import { reactive, ref } from 'vue';
   import type { pageSettingType, TemplateDOM } from '/#/template';
   import { useUniqueField } from '../quotaTable/components/helper';
-  import { onMountedOrActivated } from '/@/hooks/core/onMountedOrActivated';
-  import { useResizeObserver } from '@vueuse/core';
+  import { useDrawer } from './hooks';
   import { chartConfigType } from '/#/chart';
   import { timeConfigEnum } from '/@/enums/chartEnum';
   import { today, yearsAgo } from '/@/utils/dateUtil';
@@ -38,7 +46,7 @@
     paddingTop: 32,
     paddingLeft: 32,
     paddingRight: 32,
-    pagination: false,
+    pagination: true,
     horizontal: false,
     header: {
       show: true,
@@ -78,20 +86,64 @@
     insertDOM(templateList, selectedTemplateList, node);
     console.log(node);
   }
-  onMountedOrActivated(() => {
-    const viewBox = document.getElementById('page-box')!;
-    const parentEle = viewBox.parentElement;
-    useResizeObserver(parentEle, (e) => {
-      viewBox.style.maxWidth = `${(e[0].target as HTMLElement).offsetWidth}px`;
-    });
-  });
+  const container = ref<HTMLElement>();
+  useDrawer(container);
 </script>
 
 <style lang="less" scoped>
   .views-box {
     // height: calc(100% - 4rem);
-    flex-grow: 1;
+    // flex-grow: 1;
     // width: auto;
     // max-width: 1571px;
+  }
+
+  // 收起配置界面用的css
+
+  .drawer-main {
+    transition: opacity 0.2s ease;
+  }
+
+  .drawer {
+    box-shadow: 6px 8px 20px #b9b9b975;
+  }
+
+  ::v-deep(.line) {
+    transition: background-color 0.3s;
+    width: 20px;
+    min-width: 20px;
+    height: 100%;
+    position: relative;
+    border-left: 1px solid #e8e8e8;
+
+    .arrow-icon {
+      color: rgba(156, 163, 175, 1) !important;
+      transition: transform 0.5s;
+      position: absolute;
+      top: 50%;
+      font-size: 20px;
+
+      &.rotate {
+        transform: rotate(180deg);
+      }
+    }
+
+    .tip {
+      color: rgba(156, 163, 175, 1) !important;
+      transform: translateX(-2px);
+      position: absolute;
+      top: 40%;
+      writing-mode: vertical-rl;
+    }
+
+    &.hover-gray-shadow:hover {
+      background-color: rgba(243, 244, 246, 1);
+      border-left-color: rgba(243, 244, 246, 1);
+    }
+
+    &.gray-shadow {
+      background-color: rgba(243, 244, 246, 1);
+      border-left-color: rgba(243, 244, 246, 1);
+    }
   }
 </style>

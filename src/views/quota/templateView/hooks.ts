@@ -1,10 +1,11 @@
-import { InjectionKey, ref, Ref, watchEffect } from 'vue';
+import { h, InjectionKey, onMounted, ref, Ref, render, unref, watchEffect } from 'vue';
 import { createContext, useContext } from '/@/hooks/core/useContext';
 import type { pageSettingType, TemplateDOM } from '/#/template';
 import { remove } from 'lodash-es';
 import { useActiveElement, useMagicKeys } from '@vueuse/core';
 import interact from 'interactjs';
 import { InteractEvent } from '@interactjs/types/index';
+import Icon from '/@/components/Icon';
 
 const templateKey: InjectionKey<Ref<TemplateDOM[]>> = Symbol();
 
@@ -251,4 +252,60 @@ export function useDraggable({
     .on('resizeend', (event: InteractEvent) => {
       onResizeEnd?.call(null, event);
     });
+}
+
+export interface paginationInfoType {
+  totalPage: number;
+}
+
+export function useDrawer(container: Ref<HTMLElement | undefined>) {
+  const containerHidden = ref(false);
+  const icon = h(Icon, {
+    icon: 'ant-design:left-outlined',
+    class: 'arrow-icon',
+  });
+  const tip = h(
+    'span',
+    {
+      class: 'tip',
+    },
+    '模板树',
+  );
+  const line = h(
+    'div',
+    {
+      onClick: hide,
+      class: 'line hover-gray-shadow',
+    },
+    [icon, tip],
+  );
+  let main: HTMLElement;
+  let startWidth: number;
+  function init() {
+    const parent = unref(container)!;
+    render(line, parent);
+    startWidth = parent.offsetWidth;
+    Object.assign(parent.style, {
+      width: `${startWidth}px`,
+      transition: 'width .3s',
+    });
+    main = parent.getElementsByClassName('drawer-main')[0] as HTMLElement;
+    Object.assign(main.style, {
+      width: `${main.offsetWidth}px`,
+    });
+  }
+  function hide() {
+    const parent = unref(container)!;
+    const line = parent.getElementsByClassName('line')[0] as HTMLElement;
+    const remainWidth = line.offsetWidth;
+    if (containerHidden.value) {
+      parent.style.width = `${startWidth}px`;
+    } else {
+      parent.style.width = `${remainWidth}px`;
+    }
+    containerHidden.value = !containerHidden.value;
+    line.classList.toggle('hover-gray-shadow');
+    icon.el!.classList.toggle('rotate');
+  }
+  onMounted(init);
 }

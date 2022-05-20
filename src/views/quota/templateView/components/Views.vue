@@ -1,66 +1,16 @@
 <template>
-  <div class="w-full overflow-y-scroll p-2 relative" id="page-box">
+  <div class="overflow-scroll p-2 relative flex flex-col items-center">
+    <PagePlaceHolder id="pagePlaceHolder" :pagination-info="paginationInfo" />
     <div
-      :class="[
-        'pages bg-white overflow-hidden shadow-lg shadow-gray-300 flex flex-col items-center gap-4',
-        pageSetting.pagination ? 'mb-8' : '',
-      ]"
-      v-for="pageIdx in paginationInfo.totalPage"
-      :key="pageIdx"
-      :data-pageid="pageIdx"
-      :style="pageStyle"
-      @click.self="clearSelectKey"
-    >
-      <!-- 页眉start -->
-      <div class="pb-1 border-b page-header" v-show="pageSetting.header.show">
-        <span contenteditable @input="pageHeaderChange('left', $event)">{{
-          pageSetting.header.left
-        }}</span>
-        <span class="flex gap-1"
-          ><img class="w-3.5 h-3.5" src="http://121.4.186.36:23587/favicon.ico" /><span
-            contenteditable
-            @input="pageHeaderChange('right', $event)"
-            class="text-right"
-            >{{ pageSetting.header.right }}</span
-          ></span
-        >
-      </div>
-      <!-- 页眉end -->
-      <div class="page-main flex-grow"> </div>
-      <!-- 页脚start -->
-      <div class="pt-1 border-t page-footer">
-        <span
-          contenteditable
-          v-show="pageSetting.footer.show"
-          @input="pageFooterChange('left', $event)"
-          >{{ pageSetting.footer.left }}</span
-        >
-        <span class="footer-page-num" v-show="pageSetting.footer.pageNum">{{ pageIdx + 1 }}</span>
-        <span v-show="pageSetting.footer.show" class="flex gap-1"
-          ><img class="w-3.5 h-3.5" src="http://121.4.186.36:23587/favicon.ico" /><span
-            contenteditable
-            @input="pageFooterChange('right', $event)"
-            >{{ pageSetting.footer.right }}</span
-          ></span
-        >
-      </div>
-      <!-- 页脚end -->
-    </div>
-    <div
-      class="flex-grow overflow-hidden absolute grid-line"
+      class="w-1440px overflow-hidden absolute grid-line"
       id="grid-container"
       @click.self="clearSelectKey"
-      :style="{
-        top: `calc(${pageStyle.paddingTop} + 2rem)`,
-        left: `calc(${pageStyle.paddingLeft} + 0.5rem)`,
-        right: `calc(${pageStyle.paddingRight} + 0.5rem)`,
-        bottom: pageStyle.paddingBottom,
-      }"
+      :style="gridAreaStyle"
     >
       <div
         v-for="element in templateList"
         :key="element.uniqId"
-        @click="selectTemplate(element, $event)"
+        @click="insertSelectKey(element, $event)"
         :data-uniqid="element.uniqId"
         :class="[
           'border rounded-sm overflow-hidden sortable',
@@ -85,44 +35,44 @@
 </template>
 
 <script lang="ts" setup>
-  import { reactive, computed, ComputedRef, watch, nextTick, CSSProperties } from 'vue';
+  import { ref, reactive, computed, ComputedRef, nextTick, CSSProperties, onMounted } from 'vue';
   import {
     useMultiSelect,
     useTemplateListContext,
     useSelectTemplateListContext,
     usePageSettingContext,
     useDraggable,
+    paginationInfoType,
   } from '../hooks';
-  import type { TemplateDOM } from '/#/template';
+  import PagePlaceHolder from './PagePlaceHolder.vue';
   import { DoubleSideChart } from '/@/components/Chart';
   import BasicText from './Text.vue';
   import BasicImg from './Image.vue';
   import Icon from '/@/components/Icon';
-  import { onMountedOrActivated } from '/@/hooks/core/onMountedOrActivated';
   // import { useI18n } from '/@/hooks/web/useI18n';
-  import { useMutationObserver } from '@vueuse/core';
+  import { useMutationObserver, useResizeObserver } from '@vueuse/core';
   // import { useUniqueField } from '../../quotaTable/components/helper';
   import { InteractEvent } from '@interactjs/types/index';
+  import { getRem } from '/@/utils/domUtils';
 
   // import { useContextMenu } from '/@/hooks/web/useContextMenu';
 
   // const { t } = useI18n();
   // const [createContextMenu] = useContextMenu();
+  // 页面设置
   const pageSetting = usePageSettingContext();
-  const selectedTemplateDOMList = useSelectTemplateListContext();
-  const pageStyle: ComputedRef<CSSProperties> = computed(() => {
+  const gridAreaStyle: ComputedRef<CSSProperties> = computed(() => {
     return {
-      paddingTop: `${pageSetting.paddingTop}px`,
-      paddingBottom: `${pageSetting.paddingBottom}px`,
-      paddingLeft: `${pageSetting.paddingLeft}px`,
-      paddingRight: `${pageSetting.paddingRight}px`,
-      aspectRatio: pageSetting.pagination
-        ? pageSetting.horizontal
-          ? '300/210'
-          : '210/300'
-        : 'unset',
+      top: `calc(${pageSetting.paddingTop}px + 1.75rem)`,
+      left: `calc(${pageSetting.paddingLeft}px + 50% - ${
+        (pageSetting.paddingLeft + pageSetting.paddingRight + 8 + 1440) / 2
+      }px)`,
+      minHeight: `900px`,
     };
   });
+  // 选中的模块
+  const selectedTemplateDOMList = useSelectTemplateListContext();
+
   const templateList = useTemplateListContext();
   const compTypeMap = {
     Chart: DoubleSideChart,
@@ -130,12 +80,10 @@
     Img: BasicImg,
   };
   const { insertSelectKey, clearSelectKey } = useMultiSelect(templateList, selectedTemplateDOMList);
-  function selectTemplate(temp: TemplateDOM, nativeEvent: PointerEvent) {
-    insertSelectKey(temp, nativeEvent);
-  }
-  const paginationInfo: { totalPage: number } = reactive({
+  const paginationInfo: paginationInfoType = reactive({
     totalPage: 1,
   });
+
   // const { getUniqueField } = useUniqueField();
 
   // function checkOverflow(boxdom: HTMLDivElement) {
@@ -149,18 +97,6 @@
   //   }
   //   return false;
   // }
-  watch(
-    () => paginationInfo.totalPage,
-    async () => {
-      await nextTick();
-    },
-  );
-  function pageHeaderChange(pos: 'left' | 'right', e: InputEvent) {
-    pageSetting.header[pos] = (e.target as HTMLSpanElement).innerText;
-  }
-  function pageFooterChange(pos: 'left' | 'right', e: InputEvent) {
-    pageSetting.footer[pos] = (e.target as HTMLSpanElement).innerText;
-  }
   // function dragHandleMenu(event: MouseEvent) {
   //   createContextMenu({
   //     event,
@@ -179,16 +115,24 @@
     const _dom = templateList.value.find((temp) => temp.uniqId === target.dataset['uniqid'])!;
     return { target, _dom };
   }
-  onMountedOrActivated(() => {
+  onMounted(async () => {
+    await nextTick();
     const boxdom = document.getElementById('grid-container') as HTMLDivElement;
+    const pagePlaceHolder = document.getElementById('pagePlaceHolder') as HTMLDivElement;
+
+    useResizeObserver(pagePlaceHolder, (entries) => {
+      const { height } = entries[0].contentRect;
+      // getRem()*4是页面之间的gap
+      boxdom.style.height = `${
+        height - pageSetting.paddingBottom - pageSetting.paddingTop - getRem() * 5
+      }px`;
+    });
     const gridSize = 40;
     // 监听有新模块加入
     useMutationObserver(
       boxdom,
       (mutation) => {
         if (mutation[0].addedNodes.length === 0) return;
-        console.log(mutation);
-
         useDraggable({
           items: '.sortable',
           handle: '.drag-handler',
@@ -211,7 +155,6 @@
             if (match) {
               const x = Number(match[1]) + event.dx;
               const y = Number(match[2]) + event.dy;
-
               _dom.pageConfig.transform = `translate(${Math.round(x / gridSize) * gridSize}px, ${
                 Math.round(y / gridSize) * gridSize
               }px)`;
@@ -259,12 +202,6 @@
     }
   }
 
-  .pages {
-    width: 100%;
-    height: auto;
-    min-height: 800px;
-  }
-
   .sortable {
     box-sizing: border-box;
     width: 50%;
@@ -293,35 +230,6 @@
       z-index: 9;
       transition: opacity 0.2s;
     }
-  }
-
-  .page-header,
-  .page-footer {
-    @apply border-gray-200;
-    @apply text-sm;
-    @apply leading-4;
-    @apply px-1;
-    @apply text-gray-300;
-
-    position: relative;
-    width: 100%;
-    height: 1.25rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    span {
-      width: fit-content;
-      // font-style: italic;
-      outline: none;
-      overflow: visible;
-    }
-  }
-
-  .footer-page-num {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
   }
 
   #grid-container {
