@@ -6,6 +6,7 @@ import { setupPermissionDirective } from './permission';
 import { setupLoadingDirective } from './loading';
 import { setupRepeatDirective } from './repeatClick';
 import { setupResizeDirective, setupAutoSizeDirective } from './resizeable';
+import { setupTooltipDirective } from './tooltip';
 
 export function setupGlobDirectives(app: App) {
   setupPermissionDirective(app);
@@ -13,4 +14,5 @@ export function setupGlobDirectives(app: App) {
   setupRepeatDirective(app);
   setupResizeDirective(app);
   setupAutoSizeDirective(app);
+  setupTooltipDirective(app);
 }

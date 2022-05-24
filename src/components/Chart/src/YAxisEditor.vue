@@ -66,6 +66,7 @@
             <div
               v-for="color in currentColorScheme"
               :key="color"
+              v-tooltip="color"
               :style="
                 currentCfg.axisLine?.lineStyle?.color === color
                   ? { ...checkIcon, backgroundColor: color }
@@ -108,12 +109,10 @@
             v-model:value="currentCfg.offset"
             @input="(e) => onInputNumber(e, 'offset')"
           />
-          <Tooltip>
-            <template #title>
-              <span>{{ t('quotaView.advance.axisSetting.yAxis.offsetTip') }}</span>
-            </template>
-            <Icon icon="ant-design:question-circle-outlined" />
-          </Tooltip>
+          <Icon
+            v-tooltip="t('quotaView.advance.axisSetting.yAxis.offsetTip')"
+            icon="ant-design:question-circle-outlined"
+          />
         </div>
         <div class="flex gap-1 col-span-2">
           <Button size="small" block type="primary" @click="confirm">{{
@@ -147,6 +146,7 @@
   import { Icon, icon2Css } from '/@/components/Icon';
   import { isNull } from '/@/utils/is';
   import { useColor } from '../helper';
+  import { tooltipDirective as vTooltip } from '/@/directives/tooltip';
   const { t } = useI18n();
 
   const RadioGroup = Radio.Group;
@@ -286,10 +286,6 @@
         position: absolute;
         top: 0;
         left: 0;
-      }
-
-      &:hover {
-        transform: scale(1.2);
       }
     }
   }
