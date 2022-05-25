@@ -21,6 +21,9 @@ declare global {
   //   // Global vue app instance
   //   __APP__: App<Element>;
   // }
+  const hljs: {
+    highlightElement(el: Element, options?: any): void;
+  };
 
   // vue
   declare type PropType<T> = VuePropType<T>;

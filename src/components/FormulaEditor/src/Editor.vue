@@ -10,17 +10,7 @@
     <pre class="language-javascript code rounded-sm" ref="formulaCodeRef"></pre>
     <div
       ref="suggestionsRef"
-      class="
-        fixed
-        z-19
-        flex flex-col
-        min-w-16
-        max-h-17
-        bg-white
-        rounded-sm
-        overflow-y-scroll
-        divide-y divide-gray-300
-      "
+      class="fixed z-19 flex flex-col min-w-16 max-h-17 bg-white rounded-sm overflow-y-scroll divide-y divide-gray-300"
     >
       <span
         v-for="item in fnList"
@@ -37,9 +27,6 @@
 
 <script lang="ts" setup>
   import { ref, unref, watch, nextTick } from 'vue';
-  import hljs from 'highlight.js/lib/core';
-  import javascript from 'highlight.js/lib/languages/javascript';
-  import 'highlight.js/styles/lioshi.css';
   import { onMountedOrActivated } from '/@/hooks/core/onMountedOrActivated';
   import { useResizeObserver } from '@vueuse/core';
   import { useShowSuggestions } from './helper';
@@ -53,8 +40,6 @@
     (event: 'update:formula', formula: string): void;
     (event: 'updateEndOffset', endOffset: number): void;
   }>();
-  // 按照javascript语法高亮
-  hljs.registerLanguage('javascript', javascript);
   const formulaCodeRef = ref<HTMLPreElement>();
   const formulaEditorRef = ref<HTMLDivElement>();
   const suggestionsRef = ref<HTMLElement>();

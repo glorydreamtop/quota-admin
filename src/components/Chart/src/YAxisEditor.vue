@@ -109,10 +109,7 @@
             v-model:value="currentCfg.offset"
             @input="(e) => onInputNumber(e, 'offset')"
           />
-          <Icon
-            v-tooltip="t('quotaView.advance.axisSetting.yAxis.offsetTip')"
-            icon="ant-design:question-circle-outlined"
-          />
+          <BasicHelp :text="t('quotaView.advance.axisSetting.yAxis.offsetTip')" />
         </div>
         <div class="flex gap-1 col-span-2">
           <Button size="small" block type="primary" @click="confirm">{{
@@ -138,15 +135,16 @@
 
 <script lang="ts" setup>
   import { reactive, ref, watch } from 'vue';
-  import { Input, Switch, Radio, Popover, Button, InputNumber, Tooltip } from 'ant-design-vue';
+  import { Input, Switch, Radio, Popover, Button, InputNumber } from 'ant-design-vue';
   import { cloneDeep, last, partition, merge } from 'lodash-es';
+  import { BasicHelp } from '/@/components/Basic';
   import { useI18n } from '/@/hooks/web/useI18n';
   import type { normalChartConfigType } from '/#/chart';
   import type { YAXisComponentOption } from 'echarts';
-  import { Icon, icon2Css } from '/@/components/Icon';
+  import { icon2Css } from '/@/components/Icon';
   import { isNull } from '/@/utils/is';
   import { useColor } from '../helper';
-  import { tooltipDirective as vTooltip } from '/@/directives/tooltip';
+  // import { tooltipDirective as vTooltip } from '/@/directives/tooltip';
   const { t } = useI18n();
 
   const RadioGroup = Radio.Group;

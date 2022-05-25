@@ -53,7 +53,7 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       ],
     },
     server: {
-      https: true,
+      https: false,
       // Listening on all local IPs
       host: true,
       port: VITE_PORT,
@@ -64,10 +64,11 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       pure: VITE_DROP_CONSOLE ? ['console.log', 'debugger'] : [],
     },
     build: {
-      target: 'es2017',
+      target: 'es2015',
       cssTarget: 'chrome80',
       outDir: OUTPUT_DIR,
       assetsDir: ASSESTS_DIR,
+      sourcemap: true,
       // terserOptions: {
       //   compress: {
       //     keep_infinity: true,
@@ -78,6 +79,14 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       // Turning off brotliSize display can slightly reduce packaging time
       brotliSize: false,
       chunkSizeWarningLimit: 2000,
+      rollupOptions: {
+        external: ['highlight.js'],
+        output: {
+          globals: {
+            hljs: 'hljs',
+          },
+        },
+      },
     },
     define: {
       // setting vue-i18-next

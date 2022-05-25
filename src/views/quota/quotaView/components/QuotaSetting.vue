@@ -39,9 +39,7 @@
                 class="absolute -left-1/5 top-0 w-7/10 bg-gray-100 h-full opacity-45 skew-x-165 transform"
               ></span>
             </span>
-            <Tooltip :title="t('quotaView.quotaSetting.autofillTip')">
-              <Icon class="!text-gray-500" icon="ant-design:question-circle-outlined" />
-            </Tooltip>
+            <BasicHelp :text="t('quotaView.quotaSetting.autofillTip')" />
           </div>
         </div>
       </template>
@@ -73,9 +71,9 @@
   import { SelectedQuotaItem, useSelectedQuotaListContext } from './hooks';
   import { BasicModal, useModalInner } from '/@/components/Modal';
   import { useI18n } from '/@/hooks/web/useI18n';
-  import { Input, Tooltip } from 'ant-design-vue';
+  import { Input } from 'ant-design-vue';
   import { reactive, ref, nextTick } from 'vue';
-  import Icon from '/@/components/Icon';
+  import { BasicHelp } from '/@/components/Basic';
   import { SourceTypeEnum } from '/@/enums/quotaEnum';
   import { cloneDeep } from 'lodash-es';
   import { Editor } from '/@/components/FormulaEditor';

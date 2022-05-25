@@ -7,14 +7,10 @@
       <div>
         <div class="text-gray-500">
           <span>请选择清除区间：</span>
-          <Tooltip placement="right">
-            <template #title> 请手动完成选择，系统不会预设日期 </template>
-            <Icon icon="ant-design:question-circle-outlined" />
-          </Tooltip>
+          <BasicHelp placement="right" text="请手动完成选择，系统不会预设日期" />
         </div>
         <RangePicker v-model:value="timeRange" />
       </div>
-
       <Button type="danger" size="large" class="mt-4" @click="del"
         >我已确认，清除这些指标的数据</Button
       >
@@ -25,8 +21,8 @@
 <script lang="ts">
   import { defineComponent, Ref, ref, unref } from 'vue';
   import { QuotaItem } from '/#/quota';
-  import { Icon } from '/@/components/Icon';
-  import { Button, DatePicker, Tooltip } from 'ant-design-vue';
+  import { BasicHelp } from '/@/components/Basic';
+  import { Button, DatePicker } from 'ant-design-vue';
   import { BasicModal, useModalInner } from '/@/components/Modal';
   import { delQuotaData } from '/@/api/quota';
   import { useMessage } from '/@/hooks/web/useMessage';
@@ -34,11 +30,10 @@
 
   export default defineComponent({
     components: {
-      Icon,
       BasicModal,
       RangePicker: DatePicker.RangePicker,
       Button,
-      Tooltip,
+      BasicHelp,
     },
     setup() {
       const record = ref<QuotaItem[]>([]);

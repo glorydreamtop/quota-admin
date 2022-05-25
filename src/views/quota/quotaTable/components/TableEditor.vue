@@ -37,12 +37,7 @@
                   @input="timeStrChange(columnIndex, $event)"
                 >
                   <template #addonAfter>
-                    <Tooltip>
-                      <Icon icon="ant-design:question-circle-outlined" />
-                      <template #title>
-                        <span>{{ t('table.headerCell.timeStrTip') }}</span>
-                      </template>
-                    </Tooltip>
+                    <BasicHelp :text="t('table.headerCell.timeStrTip')" />
                   </template>
                 </Input>
                 <div class="text-sm text-red-500">
@@ -105,7 +100,8 @@
     VxeTableDefines,
     VxeGridDefines,
   } from 'vxe-table';
-  import { Popover, Input, Tooltip } from 'ant-design-vue';
+  import { BasicHelp } from '/@/components/Basic';
+  import { Popover, Input } from 'ant-design-vue';
   import { useI18n } from '/@/hooks/web/useI18n';
   import {
     createTableConfigContext,

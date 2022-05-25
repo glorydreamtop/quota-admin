@@ -1,3 +1,9 @@
+git:20e3ed45b3ee5f183cb9a1e754492cf9ab0e59e9
+作者:glorydream.top<hanwenhui520@gmail.com>
+日期:2022-5-24 17:6
+说明:feat: update v-tooltip
+版本号:20220525-155916
+*******************************************************************************
 git:f41b718df469025cae6e58d8683e4ebd33602e5b
 作者:glorydream.top<hanwenhui520@gmail.com>
 日期:2022-4-25 10:31
@@ -10,4 +16,5 @@ git:f1c01cdc7b6d6c8b6b5334ae9ece4b60fc0f9230
 说明:feat: update serieSetting
 版本号:20220421-174427
 *******************************************************************************
+
 

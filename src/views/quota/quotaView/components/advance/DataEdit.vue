@@ -2,12 +2,7 @@
   <div class="grid gap-2" v-if="showSettingFilter('removePoint')">
     <div class="label">
       <span>{{ t('quotaView.advance.dataEdit.removePoint') }}</span>
-      <Tooltip>
-        <template #title>
-          <span>{{ t('quotaView.advance.dataEdit.xTip') }}</span>
-        </template>
-        <Icon icon="ant-design:question-circle-outlined" />
-      </Tooltip>
+      <BasicHelp :text="t('quotaView.advance.dataEdit.xTip')" />
     </div>
     <div class="label">
       <div class="min-w-4em">{{ t('quotaView.advance.dataEdit.xFilter') }}</div>
@@ -50,7 +45,7 @@
   import { useMessage } from '/@/hooks/web/useMessage';
   import { remove } from 'lodash-es';
   import { EChartsOption, LineSeriesOption } from 'echarts';
-  import Icon from '/@/components/Icon';
+  import { BasicHelp } from '/@/components/Basic';
 
   const TextArea = Input.TextArea;
   const { t } = useI18n();

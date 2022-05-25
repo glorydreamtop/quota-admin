@@ -3,6 +3,7 @@
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useChartConfigContext, useSettingFilter, useSortMonthAndYear } from '../hooks';
   import Icon from '/@/components/Icon';
+  import { BasicHelp } from '/@/components/Basic';
   import { structuralOffsetUnitEnum } from '/@/enums/chartEnum';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { uniq } from 'lodash-es';
@@ -98,12 +99,11 @@
               options={pastUnitList}
               v-model:value={datasourceSetting.pastUnit}
             />
-            <Tooltip>
+            <BasicHelp>
               {{
-                title: () => <span>{t('quotaView.advance.datasourceSetting.tip')}</span>,
-                default: () => <Icon icon="ant-design:question-circle-outlined" />,
+                text: () => t('quotaView.advance.datasourceSetting.tip'),
               }}
-            </Tooltip>
+            </BasicHelp>
           </span>
         );
       }
@@ -195,14 +195,11 @@
                   {t('common.natureDay')}
                 </RadioButton>
               </RadioGroup>
-              <Tooltip>
+              <BasicHelp>
                 {{
-                  title: () => (
-                    <span>{t('quotaView.advance.datasourceSetting.structuralOffsetUnit')}</span>
-                  ),
-                  default: () => <Icon icon="ant-design:question-circle-outlined" />,
+                  text: () => t('quotaView.advance.datasourceSetting.structuralOffsetUnit'),
                 }}
-              </Tooltip>
+              </BasicHelp>
             </div>
           </div>
         );
@@ -220,14 +217,11 @@
                 v-model:value={(chartConfig as quantileRadarChartConfigType).quantileOffset}
                 onChange="offsetChange"
               />
-              <Tooltip>
+              <BasicHelp>
                 {{
-                  title: () => (
-                    <span>{t('quotaView.advance.datasourceSetting.structuralOffsetTip')}</span>
-                  ),
-                  default: () => <Icon icon="ant-design:question-circle-outlined" />,
+                  text: () => t('quotaView.advance.datasourceSetting.structuralOffsetTip'),
                 }}
-              </Tooltip>
+              </BasicHelp>
             </div>
           </div>
         );

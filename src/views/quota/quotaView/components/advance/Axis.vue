@@ -9,12 +9,7 @@
           <span>{{ t('quotaView.advance.axisSetting.yAxis.createY') }}</span>
         </Button>
       </YAxisEdit>
-      <Tooltip>
-        <template #title>
-          <span>{{ t('quotaView.advance.axisSetting.yAxis.tip2') }}</span>
-        </template>
-        <Icon icon="ant-design:question-circle-outlined" />
-      </Tooltip>
+      <BasicHelp :text="t('quotaView.advance.axisSetting.yAxis.tip2')" />
     </div>
     <div class="yAxisList">
       <Tag
@@ -30,8 +25,9 @@
 </template>
 
 <script lang="ts" setup>
-  import { Tag, Tooltip, Button } from 'ant-design-vue';
+  import { Tag, Button } from 'ant-design-vue';
   import Icon from '/@/components/Icon';
+  import { BasicHelp } from '/@/components/Basic';
   import YAxisEdit from '/@/components/Chart/src/YAxisEditor.vue';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useChartConfigContext, useYAxisEdit, useSettingFilter } from '../hooks';

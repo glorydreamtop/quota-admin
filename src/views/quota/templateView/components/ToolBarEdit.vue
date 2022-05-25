@@ -7,12 +7,7 @@
         <Input size="small" v-model:value="pageConfig.baseSize.width" class="!w-16 text-center" />
         <Icon icon="ant-design:column-height-outlined" />
         <Input size="small" v-model:value="pageConfig.baseSize.height" class="!w-16 text-center" />
-        <Tooltip>
-          <template #title>
-            {{ t('templateView.toolbar.baseSizeTip') }}
-          </template>
-          <Icon icon="ant-design:question-circle-outlined" />
-        </Tooltip>
+        <BasicHelp :text="t('templateView.toolbar.baseSizeTip')" />
       </div>
     </template>
   </Popover>
@@ -59,12 +54,13 @@
 <script lang="ts" setup>
   import { reactive } from 'vue';
   import { useI18n } from '/@/hooks/web/useI18n';
-  import { Popover, Button, Input, Switch, DatePicker, Tooltip } from 'ant-design-vue';
+  import { Popover, Button, Input, Switch, DatePicker } from 'ant-design-vue';
   import ColorSchemeSelector from './ColorSchemeSelector.vue';
   import { formatToDate, yearsAgo } from '/@/utils/dateUtil';
   import { useSelectTemplateListContext, useTemplateListContext } from '../hooks';
   import type { chartConfigType } from '/#/chart';
   import Icon from '/@/components/Icon';
+  import { BasicHelp } from '/@/components/Basic';
   import { remove } from 'lodash-es';
 
   const RangePicker = DatePicker.RangePicker;

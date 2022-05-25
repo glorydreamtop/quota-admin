@@ -43,7 +43,7 @@
         </div>
       </div>
     </div>
-    <div class="icp">
+    <!-- <div class="icp">
       <a
         target="_blank"
         href="http://www.beian.gov.cn/portal/registerSystemInfo?recordcode=33010202002169"
@@ -54,7 +54,7 @@
       <a href="https://beian.miit.gov.cn" target="_blank" rel="noopener noreferrer"
         >浙ICP备2022009116号</a
       >
-    </div>
+    </div> -->
   </div>
 </template>
 <script lang="ts" setup>
