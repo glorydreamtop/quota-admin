@@ -1,8 +1,7 @@
 <script lang="tsx">
-  import { Tooltip, Radio, InputNumber, Input, Select } from 'ant-design-vue';
+  import { Radio, InputNumber, Input, Select } from 'ant-design-vue';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useChartConfigContext, useSettingFilter, useSortMonthAndYear } from '../hooks';
-  import Icon from '/@/components/Icon';
   import { BasicHelp } from '/@/components/Basic';
   import { structuralOffsetUnitEnum } from '/@/enums/chartEnum';
   import { useMessage } from '/@/hooks/web/useMessage';
@@ -99,11 +98,7 @@
               options={pastUnitList}
               v-model:value={datasourceSetting.pastUnit}
             />
-            <BasicHelp>
-              {{
-                text: () => t('quotaView.advance.datasourceSetting.tip'),
-              }}
-            </BasicHelp>
+            <BasicHelp text={t('quotaView.advance.datasourceSetting.tip')} />
           </span>
         );
       }
@@ -195,11 +190,7 @@
                   {t('common.natureDay')}
                 </RadioButton>
               </RadioGroup>
-              <BasicHelp>
-                {{
-                  text: () => t('quotaView.advance.datasourceSetting.structuralOffsetUnit'),
-                }}
-              </BasicHelp>
+              <BasicHelp text={t('quotaView.advance.datasourceSetting.structuralOffsetUnit')} />
             </div>
           </div>
         );
@@ -217,11 +208,7 @@
                 v-model:value={(chartConfig as quantileRadarChartConfigType).quantileOffset}
                 onChange="offsetChange"
               />
-              <BasicHelp>
-                {{
-                  text: () => t('quotaView.advance.datasourceSetting.structuralOffsetTip'),
-                }}
-              </BasicHelp>
+              <BasicHelp text={t('quotaView.advance.datasourceSetting.structuralOffsetTip')} />
             </div>
           </div>
         );
