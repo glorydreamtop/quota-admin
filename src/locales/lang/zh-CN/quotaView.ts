@@ -218,6 +218,7 @@ export default {
     lineShadow: '阴影',
     lineWidth: '粗细',
     yAxisIndex: 'Y轴序号',
+    quickYAxis: '独立Y轴',
     xAxisIndex: 'X轴序号',
     seriesTypeList: {
       line: '折线图',

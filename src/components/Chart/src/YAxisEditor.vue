@@ -66,12 +66,11 @@
             <div
               v-for="color in currentColorScheme"
               :key="color"
-              v-tooltip="color"
-              :style="
-                currentCfg.axisLine?.lineStyle?.color === color
-                  ? { ...checkIcon, backgroundColor: color }
-                  : { backgroundColor: color }
-              "
+              :title="color"
+              :class="{
+                'iconfont icon-checkmark': currentCfg.axisLine?.lineStyle?.color === color,
+              }"
+              :style="{ backgroundColor: color }"
               @click="colorChange(color)"
             ></div>
           </div>
@@ -267,7 +266,6 @@
   async function getColorScheme() {
     currentColorScheme.value = await useColor({ chartConfig: props.chartConfig });
   }
-  const checkIcon = icon2Css('ant-design:check-outlined');
 </script>
 
 <style lang="less" scoped>
@@ -279,11 +277,21 @@
     div {
       @apply w-4 h-4;
 
-      &::after {
-        content: '';
+      border-radius: 2px;
+    }
+
+    .icon-checkmark {
+      position: relative;
+
+      &::before {
         position: absolute;
         top: 0;
         left: 0;
+        font-size: 12px;
+        width: 16px;
+        height: 16px;
+        text-align: center;
+        color: @white;
       }
     }
   }

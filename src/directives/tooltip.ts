@@ -1,5 +1,4 @@
-import { Directive, DirectiveBinding, App, VNode, nextTick } from 'vue';
-import { h, render } from 'vue';
+import { Directive, App, h, render } from 'vue';
 import { Tooltip } from 'ant-design-vue';
 import { buildShortUUID } from '../utils/uuid';
 
@@ -15,22 +14,19 @@ function makeEventListener(parent: HTMLElement, child: HTMLElement) {
   }
 }
 
-const map = new Map<string, HTMLElement>();
-
 interface tooltipDom extends HTMLElement {
   created: boolean;
   uniqueId: string;
 }
 
-export const tooltipDirective: Directive = {
-  created(el: tooltipDom, binding: DirectiveBinding<string | VNode>, vnode: VNode) {
+const tooltipDirective: Directive = {
+  mounted(el: tooltipDom, binding) {
     if (!el.created) {
       el.created = true;
       el.uniqueId = `tooltip${buildShortUUID()}`;
     } else {
       return;
     }
-    const isComponent = !vnode.scopeId;
     const { value, arg } = binding;
     const mask = h(el.tagName, {
       style: {
@@ -51,46 +47,25 @@ export const tooltipDirective: Directive = {
         default: () => mask,
       },
     );
-    if (isComponent) {
-      const d = document.createElement(el.tagName);
-      map.set(el.uniqueId, d);
-      render(tooltipInstance, d);
-      document.body.appendChild(d);
-      const mask = d.querySelector('.h-tooltip-helper') as HTMLElement;
-      makeEventListener(el, mask);
-    } else {
-      render(tooltipInstance, el);
-      const mask = el.querySelector('.h-tooltip-helper') as HTMLElement;
-      makeEventListener(el, mask);
-    }
-  },
-  mounted(el: tooltipDom) {
+    render(tooltipInstance, el);
     setTimeout(() => {
-      const d = map.get(el.uniqueId);
-      const { y, x } = el.getBoundingClientRect();
-      if (d) {
-        Object.assign(d.style, {
-          position: 'absolute',
-          top: `${y + el.offsetHeight / 2}px`,
-          left: `${x + el.offsetWidth / 2}px`,
-          width: '0px',
-          zIndex: '199',
-        });
-      } else {
-        const mask = el.querySelector('.h-tooltip-helper') as HTMLElement;
-        Object.assign(mask.style, {
-          transform: `translate(${el.offsetWidth / 2}px, ${el.offsetHeight / 2}px)`,
-          width: '0px',
-        });
-      }
+      // const mask = el.querySelector('.h-tooltip-helper') as HTMLElement;
+      makeEventListener(el, mask.el as HTMLElement);
+      Object.assign(mask.el.style, {
+        transform: `translate(${el.offsetWidth / 2}px, ${el.offsetHeight / 2}px)`,
+        width: '0px',
+      });
     }, 300);
   },
-  beforeUnmount(el: tooltipDom) {
-    const d = map.get(el.uniqueId);
-    d?.remove();
+  unmounted: (el: tooltipDom) => {
+    el.querySelector('.h-tooltip-helper')?.remove();
+    Reflect.deleteProperty(el, 'created');
+    Reflect.deleteProperty(el, 'uniqueId');
   },
 };
 
 export function setupTooltipDirective(app: App) {
-  app.directive('tooltip', tooltipDirective);
+  app.directive('tip', tooltipDirective);
 }
+
+export default tooltipDirective;

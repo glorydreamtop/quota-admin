@@ -40,6 +40,9 @@
             :max="limit.yAxisMax"
             :min="1"
           />
+          <Tooltip :title="t('quotaView.seriesEdit.quickYAxis')">
+            <Icon icon="ant-design:plus-circle-filled"
+          /></Tooltip>
         </span>
         <span v-if="info.xAxisIndex !== undefined">
           <span class="w-4em text-justify mr-2">{{ t('quotaView.seriesEdit.xAxisIndex') }}</span>
@@ -60,7 +63,7 @@
 
 <script lang="ts" setup>
   import { reactive, ref, watch, toRaw, computed } from 'vue';
-  import { Popover, Button, Switch, Select, InputNumber } from 'ant-design-vue';
+  import { Popover, Button, Switch, Select, InputNumber, Tooltip } from 'ant-design-vue';
   import { cloneDeep, difference, merge } from 'lodash-es';
   import { useI18n } from '/@/hooks/web/useI18n';
   import type { normalChartConfigType, seriesSettingType } from '/#/chart';

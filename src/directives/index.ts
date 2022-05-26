@@ -9,10 +9,10 @@ import { setupResizeDirective, setupAutoSizeDirective } from './resizeable';
 import { setupTooltipDirective } from './tooltip';
 
 export function setupGlobDirectives(app: App) {
+  setupTooltipDirective(app);
   setupPermissionDirective(app);
   setupLoadingDirective(app);
   setupRepeatDirective(app);
   setupResizeDirective(app);
   setupAutoSizeDirective(app);
-  setupTooltipDirective(app);
 }

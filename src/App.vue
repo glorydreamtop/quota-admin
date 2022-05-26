@@ -20,4 +20,6 @@
   useTitle();
 </script>
 
-<style></style>
+<style>
+  @import url(https://at.alicdn.com/t/font_2948274_h4eh236pakh.css);
+</style>
