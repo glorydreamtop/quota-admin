@@ -218,7 +218,8 @@ export default {
     lineShadow: '阴影',
     lineWidth: '粗细',
     yAxisIndex: 'Y轴序号',
-    quickYAxis: '独立Y轴',
+    quickYAxis: '创建独立Y轴',
+    quickYAxisTip: '确认后绑定独立Y轴',
     xAxisIndex: 'X轴序号',
     seriesTypeList: {
       line: '折线图',

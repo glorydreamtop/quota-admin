@@ -82,18 +82,7 @@
 </template>
 
 <script lang="ts" setup>
-  import {
-    onMounted,
-    reactive,
-    ref,
-    unref,
-    defineEmits,
-    defineProps,
-    toRefs,
-    nextTick,
-    h,
-    computed,
-  } from 'vue';
+  import { onMounted, reactive, ref, unref, toRefs, nextTick, h, computed } from 'vue';
   import { QuotaSearch, ToolBar } from '../index';
   import { QuotaEditor, TagEditor } from '/@/components/QuotaEditor';
   import { BasicTree } from '/@/components/Tree/index';

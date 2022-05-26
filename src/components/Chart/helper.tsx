@@ -441,6 +441,7 @@ export function useLineChartContextMenu({ onOk, chartConfig }: chartTitlePopover
     console.log(e);
     // const idx = xAxisIndex;
     function SeriesEditComponent() {
+      let yAxisIndexCache;
       const editPopover = h(SeriesEdit, {
         chartConfig,
         seriesInfo: e,
@@ -452,8 +453,12 @@ export function useLineChartContextMenu({ onOk, chartConfig }: chartTitlePopover
           }
         },
         onUpdate: (v: any) => {
+          if (yAxisIndexCache) {
+            v.yAxis!.push(yAxisIndexCache);
+          }
           onOk(v);
         },
+        onAddYAxis: () => {},
         getPopupContainer: () => dom,
       });
       return editPopover;

@@ -140,7 +140,6 @@
   import { useI18n } from '/@/hooks/web/useI18n';
   import type { normalChartConfigType } from '/#/chart';
   import type { YAXisComponentOption } from 'echarts';
-  import { icon2Css } from '/@/components/Icon';
   import { isNull } from '/@/utils/is';
   import { useColor } from '../helper';
   // import { tooltipDirective as vTooltip } from '/@/directives/tooltip';

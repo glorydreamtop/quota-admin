@@ -1,5 +1,5 @@
 {
-  "name": "quota-web-next",
+  "name": "quant-web-next",
   "version": "2.0.0",
   "author": {
     "name": "hubert",
@@ -37,7 +37,6 @@
     "@ant-design/colors": "^6.0.0",
     "@ant-design/icons-vue": "^6.1.0",
     "@iconify/iconify": "^2.2.1",
-    "@interactjs/types": "^1.10.11",
     "@logicflow/core": "^1.1.13",
     "@logicflow/extension": "^1.1.13",
     "@vue/runtime-core": "^3.2.33",
@@ -82,6 +81,7 @@
     "@commitlint/cli": "^16.2.3",
     "@commitlint/config-conventional": "^16.2.1",
     "@iconify/json": "^2.1.30",
+    "@interactjs/types": "^1.10.11",
     "@purge-icons/generated": "^0.8.1",
     "@types/codemirror": "^5.60.5",
     "@types/crypto-js": "^4.1.1",

@@ -1,3 +1,9 @@
+git:2f8d758202b4b8194cfd4055566d0104da5bc4ef
+作者:glorydream.top<hanwenhui520@gmail.com>
+日期:2022-5-26 10:38
+说明:feat: update yaxis-color setting
+版本号:20220526-11124
+*******************************************************************************
 git:20e3ed45b3ee5f183cb9a1e754492cf9ab0e59e9
 作者:glorydream.top<hanwenhui520@gmail.com>
 日期:2022-5-24 17:6
@@ -16,5 +22,6 @@ git:f1c01cdc7b6d6c8b6b5334ae9ece4b60fc0f9230
 说明:feat: update serieSetting
 版本号:20220421-174427
 *******************************************************************************
+
 
 

@@ -25,7 +25,12 @@
         </span>
         <span v-if="info.size !== undefined">
           <span class="w-4em text-justify mr-2">{{ t('quotaView.seriesEdit.lineWidth') }}</span>
-          <InputNumber :step="2" class="!text-center" size="small" v-model:value="info.size" />
+          <InputNumber
+            :step="2"
+            class="!text-center !w-6em"
+            size="small"
+            v-model:value="info.size"
+          />
         </span>
         <span v-if="info.shadow !== undefined">
           <span class="w-4em text-justify mr-2">{{ t('quotaView.seriesEdit.lineShadow') }}</span>
@@ -36,13 +41,27 @@
           <InputNumber
             class="!w-3em !text-center"
             size="small"
+            :disabled="quickYAxis"
             v-model:value="info.yAxisIndex"
             :max="limit.yAxisMax"
             :min="1"
           />
-          <Tooltip :title="t('quotaView.seriesEdit.quickYAxis')">
-            <Icon icon="ant-design:plus-circle-filled"
-          /></Tooltip>
+          <Tooltip
+            :title="
+              quickYAxis
+                ? t('quotaView.seriesEdit.quickYAxisTip')
+                : t('quotaView.seriesEdit.quickYAxis')
+            "
+          >
+            <Icon
+              :class="['ml-2', quickYAxis ? '!text-green-600' : '!text-primary']"
+              size="20"
+              :icon="
+                quickYAxis ? 'ant-design:check-circle-outlined' : 'ant-design:plus-circle-outlined'
+              "
+              @click="addYAxis"
+            />
+          </Tooltip>
         </span>
         <span v-if="info.xAxisIndex !== undefined">
           <span class="w-4em text-justify mr-2">{{ t('quotaView.seriesEdit.xAxisIndex') }}</span>
@@ -64,14 +83,21 @@
 <script lang="ts" setup>
   import { reactive, ref, watch, toRaw, computed } from 'vue';
   import { Popover, Button, Switch, Select, InputNumber, Tooltip } from 'ant-design-vue';
-  import { cloneDeep, difference, merge } from 'lodash-es';
+  import Icon from '/@/components/Icon';
+  import { cloneDeep, difference, last, merge, partition } from 'lodash-es';
   import { useI18n } from '/@/hooks/web/useI18n';
   import type { normalChartConfigType, seriesSettingType } from '/#/chart';
-  import { chartTypeEnum, echartLineTypeEnum, echartSeriesTypeEnum } from '/@/enums/chartEnum';
+  import { echartLineTypeEnum, echartSeriesTypeEnum } from '/@/enums/chartEnum';
   import { EChartsOption } from 'echarts';
   import { setSeriesInfo } from '../helper';
+  import { disableSeriesType } from './disableSeries';
 
   const { t } = useI18n();
+  const emit = defineEmits<{
+    (event: 'update', chartConfig: normalChartConfigType);
+    (event: 'visibleChange', visible: boolean);
+    (event: 'addYAxis', yAxis);
+  }>();
   const props = defineProps<{
     chartConfig: normalChartConfigType;
     seriesInfo: any;
@@ -91,36 +117,6 @@
       yAxisMax: props.chartConfig.yAxis.length,
     };
   });
-  // 某图表类型不允许将seriesType切换的黑名单
-  const disableSeriesType = {
-    [chartTypeEnum.normal]: [echartSeriesTypeEnum.radar, echartSeriesTypeEnum.pie],
-    [chartTypeEnum.seasonal]: [echartSeriesTypeEnum.radar, echartSeriesTypeEnum.pie],
-    [chartTypeEnum.bar]: [echartSeriesTypeEnum.radar, echartSeriesTypeEnum.pie],
-    [chartTypeEnum.normalRadar]: [
-      echartSeriesTypeEnum.line,
-      echartSeriesTypeEnum.scatter,
-      echartSeriesTypeEnum.smoothLine,
-      echartSeriesTypeEnum.pie,
-      echartSeriesTypeEnum.bar,
-    ],
-    [chartTypeEnum.quantileRadar]: [
-      echartSeriesTypeEnum.area,
-      echartSeriesTypeEnum.line,
-      echartSeriesTypeEnum.scatter,
-      echartSeriesTypeEnum.smoothLine,
-      echartSeriesTypeEnum.pie,
-      echartSeriesTypeEnum.bar,
-    ],
-    [chartTypeEnum.structural]: [echartSeriesTypeEnum.radar, echartSeriesTypeEnum.pie],
-    [chartTypeEnum.pie]: [
-      echartSeriesTypeEnum.area,
-      echartSeriesTypeEnum.line,
-      echartSeriesTypeEnum.scatter,
-      echartSeriesTypeEnum.smoothLine,
-      echartSeriesTypeEnum.radar,
-      echartSeriesTypeEnum.bar,
-    ],
-  };
   const availableSeriesType = computed(() => {
     return difference(
       [
@@ -161,10 +157,36 @@
   //       break;
   //   }
   // }
-  const emit = defineEmits<{
-    (event: 'update', chartConfig: normalChartConfigType);
-    (event: 'visibleChange', visible: boolean);
-  }>();
+  const quickYAxis = ref(false);
+  function addYAxis() {
+    if (quickYAxis.value) return;
+    info.yAxisIndex = props.chartConfig.yAxis.length + 1;
+    quickYAxis.value = true;
+    // 新增的智能分配到轴比较少的一侧
+    const [leftAxis, rightAxis] = partition(props.chartConfig.yAxis!, (item) => {
+      return item.position === 'left';
+    });
+    const isLeft = leftAxis.length < rightAxis.length;
+    // 新轴的偏移量在最后一根同侧轴+40
+    const offset = (isLeft ? last(leftAxis)?.offset ?? -40 : last(rightAxis)?.offset ?? -40) + 40;
+    const yAxis = {
+      min: undefined,
+      max: undefined,
+      inverse: false,
+      offset: offset,
+      axisLine: {
+        show: true,
+        lineStyle: {
+          color: '#999999',
+        },
+      },
+      position: isLeft ? 'left' : 'right',
+      axisLabel: {
+        formatter: '{value}',
+      },
+    };
+    emit('addYAxis', yAxis);
+  }
   const visible = ref(false);
   function setVisible(v) {
     visible.value = v;
@@ -172,6 +194,7 @@
   defineExpose({ setVisible });
   watch(visible, (v) => {
     if (v) {
+      console.log(props.options);
       setSeriesInfo(info, props.chartConfig.type, props.seriesInfo, props.options);
     }
     emit('visibleChange', v);

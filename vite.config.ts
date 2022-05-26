@@ -79,14 +79,6 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       // Turning off brotliSize display can slightly reduce packaging time
       brotliSize: false,
       chunkSizeWarningLimit: 2000,
-      rollupOptions: {
-        external: ['highlight.js'],
-        output: {
-          globals: {
-            hljs: 'hljs',
-          },
-        },
-      },
     },
     define: {
       // setting vue-i18-next

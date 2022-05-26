@@ -130,7 +130,6 @@ importers:
       '@ant-design/colors': 6.0.0
       '@ant-design/icons-vue': 6.1.0_vue@3.2.33
       '@iconify/iconify': 2.2.1
-      '@interactjs/types': 1.10.11
       '@logicflow/core': 1.1.13
       '@logicflow/extension': 1.1.13
       '@vue/runtime-core': 3.2.33
@@ -174,6 +173,7 @@ importers:
       '@commitlint/cli': 16.2.3
       '@commitlint/config-conventional': 16.2.1
       '@iconify/json': 2.1.30
+      '@interactjs/types': 1.10.11
       '@purge-icons/generated': 0.8.1
       '@types/codemirror': 5.60.5
       '@types/crypto-js': 4.1.1
@@ -2410,7 +2410,6 @@ packages:
 
   /@interactjs/types/1.10.11:
     resolution: {integrity: sha512-YRsVFWjL8Gkkvlx3qnjeaxW4fnibSJ9791g8BA7Pv5ANByI64WmtR1vU7A2rXcrOn8XvyCEfY0ss1s8NhZP+MA==}
-    dev: false
 
   /@intlify/core-base/9.1.9:
     resolution: {integrity: sha512-x5T0p/Ja0S8hs5xs+ImKyYckVkL4CzcEXykVYYV6rcbXxJTe2o58IquSqX9bdncVKbRZP7GlBU1EcRaQEEJ+vw==}

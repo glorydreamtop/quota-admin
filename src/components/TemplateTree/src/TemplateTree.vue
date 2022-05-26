@@ -37,7 +37,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { onMounted, reactive, ref, unref, defineEmits, defineProps, toRefs, nextTick } from 'vue';
+  import { onMounted, reactive, ref, unref, toRefs, nextTick } from 'vue';
   import { TemplateSearch } from '../index';
   import { BasicTree } from '/@/components/Tree/index';
   import type { ContextMenuItem } from '/@/components/Tree/index';
