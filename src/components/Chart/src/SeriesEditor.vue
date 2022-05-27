@@ -4,7 +4,7 @@
       <div
         class="flex flex-col gap-1 children:whitespace-nowrap children:flex children:items-center w-40"
       >
-        <span class="text-primary">{{ info.name }}</span>
+        <span :style="{ color: info.color }">{{ info.name }}</span>
         <span>
           <span class="w-4em text-justify mr-2">{{ t('quotaView.seriesEdit.seriesType') }}</span>
           <Select
@@ -22,6 +22,10 @@
             v-model:value="info.lineType"
             :options="lineTypeList"
           />
+        </span>
+        <span v-if="info.lineType !== undefined">
+          <span class="w-4em text-justify mr-2">{{ t('quotaView.seriesEdit.symbol') }}</span>
+          <Switch size="small" v-model:checked="info.symbol" />
         </span>
         <span v-if="info.size !== undefined">
           <span class="w-4em text-justify mr-2">{{ t('quotaView.seriesEdit.lineWidth') }}</span>
@@ -111,6 +115,8 @@
     shadow: undefined,
     yAxisIndex: undefined,
     xAxisIndex: undefined,
+    color: undefined,
+    symbol: undefined,
   });
   const limit = computed(() => {
     return {
@@ -177,7 +183,7 @@
       axisLine: {
         show: true,
         lineStyle: {
-          color: '#999999',
+          color: info.color,
         },
       },
       position: isLeft ? 'left' : 'right',
@@ -194,7 +200,6 @@
   defineExpose({ setVisible });
   watch(visible, (v) => {
     if (v) {
-      console.log(props.options);
       setSeriesInfo(info, props.chartConfig.type, props.seriesInfo, props.options);
     }
     emit('visibleChange', v);

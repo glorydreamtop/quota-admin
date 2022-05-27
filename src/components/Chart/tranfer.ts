@@ -293,6 +293,7 @@ export async function useBarChart(chartConfig: barChartConfigType) {
     series.push({
       type: 'bar',
       seriesLayoutBy: 'column',
+      name: legendName,
     });
     firstLine.push(legendName);
   }

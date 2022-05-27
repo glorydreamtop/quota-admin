@@ -215,6 +215,7 @@ export default {
   seriesEdit: {
     seriesType: '序列类型',
     lineType: '线型',
+    symbol: '标点',
     lineShadow: '阴影',
     lineWidth: '粗细',
     yAxisIndex: 'Y轴序号',

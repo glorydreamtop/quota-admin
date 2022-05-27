@@ -20,7 +20,7 @@ import XAxisEdit from './src/XAxisEditor.vue';
 import SeriesEdit from './src/SeriesEditor.vue';
 import { getColorScheme } from '/@/api/color';
 import { isNumber, isArray } from '/@/utils/is';
-import { fade } from '/@/utils/color';
+import { fade, rgbToHex } from '/@/utils/color';
 
 const { t } = useI18n();
 export async function fetchQuotaData(params: getQuotaDataParams) {
@@ -458,7 +458,9 @@ export function useLineChartContextMenu({ onOk, chartConfig }: chartTitlePopover
           }
           onOk(v);
         },
-        onAddYAxis: () => {},
+        onAddYAxis: (v) => {
+          yAxisIndexCache = v;
+        },
         getPopupContainer: () => dom,
       });
       return editPopover;
@@ -523,6 +525,14 @@ export function setSeriesInfo(
   seriesInfo: any,
   options: EChartsOption,
 ) {
+  // 匹配rgb中的数字部分,线就是stroke，填充就是fill
+  const colorStr: string =
+    seriesInfo.event.target.style.stroke ?? seriesInfo.event.target.style.fill;
+  const color: number[] = colorStr
+    .match(/\d+/g)!
+    .slice(0, 3)
+    .map((v) => parseInt(v));
+  info.color = rgbToHex.apply(null, color);
   function caseNormal() {
     const seriesIndex = seriesInfo.seriesIndex;
     const series = options.series![seriesIndex];
@@ -538,6 +548,7 @@ export function setSeriesInfo(
       info.size = series.lineStyle.width;
       info.lineType = series.lineStyle.type;
       info.shadow = series.lineStyle.shadowColor !== undefined;
+      info.symbol = series.symbol !== 'none';
     } else if (series.type === 'bar') {
       info.seriesType = echartSeriesTypeEnum.bar;
     }
@@ -559,6 +570,7 @@ export function setSeriesInfo(
       info.size = series.lineStyle.width;
       info.lineType = series.lineStyle.type;
       info.shadow = series.lineStyle.shadowColor !== undefined;
+      info.symbol = series.symbol !== 'none';
     } else if (series.type === 'bar') {
       info.seriesType = echartSeriesTypeEnum.bar;
     }
@@ -602,6 +614,7 @@ export function setSeriesInfo(
       info.size = series.lineStyle.width;
       info.lineType = series.lineStyle.type;
       info.shadow = series.lineStyle.shadowColor !== undefined;
+      info.symbol = series.symbol !== 'none';
     } else if (series.type === 'bar') {
       info.seriesType = echartSeriesTypeEnum.bar;
     }
@@ -616,6 +629,7 @@ export function setSeriesInfo(
     info.size = data.lineStyle.width;
     info.lineType = data.lineStyle.type;
     info.shadow = data.lineStyle.shadowColor !== undefined;
+    info.symbol = data.symbol !== 'none';
   }
   const fns = {
     [chartTypeEnum.normal]: caseNormal,
@@ -711,7 +725,15 @@ export function useSeriesSetting({
       return {
         lineStyle,
         smooth,
-        symbol: 'none',
+        symbolSize: (seriesSetting?.size ?? 4) + 2,
+        symbol:
+          chartConfig.type === chartTypeEnum.structural
+            ? seriesSetting?.symbol ?? true
+              ? 'emptyCircle'
+              : 'none'
+            : seriesSetting?.symbol
+            ? 'emptyCircle'
+            : 'none',
       };
     }
     if (ser.type === 'bar') {
@@ -765,6 +787,8 @@ export function useSeriesSetting({
       }
       return {
         lineStyle,
+        symbolSize: (seriesSetting?.size ?? 4) + 2,
+        symbol: seriesSetting?.symbol ? 'circle' : 'none',
       };
     }
   }
@@ -812,6 +836,7 @@ export function useSeriesSetting({
           ...getSeriesStyle({ ser: s, seriesSetting, index }),
           ...getAxisIndex(seriesSetting),
         });
+        console.log(s);
       });
     },
     [chartTypeEnum.normalRadar]: () => {
