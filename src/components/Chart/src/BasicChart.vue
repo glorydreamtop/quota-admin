@@ -76,6 +76,7 @@
       if (!Reflect.has(v, 'quotaList') || v.quotaList?.length === 0) return;
       try {
         loading.value = true;
+        console.log('chart config', v);
         getInstance()?.on('finished', function () {
           nextTick(() => {
             emit('paintSuccess', getInstance()!.getOption());

@@ -8,12 +8,7 @@
   >
     <template #content>
       <div
-        class="
-          flex flex-col
-          gap-1
-          children:whitespace-nowrap children:flex children:items-center
-          w-30
-        "
+        class="flex flex-col gap-1 children:whitespace-nowrap children:flex children:items-center w-30"
       >
         <div>
           <div class="w-3em text-justify mr-2">
@@ -85,7 +80,7 @@
           }}</div>
           <Input
             size="small"
-             class="!w-59px !min-w-59px"
+            class="!w-59px !min-w-59px"
             v-model:value="currentCfg.offset"
             @input="(e) => onInputNumber(e, 'offset')"
           />
@@ -155,12 +150,12 @@
 
   const placement = ref<'left' | 'right'>('right');
   // 数字格式化
-  function onInputNumber(e, type: 'min' | 'max' | 'offset') {
+  function onInputNumber(e: ChangeEvent, type: 'min' | 'max' | 'offset') {
     if (e.target.value === '') {
       currentCfg[type] = undefined;
       return;
     }
-    currentCfg[type] = parseFloat((e.target.value as string).replace(/[^\d|\.]/g, ''));
+    currentCfg[type] = parseFloat(e.target.value);
   }
   const visible = ref(false);
   function setVisible(v) {
@@ -223,9 +218,7 @@
     // 检查当前轴是否被使用中
     const hasDep = config.quotaList!.find((quota) => quota.setting.yAxisIndex === props.idx);
     if (hasDep) {
-      createMessage.warn(
-        `[${hasDep.name}]` + t('quotaView.advance.axisSetting.yAxis.cannotdel'),
-      );
+      createMessage.warn(`[${hasDep.name}]` + t('quotaView.advance.axisSetting.yAxis.cannotdel'));
       return;
     }
     if (config.yAxis.length === 1) {

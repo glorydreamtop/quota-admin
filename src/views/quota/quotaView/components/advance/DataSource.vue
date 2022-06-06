@@ -19,18 +19,18 @@
       const chartConfig = useChartConfigContext();
       const showSettingFilter = useSettingFilter(chartConfig);
       // 校验曲线结构日期偏移量输入值
-      function offsetChange({ target }: { target: HTMLInputElement }) {
-        if (/[^(\d|,)]/g.test(target.value)) {
-          target.style.borderColor = 'red';
+      function offsetChange(e: ChangeEvent) {
+        if (/[^(\d|,)]/g.test(e.target.value)) {
+          e.target.style.borderColor = 'red';
           createMessage.error(t('common.invaildTextTip'));
           return;
         }
-        const arr = target.value.split(',');
+        const arr = e.target.value.split(',');
         if (uniq(arr).length !== arr.length) {
           createMessage.error(t('common.notUniqTip'));
           return;
         }
-        target.style.borderColor = '';
+        e.target.style.borderColor = '';
       }
       const datasourceSetting = reactive({
         pastValue: 0,

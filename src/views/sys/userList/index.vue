@@ -56,7 +56,7 @@
               size: 'small',
               defaultValue: resetPwdText,
               placeholder: t('sys.login.passwordPlaceholder'),
-              onInput: ({ target }) => (resetPwdText.value = target.value),
+              onInput: (e: ChangeEvent) => (resetPwdText.value = e.target.value),
             });
           },
           confirm: async () => {

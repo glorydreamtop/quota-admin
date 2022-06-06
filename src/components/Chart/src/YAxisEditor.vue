@@ -18,30 +18,6 @@
         </div>
         <div>
           <div class="min-w-3em text-justify mr-2">{{
-            t('quotaView.advance.axisSetting.yAxis.min')
-          }}</div>
-          <Input
-            size="small"
-            class="!w-59px !min-w-59px"
-            v-model:value="currentCfg.min"
-            :placeholder="t('common.auto')"
-            @input="(e) => onInputNumber(e, 'min')"
-          />
-        </div>
-        <div>
-          <div class="min-w-3em text-justify mr-2">{{
-            t('quotaView.advance.axisSetting.yAxis.max')
-          }}</div>
-          <Input
-            size="small"
-            class="!w-59px !min-w-59px"
-            v-model:value="currentCfg.max"
-            :placeholder="t('common.auto')"
-            @input="(e) => onInputNumber(e, 'max')"
-          />
-        </div>
-        <div>
-          <div class="min-w-3em text-justify mr-2">{{
             t('quotaView.advance.axisSetting.yAxis.position')
           }}</div>
           <RadioGroup
@@ -58,6 +34,31 @@
             }}</RadioButton>
           </RadioGroup>
         </div>
+        <div>
+          <div class="min-w-3em text-justify mr-2">{{
+            t('quotaView.advance.axisSetting.yAxis.min')
+          }}</div>
+          <Input
+            size="small"
+            class="!w-59px !min-w-59px"
+            v-model:value="currentCfg.min"
+            :placeholder="t('common.auto')"
+            @blur="(e) => onInputNumber(e, 'min')"
+          />
+        </div>
+        <div>
+          <div class="min-w-3em text-justify mr-2">{{
+            t('quotaView.advance.axisSetting.yAxis.max')
+          }}</div>
+          <Input
+            size="small"
+            class="!w-59px !min-w-59px"
+            v-model:value="currentCfg.max"
+            :placeholder="t('common.auto')"
+            @blur="(e) => onInputNumber(e, 'max')"
+          />
+        </div>
+
         <div class="col-span-2">
           <div class="min-w-3em text-justify mr-2">{{
             t('quotaView.advance.axisSetting.yAxis.color')
@@ -106,7 +107,7 @@
             size="small"
             class="!w-38px !min-w-38px !mr-1"
             v-model:value="currentCfg.offset"
-            @input="(e) => onInputNumber(e, 'offset')"
+            @blur="(e) => onInputNumber(e, 'offset')"
           />
           <BasicHelp :text="t('quotaView.advance.axisSetting.yAxis.offsetTip')" />
         </div>
@@ -182,12 +183,12 @@
 
   const placement = ref<'left' | 'right'>('right');
   // 数字格式化
-  function onInputNumber(e, type: 'min' | 'max' | 'offset') {
+  function onInputNumber(e: ChangeEvent, type: 'min' | 'max' | 'offset') {
     if (e.target.value === '') {
       currentCfg[type] = undefined;
       return;
     }
-    currentCfg[type] = parseFloat((e.target.value as string).replace(/[^\d|\.]/g, ''));
+    currentCfg[type] = parseFloat(e.target.value);
   }
   const visible = ref(false);
   function setVisible(v) {
@@ -207,20 +208,8 @@
         const offset =
           (isLeft ? last(leftAxis)?.offset ?? -40 : last(rightAxis)?.offset ?? -40) + 40;
         merge(currentCfg, {
-          min: undefined,
-          max: undefined,
-          inverse: false,
           offset: offset,
-          axisLine: {
-            show: true,
-            lineStyle: {
-              color: '#999999',
-            },
-          },
           position: isLeft ? 'left' : 'right',
-          axisLabel: {
-            formatter: '{value}',
-          },
         });
         scientificNotation.value = 0;
       } else {

@@ -152,8 +152,8 @@
             h(Input, {
               class: '!w-30',
               size: 'small',
-              onInput: ({ target }: { target: HTMLInputElement }) => {
-                data.value = target.value.trim();
+              onInput: (e: ChangeEvent) => {
+                data.value = e.target.value.trim();
               },
             }),
           ]),
