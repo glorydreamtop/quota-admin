@@ -42,6 +42,7 @@
             size="small"
             class="!w-59px !min-w-59px"
             v-model:value="currentCfg.min"
+            :disabled="currentCfg.alignZero"
             :placeholder="t('common.auto')"
             @blur="(e) => onInputNumber(e, 'min')"
           />
@@ -54,11 +55,12 @@
             size="small"
             class="!w-59px !min-w-59px"
             v-model:value="currentCfg.max"
+            :disabled="currentCfg.alignZero"
             :placeholder="t('common.auto')"
             @blur="(e) => onInputNumber(e, 'max')"
           />
         </div>
-
+        <div class="col-span-2"></div>
         <div class="col-span-2">
           <div class="min-w-3em text-justify mr-2">{{
             t('quotaView.advance.axisSetting.yAxis.color')
@@ -139,8 +141,7 @@
   import { cloneDeep, last, partition, merge } from 'lodash-es';
   import { BasicHelp } from '/@/components/Basic';
   import { useI18n } from '/@/hooks/web/useI18n';
-  import type { normalChartConfigType } from '/#/chart';
-  import type { YAXisComponentOption } from 'echarts';
+  import type { normalChartConfigType, YAxisOption } from '/#/chart';
   import { isNull } from '/@/utils/is';
   import { useColor } from '../helper';
   // import { tooltipDirective as vTooltip } from '/@/directives/tooltip';
@@ -156,7 +157,7 @@
     (event: 'update', chartConfig: normalChartConfigType);
     (event: 'visibleChange', visible: boolean);
   }>();
-  const currentCfg = reactive({
+  const currentCfg: YAxisOption = reactive({
     min: undefined,
     max: undefined,
     inverse: false,
@@ -171,7 +172,8 @@
     axisLabel: {
       formatter: '{value}',
     },
-  }) as YAXisComponentOption;
+    alignZero: false,
+  });
   const colorChange = (color: string) => {
     currentCfg.axisLine.lineStyle.color = color;
   };
