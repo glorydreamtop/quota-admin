@@ -180,6 +180,7 @@
       max: undefined,
       inverse: false,
       offset: offset,
+      name: isLeft ? `左${leftAxis.length + 1}` : `右${rightAxis.length + 1}`,
       axisLine: {
         show: true,
         lineStyle: {

@@ -84,7 +84,6 @@
           });
         });
         const options = await chartTypeHooks[v.type](v);
-        options.animationEasing = 'quinticIn';
         setOptions(options);
         noChart.value = false;
         renderError.value = false;

@@ -44,6 +44,7 @@ const baseYAxisConfig = [
     min: undefined,
     max: undefined,
     inverse: false,
+    name: '左1',
     offset: 0,
     axisLine: {
       show: true,

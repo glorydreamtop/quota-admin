@@ -471,9 +471,6 @@ export function useLineChartContextMenu({ onOk, chartConfig }: chartTitlePopover
     component.component!.exposed!.setVisible(true);
   };
 }
-// if (dom.className === MOUNTNODE) {
-//   dom.remove();
-// }
 
 export function useNormalized({ chartConfig, quotaDataList }: baseHelperParams) {
   if (!chartConfig.valueFormatter.normalized) return;
@@ -512,7 +509,7 @@ export function useScientificNotation(yAxis: YAXisComponentOption) {
     y.axisLabel!.formatter = (v) => {
       return v / Math.pow(10, s);
     };
-    y.name = `10e${s}`;
+    y.name = `10e${s}${y.name}`;
     y.axisLine!.symbol = ['none', 'arrow'];
   }
   return y;

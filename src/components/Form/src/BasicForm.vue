@@ -103,6 +103,7 @@
 
       // Get uniform row style and Row configuration for the entire form
       const getRow = computed((): Recordable => {
+        console.log(unref(getProps));
         const { baseRowStyle = {}, rowProps } = unref(getProps);
         return {
           style: baseRowStyle,

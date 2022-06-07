@@ -14,7 +14,7 @@ const productTreeData = computed<TreeItem>(() => {
     conversion: (node) => {
       return {
         name: node.name,
-        code: node.code,
+        code: isNull(node.code) || node.code === '-' ? node.name : node.code,
         isLeaf: !isNull(node.code),
         selectable: !isNull(node.code),
       };

@@ -27,7 +27,7 @@
     schemas: schemas,
     showResetButton: false,
     showSubmitButton: false,
-    layout: 'horizontal',
+    // layout: 'horizontal',
     labelCol: { span: 4 },
     wrapperCol: { span: 18 },
   });

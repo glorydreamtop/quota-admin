@@ -93,11 +93,15 @@
               class="!w-14 !min-w-14"
               v-model:value={datasourceSetting.pastValue}
             />
-            <Select
+            <RadioGroup
+              button-style="solid"
               size="small"
-              options={pastUnitList}
               v-model:value={datasourceSetting.pastUnit}
-            />
+            >
+              {pastUnitList.map((item) => (
+                <RadioButton value={item.value}>{item.label}</RadioButton>
+              ))}
+            </RadioGroup>
             <BasicHelp text={t('quotaView.advance.datasourceSetting.tip')} />
           </span>
         );

@@ -14,7 +14,8 @@
           <div class="w-3em text-justify mr-2">
             {{ t('quotaView.advance.axisSetting.yAxis.index') }}
           </div>
-          <span>{{ isNull(idx) ? chartConfig.yAxis.length + 1 : idx + 1 }}</span>
+          <span>{{ currentCfg.name }}</span>
+          <!-- <span>{{ isNull(idx) ? chartConfig.yAxis.length + 1 : idx + 1 }}</span> -->
         </div>
         <div>
           <div class="min-w-3em text-justify mr-2">{{
@@ -138,7 +139,7 @@
 <script lang="ts" setup>
   import { reactive, ref, watch } from 'vue';
   import { Input, Switch, Radio, Popover, Button, InputNumber } from 'ant-design-vue';
-  import { cloneDeep, last, partition, merge } from 'lodash-es';
+  import { cloneDeep, last, partition } from 'lodash-es';
   import { BasicHelp } from '/@/components/Basic';
   import { useI18n } from '/@/hooks/web/useI18n';
   import type { normalChartConfigType, YAxisOption } from '/#/chart';
@@ -169,6 +170,7 @@
       },
     },
     position: 'left',
+    name: '',
     axisLabel: {
       formatter: '{value}',
     },
@@ -209,9 +211,10 @@
         // 新轴的偏移量在最后一根同侧轴+40
         const offset =
           (isLeft ? last(leftAxis)?.offset ?? -40 : last(rightAxis)?.offset ?? -40) + 40;
-        merge(currentCfg, {
+        Object.assign(currentCfg, {
           offset: offset,
           position: isLeft ? 'left' : 'right',
+          name: isLeft ? `左${leftAxis.length}` : `右${rightAxis.length}`,
         });
         scientificNotation.value = 0;
       } else {
