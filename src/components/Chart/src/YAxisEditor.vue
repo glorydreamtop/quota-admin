@@ -14,31 +14,8 @@
           <div class="w-3em text-justify mr-2">
             {{ t('quotaView.advance.axisSetting.yAxis.index') }}
           </div>
-          <span>{{ isNull(idx) ? chartConfig.yAxis.length + 1 : idx + 1 }}</span>
-        </div>
-        <div>
-          <div class="min-w-3em text-justify mr-2">{{
-            t('quotaView.advance.axisSetting.yAxis.min')
-          }}</div>
-          <Input
-            size="small"
-            class="!w-59px !min-w-59px"
-            v-model:value="currentCfg.min"
-            :placeholder="t('common.auto')"
-            @input="(e) => onInputNumber(e, 'min')"
-          />
-        </div>
-        <div>
-          <div class="min-w-3em text-justify mr-2">{{
-            t('quotaView.advance.axisSetting.yAxis.max')
-          }}</div>
-          <Input
-            size="small"
-            class="!w-59px !min-w-59px"
-            v-model:value="currentCfg.max"
-            :placeholder="t('common.auto')"
-            @input="(e) => onInputNumber(e, 'max')"
-          />
+          <span>{{ currentCfg.name }}</span>
+          <!-- <span>{{ isNull(idx) ? chartConfig.yAxis.length + 1 : idx + 1 }}</span> -->
         </div>
         <div>
           <div class="min-w-3em text-justify mr-2">{{
@@ -58,6 +35,33 @@
             }}</RadioButton>
           </RadioGroup>
         </div>
+        <div>
+          <div class="min-w-3em text-justify mr-2">{{
+            t('quotaView.advance.axisSetting.yAxis.min')
+          }}</div>
+          <Input
+            size="small"
+            class="!w-59px !min-w-59px"
+            v-model:value="currentCfg.min"
+            :disabled="currentCfg.alignZero"
+            :placeholder="t('common.auto')"
+            @blur="(e) => onInputNumber(e, 'min')"
+          />
+        </div>
+        <div>
+          <div class="min-w-3em text-justify mr-2">{{
+            t('quotaView.advance.axisSetting.yAxis.max')
+          }}</div>
+          <Input
+            size="small"
+            class="!w-59px !min-w-59px"
+            v-model:value="currentCfg.max"
+            :disabled="currentCfg.alignZero"
+            :placeholder="t('common.auto')"
+            @blur="(e) => onInputNumber(e, 'max')"
+          />
+        </div>
+        <div class="col-span-2"></div>
         <div class="col-span-2">
           <div class="min-w-3em text-justify mr-2">{{
             t('quotaView.advance.axisSetting.yAxis.color')
@@ -106,7 +110,7 @@
             size="small"
             class="!w-38px !min-w-38px !mr-1"
             v-model:value="currentCfg.offset"
-            @input="(e) => onInputNumber(e, 'offset')"
+            @blur="(e) => onInputNumber(e, 'offset')"
           />
           <BasicHelp :text="t('quotaView.advance.axisSetting.yAxis.offsetTip')" />
         </div>
@@ -135,11 +139,10 @@
 <script lang="ts" setup>
   import { reactive, ref, watch } from 'vue';
   import { Input, Switch, Radio, Popover, Button, InputNumber } from 'ant-design-vue';
-  import { cloneDeep, last, partition, merge } from 'lodash-es';
+  import { cloneDeep, last, partition } from 'lodash-es';
   import { BasicHelp } from '/@/components/Basic';
   import { useI18n } from '/@/hooks/web/useI18n';
-  import type { normalChartConfigType } from '/#/chart';
-  import type { YAXisComponentOption } from 'echarts';
+  import type { normalChartConfigType, YAxisOption } from '/#/chart';
   import { isNull } from '/@/utils/is';
   import { useColor } from '../helper';
   // import { tooltipDirective as vTooltip } from '/@/directives/tooltip';
@@ -155,7 +158,7 @@
     (event: 'update', chartConfig: normalChartConfigType);
     (event: 'visibleChange', visible: boolean);
   }>();
-  const currentCfg = reactive({
+  const currentCfg: YAxisOption = reactive({
     min: undefined,
     max: undefined,
     inverse: false,
@@ -167,10 +170,12 @@
       },
     },
     position: 'left',
+    name: '',
     axisLabel: {
       formatter: '{value}',
     },
-  }) as YAXisComponentOption;
+    alignZero: false,
+  });
   const colorChange = (color: string) => {
     currentCfg.axisLine.lineStyle.color = color;
   };
@@ -182,12 +187,12 @@
 
   const placement = ref<'left' | 'right'>('right');
   // 数字格式化
-  function onInputNumber(e, type: 'min' | 'max' | 'offset') {
+  function onInputNumber(e: ChangeEvent, type: 'min' | 'max' | 'offset') {
     if (e.target.value === '') {
       currentCfg[type] = undefined;
       return;
     }
-    currentCfg[type] = parseFloat((e.target.value as string).replace(/[^\d|\.]/g, ''));
+    currentCfg[type] = parseFloat(e.target.value);
   }
   const visible = ref(false);
   function setVisible(v) {
@@ -206,21 +211,10 @@
         // 新轴的偏移量在最后一根同侧轴+40
         const offset =
           (isLeft ? last(leftAxis)?.offset ?? -40 : last(rightAxis)?.offset ?? -40) + 40;
-        merge(currentCfg, {
-          min: undefined,
-          max: undefined,
-          inverse: false,
+        Object.assign(currentCfg, {
           offset: offset,
-          axisLine: {
-            show: true,
-            lineStyle: {
-              color: '#999999',
-            },
-          },
           position: isLeft ? 'left' : 'right',
-          axisLabel: {
-            formatter: '{value}',
-          },
+          name: isLeft ? `左${leftAxis.length}` : `右${rightAxis.length}`,
         });
         scientificNotation.value = 0;
       } else {

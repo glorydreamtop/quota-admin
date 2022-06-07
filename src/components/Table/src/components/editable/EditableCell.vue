@@ -1,6 +1,16 @@
 <script lang="tsx">
   import type { CSSProperties, PropType } from 'vue';
-  import { computed, defineComponent, nextTick, ref, toRaw, unref, watchEffect } from 'vue';
+  import {
+    computed,
+    defineComponent,
+    nextTick,
+    ref,
+    toRaw,
+    unref,
+    watchEffect,
+    onMounted,
+    render,
+  } from 'vue';
   import type { BasicColumn } from '../../types/table';
   import type { EditRecordRow } from './index';
   import { CheckOutlined, CloseOutlined, FormOutlined } from '@ant-design/icons-vue';

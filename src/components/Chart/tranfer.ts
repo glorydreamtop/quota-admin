@@ -134,6 +134,7 @@ export async function useSeasonalChart(
         symbol: 'none',
         type: 'line',
         connectNulls: false,
+        animationDuration: 0,
         triggerLineEvent: true,
         data: [[dayjs(time).year(year).hour(0).unix() * 1000, v]],
       });
@@ -225,6 +226,7 @@ export async function useNormalChart(chartConfig: normalChartConfigType): Promis
     series.push({
       name: quota.name,
       data: quota.data,
+      animationDuration: 0,
     });
   });
   const options: EChartsOption = {

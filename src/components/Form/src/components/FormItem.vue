@@ -274,7 +274,7 @@
         propsData.formValues = unref(getValues);
 
         const bindValue: Recordable = {
-          [valueField || (isCheck ? 'checked' : 'value')]: get(props.formModel, field),
+          [valueField || (isCheck ? 'checked' : 'value')]: props.formModel[field],
         };
 
         const compAttr: Recordable = {
@@ -366,7 +366,7 @@
           return null;
         }
 
-        const { baseColProps = {} } = props.formProps;
+        const { baseColProps = { span: 24 } } = props.formProps;
         const realColProps = { ...baseColProps, ...colProps };
         const { isIfShow, isShow } = getShow();
         const values = unref(getValues);

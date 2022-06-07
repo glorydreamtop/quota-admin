@@ -13,96 +13,63 @@ import { timeConfigEnum, chartTypeEnum, structuralOffsetUnitEnum } from '/@/enum
 import { quotaDataPastUnitTypeEnum } from '/@/api/quota';
 import { h, onMounted, Ref, ref, render, unref } from 'vue';
 import Icon from '/@/components/Icon';
+import { cloneDeep, merge } from 'lodash-es';
 
-export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
+const baseConfig: Partial<chartConfigType> = {
+  title: '',
+  name: '',
+  timeConfig: {
+    startDate: yearsAgo(5),
+    endDate: today(),
+    type: timeConfigEnum.default,
+    sortMonth: [],
+    startMonth: 1,
+    sortYear: [],
+    pastUnit: quotaDataPastUnitTypeEnum.last,
+    pastValue: 0,
+  },
+  selfColorScheme: '',
+  showLastest: true,
+  showHighest: false,
+  quotaList: [],
+  valueFormatter: {
+    afterDot: 2,
+    normalized: false,
+  },
+  seriesSetting: [],
+};
+
+const baseYAxisConfig = [
+  {
+    min: undefined,
+    max: undefined,
+    inverse: false,
+    name: '左1',
+    offset: 0,
+    axisLine: {
+      show: true,
+      lineStyle: {
+        color: '#999999',
+      },
+    },
+    position: 'left',
+    axisLabel: {
+      formatter: '{value}',
+    },
+  },
+];
+
+export function getChartDefaultConfig(type: chartTypeEnum): Partial<chartConfigType> {
   const defaultConfig = {
     normal: {
-      title: '',
-      name: '',
-      timeConfig: {
-        startDate: yearsAgo(5),
-        endDate: today(),
-        type: timeConfigEnum.default,
-        sortMonth: [],
-        startMonth: 1,
-        sortYear: [],
-        pastUnit: quotaDataPastUnitTypeEnum.last,
-        pastValue: 0,
-      },
-      selfColorScheme: '',
       type: chartTypeEnum.normal,
-      showLastest: true,
-      showHighest: false,
-      quotaList: [],
-      valueFormatter: {
-        afterDot: 2,
-        normalized: false,
-      },
-      yAxis: [
-        {
-          min: undefined,
-          max: undefined,
-          inverse: false,
-          offset: 0,
-          axisLine: {
-            show: true,
-            lineStyle: {
-              color: '#999999',
-            },
-          },
-          position: 'left',
-          axisLabel: {
-            formatter: '{value}',
-          },
-        },
-      ],
-      seriesSetting: [],
+      yAxis: baseYAxisConfig,
     } as normalChartConfigType,
     seasonal: {
-      title: '',
-      name: '',
-      timeConfig: {
-        startDate: yearsAgo(5),
-        endDate: today(),
-        type: timeConfigEnum.default,
-        sortMonth: [],
-        startMonth: 1,
-        sortYear: [],
-        pastUnit: quotaDataPastUnitTypeEnum.last,
-        pastValue: 0,
-      },
-      selfColorScheme: '',
       type: chartTypeEnum.seasonal,
-      showLastest: true,
-      showHighest: false,
-      quotaList: [],
-      valueFormatter: {
-        afterDot: 2,
-        normalized: false,
-      },
-      yAxis: [
-        {
-          min: undefined,
-          max: undefined,
-          inverse: false,
-          offset: 0,
-          axisLine: {
-            show: true,
-            lineStyle: {
-              color: '#999999',
-            },
-          },
-          position: 'left',
-          axisLabel: {
-            formatter: '{value}',
-          },
-        },
-      ],
-      seriesSetting: [],
+      yAxis: baseYAxisConfig,
     } as seasonalChartConfigType,
     bar: {
-      title: '',
-      name: '',
       timeConfig: {
         startDate: yearsAgo(1),
         endDate: today(),
@@ -111,39 +78,10 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
         pastValue: 3,
         startMonth: 1,
       },
-
-      selfColorScheme: '',
       type: chartTypeEnum.bar,
-      showLastest: true,
-      showHighest: false,
-      quotaList: [],
-      valueFormatter: {
-        afterDot: 2,
-        normalized: false,
-      },
-      yAxis: [
-        {
-          min: undefined,
-          max: undefined,
-          inverse: false,
-          offset: 0,
-          axisLine: {
-            show: true,
-            lineStyle: {
-              color: '#999999',
-            },
-          },
-          position: 'left',
-          axisLabel: {
-            formatter: '{value}',
-          },
-        },
-      ],
-      seriesSetting: [],
+      yAxis: baseYAxisConfig,
     } as barChartConfigType,
     normalRadar: {
-      title: '',
-      name: '',
       timeConfig: {
         startDate: yearsAgo(1),
         endDate: today(),
@@ -151,41 +89,18 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
         pastUnit: quotaDataPastUnitTypeEnum.last,
         pastValue: 3,
       },
-      selfColorScheme: '',
       type: chartTypeEnum.normalRadar,
-      showLastest: true,
-      showHighest: false,
-      quotaList: [],
-      valueFormatter: {
-        afterDot: 2,
-        normalized: false,
-      },
-      seriesSetting: [],
     } as radarChartConfigType,
     quantileRadar: {
-      title: '',
-      name: '',
       timeConfig: {
         startDate: yearsAgo(5),
         endDate: today(),
         type: timeConfigEnum.default,
       },
-
-      selfColorScheme: '',
       type: chartTypeEnum.quantileRadar,
-      showLastest: false,
-      showHighest: false,
-      quotaList: [],
-      valueFormatter: {
-        afterDot: 2,
-        normalized: false,
-      },
       quantileOffset: '1,2,3,5',
-      seriesSetting: [],
     } as quantileRadarChartConfigType,
     structural: {
-      title: '',
-      name: '',
       timeConfig: {
         startDate: yearsAgo(1),
         endDate: today(),
@@ -193,41 +108,12 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
         pastUnit: quotaDataPastUnitTypeEnum.last,
         pastValue: 3,
       },
-
-      selfColorScheme: '',
       type: chartTypeEnum.structural,
-      showLastest: true,
-      showHighest: false,
-      quotaList: [],
-      valueFormatter: {
-        afterDot: 2,
-        normalized: false,
-      },
       structuralOffset: '30,15,7,1,0',
       structuralOffsetUnit: structuralOffsetUnitEnum.natureDay,
-      yAxis: [
-        {
-          min: undefined,
-          max: undefined,
-          inverse: false,
-          offset: 0,
-          axisLine: {
-            show: true,
-            lineStyle: {
-              color: '#999999',
-            },
-          },
-          position: 'left',
-          axisLabel: {
-            formatter: '{value}',
-          },
-        },
-      ],
-      seriesSetting: [],
+      yAxis: baseYAxisConfig,
     } as structuralChartConfigType,
     pie: {
-      title: '',
-      name: '',
       timeConfig: {
         startDate: yearsAgo(1),
         endDate: today(),
@@ -235,20 +121,12 @@ export function getChartDefaultConfig(type: chartTypeEnum): chartConfigType {
         pastUnit: quotaDataPastUnitTypeEnum.last,
         pastValue: 1,
       },
-
-      selfColorScheme: '',
       type: chartTypeEnum.pie,
-      showLastest: true,
-      showHighest: false,
-      quotaList: [],
-      valueFormatter: {
-        afterDot: 2,
-        normalized: false,
-      },
-      seriesSetting: [],
     } as pieChartConfigType,
   };
-  return defaultConfig[type];
+  const config = cloneDeep(baseConfig);
+  merge(config, defaultConfig[type]);
+  return config;
 }
 
 export function useDrawer(container: Ref<HTMLElement | undefined>) {

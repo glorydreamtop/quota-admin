@@ -116,6 +116,7 @@ export default {
         position: '位置',
         color: '颜色',
         inverse: '逆序',
+        onZero: '对齐0',
         createY: '创建Y轴',
         left: '左',
         right: '右',
