@@ -84,6 +84,10 @@
 
   .ant-divider {
     margin: 0;
+
+    ::v-deep(.ant-divider-horizontal.ant-divider-with-text-left::before) {
+      display: none;
+    }
   }
 
   ::v-deep(.anticon.anticon-close) {
@@ -136,9 +140,9 @@
     @apply flex items-end justify-center border-t border-gray-200;
     position: absolute;
     bottom: 0;
-    left: 20px;
+    left: 36px;
     background-color: @white;
-    width: calc(100% - 40px);
+    width: calc(100% - 56px);
     height: @save-button-size + 16px;
     z-index: 9;
 
