@@ -41,7 +41,7 @@
     useTemplateListContext,
     useSelectTemplateListContext,
     usePageSettingContext,
-    useDraggable,
+    // useDraggable,
     paginationInfoType,
   } from '../hooks';
   import PagePlaceHolder from './PagePlaceHolder.vue';
@@ -52,7 +52,7 @@
   // import { useI18n } from '/@/hooks/web/useI18n';
   import { useMutationObserver, useResizeObserver } from '@vueuse/core';
   // import { useUniqueField } from '../../quotaTable/components/helper';
-  import { InteractEvent } from '@interactjs/types/index';
+  // import { InteractEvent } from '@interactjs/types/index';
   import { getRem } from '/@/utils/domUtils';
 
   // import { useContextMenu } from '/@/hooks/web/useContextMenu';
@@ -110,7 +110,7 @@
   //     ],
   //   });
   // }
-  function getDomConfig(event: InteractEvent) {
+  function getDomConfig(event) {
     const target = event.target as HTMLElement;
     const _dom = templateList.value.find((temp) => temp.uniqId === target.dataset['uniqid'])!;
     return { target, _dom };
@@ -133,44 +133,44 @@
       boxdom,
       (mutation) => {
         if (mutation[0].addedNodes.length === 0) return;
-        useDraggable({
-          items: '.sortable',
-          handle: '.drag-handler',
-          onDraggle: (event) => {
-            const { _dom, target } = getDomConfig(event);
-            const transform = target.style.transform;
-            const reg = /translate\((\-?[0-9]+)px, (\-?[0-9]+)px\)/;
-            const match = reg.exec(transform);
-            if (match) {
-              const x = Number(match[1]) + event.dx;
-              const y = Number(match[2]) + event.dy;
-              _dom.pageConfig.transform = `translate(${x}px, ${y}px)`;
-            }
-          },
-          onDraggleEnd: (event) => {
-            const { _dom, target } = getDomConfig(event);
-            const transform = target.style.transform;
-            const reg = /translate\((\-?[0-9]+)px, (\-?[0-9]+)px\)/;
-            const match = reg.exec(transform);
-            if (match) {
-              const x = Number(match[1]) + event.dx;
-              const y = Number(match[2]) + event.dy;
-              _dom.pageConfig.transform = `translate(${Math.round(x / gridSize) * gridSize}px, ${
-                Math.round(y / gridSize) * gridSize
-              }px)`;
-            }
-          },
-          onResize: (event) => {
-            const { _dom } = getDomConfig(event);
-            _dom.pageConfig.width = `${event.rect.width}px`;
-            _dom.pageConfig.height = `${event.rect.height}px`;
-          },
-          onResizeEnd: (event) => {
-            const { _dom } = getDomConfig(event);
-            _dom.pageConfig.width = `${Math.round(event.rect.width / gridSize) * gridSize}px`;
-            _dom.pageConfig.height = `${Math.round(event.rect.height / gridSize) * gridSize}px`;
-          },
-        });
+        // useDraggable({
+        //   items: '.sortable',
+        //   handle: '.drag-handler',
+        //   onDraggle: (event) => {
+        //     const { _dom, target } = getDomConfig(event);
+        //     const transform = target.style.transform;
+        //     const reg = /translate\((\-?[0-9]+)px, (\-?[0-9]+)px\)/;
+        //     const match = reg.exec(transform);
+        //     if (match) {
+        //       const x = Number(match[1]) + event.dx;
+        //       const y = Number(match[2]) + event.dy;
+        //       _dom.pageConfig.transform = `translate(${x}px, ${y}px)`;
+        //     }
+        //   },
+        //   onDraggleEnd: (event) => {
+        //     const { _dom, target } = getDomConfig(event);
+        //     const transform = target.style.transform;
+        //     const reg = /translate\((\-?[0-9]+)px, (\-?[0-9]+)px\)/;
+        //     const match = reg.exec(transform);
+        //     if (match) {
+        //       const x = Number(match[1]) + event.dx;
+        //       const y = Number(match[2]) + event.dy;
+        //       _dom.pageConfig.transform = `translate(${Math.round(x / gridSize) * gridSize}px, ${
+        //         Math.round(y / gridSize) * gridSize
+        //       }px)`;
+        //     }
+        //   },
+        //   onResize: (event) => {
+        //     const { _dom } = getDomConfig(event);
+        //     _dom.pageConfig.width = `${event.rect.width}px`;
+        //     _dom.pageConfig.height = `${event.rect.height}px`;
+        //   },
+        //   onResizeEnd: (event) => {
+        //     const { _dom } = getDomConfig(event);
+        //     _dom.pageConfig.width = `${Math.round(event.rect.width / gridSize) * gridSize}px`;
+        //     _dom.pageConfig.height = `${Math.round(event.rect.height / gridSize) * gridSize}px`;
+        //   },
+        // });
       },
       {
         childList: true,

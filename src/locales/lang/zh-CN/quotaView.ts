@@ -214,6 +214,7 @@ export default {
     confirmDel: '确认删除',
   },
   seriesEdit: {
+    legendName:'图例名称',
     seriesType: '序列类型',
     lineType: '线型',
     symbol: '标点',

@@ -58,6 +58,7 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       host: true,
       port: VITE_PORT,
       // Load proxy configuration from .env
+      hmr: true,
       proxy: createProxy(VITE_PROXY),
     },
     esbuild: {
@@ -68,7 +69,6 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
       cssTarget: 'chrome80',
       outDir: OUTPUT_DIR,
       assetsDir: ASSESTS_DIR,
-      sourcemap: true,
       // terserOptions: {
       //   compress: {
       //     keep_infinity: true,
@@ -102,14 +102,13 @@ export default ({ command, mode }: ConfigEnv): UserConfig => {
     optimizeDeps: {
       // @iconify/iconify: The dependency is dynamically and virtually loaded by @purge-icons/generated, so it needs to be specified explicitly
       include: [
-        // '@vue/runtime-core',
-        // '@vue/shared',
-        'vue',
-        'pinia',
+        '@vue/runtime-core',
+        '@vue/shared',
         '@iconify/iconify',
         'ant-design-vue/es/locale/zh_CN',
         'ant-design-vue/es/locale/en_US',
       ],
+      exclude: ['vue-demi'],
     },
   };
 };

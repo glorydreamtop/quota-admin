@@ -7,6 +7,9 @@
         <span :style="{ color: info.color }">{{ info.name }}</span>
         <span>
           <span class="w-4em text-justify mr-2">{{ t('quotaView.seriesEdit.seriesType') }}</span>
+        </span>
+        <span>
+          <span class="w-4em text-justify mr-2">{{ t('quotaView.seriesEdit.seriesType') }}</span>
           <Select
             class="!w-6em"
             size="small"
@@ -121,6 +124,7 @@
     xAxisIndex: undefined,
     color: undefined,
     symbol: undefined,
+    legendName: undefined,
   });
   const yAxisList = computed(() => {
     const { chartConfig } = props;

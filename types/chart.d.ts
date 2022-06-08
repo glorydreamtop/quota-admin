@@ -42,6 +42,7 @@ export interface seriesSettingType {
   xAxisIndex?: number | undefined;
   // 序列的名字或序号等唯一标识
   name?: string;
+  legendName?: string;
   color?: string;
   symbol?: boolean;
 }
