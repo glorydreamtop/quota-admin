@@ -1,4 +1,4 @@
-import type { YAXisComponentOption } from 'echarts';
+import type { YAXisComponentOption,XAXisComponentOption } from 'echarts';
 import { quotaDataPastUnitTypeEnum } from '/@/api/quota';
 import {
   chartTypeEnum,
@@ -66,7 +66,6 @@ export interface baseChartConfigType {
   };
 
   quotaList: Nullable<SelectedQuotaItem[]>;
-
   seriesSetting: seriesSettingType[];
 }
 
@@ -79,7 +78,10 @@ export type YAxisOption = YAXisComponentOption & {
   alignZero?: boolean;
 };
 
+export type XAxisOption = XAXisComponentOption
+
 export interface seasonalChartConfigType extends reactSettingType, baseChartConfigType {
+  xAxis: XAxisOption[];
   yAxis: YAxisOption[];
   removePoint?: {
     xRange: string;
@@ -89,6 +91,7 @@ export interface seasonalChartConfigType extends reactSettingType, baseChartConf
 
 export interface normalChartConfigType extends reactSettingType, baseChartConfigType {
   [x: string]: any;
+  xAxis: XAxisOption[];
   yAxis: YAxisOption[];
   removePoint?: {
     xRange: string;
@@ -97,6 +100,7 @@ export interface normalChartConfigType extends reactSettingType, baseChartConfig
 }
 
 export interface barChartConfigType extends reactSettingType, baseChartConfigType {
+  xAxis: XAxisOption[];
   yAxis: YAxisOption[];
 }
 
@@ -107,6 +111,7 @@ export interface quantileRadarChartConfigType extends reactSettingType, baseChar
 }
 
 export interface structuralChartConfigType extends reactSettingType, baseChartConfigType {
+  xAxis: XAxisOption[];
   yAxis: YAxisOption[];
   structuralOffset: string;
   structuralOffsetUnit: structuralOffsetUnitEnum;

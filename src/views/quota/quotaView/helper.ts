@@ -59,10 +59,23 @@ const baseYAxisConfig = [
   },
 ];
 
+const baseXAxisConfig = [
+  {
+    offset: 0,
+    axisLine: {
+      show: true,
+      lineStyle: {
+        color: '#999999',
+      },
+    },
+  },
+];
+
 export function getChartDefaultConfig(type: chartTypeEnum): Partial<chartConfigType> {
   const defaultConfig = {
     normal: {
       type: chartTypeEnum.normal,
+      xAxis: baseXAxisConfig,
       yAxis: baseYAxisConfig,
     } as normalChartConfigType,
     seasonal: {

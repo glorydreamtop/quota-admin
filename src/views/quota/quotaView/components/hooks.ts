@@ -82,7 +82,7 @@ export function useYAxisEdit(chartConfig: chartConfigType): useYAxisEditRes {
     if (Reflect.has(chartConfig, 'yAxis')) {
       return chartConfig.yAxis.map((item, index) => {
         return {
-          label: `${index + 1}/${t('quotaView.advance.axisSetting.yAxis.min')}[${
+          label: `${item.name}/${t('quotaView.advance.axisSetting.yAxis.min')}[${
             item.min || t('common.auto')
           }]-${t('quotaView.advance.axisSetting.yAxis.max')}[${item.max || t('common.auto')}]/${t(
             'quotaView.advance.axisSetting.yAxis.' + item.position,

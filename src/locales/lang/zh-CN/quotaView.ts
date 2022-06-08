@@ -219,10 +219,10 @@ export default {
     symbol: '标点',
     lineShadow: '阴影',
     lineWidth: '粗细',
-    yAxisIndex: 'Y轴序号',
+    yAxisIndex: '适用Y轴',
     quickYAxis: '创建独立Y轴',
     quickYAxisTip: '确认后绑定独立Y轴',
-    xAxisIndex: 'X轴序号',
+    xAxisIndex: '适用X轴',
     seriesTypeList: {
       line: '折线图',
       smoothLine: '曲线图',

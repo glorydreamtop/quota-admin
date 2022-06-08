@@ -42,13 +42,12 @@
         </span>
         <span v-if="info.yAxisIndex !== undefined">
           <span class="w-4em text-justify mr-2">{{ t('quotaView.seriesEdit.yAxisIndex') }}</span>
-          <InputNumber
-            class="!w-3em !text-center"
+          <Select
+            class="!w-4em !text-center y-selector"
             size="small"
             :disabled="quickYAxis"
             v-model:value="info.yAxisIndex"
-            :max="limit.yAxisMax"
-            :min="1"
+            :options="yAxisList"
           />
           <Tooltip
             :title="
@@ -58,7 +57,7 @@
             "
           >
             <Icon
-              :class="['ml-2', quickYAxis ? '!text-green-600' : '!text-primary']"
+              :class="['ml-1', quickYAxis ? '!text-green-600' : '!text-primary']"
               size="20"
               :icon="
                 quickYAxis ? 'ant-design:check-circle-outlined' : 'ant-design:plus-circle-outlined'
@@ -67,10 +66,15 @@
             />
           </Tooltip>
         </span>
-        <span v-if="info.xAxisIndex !== undefined">
+        <!-- <span v-if="info.xAxisIndex !== undefined">
           <span class="w-4em text-justify mr-2">{{ t('quotaView.seriesEdit.xAxisIndex') }}</span>
-          <InputNumber class="!w-3em !text-center" size="small" v-model:value="info.xAxisIndex" />
-        </span>
+          <Select
+            class="!w-5em !text-center"
+            size="small"
+            v-model:value="info.xAxisIndex"
+            :options="xAxisList"
+          />
+        </span> -->
         <div class="mt-2 flex gap-1">
           <Button size="small" block type="primary" @click="confirm">{{
             t('common.okText')
@@ -118,11 +122,26 @@
     color: undefined,
     symbol: undefined,
   });
-  const limit = computed(() => {
-    return {
-      yAxisMax: props.chartConfig.yAxis.length,
-    };
+  const yAxisList = computed(() => {
+    const { chartConfig } = props;
+    const { yAxis } = chartConfig;
+    return yAxis.map((item, index) => {
+      return {
+        value: index + 1,
+        label: item.name,
+      };
+    });
   });
+  // const xAxisList = computed(() => {
+  //   const { chartConfig } = props;
+  //   const { xAxis } = chartConfig;
+  //   return xAxis.map((item, index) => {
+  //     return {
+  //       value: index + 1,
+  //       label: item.name,
+  //     };
+  //   });
+  // });
   const availableSeriesType = computed(() => {
     return difference(
       [
@@ -229,5 +248,11 @@
 
   ::v-deep(.ant-input-number) {
     min-width: 0 !important;
+  }
+
+  .y-selector {
+    ::v-deep(.ant-select-selection-item) {
+      text-overflow: unset;
+    }
   }
 </style>
