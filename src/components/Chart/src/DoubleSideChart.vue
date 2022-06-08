@@ -44,7 +44,7 @@
       </div>
       <div
         class="w-full h-full preserve-3d box"
-        :class="[fullscreen ? 'fullscreen' : '']"
+        :class="[fullscreen ? 'fullscreen pt-4' : '']"
         id="quota-view-chartbox"
       >
         <BasicChart
