@@ -130,8 +130,8 @@
     (event: 'visibleChange', visible: boolean);
   }>();
   const currentCfg = reactive({
-    min: undefined,
-    max: undefined,
+    min: void 0,
+    max: void 0,
     inverse: false,
     offset: 0,
     axisLine: {
@@ -152,7 +152,7 @@
   // 数字格式化
   function onInputNumber(e: ChangeEvent, type: 'min' | 'max' | 'offset') {
     if (e.target.value === '') {
-      currentCfg[type] = undefined;
+      currentCfg[type] = void 0;
       return;
     }
     currentCfg[type] = parseFloat(e.target.value);
@@ -174,8 +174,8 @@
         const offset =
           (isLeft ? last(rightAxis)?.offset ?? -40 : last(leftAxis)?.offset ?? -40) + 40;
         Object.assign(currentCfg, {
-          min: undefined,
-          max: undefined,
+          min: void 0,
+          max: void 0,
           inverse: false,
           offset: offset,
           axisLine: {

@@ -27,6 +27,7 @@ import {
   useRemovePoint,
   useScientificNotation,
   useSeriesSetting,
+  useLegendName,
 } from './helper';
 import {
   barChartConfigType,
@@ -190,6 +191,7 @@ export async function useSeasonalChart(
     grid: gridConfig,
   };
   useSeriesSetting({ chartConfig, options });
+  useLegendName({ chartConfig, options });
   useAddGraphicElement({ options });
   // 最新值模块
   useLastestQuotaData({ chartConfig, options, quotaDataList });
@@ -260,6 +262,7 @@ export async function useNormalChart(chartConfig: normalChartConfigType): Promis
     grid: gridConfig,
   };
   useSeriesSetting({ chartConfig, options });
+  useLegendName({ chartConfig, options });
   useAddGraphicElement({ options });
   // 最新值模块
   useLastestQuotaData({ chartConfig, options, quotaDataList });
@@ -346,6 +349,7 @@ export async function useBarChart(chartConfig: barChartConfigType) {
     grid: gridConfig,
   };
   useSeriesSetting({ chartConfig, options });
+  useLegendName({ chartConfig, options });
   useAddGraphicElement({ options });
   // 最新值模块
   useLastestQuotaData({ chartConfig, options, quotaDataList });
@@ -428,6 +432,7 @@ export async function useRadarChart(chartConfig: radarChartConfigType) {
     grid: gridConfig,
   };
   useSeriesSetting({ chartConfig, options });
+  useLegendName({ chartConfig, options });
   useAddGraphicElement({ options });
   // 最新值模块
   useLastestQuotaData({ chartConfig, options, quotaDataList });
@@ -545,6 +550,7 @@ export async function useStructuralChart(chartConfig: structuralChartConfigType)
     grid: gridConfig,
   };
   useSeriesSetting({ options, chartConfig });
+  useLegendName({ chartConfig, options });
   useAddGraphicElement({ options });
   // 最新值模块
   useLastestQuotaData({ chartConfig, options, quotaDataList });
@@ -617,6 +623,7 @@ export async function usePieChart(chartConfig: pieChartConfigType) {
     grid: gridConfig,
   };
   useAddGraphicElement({ options });
+  useLegendName({ chartConfig, options });
   // 最新值模块
   useLastestQuotaData({ chartConfig, options, quotaDataList });
   useHighestQuotaData({ chartConfig, options, quotaDataList });
@@ -726,6 +733,7 @@ export async function useQuantileRadarChart(chartConfig: quantileRadarChartConfi
     grid: gridConfig,
   };
   useSeriesSetting({ options, chartConfig });
+  useLegendName({ chartConfig, options });
   useAddGraphicElement({ options });
   // 最新值模块
   useLastestQuotaData({ chartConfig, options, quotaDataList });

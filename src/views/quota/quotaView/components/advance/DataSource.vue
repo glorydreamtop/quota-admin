@@ -1,14 +1,24 @@
 <script lang="tsx">
-  import { Radio, InputNumber, Input, Select } from 'ant-design-vue';
+  import { Radio, InputNumber, Input, Tag, Select, Tooltip, Button } from 'ant-design-vue';
   import { useI18n } from '/@/hooks/web/useI18n';
-  import { useChartConfigContext, useSettingFilter, useSortMonthAndYear } from '../hooks';
+  import {
+    echartMitter,
+    useChartConfigContext,
+    useSettingFilter,
+    useSortMonthAndYear,
+  } from '../hooks';
   import { BasicHelp } from '/@/components/Basic';
   import { structuralOffsetUnitEnum } from '/@/enums/chartEnum';
   import { useMessage } from '/@/hooks/web/useMessage';
-  import { uniq } from 'lodash-es';
-  import { toRaw, watch, reactive, defineComponent, unref } from 'vue';
+  import { uniq, remove } from 'lodash-es';
+  import { toRaw, watch, reactive, defineComponent, unref, ref } from 'vue';
   import { quotaDataPastUnitTypeEnum } from '/@/api/quota';
-  import { quantileRadarChartConfigType, structuralChartConfigType } from '/#/chart';
+  import { EChartsOption, LineSeriesOption } from 'echarts';
+  import {
+    normalChartConfigType,
+    quantileRadarChartConfigType,
+    structuralChartConfigType,
+  } from '/#/chart';
 
   export default defineComponent({
     setup() {
@@ -16,6 +26,7 @@
       const { t } = useI18n();
       const RadioGroup = Radio.Group;
       const RadioButton = Radio.Button;
+      const TextArea = Input.TextArea;
       const chartConfig = useChartConfigContext();
       const showSettingFilter = useSettingFilter(chartConfig);
       // 校验曲线结构日期偏移量输入值
@@ -210,9 +221,90 @@
                 size="small"
                 class="!w-30 !min-w-30"
                 v-model:value={(chartConfig as quantileRadarChartConfigType).quantileOffset}
-                onChange="offsetChange"
+                onChange={offsetChange}
               />
               <BasicHelp text={t('quotaView.advance.datasourceSetting.structuralOffsetTip')} />
+            </div>
+          </div>
+        );
+      }
+      // 智能抹去数据点
+      const removePoint = reactive({
+        xRange: '',
+        seriesName: '',
+      });
+      const seriesOptions = ref<{ label: any; value: any }[]>([]);
+      echartMitter.on('echartOptions', (options: EChartsOption) => {
+        seriesOptions.value = (options.series as LineSeriesOption[]).map((ser) => {
+          return {
+            label: ser.name,
+            value: ser.name,
+          };
+        });
+      });
+      function addFilterGroup() {
+        const list = (chartConfig as normalChartConfigType).removePoint ?? [];
+        const repeat = list.some(
+          (item) =>
+            item.seriesName === removePoint.seriesName && item.xRange === removePoint.xRange,
+        );
+        if (repeat) {
+          createMessage.warn(t('common.notUniqTip'));
+          return;
+        }
+        list.push({
+          seriesName: removePoint.seriesName,
+          xRange: removePoint.xRange,
+        });
+        (chartConfig as normalChartConfigType).removePoint = list;
+      }
+      function delFilterGroup(group: any) {
+        remove(
+          (chartConfig as normalChartConfigType).removePoint!,
+          (item) => item.xRange === group.xRange && item.seriesName === group.seriesName,
+        );
+      }
+      function renderRemovePoint() {
+        return (
+          <div class="grid gap-2 bg-gray-100 p-2">
+            <div class="label">
+              <span>{t('quotaView.advance.dataEdit.removePoint')}</span>
+              <BasicHelp text={t('quotaView.advance.dataEdit.xTip')} />
+            </div>
+            <div class="label">
+              <div class="min-w-4em">{t('quotaView.advance.dataEdit.xFilter')}</div>
+              <TextArea v-model:value={removePoint.xRange} />
+            </div>
+            <div class="label">
+              <div class="min-w-4em">{t('quotaView.advance.dataEdit.seriesFilter')}</div>
+              <Select
+                placeholder={t('quotaView.advance.dataEdit.seriesTip')}
+                class="flex-grow"
+                v-model:value={removePoint.seriesName}
+                options={seriesOptions}
+              />
+              <Button type="primary" onClick={addFilterGroup}>
+                {t('quotaView.advance.dataEdit.addBtn')}
+              </Button>
+            </div>
+            <div class="items-baseline label">
+              <div class="min-w-4em">{t('quotaView.advance.dataEdit.filterGroup')}</div>
+              <div class="!children:mb-3">
+                {(chartConfig as normalChartConfigType).removePoint?.map((item) => (
+                  <span key={`${item.seriesName}${item.xRange}`}>
+                    <Tooltip placement="left">
+                      {{
+                        title: () => <span>{item.xRange}</span>,
+                        default: () => (
+                          <Tag closable onClose={delFilterGroup.bind(null, item)}>
+                            {item.seriesName}
+                          </Tag>
+                        ),
+                      }}
+                    </Tooltip>
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
         );
@@ -224,9 +316,10 @@
           {showSettingFilter('sortYear') && renderSortYear()}
           {showSettingFilter('structuralOffset') && renderStructuralOffset()}
           {showSettingFilter('quantileOffset') && renderQuantileOffset()}
+          {showSettingFilter('removePoint') && renderRemovePoint()}
         </div>
       );
-    }, // 这是setup函数的结尾
+    },
   });
 </script>
 

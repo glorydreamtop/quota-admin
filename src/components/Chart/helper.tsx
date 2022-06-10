@@ -10,7 +10,7 @@ import {
   SeriesOption,
   YAXisComponentOption,
 } from 'echarts';
-import { last, maxBy, nth, remove, round, cloneDeep, has } from 'lodash-es';
+import { last, maxBy, nth, remove, round, cloneDeep, has, isObject } from 'lodash-es';
 import { chartTypeEnum, echartLineTypeEnum, echartSeriesTypeEnum } from '/@/enums/chartEnum';
 import { daysAgo, formatToDate } from '/@/utils/dateUtil';
 import dayjs from 'dayjs';
@@ -491,7 +491,7 @@ export async function useColor({ chartConfig }: { chartConfig: chartConfigType }
     const { colors } = await getColorScheme({ id: id });
     // merge一下自有颜色和方案颜色，得到最终颜色
     const finalColor = colors.split(',').map((v, idx) => {
-      const bool = selfColors[idx] === undefined || !selfColors[idx].includes('#');
+      const bool = selfColors[idx] === void 0 || !selfColors[idx].includes('#');
       return bool ? v : selfColors[idx];
     });
     return finalColor;
@@ -515,16 +515,17 @@ export function useScientificNotation(yAxis: YAXisComponentOption) {
   return y;
 }
 
+interface setSeriesInfoParams {
+  info: seriesSettingType;
+  chartConfig: chartConfigType;
+  seriesInfo: any;
+  options: EChartsOption;
+}
 // 输出series信息
-export function setSeriesInfo(
-  info: seriesSettingType,
-  type: chartTypeEnum,
-  seriesInfo: any,
-  options: EChartsOption,
-) {
+export function setSeriesInfo({ info, chartConfig, seriesInfo, options }: setSeriesInfoParams) {
   // 匹配rgb中的数字部分,线就是stroke，填充就是fill
-  const colorStr: string =
-    seriesInfo.event.target.style.stroke ?? seriesInfo.event.target.style.fill;
+  const style = seriesInfo.event.target.style;
+  const colorStr: string = style.stroke ?? (isObject(style.fill)?style.fill.colorStops[0].color:style.fill);
   const color: number[] = colorStr
     .match(/\d+/g)!
     .slice(0, 3)
@@ -534,6 +535,7 @@ export function setSeriesInfo(
     const seriesIndex = seriesInfo.seriesIndex;
     const series = options.series![seriesIndex];
     info.name = series.name;
+    info.legendName = chartConfig.seriesSetting.find(ser=>ser.name===series.name)?.legendName;
     if (series.type === 'line') {
       if (has(series, 'areaStyle')) {
         info.seriesType = echartSeriesTypeEnum.area;
@@ -544,7 +546,7 @@ export function setSeriesInfo(
       }
       info.size = series.lineStyle.width;
       info.lineType = series.lineStyle.type;
-      info.shadow = series.lineStyle.shadowColor !== undefined;
+      info.shadow = series.lineStyle.shadowColor !== void 0;
       info.symbol = series.symbol !== 'none';
     } else if (series.type === 'bar') {
       info.seriesType = echartSeriesTypeEnum.bar;
@@ -556,6 +558,7 @@ export function setSeriesInfo(
     const seriesIndex = seriesInfo.seriesIndex;
     const series = options.series![seriesIndex];
     info.name = series.name;
+    info.legendName = chartConfig.seriesSetting.find(ser=>ser.name===series.name)?.legendName;
     if (series.type === 'line') {
       if (has(series, 'areaStyle')) {
         info.seriesType = echartSeriesTypeEnum.area;
@@ -566,7 +569,7 @@ export function setSeriesInfo(
       }
       info.size = series.lineStyle.width;
       info.lineType = series.lineStyle.type;
-      info.shadow = series.lineStyle.shadowColor !== undefined;
+      info.shadow = series.lineStyle.shadowColor !== void 0;
       info.symbol = series.symbol !== 'none';
     } else if (series.type === 'bar') {
       info.seriesType = echartSeriesTypeEnum.bar;
@@ -577,6 +580,8 @@ export function setSeriesInfo(
   function caseBar() {
     const seriesIndex = seriesInfo.seriesIndex;
     const series = options.series![seriesIndex];
+    info.name = series.name;
+    info.legendName = chartConfig.seriesSetting.find(ser=>ser.name===series.name)?.legendName;
     if (series.type === 'line') {
       if (has(series, 'areaStyle')) {
         info.seriesType = echartSeriesTypeEnum.area;
@@ -587,9 +592,8 @@ export function setSeriesInfo(
       }
       info.size = series.lineStyle.width;
       info.lineType = series.lineStyle.type;
-      info.shadow = series.lineStyle.shadowColor !== undefined;
+      info.shadow = series.lineStyle.shadowColor !== void 0;
     } else if (series.type === 'bar') {
-      info.name = seriesInfo.seriesName;
       info.seriesType = echartSeriesTypeEnum.bar;
       info.shadow = false;
     }
@@ -600,6 +604,7 @@ export function setSeriesInfo(
     const seriesIndex = seriesInfo.seriesIndex;
     const series = options.series![seriesIndex];
     info.name = series.name;
+    info.legendName = chartConfig.seriesSetting.find(ser=>ser.name===series.name)?.legendName;
     if (series.type === 'line') {
       if (has(series, 'areaStyle')) {
         info.seriesType = echartSeriesTypeEnum.area;
@@ -610,7 +615,7 @@ export function setSeriesInfo(
       }
       info.size = series.lineStyle.width;
       info.lineType = series.lineStyle.type;
-      info.shadow = series.lineStyle.shadowColor !== undefined;
+      info.shadow = series.lineStyle.shadowColor !== void 0;
       info.symbol = series.symbol !== 'none';
     } else if (series.type === 'bar') {
       info.seriesType = echartSeriesTypeEnum.bar;
@@ -622,10 +627,11 @@ export function setSeriesInfo(
     const dataIndex = seriesInfo.dataIndex;
     const data = options.series![0].data[dataIndex];
     info.name = data.name;
+    info.legendName = chartConfig.seriesSetting.find(ser=>ser.name===data.name)?.legendName;
     info.seriesType = echartSeriesTypeEnum.radar;
     info.size = data.lineStyle.width;
     info.lineType = data.lineStyle.type;
-    info.shadow = data.lineStyle.shadowColor !== undefined;
+    info.shadow = data.lineStyle.shadowColor !== void 0;
     info.symbol = data.symbol !== 'none';
   }
   const fns = {
@@ -636,7 +642,7 @@ export function setSeriesInfo(
     [chartTypeEnum.normalRadar]: caseRadar,
     [chartTypeEnum.quantileRadar]: caseRadar,
   };
-  return fns[type as keyof typeof fns].call(null);
+  return fns[chartConfig.type as keyof typeof fns].call(null);
 }
 
 export function conver2ecSeriesType(echartSeriesType: echartSeriesTypeEnum) {
@@ -864,6 +870,19 @@ export function useSeriesSetting({
   return typeMap[chartConfig.type as keyof typeof typeMap].call(null);
 }
 
+export function useLegendName({
+  chartConfig,
+  options,
+}: {
+  options: EChartsOption;
+  chartConfig: chartConfigType;
+}) {
+  const { seriesSetting } = chartConfig;
+  (options.legend! as LegendComponentOption).formatter = (name: string) => {
+    return seriesSetting?.find((q) => q.name === name)?.legendName ?? name;
+  }
+}
+
 export function useRemovePoint({
   chartConfig,
   quotaDataList,
@@ -872,13 +891,13 @@ export function useRemovePoint({
   quotaDataList: getQuotaDataResult[];
 }) {
   const rules = chartConfig.removePoint;
-  if (rules !== undefined && rules.length > 0) {
+  if (rules !== void 0 && rules.length > 0) {
     const filterSeries: { [key: string]: string[] } = {};
     rules?.forEach((item) => {
       const range = item.xRange.split(',');
       filterSeries[item.seriesName] = range;
     });
-    if (rules === undefined || rules.length === 0) return;
+    if (rules === void 0 || rules.length === 0) return;
     quotaDataList.forEach((quota) => {
       if (Reflect.has(filterSeries, quota.name)) {
         const r = filterSeries[quota.name].map((item) => {

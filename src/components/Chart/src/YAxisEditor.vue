@@ -159,8 +159,8 @@
     (event: 'visibleChange', visible: boolean);
   }>();
   const currentCfg: YAxisOption = reactive({
-    min: undefined,
-    max: undefined,
+    min: void 0,
+    max: void 0,
     inverse: false,
     offset: 0,
     axisLine: {
@@ -189,7 +189,7 @@
   // 数字格式化
   function onInputNumber(e: ChangeEvent, type: 'min' | 'max' | 'offset') {
     if (e.target.value === '') {
-      currentCfg[type] = undefined;
+      currentCfg[type] = void 0;
       return;
     }
     currentCfg[type] = parseFloat(e.target.value);

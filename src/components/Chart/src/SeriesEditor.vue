@@ -6,7 +6,8 @@
       >
         <span :style="{ color: info.color }">{{ info.name }}</span>
         <span>
-          <span class="w-4em text-justify mr-2">{{ t('quotaView.seriesEdit.seriesType') }}</span>
+          <span class="w-4em text-justify mr-2">{{ t('quotaView.seriesEdit.legendName') }}</span>
+          <Input class="!w-6em" size="small" v-model:value="info.legendName" placeholder="默认" />
         </span>
         <span>
           <span class="w-4em text-justify mr-2">{{ t('quotaView.seriesEdit.seriesType') }}</span>
@@ -17,7 +18,7 @@
             :options="availableSeriesType"
           />
         </span>
-        <span v-if="info.lineType !== undefined">
+        <span v-if="info.lineType !== void 0">
           <span class="w-4em text-justify mr-2">{{ t('quotaView.seriesEdit.lineType') }}</span>
           <Select
             class="!w-6em"
@@ -26,11 +27,11 @@
             :options="lineTypeList"
           />
         </span>
-        <span v-if="info.lineType !== undefined">
+        <span v-if="info.lineType !== void 0">
           <span class="w-4em text-justify mr-2">{{ t('quotaView.seriesEdit.symbol') }}</span>
           <Switch size="small" v-model:checked="info.symbol" />
         </span>
-        <span v-if="info.size !== undefined">
+        <span v-if="info.size !== void 0">
           <span class="w-4em text-justify mr-2">{{ t('quotaView.seriesEdit.lineWidth') }}</span>
           <InputNumber
             :step="2"
@@ -39,11 +40,11 @@
             v-model:value="info.size"
           />
         </span>
-        <span v-if="info.shadow !== undefined">
+        <span v-if="info.shadow !== void 0">
           <span class="w-4em text-justify mr-2">{{ t('quotaView.seriesEdit.lineShadow') }}</span>
           <Switch size="small" v-model:checked="info.shadow" />
         </span>
-        <span v-if="info.yAxisIndex !== undefined">
+        <span v-if="info.yAxisIndex !== void 0">
           <span class="w-4em text-justify mr-2">{{ t('quotaView.seriesEdit.yAxisIndex') }}</span>
           <Select
             class="!w-4em !text-center y-selector"
@@ -69,7 +70,7 @@
             />
           </Tooltip>
         </span>
-        <!-- <span v-if="info.xAxisIndex !== undefined">
+        <!-- <span v-if="info.xAxisIndex !== void 0">
           <span class="w-4em text-justify mr-2">{{ t('quotaView.seriesEdit.xAxisIndex') }}</span>
           <Select
             class="!w-5em !text-center"
@@ -93,7 +94,7 @@
 
 <script lang="ts" setup>
   import { reactive, ref, watch, toRaw, computed } from 'vue';
-  import { Popover, Button, Switch, Select, InputNumber, Tooltip } from 'ant-design-vue';
+  import { Popover, Button, Switch, Select, InputNumber, Input, Tooltip } from 'ant-design-vue';
   import Icon from '/@/components/Icon';
   import { cloneDeep, difference, last, merge, partition } from 'lodash-es';
   import { useI18n } from '/@/hooks/web/useI18n';
@@ -116,15 +117,15 @@
   }>();
   const info: seriesSettingType = reactive({
     name: '',
-    size: undefined,
+    size: void 0,
     seriesType: echartSeriesTypeEnum.line,
-    lineType: undefined,
-    shadow: undefined,
-    yAxisIndex: undefined,
-    xAxisIndex: undefined,
-    color: undefined,
-    symbol: undefined,
-    legendName: undefined,
+    lineType: void 0,
+    shadow: void 0,
+    yAxisIndex: void 0,
+    xAxisIndex: void 0,
+    color: void 0,
+    symbol: void 0,
+    legendName: void 0,
   });
   const yAxisList = computed(() => {
     const { chartConfig } = props;
@@ -199,8 +200,8 @@
     // 新轴的偏移量在最后一根同侧轴+40
     const offset = (isLeft ? last(leftAxis)?.offset ?? -40 : last(rightAxis)?.offset ?? -40) + 40;
     const yAxis = {
-      min: undefined,
-      max: undefined,
+      min: void 0,
+      max: void 0,
       inverse: false,
       offset: offset,
       name: isLeft ? `左${leftAxis.length + 1}` : `右${rightAxis.length + 1}`,
@@ -216,6 +217,8 @@
       },
     };
     emit('addYAxis', yAxis);
+    info.legendName?.replace(/\|(左|右)\d+/g, '');
+    info.legendName = `${info.legendName?.length ? info.legendName : info.name}|${yAxis.name}`;
   }
   const visible = ref(false);
   function setVisible(v) {
@@ -224,7 +227,7 @@
   defineExpose({ setVisible });
   watch(visible, (v) => {
     if (v) {
-      setSeriesInfo(info, props.chartConfig.type, props.seriesInfo, props.options);
+      setSeriesInfo({ info, ...props });
     }
     emit('visibleChange', v);
   });

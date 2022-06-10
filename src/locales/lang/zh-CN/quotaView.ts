@@ -131,7 +131,7 @@ export default {
       },
     },
     datasourceSetting: {
-      title: '获取数据量设置',
+      title: '数据量设置',
       tip: '设为0则是起止日期内全部',
       past: '最近',
       pastUnit: {
@@ -214,7 +214,7 @@ export default {
     confirmDel: '确认删除',
   },
   seriesEdit: {
-    legendName:'图例名称',
+    legendName: '图例名称',
     seriesType: '序列类型',
     lineType: '线型',
     symbol: '标点',

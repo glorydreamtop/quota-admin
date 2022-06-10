@@ -23,7 +23,7 @@
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useDrawer } from '../helper';
   import { ref, shallowRef } from 'vue';
-  import { Model, Axis, DataEdit, DataSource, Formatter, Base } from './advance';
+  import { Model, Axis, DataSource, Formatter, Base } from './advance';
 
   const CollapsePanel = Collapse.Panel;
   const container = ref<HTMLElement>();
@@ -35,6 +35,11 @@
       key: 'base',
       title: t('quotaView.advance.baseSetting.title'),
       content: Base,
+    },
+    {
+      key: 'datasourceSetting',
+      title: t('quotaView.advance.datasourceSetting.title'),
+      content: DataSource,
     },
     {
       key: 'rectSetting',
@@ -50,16 +55,6 @@
       key: 'axisSetting',
       title: t('quotaView.advance.axisSetting.title'),
       content: Axis,
-    },
-    {
-      key: 'datasourceSetting',
-      title: t('quotaView.advance.datasourceSetting.title'),
-      content: DataSource,
-    },
-    {
-      key: 'dataEdit',
-      title: t('quotaView.advance.dataEdit.title'),
-      content: DataEdit,
     },
   ]);
 
