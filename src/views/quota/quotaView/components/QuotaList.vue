@@ -25,9 +25,7 @@
       </Tooltip>
     </div>
     <!-- 列表start -->
-    <transition-group
-      tag="div"
-      name="quota-list"
+    <div
       class="flex gap-4 flex-wrap content-start rounded-md overflow-y-scroll select-none flex-grow relative pl-2"
       ref="quotaBox"
     >
@@ -37,8 +35,9 @@
         @contextmenu="handleContext($event, item)"
         v-loading="loading"
         :class="[
-          item.selected ? 'card-themecard-selected' : 'card-notselected',
-          'sortable quota-list-item card-theme',
+          item.selected ? 'card-selected' : 'card-notselected',
+          'sortable card-theme animate__animated animate__faster',
+          animationQueue.includes(item.id) ? 'animate__zoomIn' : '',
         ]"
         v-for="item in selectedQuota"
         :key="item.id"
@@ -46,13 +45,13 @@
       >
         <template #actions>
           <Icon
-            @click="handleIcon(item, 'del')"
+            @click.stop="handleIcon(item, 'del')"
             class="mr-1 cursor-pointer"
             icon="ant-design:delete-outlined"
           />
         </template>
       </QuotaCard>
-    </transition-group>
+    </div>
 
     <QuotaSetting @register="registerEdit" />
   </div>
@@ -75,10 +74,8 @@
   import { useCopyToClipboard } from '/@/hooks/web/useCopyToClipboard';
   import { useContextMenu } from '/@/hooks/web/useContextMenu';
   import { onMountedOrActivated } from '/@/hooks/core/onMountedOrActivated';
-  // import { usePointerSlideIn } from '/@/hooks/web/useAnimation';
   import { useQuotaListContext, useSelectedQuotaListContext } from './hooks';
   import type { SelectedQuotaItem } from './hooks';
-  import { domForeach } from '/@/utils/domUtils';
   import QuotaSetting from './QuotaSetting.vue';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { requestUpdateQuotaData } from '/@/api/quota';
@@ -136,11 +133,17 @@
       for (let i = 0; i < cur.length; i++) {
         if (pre.findIndex((quota) => quota.id === cur[i].id) === -1) {
           cur[i].selected = true;
+          animationQueue.value.push(cur[i].id);
+          setTimeout(() => {
+            animationQueue.value.splice(animationQueue.value.indexOf(cur[i].id), 1);
+          }, 300);
         }
       }
-      // animationFlag = true;
-    } else {
-      // animationFlag = false;
+      // setTimeout(() => {
+      //   domForeach(unref(quotaBox)!.getElementsByClassName('sortable'), (element) => {
+      //     element.classList.remove('animate__zoomIn');
+      //   });
+      // }, 500);
     }
     quotaList.value = cur.filter((item) => item.selected);
   });
@@ -164,7 +167,32 @@
   function handleIcon(item: QuotaItem, type: string) {
     const handler = {
       del: () => {
-        remove(selectedQuota.value, (quota) => quota.id === item.id);
+        const boxdom = unref(quotaBox)!;
+        // boxdom 中query查找data-id为item.id的元素
+        const dom: HTMLDivElement = boxdom.querySelector(`[data-quotaid="${item.id}"]`)!;
+        boxdom.classList.add('relative');
+        //获得dom相对父元素的位置
+        const { offsetLeft, offsetTop, offsetWidth } = dom;
+        // dom.className += 'opacity-0 width-0 width-transition';
+        dom.classList.add('opacity-0');
+        dom.classList.add('width-0');
+        dom.classList.add('width-transition');
+        // 创建一个div
+        const div = dom.cloneNode(true) as HTMLElement;
+        Object.assign(div.style, {
+          position: 'absolute',
+          top: `${offsetTop}px`,
+          left: `${offsetLeft}px`,
+          width: `${offsetWidth}px`,
+        });
+        // 将div插入到boxdom中
+        boxdom.appendChild(div);
+        div.classList.add('animate__zoomOut');
+
+        setTimeout(() => {
+          remove(selectedQuota.value, (quota) => quota.id === item.id);
+          div.remove();
+        }, 200);
       },
     };
     handler[type]();
@@ -231,7 +259,8 @@
       items: menuList,
     });
   }
-  const quotaBox = ref<ComponentRef>();
+  const quotaBox = ref<HTMLDivElement>();
+  const animationQueue = ref<(string | number)[]>([]);
   // 飞入动画的监听器
   // async function listener(event: MouseEvent) {
   //   const boxdom: HTMLDivElement = unref(quotaBox)!.$el;
@@ -248,31 +277,14 @@
   // }
   onMountedOrActivated(async () => {
     await nextTick();
-    const boxdom: HTMLDivElement = unref(quotaBox)!.$el;
+    const boxdom: HTMLDivElement = unref(quotaBox)!;
     // 支持拖动排序
     const { initSortable } = useSortable(boxdom, {
       handle: '.drag-handler',
       draggable: '.sortable',
       dataIdAttr: 'data-quotaId',
       dragoverBubble: true,
-      onStart: () => {
-        domForeach(boxdom.getElementsByClassName('sortable'), (element) => {
-          element.classList.remove(
-            'quota-list-item',
-            'animate__animated',
-            'animate__zoomIn',
-            'animate__fast',
-          );
-        });
-      },
-      // setData: (dt) => {
-      //   const d = document.createElement('div');
-      //   dt.setDragImage(d, 2, 2);
-      // },
       onEnd: (evt) => {
-        domForeach(boxdom.getElementsByClassName('sortable'), (element) => {
-          element.classList.add('quota-list-item');
-        });
         const { oldIndex, newIndex } = evt;
         if (isNullAndUnDef(oldIndex) || isNullAndUnDef(newIndex) || oldIndex === newIndex) {
           return;
@@ -300,29 +312,11 @@
 </script>
 
 <style lang="less" scoped>
-  .quota-list-move {
-    transition: transform 0.5s ease;
+  .width-transition {
+    transition: width 0.2s ease-in-out;
   }
 
-  .quota-list-item {
-    transition-property: transform;
-    transition-duration: 0.3s;
-    transition-timing-function: ease;
-  }
-
-  .quota-list-leave-active {
-    transition: 0.8s ease;
-    transition-property: opacity, transform;
-    position: absolute !important;
-  }
-
-  .quota-list-leave-to {
-    opacity: 0%;
-    transform: translateY(-100px);
-  }
-
-  .quota-list-leave-from {
-    opacity: 100%;
-    transform: translateY(0);
+  .width-0 {
+    width: 0;
   }
 </style>
