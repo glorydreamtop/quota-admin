@@ -67,7 +67,7 @@
   const { t } = useI18n();
   const { createMessage } = useMessage();
   const { config } = toRefs(props);
-  const dateKey = t('quotaView.toolbar.quotaDataTableHeader.date');
+  const dateKey = t('quotaView.doubleSideChart.quotaDataTableHeader.date');
   const info: quotaDataType = reactive({
     header: [],
     quotaDataLine: [],
@@ -122,7 +122,7 @@
       editData.value = '';
       editData.date = '';
       info.loading = false;
-      createMessage.success(t('quotaView.toolbar.realTimeSave'));
+      createMessage.success(t('quotaView.doubleSideChart.realTimeSave'));
     } catch (error) {
       createMessage.error(error);
     }
@@ -136,7 +136,7 @@
       return data.value.length === 0 || !/\d{4}-\d{2}-\d{2}/i.test(data.date);
     });
     Modal.confirm({
-      title: t('quotaView.toolbar.addData.title'),
+      title: t('quotaView.doubleSideChart.addData.title'),
       content: h(
         'div',
         {
@@ -147,7 +147,7 @@
             h(
               'span',
               { className: 'whitespace-nowrap w-4em text-center' },
-              t('quotaView.toolbar.addData.dataValue'),
+              t('quotaView.doubleSideChart.addData.dataValue'),
             ),
             h(Input, {
               class: '!w-30',
@@ -161,7 +161,7 @@
             h(
               'span',
               { className: 'whitespace-nowrap w-4em text-center' },
-              t('quotaView.toolbar.addData.dataDate'),
+              t('quotaView.doubleSideChart.addData.dataDate'),
             ),
             h(DatePicker, {
               locale,
@@ -177,7 +177,7 @@
         ],
       ),
       okType: 'primary',
-      okText: t('quotaView.toolbar.addData.confirm'),
+      okText: t('quotaView.doubleSideChart.addData.confirm'),
       okButtonProps: {
         disabled: disabled,
       },
@@ -202,7 +202,7 @@
             }
           }
           info.loading = false;
-          createMessage.success(t('quotaView.toolbar.realTimeSave'));
+          createMessage.success(t('quotaView.doubleSideChart.realTimeSave'));
         } catch (error) {}
       },
     });

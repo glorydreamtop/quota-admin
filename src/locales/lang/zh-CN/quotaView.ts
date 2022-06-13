@@ -9,38 +9,10 @@ export default {
     listUI: '切换到列表视角',
     getXLSX: '数据导出为表格',
   },
-  toolbar: {
-    paintBtn: '绘制',
-    saveBtn: '保存',
-    saveCopy: '另存为',
-    chartTypeSelectPlaceholer: '图表类型',
-    chartTypeList: {
-      // 单指标季节性序列
-      seasonal: '单指标季节性',
-      // 单指标季节性农历序列
-      seasonalLunar: '季节性农历',
-      // 多指标定基序列
-      fixedbase: '定基',
-      // 多指标柱状图
-      bar: '柱状图',
-      // 普通多指标数据序列
-      normal: '多指标数据',
-      // 普通多指标雷达图
-      normalRadar: '多指标最新值',
-      // 多指标分位数雷达图
-      quantileRadar: '多指标分位数',
-      // 多指标曲线结构折线图
-      structural: '曲线结构',
-      // 多指标单饼图
-      pie: '多指标比例',
-    },
+  doubleSideChart: {
+    paint: '绘制数据',
     startDatePicker: '选择开始日期',
     endDatePicker: '选择结束日期',
-    year: '年',
-    month: '月',
-    week: '周',
-    day: '日',
-    advanceDrawerTitle: '高级设置',
     downloadImg: '保存图片',
     downloadXLSX: '导出表格',
     noQuotaListTip: '至少勾选一个指标',
@@ -86,12 +58,38 @@ export default {
     hide: '隐藏',
     use: '启用',
     stop: '停用',
+    saveBtn: '保存为模板',
+    saveCopy: '另存为',
     baseSetting: {
       title: '基础设置',
       chartType: '图表类型',
       startDate: '开始日期',
       endDate: '结束日期',
       colorScheme: '颜色方案',
+      year: '年',
+      month: '月',
+      week: '周',
+      day: '日',
+      chartTypeList: {
+        // 单指标季节性序列
+        seasonal: '单指标季节性',
+        // 单指标季节性农历序列
+        seasonalLunar: '季节性农历',
+        // 多指标定基序列
+        fixedbase: '定基',
+        // 多指标柱状图
+        bar: '柱状图',
+        // 普通多指标数据序列
+        normal: '多指标数据',
+        // 普通多指标雷达图
+        normalRadar: '多指标最新值',
+        // 多指标分位数雷达图
+        quantileRadar: '多指标分位数',
+        // 多指标曲线结构折线图
+        structural: '曲线结构',
+        // 多指标单饼图
+        pie: '多指标比例',
+      },
     },
     rectSetting: {
       title: '模块设置',

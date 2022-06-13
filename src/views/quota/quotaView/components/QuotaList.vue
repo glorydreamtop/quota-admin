@@ -35,8 +35,7 @@
         @contextmenu="handleContext($event, item)"
         v-loading="loading"
         :class="[
-          item.selected ? 'card-selected' : 'card-notselected',
-          'sortable card-theme animate__animated animate__faster',
+          'sortable animate__animated animate__faster',
           animationQueue.includes(item.id) ? 'animate__zoomIn' : '',
         ]"
         v-for="item in selectedQuota"
@@ -172,23 +171,19 @@
         const dom: HTMLDivElement = boxdom.querySelector(`[data-quotaid="${item.id}"]`)!;
         boxdom.classList.add('relative');
         //获得dom相对父元素的位置
-        const { offsetLeft, offsetTop, offsetWidth } = dom;
-        // dom.className += 'opacity-0 width-0 width-transition';
-        dom.classList.add('opacity-0');
-        dom.classList.add('width-0');
-        dom.classList.add('width-transition');
+        const { offsetLeft, offsetTop } = dom;
+
         // 创建一个div
         const div = dom.cloneNode(true) as HTMLElement;
         Object.assign(div.style, {
           position: 'absolute',
           top: `${offsetTop}px`,
           left: `${offsetLeft}px`,
-          width: `${offsetWidth}px`,
         });
         // 将div插入到boxdom中
         boxdom.appendChild(div);
         div.classList.add('animate__zoomOut');
-
+        dom.classList.add('opacity-block');
         setTimeout(() => {
           remove(selectedQuota.value, (quota) => quota.id === item.id);
           div.remove();
@@ -312,11 +307,13 @@
 </script>
 
 <style lang="less" scoped>
-  .width-transition {
-    transition: width 0.2s ease-in-out;
-  }
-
-  .width-0 {
+  .opacity-block {
+    transition-property: width, padding;
+    transition-duration: 0.2s;
+    transition-timing-function: ease-out;
     width: 0;
+    padding: 0;
+    opacity: 0;
+    margin-right: -16px; // 因为有个gap，所以要减去
   }
 </style>

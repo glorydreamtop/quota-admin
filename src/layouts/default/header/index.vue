@@ -33,7 +33,10 @@
 
     <!-- action  -->
     <div :class="`${prefixCls}-action`">
-      <div class="font-bold text-red-500 mr-2">{{ version }}</div>
+      <Tooltip :title="`已连接${version === 'PROD' ? '正式' : '测试'}数据库`">
+        <div class="font-bold text-red-500 mr-2 select-none">{{ version }}</div>
+      </Tooltip>
+
       <AppSearch :class="`${prefixCls}-action__item `" v-if="getShowSearch" />
 
       <ErrorAction v-if="getUseErrorHandle" :class="`${prefixCls}-action__item error-action`" />
@@ -57,6 +60,7 @@
 </template>
 <script lang="ts">
   import { defineComponent, unref, computed } from 'vue';
+  import { Tooltip } from 'ant-design-vue';
 
   import { propTypes } from '/@/utils/propTypes';
 
@@ -85,6 +89,7 @@
   export default defineComponent({
     name: 'LayoutHeader',
     components: {
+      Tooltip,
       Header: Layout.Header,
       AppLogo,
       LayoutTrigger,

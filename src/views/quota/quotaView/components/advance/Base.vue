@@ -4,7 +4,6 @@
       size="small"
       @select="selectType"
       v-model:value="chartConfig.type"
-      :placeholder="t('quotaView.toolbar.chartTypeSelectPlaceholer')"
       :options="chartTypeList"
     />
     <Color />
@@ -14,16 +13,16 @@
       v-model:value="chartConfig.timeConfig.startDate"
       value-format="YYYY-MM-DD"
       :showToday="false"
-      :placeholer="t('quotaView.toolbar.startDatePicker')"
+      :placeholer="t('quotaView.advance.baseSetting.startDate')"
     >
       <template #renderExtraFooter>
         <div class="flex items-center">
           <Input size="small" class="!w-10 text-center !mr-1" v-model:value="quickDateParams.num" />
           <RadioGroup button-style="solid" size="small" v-model:value="quickDateParams.unit">
-            <RadioButton value="year">{{ t('quotaView.toolbar.year') }}</RadioButton>
-            <RadioButton value="month">{{ t('quotaView.toolbar.month') }}</RadioButton>
-            <RadioButton value="week">{{ t('quotaView.toolbar.week') }}</RadioButton>
-            <RadioButton value="day">{{ t('quotaView.toolbar.day') }}</RadioButton>
+            <RadioButton value="year">{{ t('quotaView.advance.baseSetting.year') }}</RadioButton>
+            <RadioButton value="month">{{ t('quotaView.advance.baseSetting.month') }}</RadioButton>
+            <RadioButton value="week">{{ t('quotaView.advance.baseSetting.week') }}</RadioButton>
+            <RadioButton value="day">{{ t('quotaView.advance.baseSetting.day') }}</RadioButton>
           </RadioGroup>
           <span class="ml-auto cursor-pointer text-primary" @click="quickDate">{{
             t('common.okText')
@@ -37,7 +36,7 @@
       :allowClear="false"
       v-model:value="chartConfig.timeConfig.endDate"
       value-format="YYYY-MM-DD"
-      :placeholer="t('quotaView.toolbar.endDatePicker')"
+      :placeholer="t('quotaView.advance.baseSetting.endDate')"
     >
       <template #suffixIcon> </template>
     </DatePicker>
@@ -64,7 +63,7 @@
   const chartTypeList: LabelValueOptions = [];
   for (let v in chartTypeEnum) {
     chartTypeList.push({
-      label: t(`quotaView.toolbar.chartTypeList.${v}`),
+      label: t(`quotaView.advance.baseSetting.chartTypeList.${v}`),
       value: v,
       disabled: [chartTypeEnum.seasonalLunar, chartTypeEnum.fixedbase].includes(v as chartTypeEnum),
     });

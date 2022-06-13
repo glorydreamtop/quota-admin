@@ -7,12 +7,13 @@ import 'virtual:svg-icons-register';
 import App from './App.vue';
 import { createApp } from 'vue';
 import { initAppConfigStore } from '/@/logics/initAppConfig';
-import { setupErrorHandle } from '/@/logics/error-handle';
+// import { setupErrorHandle } from '/@/logics/error-handle';
 import { router, setupRouter } from '/@/router';
 import { setupRouterGuard } from '/@/router/guard';
 import { setupStore } from '/@/store';
 import { setupGlobDirectives } from '/@/directives';
 import { setupI18n } from '/@/locales/setupI18n';
+import { setupAegisSDK } from '/@/utils/lib/aegis';
 import { registerGlobComp } from '/@/components/registerGlobComp';
 import { setupVxeTable } from './utils/lib/vxetable';
 
@@ -42,9 +43,12 @@ async function bootstrap() {
   setupGlobDirectives(app);
 
   // Configure global error handling
-  setupErrorHandle(app);
+  // setupErrorHandle(app);
 
   setupVxeTable(app);
+
+  setupAegisSDK(app);
+
   app.mount('#app');
   return true;
 }

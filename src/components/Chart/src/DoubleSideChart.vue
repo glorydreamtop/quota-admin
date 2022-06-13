@@ -5,7 +5,9 @@
         <Tooltip>
           <template #title>
             <span>{{
-              showTable ? t('quotaView.toolbar.downloadXLSX') : t('quotaView.toolbar.downloadImg')
+              showTable
+                ? t('quotaView.doubleSideChart.downloadXLSX')
+                : t('quotaView.doubleSideChart.downloadImg')
             }}</span>
           </template>
           <Icon
@@ -20,7 +22,9 @@
         </Tooltip>
         <Tooltip>
           <template #title>{{
-            showTable ? t('quotaView.toolbar.chartView') : t('quotaView.toolbar.tableView')
+            showTable
+              ? t('quotaView.doubleSideChart.chartView')
+              : t('quotaView.doubleSideChart.tableView')
           }}</template>
           <div
             class="relative w-24px h-24px"
@@ -66,7 +70,7 @@
           v-if="fullscreen"
           @click="handleEvent('fullscreen')"
         >
-          <div class="text-white keybord">{{ t('quotaView.toolbar.fullscreen') }}</div>
+          <div class="text-white keybord">{{ t('quotaView.doubleSideChart.fullscreen') }}</div>
           <Icon icon="ant-design:close-circle-outlined" class="!text-gray-600 !text-3xl" />
         </div>
       </div>

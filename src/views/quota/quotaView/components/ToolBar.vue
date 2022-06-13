@@ -1,23 +1,17 @@
 <template>
-  <div class="absolute top-0 right-0 overflow-hidden z-9 w-18 h-18" @click="paint">
-    <div
-      v-ripple
-      class="w-36 h-36 !absolute -right-18 -top-18 bg-linear-primary rounded-1 cursor-pointer"
-    >
-      <Icon class="absolute left-7 bottom-7" size="32" color="#fff" icon="ph:paint-brush-light" />
-    </div>
-  </div>
+  <Button type="primary" class="!absolute right-4 top-0 z-19 w-36" @click="paint">
+    {{ t('quotaView.doubleSideChart.paint') }}
+  </Button>
 </template>
 
 <script lang="ts" setup>
   import { nextTick } from 'vue';
-  import vRipple from '/@/directives/ripple';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useChartConfigContext, useQuotaListContext, useSelectedQuotaListContext } from './hooks';
   import { chartTypeEnum } from '/@/enums/chartEnum';
-  import Icon from '/@/components/Icon';
   import { cloneDeep } from 'lodash-es';
   import { useMessage } from '/@/hooks/web/useMessage';
+  import { Button } from 'ant-design-vue';
 
   const { t } = useI18n();
   const emit = defineEmits<{
@@ -30,7 +24,7 @@
 
   async function paint() {
     if (quotaList.value.length === 0) {
-      createMessage.warn(t('quotaView.toolbar.noQuotaListTip'));
+      createMessage.warn(t('quotaView.doubleSideChart.noQuotaListTip'));
       return;
     }
     // 季节性的公历和农历均只适用一个指标，使其他指标置灰

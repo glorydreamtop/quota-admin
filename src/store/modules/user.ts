@@ -5,7 +5,7 @@ import { defineStore } from 'pinia';
 import { store } from '/@/store';
 import { PageEnum } from '/@/enums/pageEnum';
 import { ROLES_KEY, TOKEN_KEY, USER_INFO_KEY } from '/@/enums/cacheEnum';
-import { getAuthCache, setAuthCache } from '/@/utils/auth';
+import { getAuthCache, getToken, setAuthCache } from '/@/utils/auth';
 import { LoginParams } from '/@/api/sys/model';
 import { getUserInfo, loginApi } from '/@/api/sys/user';
 import { useI18n } from '/@/hooks/web/useI18n';
@@ -17,6 +17,7 @@ import { PAGE_NOT_FOUND_ROUTE } from '/@/router/routes/basic';
 import { h } from 'vue';
 import { useAppStoreWithOut } from './app';
 import { useQuotaTreeStore } from './quotaTree';
+import { initAegisSDK } from '/@/utils/lib/aegis';
 
 interface UserState {
   userInfo: Nullable<UserInfo>;
@@ -45,7 +46,7 @@ export const useUserStore = defineStore({
       return this.userInfo || getAuthCache<UserInfo>(USER_INFO_KEY) || {};
     },
     getToken(): string {
-      return this.token || getAuthCache<string>(TOKEN_KEY);
+      return this.token ?? getToken();
     },
     getRoleList(): number[] {
       return this.roleIdList.length > 0 ? this.roleIdList : getAuthCache<number[]>(ROLES_KEY);
@@ -134,6 +135,7 @@ export const useUserStore = defineStore({
       appStore.setProjectConfig({
         colorScheme: scheme,
       });
+      initAegisSDK(userInfo.username);
       const treeStore = useQuotaTreeStore();
       // 这三个接口查询时间长甚至可能会失败，不要await
       treeStore.setSysQuotaTree();

@@ -1,3 +1,4 @@
+import Aegis from 'aegis-web-sdk';
 import type {
   ComponentRenderProxy,
   VNode,
@@ -24,6 +25,8 @@ declare global {
   const hljs: {
     highlightElement(el: Element, options?: any): void;
   };
+
+  let aegis: Aegis | null;
 
   // vue
   declare type PropType<T> = VuePropType<T>;

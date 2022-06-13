@@ -1,5 +1,8 @@
 <template>
-  <div :data-quotaId="quotaInfo.id">
+  <div
+    :data-quotaId="quotaInfo.id"
+    :class="[quotaInfo.selected ? 'card-selected' : 'card-notselected', 'card-theme']"
+  >
     <div class="quota-id">
       <Icon icon="akar-icons:drag-horizontal" class="cursor-move drag-handler" />
       <span
@@ -56,9 +59,10 @@
   import { useCopyToClipboard } from '/@/hooks/web/useCopyToClipboard';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { Icon } from '/@/components/Icon';
+import { SelectedQuotaItem } from '/@/views/quota/quotaView/components/hooks';
 
   const props = defineProps<{
-    quotaInfo: QuotaItem;
+    quotaInfo: SelectedQuotaItem;
   }>();
   const { quotaInfo } = toRefs(props);
 
