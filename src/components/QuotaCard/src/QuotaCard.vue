@@ -3,7 +3,7 @@
     :data-quotaId="quotaInfo.id"
     :class="[quotaInfo.selected ? 'card-selected' : 'card-notselected', 'card-theme']"
   >
-    <div :class="['quota-id', quotaInfo.selected ? 'card-selected' : 'card-notselected']">
+    <div :class="['quota-id', quotaInfo.selected ? 'quota-id-selected' : 'quota-id-notselected']">
       <Icon icon="akar-icons:drag-horizontal" class="cursor-move drag-handler" />
       <span
         class="w-4em text-center cursor-pointer select-none"
@@ -106,6 +106,14 @@
     .quota-id {
       @apply flex items-center gap-1 absolute top-0 left-0 py-2px px-1 mb-1 w-fit rounded-br-md text-white;
 
+      &-selected {
+        @apply bg-primary;
+      }
+
+      &-notselected {
+        @apply bg-primary-300;
+      }
+
       .drag-handler {
         @apply !text-white;
       }
@@ -164,8 +172,8 @@
     }
   }
 
-  .card-selected{
-    @apply bg-primary;
+  .card-selected {
+    // @apply bg-primary;
   }
 
   .card-notselected {
