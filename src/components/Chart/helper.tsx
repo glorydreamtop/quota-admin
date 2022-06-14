@@ -173,13 +173,18 @@ function createRichText(data: lastestDataType[], options: EChartsOption, title: 
   const width = container.clientWidth;
   const height = container.clientHeight;
   container.remove();
-  // 找到图中存在的其他模块，方便给本模块设置初始定位
+  // 找到图中存在的其他模块，方便给本模块设置初始定位,只找文本块的
   //@ts-ignore
-  const lastGraphicGroup = last((options.graphic as GraphicComponentOption).elements);
+  const lastGraphicGroup = last(
+    ((options.graphic as GraphicComponentOption).elements as any[]).filter(
+      (e) => e.groupType === 'textRect',
+    ),
+  );
   //@ts-ignore
   const left = lastGraphicGroup ? lastGraphicGroup.left + lastGraphicGroup.shape.width + 10 : 80;
   const lastestConfig = {
     type: 'group',
+    groupType: 'textRect',
     left,
     top: '10%',
     draggable: true,
@@ -222,7 +227,7 @@ function createRichText(data: lastestDataType[], options: EChartsOption, title: 
           fontFamily: 'Microsoft YaHei',
           fontSize: '12px',
           rich: {
-            title:{
+            title: {
               fontWeight: 'bold',
             },
             val: {
@@ -373,6 +378,38 @@ export function useAddGraphicElement({ options }: addGraphicElementParams) {
   Object.assign(options, {
     graphic,
   });
+}
+
+interface createRemarkParams {
+  options: EChartsOption;
+  remark: {
+    text: string;
+    point: [number, number];
+  };
+}
+
+// 创建备注模块
+export function createRemark({ options }: createRemarkParams) {
+  const position = {
+    x1: 0,
+    y1: 0,
+    x2: 30,
+    y2: 30,
+  };
+  const { x1, x2, y1, y2 } = position;
+  const arrow = `data:image/svg+xml;charset=utf8,<svg width='60px' height='60px'> <defs> <marker id='arrow' markerWidth='10' markerHeight='10' refx='0' refy='3' orient='auto' markerUnits='userSpaceOnUse'> <path d='M0,0 L0,6 L9,3 z' fill='#000' /> </marker> </defs> <line x1='${x1}' y1='${y1}' x2='${x2}' y2='${y2}' stroke='#000' stroke-width='1' marker-end='url(#arrow)' /> </svg>`;
+  const remark: GraphicComponentOption = {
+    type: 'image',
+    left:100,
+    top:100,
+    style: {
+      image: arrow,
+      width: 60,
+      height: 60,
+    },
+  };
+  // @ts-ignore
+  options.graphic.elements.push(remark);
 }
 
 interface baseHelperParams {
@@ -532,7 +569,8 @@ interface setSeriesInfoParams {
 export function setSeriesInfo({ info, chartConfig, seriesInfo, options }: setSeriesInfoParams) {
   // 匹配rgb中的数字部分,线就是stroke，填充就是fill
   const style = seriesInfo.event.target.style;
-  const colorStr: string = style.stroke ?? (isObject(style.fill)?style.fill.colorStops[0].color:style.fill);
+  const colorStr: string =
+    style.stroke ?? (isObject(style.fill) ? style.fill.colorStops[0].color : style.fill);
   const color: number[] = colorStr
     .match(/\d+/g)!
     .slice(0, 3)
@@ -542,7 +580,7 @@ export function setSeriesInfo({ info, chartConfig, seriesInfo, options }: setSer
     const seriesIndex = seriesInfo.seriesIndex;
     const series = options.series![seriesIndex];
     info.name = series.name;
-    info.legendName = chartConfig.seriesSetting.find(ser=>ser.name===series.name)?.legendName;
+    info.legendName = chartConfig.seriesSetting.find((ser) => ser.name === series.name)?.legendName;
     if (series.type === 'line') {
       if (has(series, 'areaStyle')) {
         info.seriesType = echartSeriesTypeEnum.area;
@@ -565,7 +603,7 @@ export function setSeriesInfo({ info, chartConfig, seriesInfo, options }: setSer
     const seriesIndex = seriesInfo.seriesIndex;
     const series = options.series![seriesIndex];
     info.name = series.name;
-    info.legendName = chartConfig.seriesSetting.find(ser=>ser.name===series.name)?.legendName;
+    info.legendName = chartConfig.seriesSetting.find((ser) => ser.name === series.name)?.legendName;
     if (series.type === 'line') {
       if (has(series, 'areaStyle')) {
         info.seriesType = echartSeriesTypeEnum.area;
@@ -588,7 +626,7 @@ export function setSeriesInfo({ info, chartConfig, seriesInfo, options }: setSer
     const seriesIndex = seriesInfo.seriesIndex;
     const series = options.series![seriesIndex];
     info.name = series.name;
-    info.legendName = chartConfig.seriesSetting.find(ser=>ser.name===series.name)?.legendName;
+    info.legendName = chartConfig.seriesSetting.find((ser) => ser.name === series.name)?.legendName;
     if (series.type === 'line') {
       if (has(series, 'areaStyle')) {
         info.seriesType = echartSeriesTypeEnum.area;
@@ -611,7 +649,7 @@ export function setSeriesInfo({ info, chartConfig, seriesInfo, options }: setSer
     const seriesIndex = seriesInfo.seriesIndex;
     const series = options.series![seriesIndex];
     info.name = series.name;
-    info.legendName = chartConfig.seriesSetting.find(ser=>ser.name===series.name)?.legendName;
+    info.legendName = chartConfig.seriesSetting.find((ser) => ser.name === series.name)?.legendName;
     if (series.type === 'line') {
       if (has(series, 'areaStyle')) {
         info.seriesType = echartSeriesTypeEnum.area;
@@ -634,7 +672,7 @@ export function setSeriesInfo({ info, chartConfig, seriesInfo, options }: setSer
     const dataIndex = seriesInfo.dataIndex;
     const data = options.series![0].data[dataIndex];
     info.name = data.name;
-    info.legendName = chartConfig.seriesSetting.find(ser=>ser.name===data.name)?.legendName;
+    info.legendName = chartConfig.seriesSetting.find((ser) => ser.name === data.name)?.legendName;
     info.seriesType = echartSeriesTypeEnum.radar;
     info.size = data.lineStyle.width;
     info.lineType = data.lineStyle.type;
@@ -887,7 +925,7 @@ export function useLegendName({
   const { seriesSetting } = chartConfig;
   (options.legend! as LegendComponentOption).formatter = (name: string) => {
     return seriesSetting?.find((q) => q.name === name)?.legendName ?? name;
-  }
+  };
 }
 
 export function useRemovePoint({

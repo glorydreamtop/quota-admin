@@ -28,6 +28,7 @@ import {
   useScientificNotation,
   useSeriesSetting,
   useLegendName,
+  createRemark,
 } from './helper';
 import {
   barChartConfigType,
@@ -277,6 +278,7 @@ export async function useNormalChart(chartConfig: normalChartConfigType): Promis
   // 最新值模块
   useLastestQuotaData({ chartConfig, options, quotaDataList });
   useHighestQuotaData({ chartConfig, options, quotaDataList });
+  createRemark({ chartConfig, options });
   return options;
 }
 // 柱状图最近N期序列

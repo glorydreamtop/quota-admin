@@ -17,7 +17,7 @@
 
 <script lang="ts" setup>
   import { useDebounceFn } from '@vueuse/shared';
-  import { ref, defineEmits } from 'vue';
+  import { ref } from 'vue';
   import { AutoComplete, Input } from 'ant-design-vue';
   import { Icon } from '/@/components/Icon';
   import { searchQuota } from '/@/api/quota';
