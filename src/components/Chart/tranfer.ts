@@ -71,6 +71,18 @@ const toolboxConfig: ToolboxComponentOption = {
 
 const gridConfig: GridComponentOption = {
   width: 'auto',
+  containLabel: true,
+  left: '2%',
+  right: '2%',
+  top: 60,
+  bottom: 60,
+};
+const legendConfig: LegendComponentOption = {
+  show: true,
+  left: 'center',
+  top: 'bottom',
+  orient: 'horizontal',
+  icon: 'roundRect',
 };
 // 季节性序列
 export async function useSeasonalChart(
@@ -89,8 +101,7 @@ export async function useSeasonalChart(
   const series: SeriesOption[] = [];
   const legend: LegendComponentOption = {
     data: [],
-    top: 'bottom',
-    icon: 'roundRect',
+    ...legendConfig,
   };
   const quota = quotaDataList[0];
   if (quota.data.length === 0) {
@@ -215,8 +226,7 @@ export async function useNormalChart(chartConfig: normalChartConfigType): Promis
   useRemovePoint({ chartConfig, quotaDataList });
   const legend: LegendComponentOption = {
     data: [],
-    top: 'bottom',
-    icon: 'roundRect',
+    ...legendConfig,
   };
   type NormalChartSeriesOption = LineSeriesOption | BarSeriesOption | ScatterSeriesOption;
   const series: NormalChartSeriesOption[] = [];
@@ -335,8 +345,7 @@ export async function useBarChart(chartConfig: barChartConfigType) {
     color,
     series,
     legend: {
-      top: 'bottom',
-      icon: 'roundRect',
+      ...legendConfig,
     },
     toolbox: toolboxConfig,
     tooltip: {
@@ -418,8 +427,7 @@ export async function useRadarChart(chartConfig: radarChartConfigType) {
     series,
     color,
     legend: {
-      top: 'bottom',
-      icon: 'roundRect',
+      ...legendConfig,
     },
     toolbox: toolboxConfig,
     tooltip: {
@@ -536,8 +544,7 @@ export async function useStructuralChart(chartConfig: structuralChartConfigType)
     color,
     series,
     legend: {
-      top: 'bottom',
-      icon: 'roundRect',
+      ...legendConfig,
     },
     toolbox: toolboxConfig,
     tooltip: {
@@ -609,8 +616,7 @@ export async function usePieChart(chartConfig: pieChartConfigType) {
     color,
     series,
     legend: {
-      top: 'bottom',
-      icon: 'roundRect',
+      ...legendConfig,
     },
     toolbox: toolboxConfig,
     tooltip: {
@@ -719,8 +725,7 @@ export async function useQuantileRadarChart(chartConfig: quantileRadarChartConfi
     color,
     series,
     legend: {
-      top: 'bottom',
-      icon: 'roundRect',
+      ...legendConfig,
     },
     toolbox: toolboxConfig,
     tooltip: {
