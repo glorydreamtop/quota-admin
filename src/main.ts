@@ -19,6 +19,9 @@ import { setupVxeTable } from './utils/lib/vxetable';
 
 async function bootstrap() {
   const app = createApp(App);
+  // Multilingual configuration
+  // Asynchronous case: language files may be obtained from the server side
+  await setupI18n(app);
 
   // Configure store
   setupStore(app);
@@ -28,10 +31,6 @@ async function bootstrap() {
 
   // Register global components
   registerGlobComp(app);
-
-  // Multilingual configuration
-  // Asynchronous case: language files may be obtained from the server side
-  await setupI18n(app);
 
   // Configure routing
   setupRouter(app);

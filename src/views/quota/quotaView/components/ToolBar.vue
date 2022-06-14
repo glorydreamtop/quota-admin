@@ -1,5 +1,8 @@
 <template>
   <Button type="primary" class="!absolute right-4 top-0 z-19 w-36" @click="paint">
+    <template #icon>
+      <Icon size="22" icon="ph:paint-brush-duotone" />
+    </template>
     {{ t('quotaView.doubleSideChart.paint') }}
   </Button>
 </template>
@@ -12,6 +15,7 @@
   import { cloneDeep } from 'lodash-es';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { Button } from 'ant-design-vue';
+  import Icon from '/@/components/Icon';
 
   const { t } = useI18n();
   const emit = defineEmits<{

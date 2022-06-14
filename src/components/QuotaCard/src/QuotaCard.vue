@@ -3,7 +3,7 @@
     :data-quotaId="quotaInfo.id"
     :class="[quotaInfo.selected ? 'card-selected' : 'card-notselected', 'card-theme']"
   >
-    <div class="quota-id">
+    <div :class="['quota-id', quotaInfo.selected ? 'card-selected' : 'card-notselected']">
       <Icon icon="akar-icons:drag-horizontal" class="cursor-move drag-handler" />
       <span
         class="w-4em text-center cursor-pointer select-none"
@@ -59,7 +59,7 @@
   import { useCopyToClipboard } from '/@/hooks/web/useCopyToClipboard';
   import { useMessage } from '/@/hooks/web/useMessage';
   import { Icon } from '/@/components/Icon';
-import { SelectedQuotaItem } from '/@/views/quota/quotaView/components/hooks';
+  import { SelectedQuotaItem } from '/@/views/quota/quotaView/components/hooks';
 
   const props = defineProps<{
     quotaInfo: SelectedQuotaItem;
@@ -165,6 +165,6 @@ import { SelectedQuotaItem } from '/@/views/quota/quotaView/components/hooks';
   }
 
   .card-notselected {
-    @apply filter grayscale-75;
+    @apply bg-white;
   }
 </style>
