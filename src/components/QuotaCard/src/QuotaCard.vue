@@ -177,6 +177,6 @@
   }
 
   .card-notselected {
-    @apply bg-white;
+    @apply filter grayscale-75;
   }
 </style>

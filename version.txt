@@ -1,3 +1,9 @@
+git:77c28d89ad9e9ea2d5c3f7ea5a7042af64dfa6cb
+作者:glorydream.top<hanwenhui520@gmail.com>
+日期:2022-6-14 15:51
+说明:fix: update quota-card css
+版本号:20220614-155141
+*******************************************************************************
 git:c9f5f2dc67859589e27c6f5a88293cebc89b9399
 作者:glorydream.top<hanwenhui520@gmail.com>
 日期:2022-6-13 16:36
@@ -34,6 +40,7 @@ git:f1c01cdc7b6d6c8b6b5334ae9ece4b60fc0f9230
 说明:feat: update serieSetting
 版本号:20220421-174427
 *******************************************************************************
+
 
 
 

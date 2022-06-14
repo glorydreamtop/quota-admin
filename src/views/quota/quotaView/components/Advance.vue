@@ -12,14 +12,19 @@
         <Component :is="item.content" :key="item.key" />
       </CollapsePanel>
     </Collapse>
+
     <div class="save">
-      <Button disabled type="primary" block>{{ t('quotaView.advance.saveBtn') }}</Button>
+      <Tooltip title="暂不开放保存模板功能，期待你体验后的宝贵建议哦^_^">
+        <Button block>
+          <span>{{ t('quotaView.advance.saveBtn') }}</span>
+        </Button>
+      </Tooltip>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-  import { Divider, Collapse, Button } from 'ant-design-vue';
+  import { Divider, Collapse, Button, Tooltip } from 'ant-design-vue';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { useDrawer } from '../helper';
   import { ref, shallowRef } from 'vue';
