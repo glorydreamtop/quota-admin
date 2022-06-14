@@ -13,7 +13,7 @@
       </CollapsePanel>
     </Collapse>
     <div class="save">
-      <Button type="primary" block>{{ t('common.saveText') }}</Button>
+      <Button disabled type="primary" block>{{ t('quotaView.advance.saveBtn') }}</Button>
     </div>
   </div>
 </template>

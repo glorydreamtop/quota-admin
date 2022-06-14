@@ -147,7 +147,7 @@ export function useXAxisIndexEdit({ chartConfig, onOk }: yAxixIndexEditParams) {
 
 function createRichText(data: lastestDataType[], options: EChartsOption, title: string) {
   const text =
-    `${title}\n` +
+    `{title|${title}}\n` +
     data
       .map((item) => {
         const DIFF = item.diff
@@ -161,10 +161,12 @@ function createRichText(data: lastestDataType[], options: EChartsOption, title: 
       .join('\n');
   const container = document.createElement('div');
   Object.assign(container.style, {
-    fontSize: '13px',
+    fontSize: '12px',
     fontFamily: 'Microsoft YaHei',
     lineHeight: '18px',
     position: 'absolute',
+    paddingBottom: '5px',
+    paddingRight: '5px',
   });
   container.innerText = text.replaceAll(/\{|}|less|more|val|\|/g, '');
   document.getElementById('app')!.append(container);
@@ -194,11 +196,11 @@ function createRichText(data: lastestDataType[], options: EChartsOption, title: 
         shape: {
           x: 0,
           y: 0,
-          width: width + 10,
-          height: height + 10,
+          width: width + 15,
+          height: height + 5,
         },
         style: {
-          fill: '#ffffff66',
+          fill: '#ffffffdd',
           stroke: '#555',
           borderColor: '#ffffff99',
           borderWidth: 1,
@@ -217,21 +219,26 @@ function createRichText(data: lastestDataType[], options: EChartsOption, title: 
         style: {
           fill: '#333',
           text,
-          font: '12px Microsoft YaHei',
+          fontFamily: 'Microsoft YaHei',
+          fontSize: '12px',
           rich: {
-            val: {
-              fill: '#000',
+            title:{
               fontWeight: 'bold',
-              fontSize: '12px',
-              height: 20,
+            },
+            val: {
+              fill: '#333',
+              fontWeight: 'bold',
+              height: 18,
             },
             more: {
               fill: '#DC143C',
-              height: 20,
+              height: 18,
+              fontStyle: 'italic',
             },
             less: {
               fill: '#008000',
-              height: 20,
+              height: 18,
+              fontStyle: 'italic',
             },
           },
         },
