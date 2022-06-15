@@ -1,20 +1,29 @@
 <template>
-  <div class="h-full overflow-hidden relative" v-loading="loading">
+  <div class="h-full overflow-hidden relative" v-loading="state.loading">
     <div ref="chartElRef" class="w-full h-full" @contextmenu="originContextmenu"></div>
-    <div v-if="noChart" class="no-chart flex flex-col items-center">
+    <div v-if="state.noChart" class="no-chart flex flex-col items-center">
       <img src="../../../assets/svg/no-chart.svg" />
       <span
         v-if="config.title"
         class="whitespace-nowrap mt-2 text-gray-400 flex flex-col items-center"
         ><span>{{ config.title }}</span
-        ><span v-if="renderError">{{ t('common.renderError') }}</span>
+        ><span v-if="state.renderError">{{ t('common.renderError') }}</span>
       </span>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-  import { nextTick, onBeforeUnmount, onDeactivated, ref, toRefs, unref, watch } from 'vue';
+  import {
+    nextTick,
+    onBeforeUnmount,
+    onDeactivated,
+    ref,
+    toRefs,
+    unref,
+    watch,
+    reactive,
+  } from 'vue';
   import type { Ref } from 'vue';
   import { useECharts } from '/@/hooks/web/useECharts';
   import { useI18n } from '/@/hooks/web/useI18n';
@@ -47,7 +56,7 @@
   }>();
   const emit = defineEmits<{
     (event: 'updateConfig', config: chartConfigType): void;
-    (event: 'paintSuccess', options: EChartsCoreOption): void;
+    (event: 'renderSuccess', options: EChartsCoreOption): void;
   }>();
 
   const { config } = toRefs(props);
@@ -55,8 +64,13 @@
   const { setOptions, resize, getInstance } = useECharts(chartElRef as Ref<HTMLDivElement>);
   const { createMessage } = useMessage();
   const { t } = useI18n();
-  const noChart = ref(true);
-  const renderError = ref(false);
+  const state = reactive({
+    // 还没画图
+    noChart: true,
+    // 渲染出错
+    renderError: false,
+    loading: false,
+  });
   const chartTypeHooks = {
     [chartTypeEnum.seasonal]: useSeasonalChart,
     [chartTypeEnum.normal]: useNormalChart,
@@ -66,7 +80,6 @@
     [chartTypeEnum.pie]: usePieChart,
     [chartTypeEnum.quantileRadar]: useQuantileRadarChart,
   };
-  const loading = ref(false);
   defineExpose({
     getInstance,
   });
@@ -75,25 +88,25 @@
     async (v) => {
       if (!Reflect.has(v, 'quotaList') || v.quotaList?.length === 0) return;
       try {
-        loading.value = true;
+        state.loading = true;
         console.log('chart config', v);
         getInstance()?.on('finished', function () {
           nextTick(() => {
-            emit('paintSuccess', getInstance()!.getOption());
+            emit('renderSuccess', getInstance()!.getOption());
             getInstance()?.off('finished');
           });
         });
         const options = await chartTypeHooks[v.type](v);
         setOptions(options);
-        noChart.value = false;
-        renderError.value = false;
+        state.noChart = false;
+        state.renderError = false;
       } catch (error) {
         console.log(error);
-        noChart.value = true;
-        renderError.value = true;
+        state.noChart = true;
+        state.renderError = true;
         createMessage.warn(t('common.renderError'));
       } finally {
-        loading.value = false;
+        state.loading = false;
       }
     },
     { deep: true, immediate: true },
@@ -203,7 +216,6 @@
           }
         });
     });
-
   });
 </script>
 

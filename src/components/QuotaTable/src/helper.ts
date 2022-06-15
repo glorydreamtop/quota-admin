@@ -1,10 +1,9 @@
-import dayjs from 'dayjs';
 import { cloneDeep } from 'lodash-es';
 import { jsonToSheetXlsx } from '../../Excel';
 import { getQuotaData, quotaDataExportTypeEnum } from '/@/api/quota';
 import { getQuotaDataResult } from '/@/api/quota/model';
 import { useI18n } from '/@/hooks/web/useI18n';
-import { formatToDate } from '/@/utils/dateUtil';
+import { formatToDate, toTimeStamp } from '/@/utils/dateUtil';
 import { SelectedQuotaItem } from '/@/views/quota/quotaView/components/hooks';
 
 const { t } = useI18n();
@@ -62,7 +61,7 @@ export function useDownloadXLSX(): useDownloadXLSXRes {
     }
     // 最新的日子搁上头
     tableData = dataSource.sort((a, b) => {
-      return dayjs(b[dateColName]).unix() - dayjs(a[dateColName]).unix();
+      return toTimeStamp(b[dateColName]) - toTimeStamp(a[dateColName]);
     });
     return { tableData, names, ids };
   }

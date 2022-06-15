@@ -8,8 +8,8 @@ import mitt from '/@/utils/mitt';
 import { useI18n } from '/@/hooks/web/useI18n';
 import { cloneDeep } from 'lodash-es';
 import { useMessage } from '/@/hooks/web/useMessage';
-import dayjs from 'dayjs';
 import { chartTypeEnum } from '/@/enums/chartEnum';
+import { getYear } from '/@/utils/dateUtil';
 
 const { t } = useI18n();
 const { createMessage } = useMessage();
@@ -144,8 +144,8 @@ export function useSortMonthAndYear(chartConfig: chartConfigType): useSortMonthR
     updateYears();
   }
   function updateYears() {
-    const startYear = dayjs(chartConfig.timeConfig.startDate).year();
-    const endYear = dayjs(chartConfig.timeConfig.endDate).year();
+    const startYear = getYear(chartConfig.timeConfig.startDate);
+    const endYear = getYear(chartConfig.timeConfig.endDate);
     yearList.value = [];
     const startMonth = chartConfig.timeConfig.startMonth;
     for (let i = startYear; i <= endYear + 1; i++) {

@@ -50,10 +50,10 @@
   import { useChartConfigContext } from '../hooks';
   import { chartTypeEnum } from '/@/enums/chartEnum';
   import { reactive } from 'vue';
-  import dayjs from 'dayjs';
   import { cloneDeep } from 'lodash-es';
   import { getChartDefaultConfig } from '../../helper';
   import { mergeAndRemove } from '/@/utils/helper/commonHelper';
+  import { dateUtil } from '/@/utils/dateUtil';
 
   const { t } = useI18n();
   const RadioButton = Radio.Button;
@@ -73,7 +73,7 @@
     unit: 'year',
   });
   function quickDate() {
-    chartConfig.timeConfig.startDate = dayjs()
+    chartConfig.timeConfig.startDate = dateUtil()
       .subtract(parseInt(quickDateParams.num), quickDateParams.unit)
       .format('YYYY-MM-DD');
   }

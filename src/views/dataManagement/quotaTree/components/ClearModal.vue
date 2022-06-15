@@ -26,7 +26,7 @@
   import { BasicModal, useModalInner } from '/@/components/Modal';
   import { delQuotaData } from '/@/api/quota';
   import { useMessage } from '/@/hooks/web/useMessage';
-  import { Dayjs } from 'dayjs';
+  import { DateUtil } from '/@/utils/dateUtil';
 
   export default defineComponent({
     components: {
@@ -40,7 +40,7 @@
       const [register, { closeModal }] = useModalInner((_record: QuotaItem[]) => {
         record.value = _record;
       });
-      const timeRange: Ref<Dayjs[]> = ref([]);
+      const timeRange: Ref<DateUtil[]> = ref([]);
       const { createMessage } = useMessage();
       async function del() {
         const [startDate, endDate] = unref(timeRange).map((t) => t.format('YYYY-MM-DD'));

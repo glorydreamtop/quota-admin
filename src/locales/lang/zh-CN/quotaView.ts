@@ -18,6 +18,8 @@ export default {
     noQuotaListTip: '至少勾选一个指标',
     tableView: '数据表格',
     chartView: '回到图表',
+    paintModeOn: '开启墨迹模式',
+    paintModeOff: '关闭墨迹模式',
     fullscreen: '按ESC退出全屏',
     quotaDataTableHeader: {
       date: '日期',

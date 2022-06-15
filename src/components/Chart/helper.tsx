@@ -10,10 +10,10 @@ import {
   SeriesOption,
   YAXisComponentOption,
 } from 'echarts';
+import { encodeSvgForCss } from '/@/components/Icon';
 import { last, maxBy, nth, remove, round, cloneDeep, has, isObject } from 'lodash-es';
 import { chartTypeEnum, echartLineTypeEnum, echartSeriesTypeEnum } from '/@/enums/chartEnum';
-import { daysAgo, formatToDate } from '/@/utils/dateUtil';
-import dayjs from 'dayjs';
+import { dateUtil, daysAgo, formatToDate,getMonth, toTimeStamp } from '/@/utils/dateUtil';
 import { useI18n } from '/@/hooks/web/useI18n';
 import YAxisEdit from './src/YAxisEditor.vue';
 import XAxisEdit from './src/XAxisEditor.vue';
@@ -276,7 +276,7 @@ export async function useLastestQuotaData({
     const lastestData: lastestDataType[] = [];
     if (singleQuotaChartTypes.includes(chartConfig.type)) {
       // 找到最新日期
-      const lastDate = dayjs(last(quotaDataList[0].data)![0]).year(2020).unix() * 1000;
+      const lastDate = dateUtil(last(quotaDataList[0].data)![0]).year(2020).unix() * 1000;
       const series = options.series as SeriesOption[];
       series.forEach((item, idx) => {
         const data = item.data as [number, number][];
@@ -393,17 +393,26 @@ export function createRemark({ options }: createRemarkParams) {
   const position = {
     x1: 0,
     y1: 0,
-    x2: 30,
+    x2: 40,
     y2: 30,
   };
   const { x1, x2, y1, y2 } = position;
-  const arrow = `data:image/svg+xml;charset=utf8,<svg width='60px' height='60px'> <defs> <marker id='arrow' markerWidth='10' markerHeight='10' refx='0' refy='3' orient='auto' markerUnits='userSpaceOnUse'> <path d='M0,0 L0,6 L9,3 z' fill='#000' /> </marker> </defs> <line x1='${x1}' y1='${y1}' x2='${x2}' y2='${y2}' stroke='#000' stroke-width='1' marker-end='url(#arrow)' /> </svg>`;
+  const arrow = 
+  `<svg xmlns='http://www.w3.org/2000/svg' width='60px' height='60px' viewBox='0 0 60 60'> 
+    <defs> 
+      <marker id='arrow' markerWidth='10' markerHeight='10' refX='0' refY='5' orient='auto' markerUnits='userSpaceOnUse'>
+        <path d='M0,0 L0,10 L9,5 z' fill='#f00' />
+      </marker> 
+    </defs> 
+    <line x1='${x1}' y1='${y1}' x2='${x2}' y2='${y2}' stroke='#000' stroke-width='1' marker-end='url(#arrow)' />
+  </svg>`;
+  const data = `data:image/svg+xml;charset=utf8,${encodeSvgForCss(arrow)}`;
   const remark: GraphicComponentOption = {
     type: 'image',
-    left:100,
-    top:100,
+    left: 100,
+    top: 100,
     style: {
-      image: arrow,
+      image: data,
       width: 60,
       height: 60,
     },
@@ -424,7 +433,7 @@ export function useSortMonth({ chartConfig, quotaDataList }: baseHelperParams) {
   }
   quotaDataList.forEach((quota) => {
     quota.data = quota.data.filter((data) => {
-      return !sortMonth.includes(dayjs(data[0]).month() + 1);
+      return !sortMonth.includes(getMonth(data[0]) + 1);
     });
   });
 }
@@ -948,16 +957,16 @@ export function useRemovePoint({
         const r = filterSeries[quota.name].map((item) => {
           // 等于某日期
           if (/x=\d{4}-\d{2}-\d{2}/i.test(item)) {
-            return dayjs(item.split('=')[1]).unix() * 1000;
+            return toTimeStamp(item.split('=')[1]) * 1000;
           }
           // 大于某日期,小于某日期
           if (/\d{4}-\d{2}-\d{2}<x<\d{4}-\d{2}-\d{2}/i.test(item)) {
-            return item.split('<x<').map((s) => dayjs(s).unix() * 1000);
+            return item.split('<x<').map((s) => toTimeStamp(s) * 1000);
           }
         });
         if (r.length > 0) {
           quota.data = quota.data.filter((data) => {
-            const time = dayjs(data[0]).startOf('d').unix() * 1000;
+            const time = dateUtil(data[0]).startOf('d').unix() * 1000;
             for (let i = 0; i < r.length; i++) {
               const s = r[i];
               if (isNumber(s) && s === time) return false;

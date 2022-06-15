@@ -1,80 +1,92 @@
 <template>
-  <div ref="doubleSideChart">
-    <Teleport to="body" :disabled="!fullscreen">
-      <div :class="['toolbar', inReport ? 'autohidden-toolbar gap-1' : 'gap-2']">
-        <Tooltip>
-          <template #title>
-            <span>{{
-              showTable
-                ? t('quotaView.doubleSideChart.downloadXLSX')
-                : t('quotaView.doubleSideChart.downloadImg')
-            }}</span>
-          </template>
-          <Icon
-            :class="[
-              'download-icon animate__animated',
-              (config.title ?? '').length === 0 ? 'disabled' : '',
-            ]"
-            size="22"
-            icon="xiazai|svg"
-            @click="download"
-          />
-        </Tooltip>
-        <Tooltip>
-          <template #title>{{
-            showTable
-              ? t('quotaView.doubleSideChart.chartView')
-              : t('quotaView.doubleSideChart.tableView')
-          }}</template>
-          <div
-            class="relative w-24px h-24px"
-            :class="[(config.title ?? '').length === 0 ? 'disabled' : '']"
-            @click="handleEvent(showTable ? 'showChart' : 'showTable')"
-          >
-            <Icon
-              :class="['chartmode-icon', showTable ? 'front' : 'back']"
-              icon="fsux_tubiao_zhuzhuangtu|svg"
-              size="24"
-            />
-            <Icon
-              :class="['sheetmode-icon -mt-1px', !showTable ? 'front' : 'back']"
-              icon="fsux_tubiao_biaoge|svg"
-              size="24"
-            />
-          </div>
-        </Tooltip>
-        <Icon icon="quanping|svg" size="24" @click="handleEvent('fullscreen')" />
-        <!-- <Icon icon="shezhi|svg" size="24" v-show="inReport" @click="handleEvent('setting')" /> -->
-      </div>
-      <div
-        class="w-full h-full preserve-3d box"
-        :class="[fullscreen ? 'fullscreen pt-4' : '']"
-        id="quota-view-chartbox"
+  <div ref="doubleSideChart" :class="[fullscreen ? 'fullscreen' : '']">
+    <div :class="['toolbar', inReport ? 'autohidden-toolbar gap-1' : 'gap-2']">
+      <Tooltip
+        :title="
+          showTable
+            ? t('quotaView.doubleSideChart.downloadXLSX')
+            : t('quotaView.doubleSideChart.downloadImg')
+        "
       >
-        <BasicChart
-          :class="['chart-view w-full', showTable ? 'back' : 'front']"
-          :config="config"
-          @update-config="updateConfig"
-          @paint-success="paintSuccess"
-          ref="chartRef"
+        <Icon
+          :class="[
+            'download-icon animate__animated',
+            (config.title ?? '').length === 0 ? 'disabled' : '',
+          ]"
+          size="22"
+          icon="xiazai|svg"
+          @click="download"
         />
-        <QuotaDataTable
-          v-if="loadTable"
-          :class="['table-view', showTable ? 'front' : 'back']"
-          :config="config"
-          ref="tableRef"
-        />
-
+      </Tooltip>
+      <Tooltip
+        :title="
+          showTable
+            ? t('quotaView.doubleSideChart.chartView')
+            : t('quotaView.doubleSideChart.tableView')
+        "
+      >
         <div
-          class="absolute flex items-center gap-4 top-2 right-2 cursor-pointer"
-          v-if="fullscreen"
-          @click="handleEvent('fullscreen')"
+          class="relative w-24px h-24px"
+          :class="[(config.title ?? '').length === 0 ? 'disabled' : '']"
+          @click="handleEvent(showTable ? 'showChart' : 'showTable')"
         >
-          <div class="text-white keybord">{{ t('quotaView.doubleSideChart.fullscreen') }}</div>
-          <Icon icon="ant-design:close-circle-outlined" class="!text-gray-600 !text-3xl" />
+          <Icon
+            :class="['chartmode-icon', showTable ? 'front' : 'back']"
+            icon="fsux_tubiao_zhuzhuangtu|svg"
+            size="24"
+          />
+          <Icon
+            :class="['sheetmode-icon -mt-1px', !showTable ? 'front' : 'back']"
+            icon="fsux_tubiao_biaoge|svg"
+            size="24"
+          />
         </div>
+      </Tooltip>
+      <Icon icon="quanping|svg" size="24" @click="handleEvent('fullscreen')" />
+      <Tooltip
+        :title="
+          paintMode
+            ? t('quotaView.doubleSideChart.paintModeOff')
+            : t('quotaView.doubleSideChart.paintModeOn')
+        "
+      >
+        <Icon
+          icon="fabiao|svg"
+          size="22"
+          :class="['filter paint-mode', paintMode ? '' : 'grayscale-75']"
+          v-show="!inReport"
+          @click="handleEvent('paintMode')"
+        />
+      </Tooltip>
+    </div>
+    <div
+      class="w-full h-full preserve-3d box"
+      :class="[fullscreen ? 'pt-4' : '']"
+      id="quota-view-chartbox"
+    >
+      <BasicChart
+        :class="['chart-view w-full', showTable ? 'back' : 'front']"
+        :config="config"
+        @update-config="updateConfig"
+        @render-success="renderSuccess"
+        ref="chartRef"
+      />
+      <QuotaDataTable
+        v-if="loadTable"
+        :class="['table-view', showTable ? 'front' : 'back']"
+        :config="config"
+        ref="tableRef"
+      />
+
+      <div
+        class="absolute flex items-center gap-4 top-2 right-2 cursor-pointer"
+        v-if="fullscreen"
+        @click="handleEvent('fullscreen')"
+      >
+        <div class="text-white keybord">{{ t('quotaView.doubleSideChart.fullscreen') }}</div>
+        <Icon icon="ant-design:close-circle-outlined" class="!text-gray-600 !text-3xl" />
       </div>
-    </Teleport>
+    </div>
   </div>
 </template>
 
@@ -98,7 +110,7 @@
   }>();
   const emit = defineEmits<{
     (event: 'updateConfig', config: chartConfigType): void;
-    (event: 'paintSuccess', options: EChartsCoreOption): void;
+    (event: 'renderSuccess', options: EChartsCoreOption): void;
   }>();
   const { config } = toRefs(props);
   const doubleSideChart = ref<HTMLDivElement>(null);
@@ -107,6 +119,7 @@
   onMounted(() => {
     inReport.value = doubleSideChart.value.parentElement.hasAttribute('data-uniqid');
   });
+  const paintMode = ref(false);
   const fullscreen = ref(false);
   const showTable = ref(false);
   const loadTable = ref(false);
@@ -119,8 +132,8 @@
   function updateConfig(cfg: chartConfigType) {
     emit('updateConfig', cfg);
   }
-  function paintSuccess(options: EChartsCoreOption) {
-    emit('paintSuccess', options);
+  function renderSuccess(options: EChartsCoreOption) {
+    emit('renderSuccess', options);
   }
   const chartRef = ref<
     {
@@ -155,7 +168,6 @@
         canvas.height = chartRef.value!.getInstance().getHeight() * 2;
         const img = new Image();
         img.onload = function () {
-          console.log('aaa');
           canvas.getContext('2d')!.drawImage(img, 0, 0, canvas.width, canvas.height);
           const dataUrl = canvas.toDataURL('image/png');
           downloadByBase64(dataUrl, `${config.value.title}.png`);
@@ -179,6 +191,8 @@
         break;
       case 'fullscreen':
         fullscreen.value = !fullscreen.value;
+      case 'paintMode':
+        paintMode.value = !paintMode.value;
       default:
         break;
     }
@@ -187,13 +201,13 @@
 
 <style lang="less" scoped>
   .fullscreen {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     bottom: 0;
     right: 0;
     background: @white;
-    z-index: 9999;
+    z-index: 899;
 
     .chart-view {
       padding-top: 1rem;
@@ -231,6 +245,8 @@
     position: absolute;
     z-index: 19;
     margin-left: 2rem;
+    height: 1rem;
+    width: fit-content;
 
     .disabled {
       pointer-events: none;
@@ -260,5 +276,9 @@
     line-height: 1.2;
     border-radius: 6px;
     padding: 6px 10px 8px 10px;
+  }
+
+  .paint-mode {
+    transition: filter 0.2s ease;
   }
 </style>

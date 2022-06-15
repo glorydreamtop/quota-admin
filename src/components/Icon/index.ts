@@ -2,7 +2,7 @@ import Icon from './src/Icon.vue';
 import SvgIcon from './src/SvgIcon.vue';
 import Iconify from '@purge-icons/generated';
 
-const encodeSvgForCss = (svg: string): string => {
+export const encodeSvgForCss = (svg: string): string => {
   let useSvg = svg.startsWith('<svg>') ? svg.replace('<svg>', '<svg >') : svg;
   if (!useSvg.includes(' xmlns:xlink=') && useSvg.includes(' xlink:')) {
     useSvg = useSvg.replace('<svg ', '<svg xmlns:xlink="http://www.w3.org/1999/xlink" ');

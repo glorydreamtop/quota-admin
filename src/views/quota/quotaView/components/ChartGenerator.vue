@@ -5,10 +5,10 @@
     <div class="relative flex-grow">
       <ToolBar @paint="paint" />
       <DoubleSideChart
-        class="absolute top-0 left-0 right-0 bottom-0"
+        class="w-full h-full"
         :config="config"
         @update-config="updateConfig"
-        @paint-success="paintSuccess"
+        @render-success="renderSuccess"
       />
     </div>
     <Advance />
@@ -44,43 +44,9 @@
     paint();
   }
   // 绘图完成
-  function paintSuccess(options: EChartsCoreOption) {
+  function renderSuccess(options: EChartsCoreOption) {
     echartMitter.emit('echartOptions', options);
   }
 </script>
 
-<style lang="less" scoped>
-  .fullscreen {
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    background: @white;
-    z-index: 9999;
-
-    .chart-view {
-      padding-top: 1rem;
-      padding-bottom: 1rem;
-    }
-  }
-
-  .box {
-    transition: width 0.3s ease;
-  }
-
-  .chart-view,
-  .table-view {
-    position: absolute;
-    backface-visibility: hidden;
-    transition: all 1s;
-
-    &.front {
-      transform: rotateY(0);
-    }
-
-    &.back {
-      transform: rotateY(180deg);
-    }
-  }
-</style>
+<style lang="less" scoped></style>

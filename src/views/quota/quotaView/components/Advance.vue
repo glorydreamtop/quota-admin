@@ -12,7 +12,6 @@
         <Component :is="item.content" :key="item.key" />
       </CollapsePanel>
     </Collapse>
-
     <div class="save">
       <Tooltip title="暂不开放保存模板功能，期待你体验后的宝贵建议哦^_^">
         <Button block>

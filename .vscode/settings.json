@@ -137,5 +137,8 @@
     "sider",
     "pnpm",
     "antd"
-  ]
+  ],
+  "[xml]": {
+    "editor.defaultFormatter": "redhat.vscode-xml"
+  }
 }

@@ -52,8 +52,7 @@
   import { importJson } from '/@/api/quota';
   import { useMessage } from '/@/hooks/web/useMessage';
   import locale from 'ant-design-vue/es/date-picker/locale/zh_CN';
-  import { formatToDate } from '/@/utils/dateUtil';
-  import dayjs from 'dayjs';
+  import { dateUtil, formatToDate } from '/@/utils/dateUtil';
 
   interface quotaDataType {
     header: string[];
@@ -196,8 +195,8 @@
           for (let i = 1; i < line.length; i++) {
             const e = line[i];
             if (
-              dayjs(line[i - 1][dateKey]).isAfter(dayjs(data.date)) &&
-              dayjs(e[dateKey]).isBefore(dayjs(data.date))
+              dateUtil(line[i - 1][dateKey]).isAfter(dateUtil(data.date)) &&
+              dateUtil(e[dateKey]).isBefore(dateUtil(data.date))
             ) {
             }
           }

@@ -36,4 +36,13 @@ export function daysAgo(day: number, dateStr?: dayisInput) {
   return dayjs(dateStr).subtract(day, 'day').format(DATE_FORMAT);
 }
 
+export function getYear(dateStr?: dayisInput) {
+  return dayjs(dateStr).year();
+}
+
+export function getMonth(dateStr?: dayisInput) {
+  return dayjs(dateStr).month();
+}
+
 export const dateUtil = dayjs;
+export type DateUtil = typeof dateUtil;

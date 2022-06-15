@@ -1,4 +1,3 @@
-import dayjs from 'dayjs';
 import type {
   BarSeriesOption,
   DatasetComponentOption,
@@ -45,7 +44,7 @@ import { getQuotaDataParams, getQuotaDataResult } from '/@/api/quota/model';
 import { structuralOffsetUnitEnum } from '/@/enums/chartEnum';
 import { SourceTypeEnum } from '/@/enums/quotaEnum';
 import { useI18n } from '/@/hooks/web/useI18n';
-import { daysAgo, formatToDate } from '/@/utils/dateUtil';
+import { dateUtil, daysAgo, formatToDate, getMonth, getYear } from '/@/utils/dateUtil';
 import { SelectedQuotaItem } from '/@/views/quota/quotaView/components/hooks';
 
 const { t } = useI18n();
@@ -109,8 +108,8 @@ export async function useSeasonalChart(
     await Promise.reject(new Error('empty data'));
   }
   // 计算年跨度
-  const yearLenth = dayjs(chartConfig.timeConfig.endDate).diff(
-    dayjs(chartConfig.timeConfig.startDate),
+  const yearLenth = dateUtil(chartConfig.timeConfig.endDate).diff(
+    dateUtil(chartConfig.timeConfig.startDate),
     'years',
   );
   const color = (await useColor({ chartConfig })).slice(0, yearLenth).reverse();
@@ -118,8 +117,8 @@ export async function useSeasonalChart(
   const changeStart = startMonth > 1;
   quota.data.forEach((data) => {
     const time = data[0];
-    const y = dayjs(time).year();
-    const m = dayjs(time).month();
+    const y = getYear(time);
+    const m = getMonth(time);
     const v = round(data[1], chartConfig.valueFormatter.afterDot);
     // 迁移后的年份和序列名字
     let year: number, name: string;
@@ -139,7 +138,7 @@ export async function useSeasonalChart(
     const s = series.find((ser) => ser.name === name);
 
     if (s) {
-      (s.data as [number, number][]).push([dayjs(time).year(year).hour(0).unix() * 1000, v]);
+      (s.data as [number, number][]).push([dateUtil(time).year(year).hour(0).unix() * 1000, v]);
     } else {
       legend.data?.push(name);
       series.push({
@@ -149,7 +148,7 @@ export async function useSeasonalChart(
         connectNulls: false,
         animationDuration: 0,
         triggerLineEvent: true,
-        data: [[dayjs(time).year(year).hour(0).unix() * 1000, v]],
+        data: [[dateUtil(time).year(year).hour(0).unix() * 1000, v]],
       });
     }
   });
