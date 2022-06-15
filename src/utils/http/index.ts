@@ -257,20 +257,20 @@ export const nodeHttp = createAxios({
 export const jodiHttp = createAxios({
   timeout: 120 * 1000,
   requestOptions: {
-    apiUrl: isProdMode() ? globSetting.jodiUrl : '/report-gen-dev',
+    apiUrl: globSetting.jodiUrl,
   },
 });
 //vessel服务
 export const vesselHttp = createAxios({
   timeout: 120 * 1000,
   requestOptions: {
-    apiUrl: isProdMode() ? globSetting.vesselUrl : '/report-gen-dev',
+    apiUrl: globSetting.vesselUrl,
   },
 });
 //monitor服务
 export const monitorHttp = createAxios({
   timeout: 120 * 1000,
   requestOptions: {
-    apiUrl: isProdMode() ? globSetting.monitorUrl : '/report-gen-dev',
+    apiUrl: globSetting.monitorUrl,
   },
 });

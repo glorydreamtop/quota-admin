@@ -49,10 +49,11 @@
   } from '../helper';
   import { cloneDeep } from 'lodash-es';
   import { useMessage } from '/@/hooks/web/useMessage';
-  import { EChartsCoreOption } from 'echarts/core';
+  import { EChartsCoreOption, EChartsType } from 'echarts/core';
 
   const props = defineProps<{
     config: chartConfigType;
+    paintMode: boolean;
   }>();
   const emit = defineEmits<{
     (event: 'updateConfig', config: chartConfigType): void;
@@ -122,7 +123,7 @@
   interface eventBusType {
     event: any;
     target: 'title' | 'yAxis' | 'series' | 'xAxis';
-    eventType: 'dblclick' | 'contextmenu';
+    eventType: 'dblclick' | 'contextmenu' | 'mousedown' | 'mouseup' | 'mousemove';
   }
   // 监听事件的列表
   const eventBus: eventBusType[] = [];
@@ -192,6 +193,7 @@
       target: 'series',
     });
     instance.on('dblclick', (e) => {
+      if (props.paintMode) return;
       // 依次执行双击监听的所有事件
       eventBus
         .filter((event) => event.eventType === 'dblclick')
@@ -204,6 +206,7 @@
         });
     });
     instance.on('contextmenu', (e) => {
+      if (props.paintMode) return;
       // 依次执行右键监听的所有事件
       eventBus
         .filter((event) => event.eventType === 'contextmenu')
@@ -217,6 +220,9 @@
         });
     });
   });
+  function paintListener(e, instance: EChartsType) {
+    instance.on('mousedown', (e) => {});
+  }
 </script>
 
 <style lang="less" scoped>

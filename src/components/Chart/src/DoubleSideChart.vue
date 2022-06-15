@@ -1,6 +1,12 @@
 <template>
-  <div ref="doubleSideChart" :class="[fullscreen ? 'fullscreen' : '']">
-    <div :class="['toolbar', inReport ? 'autohidden-toolbar gap-1' : 'gap-2']">
+  <div ref="doubleSideChart" :class="[isFullscreen ? 'fullscreen' : '']">
+    <div
+      :class="[
+        'toolbar',
+        inReport ? 'autohidden-toolbar gap-1' : 'gap-2',
+        isFullscreen ? 'mt-4' : '',
+      ]"
+    >
       <Tooltip
         :title="
           showTable
@@ -61,12 +67,13 @@
     </div>
     <div
       class="w-full h-full preserve-3d box"
-      :class="[fullscreen ? 'pt-4' : '']"
+      :class="[isFullscreen ? 'pt-4' : '']"
       id="quota-view-chartbox"
     >
       <BasicChart
         :class="['chart-view w-full', showTable ? 'back' : 'front']"
         :config="config"
+        :paintMode="paintMode"
         @update-config="updateConfig"
         @render-success="renderSuccess"
         ref="chartRef"
@@ -80,7 +87,7 @@
 
       <div
         class="absolute flex items-center gap-4 top-2 right-2 cursor-pointer"
-        v-if="fullscreen"
+        v-if="isFullscreen"
         @click="handleEvent('fullscreen')"
       >
         <div class="text-white keybord">{{ t('quotaView.doubleSideChart.fullscreen') }}</div>
@@ -94,7 +101,7 @@
   import { ref, watchEffect, toRefs, nextTick, onMounted } from 'vue';
   import BasicChart from './BasicChart.vue';
   import { QuotaDataTable } from '/@/components/QuotaTable';
-  import { useMagicKeys } from '@vueuse/core';
+  import { useFullscreen, useMagicKeys } from '@vueuse/core';
   import { chartConfigType } from '../../../../types/chart';
   import { EChartsCoreOption, EChartsType } from 'echarts/core';
   import { downloadByBase64 } from '/@/utils/file/download';
@@ -117,16 +124,15 @@
   // 是否在报告中，显示工具栏,否则仅在鼠标移动到图表上显示
   const inReport = ref(false);
   onMounted(() => {
-    inReport.value = doubleSideChart.value.parentElement.hasAttribute('data-uniqid');
+    inReport.value = doubleSideChart.value.parentElement!.hasAttribute('data-uniqid');
   });
   const paintMode = ref(false);
-  const fullscreen = ref(false);
   const showTable = ref(false);
   const loadTable = ref(false);
   const { Escape } = useMagicKeys();
   watchEffect(() => {
     // ESC键关闭全屏
-    if (Escape.value) fullscreen.value = false;
+    if (Escape.value) exitFullscreen();
   });
 
   function updateConfig(cfg: chartConfigType) {
@@ -152,6 +158,11 @@
       handleEvent(showTable.value ? 'xlsx' : 'screenshot');
     }, 1000);
   }
+  const {
+    isFullscreen,
+    toggle: toggleFullscreen,
+    exit: exitFullscreen,
+  } = useFullscreen(doubleSideChart);
   // 响应工具栏事件
   async function handleEvent(type: string) {
     switch (type) {
@@ -190,7 +201,7 @@
         showTable.value = false;
         break;
       case 'fullscreen':
-        fullscreen.value = !fullscreen.value;
+        toggleFullscreen();
       case 'paintMode':
         paintMode.value = !paintMode.value;
       default:
@@ -201,14 +212,6 @@
 
 <style lang="less" scoped>
   .fullscreen {
-    position: fixed;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    background: @white;
-    z-index: 899;
-
     .chart-view {
       padding-top: 1rem;
       padding-bottom: 1rem;
