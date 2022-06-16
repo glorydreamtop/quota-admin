@@ -1,7 +1,7 @@
 /**
  * Independent time operation tool to facilitate subsequent switch to dayjs
  */
-import dayjs from 'dayjs';
+import dayjs, { UnitType } from 'dayjs';
 
 const DATE_TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 const DATE_FORMAT = 'YYYY-MM-DD';
@@ -34,6 +34,10 @@ export function monthsAgo(month: number, dateStr?: dayisInput) {
 
 export function daysAgo(day: number, dateStr?: dayisInput) {
   return dayjs(dateStr).subtract(day, 'day').format(DATE_FORMAT);
+}
+
+export function dayjsGet(type: UnitType, dateStr?: dayisInput) {
+  return dayjs(dateStr).get(type);
 }
 
 export const dateUtil = dayjs;

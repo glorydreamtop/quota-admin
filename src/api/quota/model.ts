@@ -4,7 +4,7 @@ import { QuotaItem } from '/#/quota';
 export interface getQuotaDataParams {
   startDate: string;
   endDate: string;
-  exportPara: quotaDataExportTypeEnum;
+  exportPara?: quotaDataExportTypeEnum;
   lastFlag?: boolean;
   pastUnit?: quotaDataPastUnitTypeEnum;
   pastValue?: number;

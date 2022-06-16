@@ -19,14 +19,14 @@ export interface CategoryTreeModel {
 
 export interface QuotaItem {
   id: number;
-  dateLast: string;
+  dateLast?: string;
   name: string;
   sourceCode: string;
   sourceType: sourceTypeEnum;
-  frequency: Nullable<'日' | '月' | '年' | '周' | '季'>;
-  shortName: Nullable<string>;
-  unit: Nullable<string>;
+  frequency?: Nullable<'日' | '月' | '年' | '周' | '季'>;
+  shortName?: Nullable<string>;
+  unit?: Nullable<string>;
   categoryIdList?: number[];
   categoryId?: number;
-  timeLastUpdate: string;
+  timeLastUpdate?: string;
 }
