@@ -220,9 +220,6 @@
         });
     });
   });
-  function paintListener(e, instance: EChartsType) {
-    instance.on('mousedown', (e) => {});
-  }
 </script>
 
 <style lang="less" scoped>

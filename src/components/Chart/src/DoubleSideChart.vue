@@ -1,5 +1,8 @@
 <template>
-  <div ref="doubleSideChart" :class="[isFullscreen ? 'fullscreen' : '']">
+  <div
+    ref="doubleSideChart"
+    :class="[isFullscreen ? 'fullscreen' : '', paintMode ? 'paint-mode' : '']"
+  >
     <div
       :class="[
         'toolbar',
@@ -59,7 +62,7 @@
         <Icon
           icon="fabiao|svg"
           size="22"
-          :class="['filter paint-mode', paintMode ? '' : 'grayscale-75']"
+          :class="['filter paint-mode-icon', paintMode ? '' : 'grayscale-75']"
           v-show="!inReport"
           @click="handleEvent('paintMode')"
         />
@@ -84,7 +87,7 @@
         :config="config"
         ref="tableRef"
       />
-
+      <div id="chart-paint-mode-area"></div>
       <div
         class="absolute flex items-center gap-4 top-2 right-2 cursor-pointer"
         v-if="isFullscreen"
@@ -165,6 +168,7 @@
   } = useFullscreen(doubleSideChart);
   // 响应工具栏事件
   async function handleEvent(type: string) {
+    if (paintMode.value && type !== 'paintMode') return;
     switch (type) {
       case 'screenshot':
         // svg渲染器只能导出svg格式
@@ -204,6 +208,7 @@
         toggleFullscreen();
       case 'paintMode':
         paintMode.value = !paintMode.value;
+        document.getElementById('chart-paint-mode-mask')?.classList.toggle('hidden');
       default:
         break;
     }
@@ -282,6 +287,27 @@
   }
 
   .paint-mode {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 100;
+
+    .chart-view {
+      @apply bg-white;
+    }
+
+    #chart-paint-mode-area {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  .paint-mode-icon {
     transition: filter 0.2s ease;
   }
 </style>

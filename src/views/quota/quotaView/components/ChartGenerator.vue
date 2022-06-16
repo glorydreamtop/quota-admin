@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="flex flex-grow p-4 overflow-hidden bg-white shadow-md shadow-primary-50 relative min-w-fit"
-  >
+  <div class="flex flex-grow p-4 bg-white shadow-md shadow-primary-50 relative min-w-fit">
     <div class="relative flex-grow">
       <ToolBar @paint="paint" />
       <DoubleSideChart
@@ -11,6 +9,7 @@
         @render-success="renderSuccess"
       />
     </div>
+    <div id="chart-paint-mode-mask" class="hidden"></div>
     <Advance />
   </div>
 </template>
@@ -49,4 +48,16 @@
   }
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+  #chart-paint-mode-mask {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(63, 63, 63, 0.3);
+    transition: all 0.3s;
+    z-index: 99;
+    // display: none;
+  }
+</style>

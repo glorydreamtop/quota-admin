@@ -5,7 +5,8 @@ export const GLOB_CONFIG_FILE_NAME = '_app.config.js';
 
 export const OUTPUT_DIR = 'dist';
 
-export const ASSESTS_DIR = 'v20220614-161522';
+export const ASSESTS_DIR = 'v20220615-173242';
+
 
 
 
