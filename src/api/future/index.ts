@@ -1,6 +1,6 @@
 import { defHttp } from '/@/utils/http';
 
-import { RankParams, RankResult, SearchProductOrContractParams } from './model';
+import { RankParams, RankResult, SearchProductOrContractParams, tableData } from './model';
 
 enum Api {
   GetFutureRankList = '/future-rank/getVolumeRank', //持仓排名列表
@@ -14,6 +14,7 @@ enum Api {
   GetSearchMemberList = '/future-rank/searchMemberList', //查询会员列表
   GetMemberValidDate = '/future-rank/getMemberValidDate', //查询会员有效日期
   GetIndexByProduct = '/category/getIndexByProduct', //根据品种查询指标
+  GetTableTimeSeries = '/service/tablequery/table_series', //相对强弱
 }
 
 export function getFutureRankList(params: RankParams) {
@@ -114,6 +115,22 @@ export function getMemberValidDate(params: { memberName: string; exchange: strin
 export function getIndexByProduct(params: any) {
   return defHttp.request<RankResult[]>({
     url: Api.GetIndexByProduct,
+    method: 'GET',
+    params,
+  });
+}
+
+export function getTableTimeSeries(params: {
+  database: string;
+  valueColumn: string;
+  end?: string;
+  start?: string;
+  options?: string;
+  dateColumn: string;
+  tableName: string;
+}) {
+  return defHttp.request<tableData[]>({
+    url: Api.GetTableTimeSeries,
     method: 'GET',
     params,
   });

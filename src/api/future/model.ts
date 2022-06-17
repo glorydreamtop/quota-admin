@@ -24,3 +24,7 @@ export interface SearchProductOrContractParams {
   productId?: string;
   productName?: string;
 }
+
+export interface tableData {
+  [key: string]: string | number;
+}
