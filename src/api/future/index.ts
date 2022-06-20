@@ -1,4 +1,4 @@
-import { defHttp } from '/@/utils/http';
+import { defHttp, monitorHttp } from '/@/utils/http';
 
 import { RankParams, RankResult, SearchProductOrContractParams, tableData } from './model';
 
@@ -14,7 +14,15 @@ enum Api {
   GetSearchMemberList = '/future-rank/searchMemberList', //查询会员列表
   GetMemberValidDate = '/future-rank/getMemberValidDate', //查询会员有效日期
   GetIndexByProduct = '/category/getIndexByProduct', //根据品种查询指标
-  GetTableTimeSeries = '/service/tablequery/table_series', //相对强弱
+
+  //相对强弱
+  GetTableTimeSeries = '/service/tablequery/table_series',
+
+  //横向监控
+  GetCtypeOptions = '/ctype_options', //链条名称列表
+  GetDtOptions = '/dt_options', //合法日期列表
+  GetCompareOptions = '/ctype_compare', //获取数据
+  GetCommStructure = '/comm_structure', //弹窗数据
 }
 
 export function getFutureRankList(params: RankParams) {
@@ -131,6 +139,37 @@ export function getTableTimeSeries(params: {
 }) {
   return defHttp.request<tableData[]>({
     url: Api.GetTableTimeSeries,
+    method: 'GET',
+    params,
+  });
+}
+
+export function getCtypeOptions() {
+  return monitorHttp.request<any>({
+    url: Api.GetCtypeOptions,
+    method: 'GET',
+  });
+}
+
+export function getDtOptions(params: any) {
+  return monitorHttp.request<any>({
+    url: Api.GetDtOptions,
+    method: 'GET',
+    params,
+  });
+}
+
+export function getCompareOptions(params: any) {
+  return monitorHttp.request<any>({
+    url: Api.GetCompareOptions,
+    method: 'GET',
+    params,
+  });
+}
+
+export function getCommStructure(params: any) {
+  return monitorHttp.request<any>({
+    url: Api.GetCommStructure,
     method: 'GET',
     params,
   });

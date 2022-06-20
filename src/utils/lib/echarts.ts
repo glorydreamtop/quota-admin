@@ -8,6 +8,7 @@ import {
   MapChart,
   PictorialBarChart,
   RadarChart,
+  BoxplotChart,
 } from 'echarts/charts';
 
 import {
@@ -56,6 +57,7 @@ echarts.use([
   GraphicComponent,
   DatasetComponent,
   MarkLineComponent,
+  BoxplotChart,
 ]);
 
 export default echarts;

@@ -271,6 +271,9 @@ export const vesselHttp = createAxios({
 export const monitorHttp = createAxios({
   timeout: 120 * 1000,
   requestOptions: {
-    apiUrl: isProdMode() ? globSetting.monitorUrl : '/report-gen-dev',
+    // apiUrl: isProdMode() ? globSetting.monitorUrl : '/report-gen-dev',
+    apiUrl: isProdMode()
+      ? globSetting.monitorUrl
+      : 'http://app.shducheng.net:8080/module/futures_basis',
   },
 });
