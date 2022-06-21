@@ -23,14 +23,14 @@
       @change="handleTableChange"
       @resize-column="handleResizeColumn"
     >
-      <!-- <template #headerCell="{ column }">
+      <template #headerCell="{ column }">
         <template v-for="col in columns" :key="col.dataIndex">
           <HeaderCell v-if="col.dataIndex === column.dataIndex" :column="col" />
         </template>
-      </template> -->
-      <template #[item]="data" v-for="item in Object.keys($slots)" :key="item">
-        <slot :name="item" v-bind="data || {}"></slot>
       </template>
+      <!-- <template #[item]="data" v-for="item in Object.keys($slots)" :key="item">
+        <slot :name="item" v-bind="data || {}"></slot>
+      </template> -->
       <template #bodyCell="{ column, record }">
         <template v-for="item in Object.keys($slots)" :key="item">
           <slot v-if="column.key === item" :name="item" v-bind="record || {}"></slot>
@@ -54,7 +54,7 @@
   import { Table } from 'ant-design-vue';
   import { BasicForm, useForm } from '/@/components/Form/index';
   import { PageWrapperFixedHeightKey } from '/@/components/Page';
-  // import HeaderCell from './components/HeaderCell.vue';
+  import HeaderCell from './components/HeaderCell.vue';
   import { InnerHandlers } from './types/table';
 
   import { usePagination } from './hooks/usePagination';
@@ -82,7 +82,7 @@
     components: {
       Table,
       BasicForm,
-      // HeaderCell,
+      HeaderCell,
     },
     props: basicProps,
     emits: [
