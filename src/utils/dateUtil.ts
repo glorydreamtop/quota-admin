@@ -1,8 +1,9 @@
 /**
  * Independent time operation tool to facilitate subsequent switch to dayjs
  */
-import dayjs from 'dayjs';
-
+import dayjs, { UnitType } from 'dayjs';
+import WeekOfYear from 'dayjs/plugin/WeekOfYear';
+dayjs.extend(WeekOfYear);
 const DATE_TIME_FORMAT = 'YYYY-MM-DD HH:mm:ss';
 const DATE_FORMAT = 'YYYY-MM-DD';
 
@@ -42,6 +43,9 @@ export function getYear(dateStr?: dayisInput) {
 
 export function getMonth(dateStr?: dayisInput) {
   return dayjs(dateStr).month();
+}
+export function dayjsGet(type: UnitType, dateStr?: dayisInput) {
+  return dayjs(dateStr).get(type);
 }
 
 export const dateUtil = dayjs;

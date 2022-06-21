@@ -257,7 +257,7 @@ export const nodeHttp = createAxios({
 export const jodiHttp = createAxios({
   timeout: 120 * 1000,
   requestOptions: {
-    apiUrl: globSetting.jodiUrl,
+    apiUrl: isProdMode() ? globSetting.jodiUrl : 'http://vessel.shducheng.net:8085',
   },
 });
 //vessel服务
@@ -271,6 +271,9 @@ export const vesselHttp = createAxios({
 export const monitorHttp = createAxios({
   timeout: 120 * 1000,
   requestOptions: {
-    apiUrl: globSetting.monitorUrl,
+    // apiUrl: isProdMode() ? globSetting.monitorUrl : '/report-gen-dev',
+    apiUrl: isProdMode()
+      ? globSetting.monitorUrl
+      : 'http://app.shducheng.net:8080/module/futures_basis',
   },
 });

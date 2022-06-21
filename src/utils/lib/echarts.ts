@@ -8,6 +8,7 @@ import {
   MapChart,
   PictorialBarChart,
   RadarChart,
+  BoxplotChart,
 } from 'echarts/charts';
 
 import {
@@ -26,6 +27,7 @@ import {
   TimelineComponent,
   CalendarComponent,
   GraphicComponent,
+  MarkLineComponent,
 } from 'echarts/components';
 
 import { SVGRenderer } from 'echarts/renderers';
@@ -54,6 +56,8 @@ echarts.use([
   CalendarComponent,
   GraphicComponent,
   DatasetComponent,
+  MarkLineComponent,
+  BoxplotChart,
 ]);
 
 export default echarts;
