@@ -1,7 +1,7 @@
 <template>
-  <div class="border-l-gray-300 flex w-380px overflow-hidden relative select-none" ref="container">
+  <div class="border-l-gray-300 w-380px overflow-x-hidden relative select-none" ref="container">
     <Collapse
-      class="overflow-x-hidden flex-grow overflow-y-scroll h-full drawer-main"
+      class="overflow-x-hidden overflow-y-scroll drawer-main"
       v-model:activeKey="collapseKey"
       :bordered="false"
     >
@@ -74,7 +74,6 @@
 
   .ant-collapse {
     background-color: transparent !important;
-    padding-bottom: @save-button-size + 16px;
 
     &-item {
       border: none;
@@ -101,6 +100,11 @@
 
   .drawer-main {
     transition: opacity 0.2s ease;
+    padding-left: 20px;
+    height: calc(100% - @save-button-size - 16px);
+    position: absolute;
+    left: 0;
+    right: 0;
   }
 
   ::v-deep(.line) {
@@ -108,9 +112,9 @@
     width: 20px;
     min-width: 20px;
     height: 100%;
-    position: relative;
+    position: absolute;
+    top: 0;
     border-left: 1px solid #e8e8e8;
-    order: -1;
 
     .arrow-icon {
       color: rgba(156, 163, 175, 1) !important;

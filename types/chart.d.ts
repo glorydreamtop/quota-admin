@@ -1,4 +1,4 @@
-import type { YAXisComponentOption,XAXisComponentOption } from 'echarts';
+import type { YAXisComponentOption, XAXisComponentOption } from 'echarts';
 import { quotaDataPastUnitTypeEnum } from '/@/api/quota';
 import {
   chartTypeEnum,
@@ -79,7 +79,7 @@ export type YAxisOption = YAXisComponentOption & {
   alignZero?: boolean;
 };
 
-export type XAxisOption = XAXisComponentOption
+export type XAxisOption = XAXisComponentOption;
 
 export interface seasonalChartConfigType extends reactSettingType, baseChartConfigType {
   xAxis: XAxisOption[];

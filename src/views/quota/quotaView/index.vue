@@ -6,7 +6,7 @@
     >
       <QuotaTree :show-search="true" class="h-full w-full enter-y" @selectNode="selectNode" />
     </div>
-    <div class="flex flex-col h-full flex-grow gap-4">
+    <div class="flex flex-col h-full max-h-full flex-grow gap-4">
       <QuotaList class="border enter-y w-full quota-list" v-resizeable:show="`y`" />
       <ChartGenerator class="enter-y" />
     </div>
@@ -48,7 +48,7 @@
   const chartConfig = reactive(def);
   createChartConfigContext(chartConfig);
   // 指标数据的Api源数据
-  const originData: getQuotaDataResult[] = ref([]);
+  const originData = ref<getQuotaDataResult[]>([]);
   createChartOriginDataContext(originData);
 
   function selectNode(q: QuotaItem) {

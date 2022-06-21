@@ -21,6 +21,7 @@ import SeriesEdit from './src/SeriesEditor.vue';
 import { getColorScheme } from '/@/api/color';
 import { isNumber, isArray } from '/@/utils/is';
 import { fade, rgbToHex } from '/@/utils/color';
+import { GraphicComponentLooseOption } from 'echarts/types/dist/shared';
 
 const { t } = useI18n();
 export async function fetchQuotaData(params: getQuotaDataParams) {
@@ -145,6 +146,11 @@ export function useXAxisIndexEdit({ chartConfig, onOk }: yAxixIndexEditParams) {
   };
 }
 
+type GraphicOption = GraphicComponentOption & {
+  ondragend?: (e: any) => void;
+  groupType: 'textRect' | 'rect' | 'mark';
+}
+
 function createRichText(data: lastestDataType[], options: EChartsOption, title: string) {
   const text =
     `{title|${title}}\n` +
@@ -181,8 +187,8 @@ function createRichText(data: lastestDataType[], options: EChartsOption, title: 
     ),
   );
   //@ts-ignore
-  const left = lastGraphicGroup ? lastGraphicGroup.left + lastGraphicGroup.shape.width + 10 : 80;
-  const lastestConfig = {
+  const left = lastGraphicGroup ? lastGraphicGroup.left + lastGraphicGroup.shape.width + 10 : '10%';
+  const lastestConfig:GraphicOption = {
     type: 'group',
     groupType: 'textRect',
     left,
@@ -207,8 +213,6 @@ function createRichText(data: lastestDataType[], options: EChartsOption, title: 
         style: {
           fill: '#ffffffdd',
           stroke: '#555',
-          borderColor: '#ffffff99',
-          borderWidth: 1,
           shadowBlur: 8,
           lineWidth: 0,
           shadowOffsetX: 3,
@@ -250,6 +254,10 @@ function createRichText(data: lastestDataType[], options: EChartsOption, title: 
       },
     ],
   };
+  lastestConfig.ondragend = (e: any) => {
+    console.log(e);
+    
+  }
   // @ts-ignore
   options.graphic.elements.push(lastestConfig);
 }
