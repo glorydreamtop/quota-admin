@@ -1,6 +1,6 @@
 <template>
   <div class="h-layout-full flex flex-col gap-4 p-4 w-full">
-    <div class="flex items-center h-3/5 gap-4">
+    <div class="flex items-center h-1/2 min-h-400px gap-4">
       <div
         class="w-60 h-full bg-white shadow-md shadow-primary-50 p-4 flex flex-col gap-2 overflow-y-scroll no-scroll-bar"
       >
@@ -24,25 +24,27 @@
         <div class="h-8 pl-2 text-primary">{{
           rankParams.tradeDate || t('monitor.futureRank.timePlaceholder')
         }}</div>
+        <div
+          ref="calendar"
+          class="-mt-2 relative"
+          v-loading="state.loadingDate"
+          :loading-tip="t('monitor.getAvailableDate')"
+        ></div>
         <DatePicker
-          :getCalendarContainer="getCalendarContainer"
+          :getPopupContainer="getCalendarContainer"
           valueFormat="YYYY-MM-DD"
           :disabled-date="disabledDate"
           size="small"
           :show-today="false"
           v-model:value="rankParams.tradeDate"
           open
+          class="calendar-input"
           @change="handleSelect($event, true)"
         >
-          <div
-            ref="calendar"
-            class="-mt-2"
-            v-loading="state.loadingDate"
-            :loading-tip="t('monitor.getAvailableDate')"
-          ></div>
           <template #dateRender="{ current }">
             <div
               :class="[
+                'picker-date',
                 avalidDate.includes(current.format('YYYY-MM-DD')) ? 'avalid-date' : 'disabled',
                 current.format('YYYY-MM-DD') === rankParams.tradeDate ? 'selected-date' : '',
               ]"
@@ -196,7 +198,7 @@
   const calendar = ref<HTMLDivElement>();
 
   function getCalendarContainer() {
-    return calendar.value;
+    return calendar.value!;
   }
   // 不可用日期
   function disabledDate(cur: any): boolean {
@@ -240,22 +242,40 @@
 </script>
 
 <style lang="less" scoped>
-  ::v-deep(.ant-calendar.ant-calendar-picker-container-content) {
+  .calendar-input {
+    display: none;
+  }
+
+  ::v-deep(.ant-picker-panel-container) {
     width: 100%;
     box-shadow: none;
     border: 1px solid #e0e0e0;
   }
 
-  ::v-deep(.ant-calendar-picker-container) {
+  ::v-deep(.ant-picker-dropdown) {
     z-index: unset;
-  }
-
-  ::v-deep(.ant-calendar-input-wrap) {
-    display: none;
   }
 
   ::v-deep(.ant-calendar-disabled-cell) {
     cursor: not-allowed;
+  }
+
+  ::v-deep(.ant-picker-date-panel) {
+    width: 206px;
+
+    .ant-picker-content {
+      width: 180px;
+
+      th {
+        width: 20px;
+        min-width: 20px;
+      }
+    }
+  }
+
+  .picker-date {
+    // width: 20px;
+    // margin-right: 0;
   }
 
   .avalid-date {

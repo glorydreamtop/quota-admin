@@ -1,7 +1,7 @@
 <template>
   <div class="h-full overflow-hidden relative" v-loading="state.loading">
     <div ref="chartElRef" class="w-full h-full" @contextmenu="originContextmenu"></div>
-    <div v-if="state.noChart" class="no-chart flex flex-col items-center">
+    <div v-if="state.noChart" class="no-chart flex flex-col items-center select-none">
       <img src="../../../assets/svg/no-chart.svg" />
       <span
         v-if="config.title"
