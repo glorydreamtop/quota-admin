@@ -44,9 +44,6 @@ export function getYear(dateStr?: dayisInput) {
 export function getMonth(dateStr?: dayisInput) {
   return dayjs(dateStr).month();
 }
-export function dayjsGet(type: UnitType, dateStr?: dayisInput) {
-  return dayjs(dateStr).get(type);
-}
 
 export const dateUtil = dayjs;
 export type DateUtil = typeof dateUtil;
