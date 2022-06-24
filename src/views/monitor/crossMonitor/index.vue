@@ -1,7 +1,7 @@
 <template>
   <div class="p-4 h-layout-full">
-    <div class="h-full p-2 rounded-md shadow-md bg-white overflow-y-scroll" v-loading="loadingRef">
-      <div class="w-full flex gap-2">
+    <div class="h-full overflow-y-scroll" v-loading="loadingRef">
+      <div class="w-full bg-white flex gap-4 mb-4 p-4 sticky top-0 z-9 border-b shadow-md">
         <Select
           class="w-70"
           v-model:value="cTypeRef"
@@ -28,7 +28,7 @@
         <!-- flex状态下，单边距auto就会占满剩余，也就是元素被顶到另一边 -->
         <Button class="ml-auto mr-2" type="primary" @click="screenShot">保存为图片</Button>
       </div>
-      <div ref="imgContainer">
+      <div class="bg-white p-4" ref="imgContainer">
         <BasicTable @register="registerTable" class="w-full">
           <template #comm="record">
             <div class="comm-name" @click="handleOpenFutureModel(record.comm)">{{
@@ -70,7 +70,7 @@
   import { SettingOutlined } from '@ant-design/icons-vue';
   import { dom2imgFile, fileType } from '/@/utils/domUtils';
   import { downloadByData } from '/@/utils/file/download';
-import { EChartsOption } from 'echarts';
+  import { EChartsOption } from 'echarts';
   const RadioButton = Radio.Button;
   const loadingRef = ref<boolean>(false);
   const tradeDateRef = ref('');

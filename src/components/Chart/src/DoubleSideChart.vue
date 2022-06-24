@@ -88,10 +88,7 @@
         ref="tableRef"
       />
       <!-- 绘制墨迹的区域 -->
-      <div ref="paintArea" id="chart-paint-mode-area"></div>
-      <Teleport to="body">
-        <div ref="paintMask" id="chart-paint-mode-mask" :class="[paintMode ? '' : 'hidden']"></div>
-      </Teleport>
+      <PaintArea :paint-mode="paintMode" />
       <div
         class="absolute flex items-center gap-4 top-2 right-2 cursor-pointer"
         v-if="isFullscreen"
@@ -107,6 +104,7 @@
 <script lang="ts" setup>
   import { ref, watchEffect, toRefs, nextTick, onMounted } from 'vue';
   import BasicChart from './BasicChart.vue';
+  import PaintArea from './PaintArea.vue';
   import { QuotaDataTable } from '/@/components/QuotaTable';
   import { useFullscreen, useMagicKeys } from '@vueuse/core';
   import { chartConfigType } from '../../../../types/chart';
@@ -128,8 +126,7 @@
   }>();
   const { config } = toRefs(props);
   const doubleSideChart = ref<HTMLDivElement>();
-  const paintArea = ref<HTMLDivElement>();
-  const paintMask = ref<HTMLDivElement>();
+
   // 是否在报告中，显示工具栏,否则仅在鼠标移动到图表上显示
   const inReport = ref(false);
   onMounted(() => {
@@ -214,9 +211,6 @@
         toggleFullscreen();
       case 'paintMode':
         paintMode.value = !paintMode.value;
-        await nextTick();
-        const { left, right, top, bottom } = paintArea.value!.getBoundingClientRect();
-        paintMask.value!.style.clipPath = `polygon(0% 0%,0% 100%,${left}px 100%,${left}px ${top}px,${right}px ${top}px,${right}px ${bottom}px,${left}px ${bottom}px,${left}px 100%,100% 100%,100% 0%)`;
       default:
         break;
     }
@@ -305,41 +299,9 @@
     .chart-view {
       @apply bg-white;
     }
-
-    #chart-paint-mode-area {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 100;
-    }
   }
 
   .paint-mode-icon {
     transition: filter 0.2s ease;
-  }
-
-  #chart-paint-mode-mask {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 599;
-    background-color: rgba(0, 0, 0, 0.3);
-    transition: clip-path 0.5s ease-out;
-    animation: colorchange 0.3s;
-    // display: none;
-  }
-
-  @keyframes colorchange {
-    0% {
-      background-color: rgba(0, 0, 0, 0);
-    }
-
-    100% {
-      background-color: rgba(0, 0, 0, 0.3);
-    }
   }
 </style>

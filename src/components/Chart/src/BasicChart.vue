@@ -150,7 +150,7 @@
     });
     eventBus.push({
       event: titleClickEvent,
-      eventType: 'dblclick',
+      eventType: 'contextmenu',
       target: 'title',
     });
     // 编辑Y轴
