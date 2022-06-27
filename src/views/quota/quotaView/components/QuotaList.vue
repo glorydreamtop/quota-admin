@@ -49,14 +49,6 @@
             icon="ant-design:delete-outlined"
           />
         </template>
-        <template #footer v-if="chartConfig.type === chartTypeEnum.fixedbase">
-          <RangePicker
-            v-model:value="item.range"
-            valueFormat="YYYY-MM-DD"
-            size="small"
-            :bordered="false"
-          />
-        </template>
       </QuotaCard>
     </div>
 

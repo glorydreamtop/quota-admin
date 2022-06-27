@@ -616,29 +616,6 @@ export function setSeriesInfo({ info, chartConfig, seriesInfo, options }: setSer
     info.yAxisIndex = series.yAxisIndex + 1;
     info.xAxisIndex = series.xAxisIndex + 1;
   }
-  function caseFixedBase() {
-    const seriesIndex = seriesInfo.seriesIndex;
-    const series = options.series![seriesIndex];
-    info.name = series.name;
-    info.legendName = chartConfig.seriesSetting.find((ser) => ser.name === series.name)?.legendName;
-    if (series.type === 'line') {
-      if (has(series, 'areaStyle')) {
-        info.seriesType = echartSeriesTypeEnum.area;
-      } else if (series.smooth === true) {
-        info.seriesType = echartSeriesTypeEnum.smoothLine;
-      } else if (series.smooth === false) {
-        info.seriesType = echartSeriesTypeEnum.line;
-      }
-      info.size = series.lineStyle.width;
-      info.lineType = series.lineStyle.type;
-      info.shadow = series.lineStyle.shadowColor !== void 0;
-      info.symbol = series.symbol !== 'none';
-    } else if (series.type === 'bar') {
-      info.seriesType = echartSeriesTypeEnum.bar;
-    }
-    info.yAxisIndex = series.yAxisIndex + 1;
-    info.xAxisIndex = series.xAxisIndex + 1;
-  }
   function caseSeasonal() {
     const seriesIndex = seriesInfo.seriesIndex;
     const series = options.series![seriesIndex];
@@ -721,7 +698,6 @@ export function setSeriesInfo({ info, chartConfig, seriesInfo, options }: setSer
   }
   const fns = {
     [chartTypeEnum.normal]: caseNormal,
-    [chartTypeEnum.fixedbase]: caseFixedBase,
     [chartTypeEnum.seasonal]: caseSeasonal,
     [chartTypeEnum.structural]: caseStructral,
     [chartTypeEnum.bar]: caseBar,
@@ -894,18 +870,6 @@ export function useSeriesSetting({
         });
       });
     },
-    [chartTypeEnum.fixedbase]: () => {
-      series.forEach((s) => {
-        const index = series.findIndex((ser) => ser.name === s.name);
-        const seriesSetting = seriesSettings.find((q) => q.name === s.name);
-        s.type = conver2ecSeriesType(seriesSetting?.seriesType ?? echartSeriesTypeEnum.line);
-        Object.assign(s, {
-          triggerLineEvent: true,
-          ...getSeriesStyle({ ser: s, seriesSetting, index }),
-          ...getAxisIndex(seriesSetting),
-        });
-      });
-    },
     [chartTypeEnum.seasonal]: () => {
       series.forEach((s, index) => {
         const seriesSetting = seriesSettings.find((q) => q.name === s.name);
@@ -962,7 +926,6 @@ export function useSeriesSetting({
       });
     },
     [chartTypeEnum.pie]: () => {},
-    [chartTypeEnum.fixedbase]: () => {},
     [chartTypeEnum.seasonalLunar]: () => {},
   };
   return typeMap[chartConfig.type as keyof typeof typeMap].call(null);

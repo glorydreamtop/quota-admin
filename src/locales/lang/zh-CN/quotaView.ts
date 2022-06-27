@@ -77,8 +77,6 @@ export default {
         seasonal: '单指标季节性',
         // 单指标季节性农历序列
         seasonalLunar: '季节性农历',
-        // 多指标定基序列
-        fixedbase: '定基',
         // 多指标柱状图
         bar: '柱状图',
         // 普通多指标数据序列

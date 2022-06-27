@@ -21,7 +21,7 @@
         {{ yAxis.label }}
       </Tag>
     </div>
-    <div class="flex items-center gap-2">
+    <div class="flex items-center gap-2 mt-2">
       <XAxisEdit :chart-config="chartConfig" :idx="null" @update="updateConfig">
         <Button size="small">
           <template #icon>

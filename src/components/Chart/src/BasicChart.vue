@@ -31,7 +31,6 @@
   import {
     useSeasonalChart,
     useNormalChart,
-    usefixedBaseChart,
     useBarChart,
     useRadarChart,
     useStructuralChart,
@@ -76,7 +75,6 @@
   const chartTypeHooks = {
     [chartTypeEnum.seasonal]: useSeasonalChart,
     [chartTypeEnum.normal]: useNormalChart,
-    [chartTypeEnum.fixedbase]: usefixedBaseChart,
     [chartTypeEnum.bar]: useBarChart,
     [chartTypeEnum.normalRadar]: useRadarChart,
     [chartTypeEnum.structural]: useStructuralChart,

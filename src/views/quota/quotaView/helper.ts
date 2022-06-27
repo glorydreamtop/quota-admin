@@ -144,11 +144,6 @@ export function getChartDefaultConfig(type: chartTypeEnum): Partial<chartConfigT
       },
       type: chartTypeEnum.pie,
     } as pieChartConfigType,
-    fixedbase: {
-      type: chartTypeEnum.fixedbase,
-      xAxis: baseXAxisConfig,
-      yAxis: baseYAxisConfig,
-    } as normalChartConfigType,
   };
   const config = cloneDeep(baseConfig);
   merge(config, defaultConfig[type]);
