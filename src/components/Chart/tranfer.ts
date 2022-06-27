@@ -10,6 +10,7 @@ import type {
   SeriesOption,
   TitleComponentOption,
   ToolboxComponentOption,
+  XAXisComponentOption,
   YAXisComponentOption,
 } from 'echarts';
 import { cloneDeep, max, maxBy, min, minBy, remove, round, pick } from 'lodash-es';
@@ -243,13 +244,17 @@ export async function useNormalChart(chartConfig: normalChartConfigType): Promis
   });
   const options: EChartsOption = {
     title: titleConfig(chartConfig),
-    xAxis: {
-      type: 'time',
-      triggerEvent: true,
-      axisLabel: {
-        hideOverlap: true,
-      },
-    },
+    xAxis: chartConfig.xAxis?.map((x) => {
+      const base: XAXisComponentOption = {
+        type: 'time',
+        triggerEvent: true,
+        axisLabel: {
+          hideOverlap: true,
+        },
+      };
+      Object.assign(base, x);
+      return base;
+    }),
     yAxis: chartConfig.yAxis?.map((y) => {
       const _y = useScientificNotation(y);
       const base: YAXisComponentOption = {
@@ -277,7 +282,86 @@ export async function useNormalChart(chartConfig: normalChartConfigType): Promis
   // 最新值模块
   useLastestQuotaData({ chartConfig, options, quotaDataList });
   useHighestQuotaData({ chartConfig, options, quotaDataList });
-  createRemark({ chartConfig, options });
+  // createRemark({ chartConfig, options });
+  return options;
+}
+
+// 定基数据序列
+export async function usefixedBaseChart(
+  chartConfig: normalChartConfigType,
+): Promise<EChartsOption> {
+  const fetchParams: getQuotaDataParams = {
+    exportPara: quotaDataExportTypeEnum.JSON,
+    rows: chartConfig.quotaList!,
+    ...pick(chartConfig.timeConfig, ['startDate', 'endDate', 'pastValue', 'pastUnit']),
+  };
+
+  const quotaDataList = await getQuotaData(fetchParams);
+  if (quotaDataList.some((quota) => quota.data.length === 0)) {
+    await Promise.reject(new Error('empty data'));
+  }
+
+  useSortMonth({ chartConfig, quotaDataList });
+  useNormalized({ chartConfig, quotaDataList });
+  useRemovePoint({ chartConfig, quotaDataList });
+  const legend: LegendComponentOption = {
+    data: [],
+    ...legendConfig,
+  };
+  type NormalChartSeriesOption = LineSeriesOption | BarSeriesOption | ScatterSeriesOption;
+  const series: NormalChartSeriesOption[] = [];
+
+  const color = await useColor({ chartConfig });
+  quotaDataList.forEach((quota) => {
+    legend.data!.push(quota.name);
+    quota.data.forEach((item) => (item[1] = round(item[1], chartConfig.valueFormatter.afterDot)));
+    series.push({
+      name: quota.name,
+      data: quota.data,
+      animationDuration: 0,
+    });
+  });
+  const options: EChartsOption = {
+    title: titleConfig(chartConfig),
+    xAxis: chartConfig.xAxis?.map((x) => {
+      const base: XAXisComponentOption = {
+        type: 'time',
+        triggerEvent: true,
+        axisLabel: {
+          hideOverlap: true,
+        },
+      };
+      Object.assign(base, x);
+      return base;
+    }),
+    yAxis: chartConfig.yAxis?.map((y) => {
+      const _y = useScientificNotation(y);
+      const base: YAXisComponentOption = {
+        type: 'value',
+        scale: true,
+        show: true,
+        triggerEvent: true,
+      };
+      Object.assign(base, _y);
+      return base;
+    }),
+    color,
+    legend,
+    series,
+    toolbox: toolboxConfig,
+    tooltip: {
+      show: true,
+      trigger: 'axis',
+    },
+    grid: gridConfig,
+  };
+  useSeriesSetting({ chartConfig, options });
+  useLegendName({ chartConfig, options });
+  useAddGraphicElement({ options });
+  // 最新值模块
+  useLastestQuotaData({ chartConfig, options, quotaDataList });
+  useHighestQuotaData({ chartConfig, options, quotaDataList });
+  // createRemark({ chartConfig, options });
   return options;
 }
 // 柱状图最近N期序列

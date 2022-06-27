@@ -61,12 +61,20 @@ const baseYAxisConfig = [
 
 const baseXAxisConfig = [
   {
+    min: undefined,
+    max: undefined,
+    inverse: false,
+    name: '下1',
     offset: 0,
     axisLine: {
       show: true,
       lineStyle: {
         color: '#999999',
       },
+    },
+    position: 'bottom',
+    axisLabel: {
+      formatter: '{yyyy}/{M}/{d}',
     },
   },
 ];
@@ -136,6 +144,11 @@ export function getChartDefaultConfig(type: chartTypeEnum): Partial<chartConfigT
       },
       type: chartTypeEnum.pie,
     } as pieChartConfigType,
+    fixedbase: {
+      type: chartTypeEnum.fixedbase,
+      xAxis: baseXAxisConfig,
+      yAxis: baseYAxisConfig,
+    } as normalChartConfigType,
   };
   const config = cloneDeep(baseConfig);
   merge(config, defaultConfig[type]);

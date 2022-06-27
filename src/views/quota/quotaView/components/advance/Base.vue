@@ -65,7 +65,7 @@
     chartTypeList.push({
       label: t(`quotaView.advance.baseSetting.chartTypeList.${v}`),
       value: v,
-      disabled: [chartTypeEnum.seasonalLunar, chartTypeEnum.fixedbase].includes(v as chartTypeEnum),
+      disabled: [chartTypeEnum.seasonalLunar].includes(v as chartTypeEnum),
     });
   }
   const quickDateParams = reactive({

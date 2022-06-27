@@ -31,6 +31,7 @@
   import {
     useSeasonalChart,
     useNormalChart,
+    usefixedBaseChart,
     useBarChart,
     useRadarChart,
     useStructuralChart,
@@ -49,7 +50,7 @@
   } from '../helper';
   import { cloneDeep } from 'lodash-es';
   import { useMessage } from '/@/hooks/web/useMessage';
-  import { EChartsCoreOption, EChartsType } from 'echarts/core';
+  import { EChartsCoreOption } from 'echarts/core';
 
   const props = defineProps<{
     config: chartConfigType;
@@ -75,6 +76,7 @@
   const chartTypeHooks = {
     [chartTypeEnum.seasonal]: useSeasonalChart,
     [chartTypeEnum.normal]: useNormalChart,
+    [chartTypeEnum.fixedbase]: usefixedBaseChart,
     [chartTypeEnum.bar]: useBarChart,
     [chartTypeEnum.normalRadar]: useRadarChart,
     [chartTypeEnum.structural]: useStructuralChart,
