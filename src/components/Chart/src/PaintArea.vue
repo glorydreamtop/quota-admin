@@ -61,7 +61,12 @@
     </svg>
   </div>
   <Teleport to="body">
-    <div ref="paintMask" id="chart-paint-mode-mask" :class="[paintMode ? '' : 'hidden']"></div>
+    <div
+      ref="paintMask"
+      id="chart-paint-mode-mask"
+      :style="{ clipPath }"
+      :class="[paintMode ? '' : 'hidden']"
+    ></div>
   </Teleport>
 </template>
 
@@ -80,6 +85,8 @@
 
   const { paintMode } = toRefs(props);
 
+  const clipPath = ref('');
+
   watch(paintMode, async () => {
     await nextTick();
     const { left, right, top, bottom } = paintArea.value!.getBoundingClientRect();
@@ -89,7 +96,7 @@
       top: top1,
       bottom: bottom1,
     } = paintArea.value!.previousElementSibling!.getBoundingClientRect();
-    paintMask.value!.style.clipPath = `polygon(0% 0%,0% 100%,${left}px 100%,${left}px ${top}px,${left1}px ${bottom1}px,${left1}px ${top1}px,${right1}px ${top1}px,${right1}px ${bottom1}px,${right}px ${top}px,${right}px ${bottom}px,${left}px ${bottom}px,${left}px 100%,100% 100%,100% 0%)`;
+    clipPath.value = `polygon(0% 0%,0% 100%,${left}px 100%,${left}px ${top}px,${left1}px ${bottom1}px,${left1}px ${top1}px,${right1}px ${top1}px,${right1}px ${bottom1}px,${right}px ${top}px,${right}px ${bottom}px,${left}px ${bottom}px,${left}px 100%,100% 100%,100% 0%)`;
   });
 </script>
 
