@@ -49,7 +49,7 @@
   } from '../helper';
   import { cloneDeep } from 'lodash-es';
   import { useMessage } from '/@/hooks/web/useMessage';
-  import { EChartsCoreOption, EChartsType } from 'echarts/core';
+  import { EChartsCoreOption } from 'echarts/core';
 
   const props = defineProps<{
     config: chartConfigType;

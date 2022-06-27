@@ -926,7 +926,6 @@ export function useSeriesSetting({
       });
     },
     [chartTypeEnum.pie]: () => {},
-    [chartTypeEnum.fixedbase]: () => {},
     [chartTypeEnum.seasonalLunar]: () => {},
   };
   return typeMap[chartConfig.type as keyof typeof typeMap].call(null);

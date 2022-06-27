@@ -10,6 +10,7 @@ import type {
   SeriesOption,
   TitleComponentOption,
   ToolboxComponentOption,
+  XAXisComponentOption,
   YAXisComponentOption,
 } from 'echarts';
 import { cloneDeep, max, maxBy, min, minBy, remove, round, pick } from 'lodash-es';
@@ -243,13 +244,17 @@ export async function useNormalChart(chartConfig: normalChartConfigType): Promis
   });
   const options: EChartsOption = {
     title: titleConfig(chartConfig),
-    xAxis: {
-      type: 'time',
-      triggerEvent: true,
-      axisLabel: {
-        hideOverlap: true,
-      },
-    },
+    xAxis: chartConfig.xAxis?.map((x) => {
+      const base: XAXisComponentOption = {
+        type: 'time',
+        triggerEvent: true,
+        axisLabel: {
+          hideOverlap: true,
+        },
+      };
+      Object.assign(base, x);
+      return base;
+    }),
     yAxis: chartConfig.yAxis?.map((y) => {
       const _y = useScientificNotation(y);
       const base: YAXisComponentOption = {
@@ -277,9 +282,10 @@ export async function useNormalChart(chartConfig: normalChartConfigType): Promis
   // 最新值模块
   useLastestQuotaData({ chartConfig, options, quotaDataList });
   useHighestQuotaData({ chartConfig, options, quotaDataList });
-  createRemark({ chartConfig, options });
+  // createRemark({ chartConfig, options });
   return options;
 }
+
 // 柱状图最近N期序列
 export async function useBarChart(chartConfig: barChartConfigType) {
   const fetchParams: getQuotaDataParams = {

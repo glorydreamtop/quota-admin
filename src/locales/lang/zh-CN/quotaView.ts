@@ -77,8 +77,6 @@ export default {
         seasonal: '单指标季节性',
         // 单指标季节性农历序列
         seasonalLunar: '季节性农历',
-        // 多指标定基序列
-        fixedbase: '定基',
         // 多指标柱状图
         bar: '柱状图',
         // 普通多指标数据序列
@@ -125,6 +123,25 @@ export default {
         showLine: '显示轴线',
         magnitude: '数量级',
         lastnotdel: '最后一个Y轴了',
+        tip: '新增的轴若最大值最小值均自动，则此轴未被使用时不显示',
+        tip2: '已有轴的编辑请直接在图中右键该轴',
+        cannotdel: '依赖于本轴，暂不可删除',
+      },
+      xAxis: {
+        index: '序号',
+        min: '最小值',
+        max: '最大值',
+        position: '位置',
+        color: '颜色',
+        inverse: '逆序',
+        createX: '创建X轴',
+        bottom: '下',
+        top: '上',
+        offset: '偏移',
+        offsetTip: '如非轴显示重叠，请勿手动修改智能推断值',
+        showLine: '显示轴线',
+        magnitude: '数量级',
+        lastnotdel: '最后一个X轴了',
         tip: '新增的轴若最大值最小值均自动，则此轴未被使用时不显示',
         tip2: '已有轴的编辑请直接在图中右键该轴',
         cannotdel: '依赖于本轴，暂不可删除',
