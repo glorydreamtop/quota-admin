@@ -13,7 +13,7 @@ import {
 import { encodeSvgForCss } from '/@/components/Icon';
 import { last, maxBy, nth, remove, round, cloneDeep, has, isObject } from 'lodash-es';
 import { chartTypeEnum, echartLineTypeEnum, echartSeriesTypeEnum } from '/@/enums/chartEnum';
-import { dateUtil, daysAgo, formatToDate,getMonth, toTimeStamp } from '/@/utils/dateUtil';
+import { dateUtil, daysAgo, formatToDate, getMonth, toTimeStamp } from '/@/utils/dateUtil';
 import { useI18n } from '/@/hooks/web/useI18n';
 import YAxisEdit from './src/YAxisEditor.vue';
 import XAxisEdit from './src/XAxisEditor.vue';
@@ -149,7 +149,7 @@ export function useXAxisIndexEdit({ chartConfig, onOk }: yAxixIndexEditParams) {
 type GraphicOption = GraphicComponentOption & {
   ondragend?: (e: any) => void;
   groupType: 'textRect' | 'rect' | 'mark';
-}
+};
 
 function createRichText(data: lastestDataType[], options: EChartsOption, title: string) {
   const text =
@@ -188,7 +188,7 @@ function createRichText(data: lastestDataType[], options: EChartsOption, title: 
   );
   //@ts-ignore
   const left = lastGraphicGroup ? lastGraphicGroup.left + lastGraphicGroup.shape.width + 10 : '10%';
-  const lastestConfig:GraphicOption = {
+  const lastestConfig: GraphicOption = {
     type: 'group',
     groupType: 'textRect',
     left,
@@ -256,8 +256,7 @@ function createRichText(data: lastestDataType[], options: EChartsOption, title: 
   };
   lastestConfig.ondragend = (e: any) => {
     console.log(e);
-    
-  }
+  };
   // @ts-ignore
   options.graphic.elements.push(lastestConfig);
 }
@@ -405,8 +404,7 @@ export function createRemark({ options }: createRemarkParams) {
     y2: 30,
   };
   const { x1, x2, y1, y2 } = position;
-  const arrow = 
-  `<svg xmlns='http://www.w3.org/2000/svg' width='60px' height='60px' viewBox='0 0 60 60'> 
+  const arrow = `<svg xmlns='http://www.w3.org/2000/svg' width='60px' height='60px' viewBox='0 0 60 60'> 
     <defs> 
       <marker id='arrow' markerWidth='10' markerHeight='10' refX='0' refY='5' orient='auto' markerUnits='userSpaceOnUse'>
         <path d='M0,0 L0,10 L9,5 z' fill='#f00' />
@@ -503,6 +501,7 @@ export function useLineChartContextMenu({ onOk, chartConfig }: chartTitlePopover
     // const idx = xAxisIndex;
     function SeriesEditComponent() {
       let yAxisIndexCache;
+      let xAxisIndexCache;
       const editPopover = h(SeriesEdit, {
         chartConfig,
         seriesInfo: e,
@@ -517,10 +516,16 @@ export function useLineChartContextMenu({ onOk, chartConfig }: chartTitlePopover
           if (yAxisIndexCache) {
             v.yAxis!.push(yAxisIndexCache);
           }
+          if (xAxisIndexCache) {
+            v.xAxis!.push(xAxisIndexCache);
+          }
           onOk(v);
         },
         onAddYAxis: (v) => {
           yAxisIndexCache = v;
+        },
+        onAddXAxis: (v) => {
+          xAxisIndexCache = v;
         },
         getPopupContainer: () => dom,
       });

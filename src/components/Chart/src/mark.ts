@@ -1,81 +1,25 @@
 import { reactive, ref, unref, onMounted, Ref } from 'vue';
 import { buildShortUUID } from '/@/utils/uuid';
 
-const SvgIdMap = new Map<string, SVGElement>();
+const SvgIdMap = new Map<string, SVGGElement>();
 
 interface currentParams {
-  svgElement?: SVGElement[];
+  svgElement: SVGElement[];
+  svgId?: string;
   paintArea?: Ref<SVGElement | undefined>;
 }
 
-function makeArrowLine(LineInfo: LineInfo, svgId: string) {
-  const { x1, x2, y1, y2 } = LineInfo;
-  const line = `<line x1='${x1}' y1='${y1}' x2='${x2}' y2='${y2}' stroke-width='0' marker-start='url(#${svgId}-l)' marker-end='url(#arrow)' />`;
-  const linePath = `<marker id='${svgId}-l' markerHeight='10' refX='0' refY='5' orient='auto' markerUnits='userSpaceOnUse'>
-    <path d='M0,5 L5,0 L10,5 L5,10 z' fill='#f00'/>
-  </marker>`;
-  const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-  group.setAttribute('id', svgId);
-  group.innerHTML = linePath + line;
-  SvgIdMap.set(svgId, group);
-  return group;
+interface setSvgIdParams {
+  g: SVGGElement;
+  svgId: string;
+  current: currentParams;
 }
 
-function makeLine(LineInfo: LineInfo, svgId: string) {
-  const { x1, x2, y1, y2 } = LineInfo;
-  const line = `<line x1='${x1}' y1='${y1}' x2='${x2}' y2='${y2}' stroke-width='1' stroke='#f00' />`;
-  const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-  group.setAttribute('id', svgId);
-  group.innerHTML = line;
-  SvgIdMap.set(svgId, group);
-  return group;
-}
-
-function makeRect(RectInfo: RectInfo, svgId: string) {
-  const { x, y } = RectInfo;
-  const rect = `<rect start='${x},${y}' x='${x}' y='${y}' width='1' height='1' stroke-width='1' stroke='#f00' fill='none' />`;
-  const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-  group.setAttribute('id', svgId);
-  group.innerHTML = rect;
-  SvgIdMap.set(svgId, group);
-  return group;
-}
-
-function makePencil(PencilInfo: PencilInfo, svgId: string) {
-  const { mx, my } = PencilInfo;
-  const line = `<path d='M${mx},${my} L${mx},${my}' stroke-width='1' stroke='#f00' fill='none' />`;
-  const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-  group.setAttribute('id', svgId);
-  group.innerHTML = line;
-  SvgIdMap.set(svgId, group);
-  return group;
-}
-
-function makeText(RectInfo: RectInfo, svgId: string) {
-  const { x, y } = RectInfo;
-  const text = `<text x='${x}' y='${y}' />`;
-  const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-  group.setAttribute('id', svgId);
-  group.innerHTML = rect;
-  SvgIdMap.set(svgId, group);
-  return group;
-}
-
-function makeTextEditor(RectInfo: RectInfo, svgId: string, area: SVGElement) {
-  const { x, y } = RectInfo;
-  const foreignObject = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
-  foreignObject.setAttribute('x', x.toString());
-  foreignObject.setAttribute('y', y.toString());
-  foreignObject.classList.add('relative');
-
-  const editor = document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
-  editor.className += 'text-red-600 min-w-2 border border-gray-600 absolute z-99';
-  editor.setAttribute('contenteditable', 'true');
-  editor.setAttribute('id', `${svgId}-editor`);
-  area.appendChild(foreignObject);
-  foreignObject.append(editor);
-  editor.focus();
-  return editor;
+function setSvgId({ svgId, g, current }: setSvgIdParams) {
+  if (g.getAttribute('mark-type') === 'text') {
+  }
+  SvgIdMap.set(svgId, g);
+  current.svgId = svgId;
 }
 
 interface setArrowParams {
@@ -122,6 +66,11 @@ export enum paintTypeEnum {
 
 function stopPaint(paintStatus: Ref<boolean>, current: currentParams) {
   paintStatus.value = false;
+  const g = SvgIdMap.get(current.svgId!)!;
+  const { width, height } = g.getBoundingClientRect();
+  if (width < 4 && height < 4) {
+    removeGroup(current.svgId!);
+  }
   current.svgElement = [];
 }
 
@@ -132,13 +81,105 @@ function removeGroup(svgId: string) {
   }
 }
 
+function createGroup(svgId: string) {
+  const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  group.setAttribute('id', svgId);
+  return group;
+}
+
 export function usePaint(): usePaintResult {
   const paintArea = ref<SVGElement>();
-  const paintType = ref<paintTypeEnum>(paintTypeEnum.arrow);
+  const paintType = ref<paintTypeEnum>(paintTypeEnum.select);
 
   const paintStatus = ref(false);
 
-  const current: currentParams = reactive({});
+  const current: currentParams = reactive({
+    svgElement: [],
+    svgId: '',
+  });
+  function makeArrowLine(LineInfo: LineInfo, svgId: string) {
+    const { x1, x2, y1, y2 } = LineInfo;
+    const line = `<line x1='${x1}' y1='${y1}' x2='${x2}' y2='${y2}' stroke-width='0' marker-start='url(#${svgId}-l)' marker-end='url(#arrow)' />`;
+    const linePath = `<marker id='${svgId}-l' markerHeight='10' refX='0' refY='5' orient='auto' markerUnits='userSpaceOnUse'>
+      <path d='M0,5 L5,0 L10,5 L5,10 z' fill='#f00'/>
+    </marker>`;
+    const group = createGroup(svgId);
+    group.innerHTML = linePath + line;
+    SvgIdMap.set(svgId, group);
+    return group;
+  }
+
+  function makeLine(LineInfo: LineInfo, svgId: string) {
+    const { x1, x2, y1, y2 } = LineInfo;
+    const line = `<line x1='${x1}' y1='${y1}' x2='${x2}' y2='${y2}' stroke-width='1' stroke='#f00' />`;
+    const group = createGroup(svgId);
+    group.innerHTML = line;
+    return group;
+  }
+
+  function makeRect(RectInfo: RectInfo, svgId: string) {
+    const { x, y } = RectInfo;
+    const rect = `<rect start='${x},${y}' x='${x}' y='${y}' width='1' height='1' stroke-width='1' stroke='#f00' fill='none' />`;
+    const group = createGroup(svgId);
+    group.innerHTML = rect;
+    return group;
+  }
+
+  function makePencil(PencilInfo: PencilInfo, svgId: string) {
+    const { mx, my } = PencilInfo;
+    const line = `<path d='M${mx},${my} L${mx},${my}' stroke-width='1' stroke='#f00' fill='none' />`;
+    const group = createGroup(svgId);
+    group.innerHTML = line;
+    return group;
+  }
+
+  function makeText(RectInfo: RectInfo, svgId: string) {
+    const { x, y } = RectInfo;
+    const group = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
+    const text = document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
+    text.setAttribute('contenteditable', 'true');
+    text.className +=
+      'text-red-600 min-w-4 w-fit border border-transparent inline-block border-animation';
+    group.setAttribute('x', x.toString());
+    group.setAttribute('y', y.toString());
+    group.setAttribute('width', '16');
+    group.setAttribute('height', '24');
+    group.setAttribute('id', svgId);
+    group.setAttribute('mark-type', 'text');
+    group.appendChild(text);
+    text.oninput = () => {
+      const { height } = text.getBoundingClientRect();
+      group.setAttribute('height', `${height}`);
+    };
+    // 不取消可编辑性的话偶发错误，点击别的地方这里先focus了
+    text.onmouseenter = () => {
+      if (paintType.value !== paintTypeEnum.text) return;
+      text.setAttribute('contenteditable', 'true');
+      text.classList.remove('select-none');
+    };
+    text.onmouseleave = (e) => {
+      if ((e.target as HTMLDivElement) === document.activeElement) return;
+      text.setAttribute('contenteditable', 'false');
+      text.classList.add('select-none');
+    };
+    text.onfocus = () => {
+      text.classList.replace('border-transparent', 'border-gray-300');
+      group.setAttribute('width', '100%');
+    };
+    text.onblur = () => {
+      if (text.textContent?.length === 0) {
+        // 没字就删掉
+        removeGroup(group.getAttribute('id')!);
+      } else {
+        text.setAttribute('contenteditable', 'false');
+        text.classList.add('w-fit');
+        text.classList.replace('border-gray-300', 'border-transparent');
+        const { width } = text.getBoundingClientRect();
+        group.setAttribute('width', `${width}`);
+      }
+    };
+    return { group, text };
+  }
   // 设置箭头起点
   function setArrowStart({ x, y }: setArrowParams) {
     const svgId = buildShortUUID('mark');
@@ -149,6 +190,7 @@ export function usePaint(): usePaintResult {
       arrow.querySelector('path')!,
       arrow.querySelector('marker')!,
     ];
+    setSvgId({ g: arrow, svgId, current });
     return arrow;
   }
   // 设置箭头终点
@@ -188,6 +230,7 @@ export function usePaint(): usePaintResult {
     const line = makeLine({ x1: x, x2: x, y1: y, y2: y }, svgId);
     paintArea.value!.appendChild(line);
     current.svgElement = [line.querySelector('line')!];
+    setSvgId({ g: line, svgId, current });
     return line;
   }
   // 设置直线终点
@@ -222,6 +265,7 @@ export function usePaint(): usePaintResult {
     const rect = makeRect({ x, y, width: 1, height: 1 }, svgId);
     paintArea.value!.appendChild(rect);
     current.svgElement = [rect.querySelector('rect')!];
+    setSvgId({ g: rect, svgId, current });
     return rect;
   }
   // 设置矩形终点
@@ -261,6 +305,7 @@ export function usePaint(): usePaintResult {
     const pencil = makePencil({ mx: x, my: y }, svgId);
     paintArea.value!.appendChild(pencil);
     current.svgElement = [pencil.querySelector('path')!];
+    setSvgId({ g: pencil, svgId, current });
     return pencil;
   }
   // 设置线条终点
@@ -290,22 +335,24 @@ export function usePaint(): usePaintResult {
     };
   }
 
-  // 设置文字位置
-  function setText({ x, y }: setLineParams) {
-    const svgId = buildShortUUID('mark');
-    const text = makeText({ mx: x, my: y }, svgId);
-    paintArea.value!.appendChild(text);
-    current.svgElement = [text.querySelector('path')!];
-    return text;
-  }
-
   function paintText() {
     const area = unref(paintArea)!;
     area.onclick = (e: MouseEvent) => {
+      if ((e.target as Element).hasAttribute('contenteditable')) return;
       if (e.ctrlKey || e.altKey || e.button > 0 || paintStatus.value) return;
       const svgId = buildShortUUID('mark');
-      const editor = makeTextEditor({ x: e.offsetX, y: e.offsetY }, svgId, area);
+      const { group, text } = makeText({ x: e.offsetX, y: e.offsetY }, svgId);
+      setSvgId({ g: group, svgId, current });
+      area.appendChild(group);
+      Promise.resolve().then(() => text.focus());
     };
+  }
+
+  function selectMode() {
+    const area = unref(paintArea)!;
+    SvgIdMap.forEach((svg) => {
+      svg.classList.add('selected-light');
+    });
   }
 
   const paintTypeFn = {
@@ -314,9 +361,11 @@ export function usePaint(): usePaintResult {
     [paintTypeEnum.text]: paintText,
     [paintTypeEnum.rect]: paintRect,
     [paintTypeEnum.pencil]: paintPencil,
+    [paintTypeEnum.select]: selectMode,
   };
 
   function switchType(type: paintTypeEnum) {
+    if (paintType.value === type) return;
     paintType.value = type;
     paintArea.value!.onmousedown = null;
     paintArea.value!.onmousemove = null;
@@ -328,7 +377,9 @@ export function usePaint(): usePaintResult {
   onMounted(() => {
     switchType(paintTypeEnum.arrow);
     paintArea.value!.onmouseleave = () => {
-      stopPaint(paintStatus, current);
+      if (paintStatus.value) {
+        stopPaint(paintStatus, current);
+      }
     };
   });
   return [paintArea, paintType, { switchType, removeGroup }];

@@ -52,6 +52,7 @@ export default {
     noName: '需要一个名字',
     setting: {
       yAxisIndex: '适用Y轴',
+
       type: '适用图形',
     },
   },
@@ -241,6 +242,8 @@ export default {
     quickYAxis: '创建独立Y轴',
     quickYAxisTip: '确认后绑定独立Y轴',
     xAxisIndex: '适用X轴',
+    quickXAxis: '创建独立X轴',
+    quickXAxisTip: '确认后绑定独立X轴',
     seriesTypeList: {
       line: '折线图',
       smoothLine: '曲线图',

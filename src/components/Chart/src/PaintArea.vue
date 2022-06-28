@@ -154,4 +154,14 @@
       }
     }
   }
+
+  ::v-deep(.border-animation) {
+    transition: border 0.3s;
+  }
+
+  ::v-deep(.selected-light) {
+    &:hover {
+      filter: drop-shadow(0px 0px 4px red);
+    }
+  }
 </style>

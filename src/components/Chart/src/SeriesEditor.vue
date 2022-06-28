@@ -70,15 +70,32 @@
             />
           </Tooltip>
         </span>
-        <!-- <span v-if="info.xAxisIndex !== void 0">
+        <span v-if="info.xAxisIndex !== void 0">
           <span class="w-4em text-justify mr-2">{{ t('quotaView.seriesEdit.xAxisIndex') }}</span>
           <Select
-            class="!w-5em !text-center"
+            class="!w-4em !text-center y-selector"
             size="small"
+            :disabled="quickXAxis"
             v-model:value="info.xAxisIndex"
             :options="xAxisList"
           />
-        </span> -->
+          <Tooltip
+            :title="
+              quickXAxis
+                ? t('quotaView.seriesEdit.quickXAxisTip')
+                : t('quotaView.seriesEdit.quickXAxis')
+            "
+          >
+            <Icon
+              :class="['ml-1', quickXAxis ? '!text-green-600' : '!text-primary']"
+              size="20"
+              :icon="
+                quickXAxis ? 'ant-design:check-circle-outlined' : 'ant-design:plus-circle-outlined'
+              "
+              @click="addXAxis"
+            />
+          </Tooltip>
+        </span>
         <div class="mt-2 flex gap-1">
           <Button size="small" block type="primary" @click="confirm">{{
             t('common.okText')
@@ -109,6 +126,7 @@
     (event: 'update', chartConfig: normalChartConfigType);
     (event: 'visibleChange', visible: boolean);
     (event: 'addYAxis', yAxis);
+    (event: 'addXAxis', xAxis);
   }>();
   const props = defineProps<{
     chartConfig: normalChartConfigType;
@@ -137,16 +155,16 @@
       };
     });
   });
-  // const xAxisList = computed(() => {
-  //   const { chartConfig } = props;
-  //   const { xAxis } = chartConfig;
-  //   return xAxis.map((item, index) => {
-  //     return {
-  //       value: index + 1,
-  //       label: item.name,
-  //     };
-  //   });
-  // });
+  const xAxisList = computed(() => {
+    const { chartConfig } = props;
+    const { xAxis } = chartConfig;
+    return xAxis.map((item, index) => {
+      return {
+        value: index + 1,
+        label: item.name,
+      };
+    });
+  });
   const availableSeriesType = computed(() => {
     return difference(
       [
@@ -176,18 +194,8 @@
       },
     );
   });
-  // function getWhiteList(type:string){
-  //   let whiteList = [];
-  //   switch (info.seriesType) {
-  //     case echartSeriesTypeEnum.line:
-  //       whiteList = ['seriesType','lineType','lineShadow']
-  //       break;
-
-  //     default:
-  //       break;
-  //   }
-  // }
   const quickYAxis = ref(false);
+  const quickXAxis = ref(false);
   function addYAxis() {
     if (quickYAxis.value) return;
     info.yAxisIndex = props.chartConfig.yAxis.length + 1;
@@ -219,6 +227,38 @@
     emit('addYAxis', yAxis);
     info.legendName?.replace(/\|(左|右)\d+/g, '');
     info.legendName = `${info.legendName?.length ? info.legendName : info.name}|${yAxis.name}`;
+  }
+  function addXAxis() {
+    if (quickXAxis.value) return;
+    info.xAxisIndex = props.chartConfig.xAxis.length + 1;
+    quickXAxis.value = true;
+    // 新增的智能分配到轴比较少的一侧
+    const [bottomAxis, topAxis] = partition(props.chartConfig.xAxis!, (item) => {
+      return item.position === 'bottom';
+    });
+    const isBottom = bottomAxis.length < topAxis.length;
+    // 新轴的偏移量在最后一根同侧轴+40
+    const offset = (isBottom ? last(bottomAxis)?.offset ?? -40 : last(topAxis)?.offset ?? -40) + 40;
+    const xAxis = {
+      min: void 0,
+      max: void 0,
+      inverse: false,
+      offset: offset,
+      name: isBottom ? `下${bottomAxis.length + 1}` : `上${topAxis.length + 1}`,
+      axisLine: {
+        show: true,
+        lineStyle: {
+          color: info.color,
+        },
+      },
+      position: isBottom ? 'bottom' : 'top',
+      axisLabel: {
+        formatter: '{yyyy}/{M}/{d}',
+      },
+    };
+    emit('addXAxis', xAxis);
+    info.legendName?.replace(/\|(下|上)\d+/g, '');
+    // info.legendName = `${info.legendName?.length ? info.legendName : info.name}|${xAxis.name}`;
   }
   const visible = ref(false);
   function setVisible(v) {

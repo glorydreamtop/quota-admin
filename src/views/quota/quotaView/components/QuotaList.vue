@@ -59,8 +59,7 @@
 <script lang="ts" setup>
   import { nextTick, ref, unref } from 'vue';
   import type { QuotaItem } from '/#/quota';
-  import { Tooltip, RangePicker } from 'ant-design-vue';
-  import { chartTypeEnum } from '/@/enums/chartEnum';
+  import { Tooltip } from 'ant-design-vue';
   import { useModal } from '/@/components/Modal';
   import { QuotaCard } from '/@/components/QuotaCard';
   import { useWatchArray } from '/@/utils/helper/commonHelper';
@@ -86,7 +85,6 @@
   const quotaList = useQuotaListContext();
   // 所有从树中选中的指标
   const selectedQuota = useSelectedQuotaListContext();
-  const chartConfig = useChartConfigContext();
 
   const { createMessage } = useMessage();
   const { t } = useI18n();
