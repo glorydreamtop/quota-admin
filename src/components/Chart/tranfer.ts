@@ -218,7 +218,7 @@ export async function useNormalChart(chartConfig: normalChartConfigType): Promis
     ...pick(chartConfig.timeConfig, ['startDate', 'endDate', 'pastValue', 'pastUnit']),
   };
 
-  const quotaDataList = await getQuotaData(fetchParams);
+  const quotaDataList = chartConfig.http ? await getQuotaData(fetchParams) : chartConfig.fixData!;
   if (quotaDataList.some((quota) => quota.data.length === 0)) {
     await Promise.reject(new Error('empty data'));
   }
@@ -297,7 +297,7 @@ export async function useBarChart(chartConfig: barChartConfigType) {
     pastValue: chartConfig.timeConfig.pastValue,
   };
 
-  const quotaDataList = await getQuotaData(fetchParams);
+  const quotaDataList = chartConfig.http ? await getQuotaData(fetchParams) : chartConfig.fixData!;
   useNormalized({ chartConfig, quotaDataList });
   const series: SeriesOption[] = [];
   const dataset: DatasetComponentOption = {
@@ -384,7 +384,7 @@ export async function useRadarChart(chartConfig: radarChartConfigType) {
     pastValue: chartConfig.timeConfig.pastValue,
   };
 
-  const quotaDataList = await getQuotaData(fetchParams);
+  const quotaDataList = chartConfig.http ? await getQuotaData(fetchParams) : chartConfig.fixData!;
   useNormalized({ chartConfig, quotaDataList });
   const series: SeriesOption[] = [
     {
@@ -583,7 +583,7 @@ export async function usePieChart(chartConfig: pieChartConfigType) {
     pastValue: chartConfig.timeConfig.pastValue,
   };
 
-  const quotaDataList = await getQuotaData(fetchParams);
+  const quotaDataList = chartConfig.http ? await getQuotaData(fetchParams) : chartConfig.fixData!;
   useNormalized({ chartConfig, quotaDataList });
   const series: SeriesOption[] = [];
   const dataset: DatasetComponentOption = {
@@ -665,7 +665,7 @@ export async function useQuantileRadarChart(chartConfig: quantileRadarChartConfi
     lastFlag: true,
   };
 
-  const quotaDataList = await getQuotaData(fetchParams);
+  const quotaDataList = chartConfig.http ? await getQuotaData(fetchParams) : chartConfig.fixData!;
   quotaDataList.forEach((quota) => {
     quota.data.forEach((item) => round(item[1], chartConfig.valueFormatter.afterDot));
   });
