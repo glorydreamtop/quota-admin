@@ -44,7 +44,13 @@
         <Icon size="24" icon="cil:rectangle" />
       </div>
     </div>
-    <svg ref="paintArea" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+    <svg
+      ref="paintArea"
+      xmlns="http://www.w3.org/2000/svg"
+      width="100%"
+      height="100%"
+      shape-rendering="geometricPrecision"
+    >
       <defs>
         <marker
           id="arrow"
@@ -159,9 +165,74 @@
     transition: border 0.3s;
   }
 
+  @mark-color: #f22;
+  @hover-mark-color: #ff2222dc;
+
+  @hover-stroke-width: 4;
+  @stroke-width: 1;
+
   ::v-deep(.selected-light) {
+    transition: stroke-width 0.2s;
+
     &:hover {
-      filter: drop-shadow(0px 0px 4px red);
+      filter: drop-shadow(0px 0px 4px #f66);
+
+      path {
+        stroke-width: @hover-stroke-width;
+        stroke: @hover-mark-color;
+
+        &.arrow-arrow,
+        &.arrow-path {
+          stroke-width: 0;
+        }
+      }
+
+      line {
+        stroke: @hover-mark-color;
+
+        &.arrow-line-shadow,
+        &.arrow-line {
+          stroke-width: 0;
+        }
+      }
+
+      rect {
+        stroke-width: @hover-stroke-width;
+        stroke: @hover-mark-color;
+      }
     }
+  }
+
+  ::v-deep(.arrow-line) {
+    stroke-width: 0;
+    fill: @hover-mark-color;
+  }
+
+  ::v-deep(.arrow-line-shadow) {
+    stroke-width: 10;
+    stroke: blue;
+  }
+
+  ::v-deep(.arrow-arrow),
+  ::v-deep(.arrow-path) {
+    fill: @mark-color;
+    stroke-width: 0;
+  }
+
+  ::v-deep(.line) {
+    stroke-width: @stroke-width;
+    stroke: @mark-color;
+  }
+
+  ::v-deep(.rect) {
+    stroke-width: @stroke-width;
+    stroke: @mark-color;
+    fill: none;
+  }
+
+  ::v-deep(.pencil) {
+    stroke-width: @stroke-width;
+    stroke: @mark-color;
+    fill: none;
   }
 </style>

@@ -99,19 +99,20 @@ export function usePaint(): usePaintResult {
   });
   function makeArrowLine(LineInfo: LineInfo, svgId: string) {
     const { x1, x2, y1, y2 } = LineInfo;
-    const line = `<line x1='${x1}' y1='${y1}' x2='${x2}' y2='${y2}' stroke-width='0' marker-start='url(#${svgId}-l)' marker-end='url(#arrow)' />`;
-    const linePath = `<marker id='${svgId}-l' markerHeight='10' refX='0' refY='5' orient='auto' markerUnits='userSpaceOnUse'>
-      <path d='M0,5 L5,0 L10,5 L5,10 z' fill='#f00'/>
-    </marker>`;
+    const line = `<line x1='${x1}' y1='${y1}' x2='${x2}' y2='${y2}' class='arrow-line' marker-start='url(#${svgId}-l)' marker-end='url(#arrow)' />`;
+    const linePath = `<defs><marker id='${svgId}-l' markerHeight='10' refX='0' refY='5' orient='auto' markerUnits='userSpaceOnUse' >
+      <path d='M0,5 L5,0 L10,5 L5,10 z' class='arrow-path' />
+    </marker></defs>`;
+    const lineShadow = `<line x1='${x1}' y1='${y1}' x2='${x2}' y2='${y2}' class='arrow-line-shadow' />`;
     const group = createGroup(svgId);
-    group.innerHTML = linePath + line;
+    group.innerHTML = linePath + line + lineShadow;
     SvgIdMap.set(svgId, group);
     return group;
   }
 
   function makeLine(LineInfo: LineInfo, svgId: string) {
     const { x1, x2, y1, y2 } = LineInfo;
-    const line = `<line x1='${x1}' y1='${y1}' x2='${x2}' y2='${y2}' stroke-width='1' stroke='#f00' />`;
+    const line = `<line x1='${x1}' y1='${y1}' x2='${x2}' y2='${y2}' class='line' />`;
     const group = createGroup(svgId);
     group.innerHTML = line;
     return group;
@@ -119,7 +120,7 @@ export function usePaint(): usePaintResult {
 
   function makeRect(RectInfo: RectInfo, svgId: string) {
     const { x, y } = RectInfo;
-    const rect = `<rect start='${x},${y}' x='${x}' y='${y}' width='1' height='1' stroke-width='1' stroke='#f00' fill='none' />`;
+    const rect = `<rect start='${x},${y}' x='${x}' y='${y}' width='1' height='1' class='rect' />`;
     const group = createGroup(svgId);
     group.innerHTML = rect;
     return group;
@@ -127,7 +128,7 @@ export function usePaint(): usePaintResult {
 
   function makePencil(PencilInfo: PencilInfo, svgId: string) {
     const { mx, my } = PencilInfo;
-    const line = `<path d='M${mx},${my} L${mx},${my}' stroke-width='1' stroke='#f00' fill='none' />`;
+    const line = `<path d='M${mx},${my} L${mx},${my}' class='pencil' />`;
     const group = createGroup(svgId);
     group.innerHTML = line;
     return group;
@@ -186,9 +187,10 @@ export function usePaint(): usePaintResult {
     const arrow = makeArrowLine({ x1: x, x2: x, y1: y, y2: y }, svgId);
     paintArea.value!.appendChild(arrow);
     current.svgElement = [
-      arrow.querySelector('line')!,
+      arrow.querySelector('.arrow-line')!,
       arrow.querySelector('path')!,
       arrow.querySelector('marker')!,
+      arrow.querySelector('.arrow-line-shadow')!,
     ];
     setSvgId({ g: arrow, svgId, current });
     return arrow;
@@ -196,6 +198,7 @@ export function usePaint(): usePaintResult {
   // 设置箭头终点
   function setArrowEnd({ x, y }: setArrowParams) {
     const arrow = current.svgElement[0];
+    const arrowShadow = current.svgElement[3];
     const x1 = parseFloat(arrow.getAttribute('x1')!);
     const y1 = parseFloat(arrow.getAttribute('y1')!);
     const len = Math.sqrt(Math.pow(x - x1, 2) + Math.pow(y - y1, 2)) + 3;
@@ -204,6 +207,8 @@ export function usePaint(): usePaintResult {
     linePath?.setAttribute('d', `M0,4 L${len - 4},1 L${len},5 L${len - 4},9 L0,6 z`);
     arrow?.setAttribute('x2', x.toString());
     arrow?.setAttribute('y2', y.toString());
+    arrowShadow?.setAttribute('x2', x.toString());
+    arrowShadow?.setAttribute('y2', y.toString());
   }
   // 箭头绘制模式
   function paintArrow() {
@@ -367,6 +372,9 @@ export function usePaint(): usePaintResult {
   function switchType(type: paintTypeEnum) {
     if (paintType.value === type) return;
     paintType.value = type;
+    SvgIdMap.forEach((svg) => {
+      svg.classList.remove('selected-light');
+    });
     paintArea.value!.onmousedown = null;
     paintArea.value!.onmousemove = null;
     paintArea.value!.onclick = null;

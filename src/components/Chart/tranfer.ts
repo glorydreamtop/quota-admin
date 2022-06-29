@@ -95,7 +95,7 @@ export async function useSeasonalChart(
     ...pick(chartConfig.timeConfig, ['startDate', 'endDate']),
   };
 
-  const quotaDataList = await getQuotaData(fetchParams);
+  const quotaDataList = chartConfig.http ? await getQuotaData(fetchParams) : chartConfig.fixData!;
   // 移除不展示的月份
   useSortMonth({ chartConfig, quotaDataList });
   useNormalized({ chartConfig, quotaDataList });

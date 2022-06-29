@@ -37,6 +37,7 @@ const baseConfig: Partial<chartConfigType> = {
     normalized: false,
   },
   seriesSetting: [],
+  http: true,
 };
 
 const baseYAxisConfig = [
