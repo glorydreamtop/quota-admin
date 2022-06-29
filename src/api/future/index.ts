@@ -159,12 +159,26 @@ export function getDtOptions(params: any) {
   });
 }
 
-export function getCompareOptions(params: any) {
-  return monitorHttp.request<any>({
+export async function getCompareOptions(params: any) {
+  interface json {
+    [key: string]: any[] | undefined;
+  }
+  const res = await monitorHttp.request<any>({
     url: Api.GetCompareOptions,
     method: 'GET',
     params,
   });
+  const json: json = {
+    table: undefined,
+    yoy: undefined,
+  };
+  for (const key in res) {
+    if (Object.prototype.hasOwnProperty.call(res, key)) {
+      const str = res[key];
+      json[key] = JSON.parse(str);
+    }
+  }
+  return json;
 }
 
 export function getCommStructure(params: any) {

@@ -116,7 +116,7 @@
   import { cloneDeep } from 'lodash-es';
   import ModalTagManage from './components/ModalTagManage.vue';
   import ModalChartSet from './components/ModalChartSet.vue';
-  import { yearsAgo, formatToDate, dayjsGet } from '/@/utils/dateUtil';
+  import { yearsAgo, formatToDate, getYear } from '/@/utils/dateUtil';
   import {
     tagContextModel,
     chartSetConfigModel,
@@ -537,8 +537,8 @@
       }
       async function transformEachYearChart() {
         let yearOptionsTemp: yearOptionsModel[] = [];
-        const start = dayjsGet('year', tradeDate.value[0]);
-        const end = dayjsGet('year', tradeDate.value[1]);
+        const start = getYear(tradeDate.value[0]);
+        const end = getYear(tradeDate.value[1]);
         for (let i = start; i <= end; i++) {
           const option = cloneDeep(chartOption);
           delete option.dataZoom;

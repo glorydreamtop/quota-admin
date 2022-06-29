@@ -2,8 +2,8 @@ node_modules
 .DS_Store
 /web
 dist
-build/constant.ts
-version.txt
+/build/constant.ts
+/version.txt
 .npmrc
 .cache
 

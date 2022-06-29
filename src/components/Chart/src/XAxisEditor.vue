@@ -8,96 +8,83 @@
   >
     <template #content>
       <div
-        class="flex flex-col gap-1 children:whitespace-nowrap children:flex children:items-center w-30"
+        class="grid grid-cols-2 gap-1 children:whitespace-nowrap children:flex children:items-center w-60"
       >
         <div>
           <div class="w-3em text-justify mr-2">
-            {{ t('quotaView.advance.axisSetting.yAxis.index') }}
+            {{ t('quotaView.advance.axisSetting.xAxis.index') }}
           </div>
-          <span>{{ idx > -1 ? idx + 1 : '' }}</span>
+          <span>{{ currentCfg.name }}</span>
         </div>
         <div>
           <div class="min-w-3em text-justify mr-2">{{
-            t('quotaView.advance.axisSetting.yAxis.min')
+            t('quotaView.advance.axisSetting.xAxis.position')
           }}</div>
-          <Input
+          <RadioGroup
             size="small"
-            class="!w-59px !min-w-59px"
-            v-model:value="currentCfg.min"
-            @input="(e) => onInputNumber(e, 'min')"
-          />
-        </div>
-        <div>
-          <div class="min-w-3em text-justify mr-2">{{
-            t('quotaView.advance.axisSetting.yAxis.max')
-          }}</div>
-          <Input
-            size="small"
-            class="!w-59px !min-w-59px"
-            v-model:value="currentCfg.max"
-            @input="(e) => onInputNumber(e, 'max')"
-          />
-        </div>
-        <div>
-          <div class="min-w-3em text-justify mr-2">{{
-            t('quotaView.advance.axisSetting.yAxis.position')
-          }}</div>
-          <RadioGroup size="small" v-model:value="currentCfg.position" button-style="solid">
-            <RadioButton value="left">{{
-              t('quotaView.advance.axisSetting.yAxis.left')
+            v-model:value="currentCfg.position"
+            @change="positionChange"
+            button-style="solid"
+          >
+            <RadioButton value="bottom">{{
+              t('quotaView.advance.axisSetting.xAxis.bottom')
             }}</RadioButton>
-            <RadioButton value="right">{{
-              t('quotaView.advance.axisSetting.yAxis.right')
+            <RadioButton value="top">{{
+              t('quotaView.advance.axisSetting.xAxis.top')
             }}</RadioButton>
           </RadioGroup>
         </div>
+        <div v-if="xAxisType === 'time'" class="col-span-2 flex">
+          <div class="min-w-3em text-justify mr-2">{{
+            t('quotaView.advance.axisSetting.xAxis.min')
+          }}</div>
+          <DatePicker
+            class="flex-grow"
+            size="small"
+            v-model:value="currentCfg.min"
+            value-format="YYYY-MM-DD"
+          />
+        </div>
+        <div v-if="xAxisType === 'time'" class="col-span-2 flex">
+          <div class="min-w-3em text-justify mr-2">{{
+            t('quotaView.advance.axisSetting.xAxis.max')
+          }}</div>
+          <DatePicker
+            class="flex-grow"
+            size="small"
+            v-model:value="currentCfg.max"
+            value-format="YYYY-MM-DD"
+          />
+        </div>
+
         <div>
           <div class="min-w-3em text-justify mr-2">{{
-            t('quotaView.advance.axisSetting.yAxis.inverse')
+            t('quotaView.advance.axisSetting.xAxis.inverse')
           }}</div>
           <Switch size="small" v-model:checked="currentCfg.inverse" />
         </div>
         <div>
           <div class="min-w-3em text-justify mr-2">{{
-            t('quotaView.advance.axisSetting.yAxis.showLine')
+            t('quotaView.advance.axisSetting.xAxis.showLine')
           }}</div>
           <Switch size="small" v-model:checked="currentCfg.axisLine.show" />
         </div>
         <div>
           <div class="min-w-3em text-justify mr-2">{{
-            t('quotaView.advance.valueFormatter.scientificNotation')
-          }}</div>
-          <InputNumber
-            size="small"
-            class="!w-59px !min-w-59px"
-            :min="0"
-            v-model:value="scientificNotation"
-          />
-        </div>
-        <div>
-          <div class="min-w-3em text-justify mr-2">{{
-            t('quotaView.advance.axisSetting.yAxis.offset')
+            t('quotaView.advance.axisSetting.xAxis.offset')
           }}</div>
           <Input
             size="small"
-            class="!w-59px !min-w-59px"
+            class="!w-38px !min-w-38px !mr-1"
             v-model:value="currentCfg.offset"
-            @input="(e) => onInputNumber(e, 'offset')"
+            @blur="(e) => onInputNumber(e, 'offset')"
           />
+          <BasicHelp :text="t('quotaView.advance.axisSetting.xAxis.offsetTip')" />
         </div>
         <div class="mt-2 flex gap-1">
           <Button size="small" block type="primary" @click="confirm">{{
             t('common.okText')
           }}</Button>
-          <Button
-            size="small"
-            block
-            type="primary"
-            danger
-            @click="del"
-            v-show="props.idx !== null"
-            >{{ t('common.removeText') }}</Button
-          >
         </div>
       </div>
     </template>
@@ -108,19 +95,16 @@
 </template>
 
 <script lang="ts" setup>
-  import { reactive, ref, watch } from 'vue';
-  import { Input, Switch, Radio, Popover, Button, InputNumber } from 'ant-design-vue';
+  import { computed, reactive, ref, watch } from 'vue';
+  import { Input, Switch, Radio, Popover, Button, DatePicker } from 'ant-design-vue';
   import { cloneDeep, last, partition } from 'lodash-es';
   import { useI18n } from '/@/hooks/web/useI18n';
-  import type { normalChartConfigType } from '/#/chart';
-  import type { YAXisComponentOption } from 'echarts';
-  import { useMessage } from '/@/hooks/web/useMessage';
+  import type { normalChartConfigType, XAxisOption } from '/#/chart';
+  import { chartTypeEnum } from '/@/enums/chartEnum';
   const { t } = useI18n();
 
   const RadioGroup = Radio.Group;
   const RadioButton = Radio.Button;
-
-  const { createMessage } = useMessage();
   const props = defineProps<{
     chartConfig: normalChartConfigType;
     idx: Nullable<number>;
@@ -129,26 +113,30 @@
     (event: 'update', chartConfig: normalChartConfigType);
     (event: 'visibleChange', visible: boolean);
   }>();
-  const currentCfg = reactive({
+  const currentCfg: XAxisOption = reactive({
     min: void 0,
     max: void 0,
     inverse: false,
     offset: 0,
     axisLine: {
       show: true,
+      lineStyle: {
+        color: '#999999',
+      },
     },
-    position: 'left',
+    position: 'bottom',
+    name: '',
     axisLabel: {
-      formatter: '{value}',
+      formatter: '{yyyy}/{M}/{d}',
     },
-  }) as YAXisComponentOption;
-  const scientificNotation = ref(0);
+    alignZero: false,
+  });
   const placementMap = {
-    left: 'right',
-    right: 'left',
+    top: 'bottom',
+    bottom: 'top',
   };
 
-  const placement = ref<'left' | 'right'>('right');
+  const placement = ref<'top' | 'bottom'>('top');
   // 数字格式化
   function onInputNumber(e: ChangeEvent, type: 'min' | 'max' | 'offset') {
     if (e.target.value === '') {
@@ -162,70 +150,54 @@
     visible.value = v;
   }
   defineExpose({ setVisible });
+  const xAxisType = computed(() => {
+    return [chartTypeEnum.normal, chartTypeEnum.seasonal].includes(props.chartConfig.type)
+      ? 'time'
+      : 'category';
+  });
   watch(visible, (v) => {
     if (v) {
       if (props.idx === null) {
         // 新增的智能分配到轴比较少的一侧
-        const [leftAxis, rightAxis] = partition(props.chartConfig.yAxis!, (item) => {
-          return item.position === 'left';
+        const [bottomAxis, topAxis] = partition(props.chartConfig.xAxis!, (item) => {
+          return item.position === 'bottom';
         });
-        const isLeft = leftAxis.length < rightAxis.length;
+        const isBottom = bottomAxis.length < topAxis.length;
         // 新轴的偏移量在最后一根同侧轴+40
         const offset =
-          (isLeft ? last(rightAxis)?.offset ?? -40 : last(leftAxis)?.offset ?? -40) + 40;
+          (isBottom ? last(bottomAxis)?.offset ?? -40 : last(bottomAxis)?.offset ?? -40) + 40;
         Object.assign(currentCfg, {
-          min: void 0,
-          max: void 0,
-          inverse: false,
           offset: offset,
-          axisLine: {
-            show: true,
-          },
-          position: isLeft ? 'left' : 'right',
-          axisLabel: {
-            formatter: '{value}',
-          },
+          position: isBottom ? 'bottom' : 'top',
+          name: isBottom ? `下${bottomAxis.length}` : `上${topAxis.length}`,
         });
       } else {
-        Object.assign(currentCfg, cloneDeep(props.chartConfig.yAxis[props.idx]));
+        Object.assign(currentCfg, cloneDeep(props.chartConfig.xAxis[props.idx]));
+        // @ts-ignore
+        const formatter = props.chartConfig.xAxis[props.idx!].axisLabel!.formatter as string;
       }
       placement.value = placementMap[currentCfg.position!];
-      // @ts-ignore
-      const formatter = props.chartConfig.yAxis[props.idx!].axisLabel!.formatter as string;
-      scientificNotation.value = /pow/i.test(formatter) ? parseInt(formatter.match(/\d+/i)![0]) : 0;
     }
     emit('visibleChange', v);
   });
+  function positionChange() {
+    // 新增的智能分配到轴比较少的一侧
+    const [bottomAxis, topAxis] = partition(props.chartConfig.xAxis!, (item) => {
+      return item.position === 'left';
+    });
+    const isBottom = currentCfg.position === 'left';
+    currentCfg.offset =
+      (isBottom ? last(bottomAxis)?.offset ?? -40 : last(topAxis)?.offset ?? -40) + 40;
+  }
   function confirm() {
     const config = cloneDeep(props.chartConfig);
-    if (scientificNotation.value > 0) {
-      currentCfg.axisLabel!.formatter! = `pow${scientificNotation.value}`;
-    } else {
-      currentCfg.axisLabel!.formatter! = '{value}';
-    }
     if (props.idx === null) {
       // 添加模式
-      config.yAxis.push(currentCfg);
+      config.xAxis.push(currentCfg);
     } else {
       // 修改模式
-      Object.assign(config.yAxis[props.idx], currentCfg);
+      Object.assign(config.xAxis[props.idx], currentCfg);
     }
-    emit('update', config);
-    setVisible(false);
-  }
-  function del() {
-    const config = cloneDeep(props.chartConfig);
-    // 检查当前轴是否被使用中
-    const hasDep = config.quotaList!.find((quota) => quota.setting.yAxisIndex === props.idx);
-    if (hasDep) {
-      createMessage.warn(`[${hasDep.name}]` + t('quotaView.advance.axisSetting.yAxis.cannotdel'));
-      return;
-    }
-    if (config.yAxis.length === 1) {
-      createMessage.warn(t('quotaView.advance.axisSetting.yAxis.lastnotdel'));
-      return;
-    }
-    config.yAxis.splice(props.idx!, 1);
     emit('update', config);
     setVisible(false);
   }

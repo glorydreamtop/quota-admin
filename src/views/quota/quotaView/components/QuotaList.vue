@@ -73,7 +73,7 @@
   import { useCopyToClipboard } from '/@/hooks/web/useCopyToClipboard';
   import { useContextMenu } from '/@/hooks/web/useContextMenu';
   import { onMountedOrActivated } from '/@/hooks/core/onMountedOrActivated';
-  import { useQuotaListContext, useSelectedQuotaListContext } from './hooks';
+  import { useQuotaListContext, useSelectedQuotaListContext, useChartConfigContext } from './hooks';
   import type { SelectedQuotaItem } from './hooks';
   import QuotaSetting from './QuotaSetting.vue';
   import { useI18n } from '/@/hooks/web/useI18n';
@@ -85,6 +85,7 @@
   const quotaList = useQuotaListContext();
   // 所有从树中选中的指标
   const selectedQuota = useSelectedQuotaListContext();
+
   const { createMessage } = useMessage();
   const { t } = useI18n();
   function handleSelected(item: SelectedQuotaItem) {
@@ -138,11 +139,6 @@
           }, 300);
         }
       }
-      // setTimeout(() => {
-      //   domForeach(unref(quotaBox)!.getElementsByClassName('sortable'), (element) => {
-      //     element.classList.remove('animate__zoomIn');
-      //   });
-      // }, 500);
     }
     quotaList.value = cur.filter((item) => item.selected);
   });
@@ -315,5 +311,30 @@
     padding: 0;
     opacity: 0;
     margin-right: -16px; // 因为有个gap，所以要减去
+  }
+
+  ::v-deep(.ant-picker) {
+    // 去掉日期文字左右的padding
+    padding-left: 0;
+    padding-right: 0;
+
+    input {
+      @apply text-gray-500;
+      font-size: 12px;
+      width: 5.6em;
+    }
+    // 去掉区间箭头左右的padding
+    .ant-picker-range-separator {
+      padding-left: 0;
+      padding-right: 2px;
+    }
+
+    .ant-picker-range.ant-picker-small .ant-picker-active-bar {
+      margin-left: 0;
+    }
+    // 日历小图标拉到最右边
+    .ant-picker-suffix {
+      margin-left: 18px;
+    }
   }
 </style>

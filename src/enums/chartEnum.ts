@@ -5,8 +5,6 @@ export enum chartTypeEnum {
   seasonal = 'seasonal',
   // 单指标季节性农历序列
   seasonalLunar = 'seasonalLunar',
-  // 多指标定基序列
-  fixedbase = 'fixedbase',
   // 多指标柱状图
   bar = 'bar',
   // 普通多指标雷达图

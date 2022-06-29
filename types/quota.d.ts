@@ -1,4 +1,5 @@
 import { sourceTypeEnum } from '/@/enums/quotaEnum';
+import { DateUtil } from '/@/utils/dateUtil';
 
 export interface CategoryTreeModel {
   folder: boolean;
@@ -29,4 +30,5 @@ export interface QuotaItem {
   categoryIdList?: number[];
   categoryId?: number;
   timeLastUpdate?: string;
+  range?: [string, string];
 }

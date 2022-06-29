@@ -21,6 +21,27 @@
         {{ yAxis.label }}
       </Tag>
     </div>
+    <div class="flex items-center gap-2 mt-2">
+      <XAxisEdit :chart-config="chartConfig" :idx="null" @update="updateConfig">
+        <Button size="small">
+          <template #icon>
+            <Icon icon="ant-design:plus-outlined" />
+          </template>
+          <span>{{ t('quotaView.advance.axisSetting.xAxis.createX') }}</span>
+        </Button>
+      </XAxisEdit>
+      <BasicHelp :text="t('quotaView.advance.axisSetting.yAxis.tip2')" />
+    </div>
+    <div class="yAxisList">
+      <Tag
+        v-for="xAxis in xAxisIndexList"
+        :key="xAxis.label"
+        :closable="xAxis.closable"
+        @close="delXAxis(xAxis.value)"
+      >
+        {{ xAxis.label }}
+      </Tag>
+    </div>
   </div>
 </template>
 
@@ -29,8 +50,9 @@
   import Icon from '/@/components/Icon';
   import { BasicHelp } from '/@/components/Basic';
   import YAxisEdit from '/@/components/Chart/src/YAxisEditor.vue';
+  import XAxisEdit from '/@/components/Chart/src/XAxisEditor.vue';
   import { useI18n } from '/@/hooks/web/useI18n';
-  import { useChartConfigContext, useYAxisEdit, useSettingFilter } from '../hooks';
+  import { useChartConfigContext, useYAxisEdit, useSettingFilter, useXAxisEdit } from '../hooks';
 
   const { t } = useI18n();
   const chartConfig = useChartConfigContext();
@@ -40,6 +62,7 @@
   }
   // Y轴编辑
   const [yAxisIndexList, { delYAxis }] = useYAxisEdit(chartConfig);
+  const [xAxisIndexList, { delXAxis }] = useXAxisEdit(chartConfig);
 </script>
 
 <style lang="less" scoped>

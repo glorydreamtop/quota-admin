@@ -1,5 +1,6 @@
 import type { YAXisComponentOption, XAXisComponentOption } from 'echarts';
 import { quotaDataPastUnitTypeEnum } from '/@/api/quota';
+import { getQuotaDataResult } from '/@/api/quota/model';
 import {
   chartTypeEnum,
   echartLineTypeEnum,
@@ -65,6 +66,8 @@ export interface baseChartConfigType {
     afterDot: number;
     normalized: boolean;
   };
+  http?: boolean;
+  fixData?: getQuotaDataResult[];
 
   quotaList: Nullable<SelectedQuotaItem[]>;
   seriesSetting: seriesSettingType[];

@@ -76,6 +76,7 @@ export function useChartOptionsContext() {
 export const echartMitter = mitt();
 
 type useYAxisEditRes = [ComputedRef<any[]>, { delYAxis: (idx: number) => void }];
+type useXAxisEditRes = [ComputedRef<any[]>, { delXAxis: (idx: number) => void }];
 
 export function useYAxisEdit(chartConfig: chartConfigType): useYAxisEditRes {
   const yAxisIndexList = computed(() => {
@@ -111,6 +112,42 @@ export function useYAxisEdit(chartConfig: chartConfigType): useYAxisEditRes {
     chartConfig.yAxis.splice(idx, 1);
   }
   return [yAxisIndexList, { delYAxis }];
+}
+
+export function useXAxisEdit(chartConfig: chartConfigType): useXAxisEditRes {
+  const xAxisIndexList = computed(() => {
+    if (Reflect.has(chartConfig, 'xAxis')) {
+      return chartConfig.xAxis.map((item, index) => {
+        return {
+          label: `${item.name}/${t('quotaView.advance.axisSetting.yAxis.min')}[${
+            item.min || t('common.auto')
+          }]-${t('quotaView.advance.axisSetting.yAxis.max')}[${item.max || t('common.auto')}]/${t(
+            'quotaView.advance.axisSetting.xAxis.' + item.position,
+          )}`,
+          value: index,
+          closable:
+            !chartConfig.seriesSetting!.some((ser) => ser.xAxisIndex! === index) && index > 0,
+        };
+      });
+    } else {
+      return [];
+    }
+  });
+  function delXAxis(idx: number) {
+    const config = cloneDeep(chartConfig) as normalChartConfigType;
+    // 检查当前轴是否被使用中
+    const hasDep = config.seriesSetting!.find((ser) => ser.xAxisIndex! - 1 === idx);
+    if (hasDep) {
+      createMessage.warn(`[${hasDep.name}]` + t('quotaView.advance.axisSetting.yAxis.cannotdel'));
+      return;
+    }
+    if (config.yAxis.length === 1) {
+      createMessage.warn(t('quotaView.advance.axisSetting.yAxis.lastnotdel'));
+      return;
+    }
+    chartConfig.xAxis.splice(idx, 1);
+  }
+  return [xAxisIndexList, { delXAxis }];
 }
 
 type useSortMonthRes = [

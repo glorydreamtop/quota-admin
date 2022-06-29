@@ -9,7 +9,6 @@
         @render-success="renderSuccess"
       />
     </div>
-    <div id="chart-paint-mode-mask" class="hidden"></div>
     <Advance />
   </div>
 </template>
@@ -48,16 +47,4 @@
   }
 </script>
 
-<style lang="less" scoped>
-  #chart-paint-mode-mask {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(63, 63, 63, 0.3);
-    transition: all 0.3s;
-    z-index: 99;
-    // display: none;
-  }
-</style>
+<style lang="less" scoped></style>

@@ -1,5 +1,5 @@
 import { dateUtil, formatToDate } from '/@/utils/dateUtil';
-import { cloneDeep } from 'lodash';
+import { cloneDeep } from 'lodash-es';
 const defaultChartCfg = {
   startDate: '',
   endDate: '',

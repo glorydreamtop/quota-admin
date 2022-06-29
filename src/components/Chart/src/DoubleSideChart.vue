@@ -87,7 +87,8 @@
         :config="config"
         ref="tableRef"
       />
-      <div id="chart-paint-mode-area"></div>
+      <!-- 绘制墨迹的区域 -->
+      <PaintArea :paint-mode="paintMode" />
       <div
         class="absolute flex items-center gap-4 top-2 right-2 cursor-pointer"
         v-if="isFullscreen"
@@ -103,6 +104,7 @@
 <script lang="ts" setup>
   import { ref, watchEffect, toRefs, nextTick, onMounted } from 'vue';
   import BasicChart from './BasicChart.vue';
+  import PaintArea from './PaintArea.vue';
   import { QuotaDataTable } from '/@/components/QuotaTable';
   import { useFullscreen, useMagicKeys } from '@vueuse/core';
   import { chartConfigType } from '../../../../types/chart';
@@ -123,11 +125,12 @@
     (event: 'renderSuccess', options: EChartsCoreOption): void;
   }>();
   const { config } = toRefs(props);
-  const doubleSideChart = ref<HTMLDivElement>(null);
+  const doubleSideChart = ref<HTMLDivElement>();
+
   // 是否在报告中，显示工具栏,否则仅在鼠标移动到图表上显示
   const inReport = ref(false);
   onMounted(() => {
-    inReport.value = doubleSideChart.value.parentElement!.hasAttribute('data-uniqid');
+    inReport.value = doubleSideChart.value!.parentElement!.hasAttribute('data-uniqid');
   });
   const paintMode = ref(false);
   const showTable = ref(false);
@@ -208,7 +211,6 @@
         toggleFullscreen();
       case 'paintMode':
         paintMode.value = !paintMode.value;
-        document.getElementById('chart-paint-mode-mask')?.classList.toggle('hidden');
       default:
         break;
     }
@@ -296,14 +298,6 @@
 
     .chart-view {
       @apply bg-white;
-    }
-
-    #chart-paint-mode-area {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
     }
   }
 

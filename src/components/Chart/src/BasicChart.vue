@@ -1,7 +1,7 @@
 <template>
   <div class="h-full overflow-hidden relative" v-loading="state.loading">
     <div ref="chartElRef" class="w-full h-full" @contextmenu="originContextmenu"></div>
-    <div v-if="state.noChart" class="no-chart flex flex-col items-center">
+    <div v-if="state.noChart" class="no-chart flex flex-col items-center select-none">
       <img src="../../../assets/svg/no-chart.svg" />
       <span
         v-if="config.title"
@@ -49,7 +49,7 @@
   } from '../helper';
   import { cloneDeep } from 'lodash-es';
   import { useMessage } from '/@/hooks/web/useMessage';
-  import { EChartsCoreOption, EChartsType } from 'echarts/core';
+  import { EChartsCoreOption } from 'echarts/core';
 
   const props = defineProps<{
     config: chartConfigType;
@@ -150,7 +150,7 @@
     });
     eventBus.push({
       event: titleClickEvent,
-      eventType: 'dblclick',
+      eventType: 'contextmenu',
       target: 'title',
     });
     // 编辑Y轴

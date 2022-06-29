@@ -41,15 +41,19 @@
         `${dateFomatter(quotaInfo)} ${quotaInfo.frequency ? `${quotaInfo.frequency}更` : ''}`
       }}</span>
     </Tooltip>
-    <span class="icon-slot">
+    <span class="icon-slot" @click.stop @contextmenu.stop>
       <slot name="actions"></slot>
     </span>
+    <div :class="['card-footer', slots.footer ? 'divide' : '']" @click.stop @contextmenu.stop>
+      <slot name="footer"></slot>
+    </div>
+
     <div class="sourceType" @click.stop>{{ typeFomatter(quotaInfo.sourceType) }}</div>
   </div>
 </template>
 
 <script lang="ts" setup>
-  import { toRefs, unref } from 'vue';
+  import { toRefs, unref, useSlots } from 'vue';
   import { Tooltip } from 'ant-design-vue';
   import { typeFomatter } from '/@/utils/helper/commonHelper';
   import { QuotaItem } from '/#/quota';
@@ -65,6 +69,7 @@
     quotaInfo: SelectedQuotaItem;
   }>();
   const { quotaInfo } = toRefs(props);
+  const slots = useSlots();
 
   const { t } = useI18n();
   const { createMessage } = useMessage();
@@ -99,8 +104,8 @@
     @apply relative w-52 grid bg-primary-50 border border-primary-100 px-2 py-1 shadow-md shadow-primary-50 text-xs;
 
     grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: min-content min-content auto min-content;
-    aspect-ratio: 16/9;
+    grid-template-rows: min-content min-content auto min-content min-content;
+    min-height: 7rem;
     transition: filter 0.2s;
 
     .quota-id {
@@ -148,6 +153,7 @@
 
       grid-row: 4/5;
       grid-column: 1/2;
+      align-self: end;
     }
 
     .sourceType {
@@ -169,6 +175,15 @@
       grid-row: 4/5;
       grid-column: 3/4;
       justify-self: end;
+    }
+
+    .card-footer {
+      grid-row: 5/6;
+      grid-column: 1/4;
+    }
+
+    .divide {
+      @apply border-t border-primary-200 mt-1;
     }
   }
 
