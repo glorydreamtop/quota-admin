@@ -95,7 +95,7 @@ export const schemas: FormSchema[] = [
     rules: [
       {
         required: true,
-        message: '请至少选择一个balance',
+        message: '请选择balance',
         type: 'string',
       },
     ],

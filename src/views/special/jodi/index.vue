@@ -25,7 +25,7 @@
                 :class="selectedTemplate.length < 2 ? 'w-full h-full' : 'w-1/2 h-400px float-left'"
               >
                 <DoubleSideChart
-                  v-model:config="item.config"
+                  :config="item.config"
                   :class="['w-full h-full text-base py-2']"
                   class="flex-grow"
                   :ref="setChartRefs"
@@ -66,6 +66,7 @@
   import { cloneDeep, remove } from 'lodash';
   import { useModal } from '/@/components/Modal';
   import ModalSave from './components/ModalSave.vue';
+  import { useVersionTransfer } from '/@/utils/helper/versionTransfer';
   import {
     selectedTemplateModel,
     optionsModel,
@@ -85,6 +86,7 @@
       ModalSave,
     },
     setup() {
+      const { huiChart } = useVersionTransfer();
       const defaultChartCfg = {
         startDate: '',
         endDate: '',
@@ -103,9 +105,65 @@
         textRect: { showLastest: false, showHighest: false },
         multiY: false,
         yAxis: undefined,
+        sortMonth: {
+          ifSortMonth: false,
+          list: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+          yearList: [],
+        },
+        structXLabel: {
+          ifStruct: false,
+          list: [
+            {
+              name: '-30D',
+              value: 30,
+              seriesType: 'line',
+            },
+            {
+              name: '-15D',
+              value: 15,
+              seriesType: 'line',
+            },
+            {
+              name: '-7D',
+              value: 7,
+              seriesType: 'line',
+            },
+            {
+              name: '-1D',
+              value: 1,
+              seriesType: 'line',
+            },
+            {
+              name: '-0D',
+              value: 0,
+              seriesType: 'line',
+            },
+          ],
+        },
         lastMulti: {
           multi: false,
           number: 1,
+        },
+        quantile: {
+          ifQuantile: false,
+          list: [
+            {
+              name: '1年',
+              value: 1,
+            },
+            {
+              name: '2年',
+              value: 2,
+            },
+            {
+              name: '3年',
+              value: 3,
+            },
+            {
+              name: '5年',
+              value: 5,
+            },
+          ],
         },
         decimal: 2,
         showXSplitLine: true,
@@ -200,9 +258,14 @@
             name: 'JODI数据',
           },
         ];
+        console.log(configParams);
+        const temp = huiChart({
+          config: configParams,
+        });
+        console.log(temp);
         selectedTemplate.push({
           id: `jodi${new Date().getTime()}`,
-          config: configParams,
+          config: temp,
           options: initChartOptions(params),
         });
         await nextTick();
@@ -235,7 +298,7 @@
           });
         }
         await nextTick();
-        // redrawCharts();
+        redrawCharts();
         jodiEnd.value!.scrollIntoView({ behavior: 'smooth', block: 'end' });
       }
       // 返回单个图表配置参数
