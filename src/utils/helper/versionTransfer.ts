@@ -272,6 +272,8 @@ export function huiChart() {
               axisLabel: { formatter: '{value}' },
             },
           ],
+      http: o.http,
+      fixData: o.fixData,
     };
     if (o.lastMulti.multi) {
       config.timeConfig.pastValue = o.lastMulti.number;
