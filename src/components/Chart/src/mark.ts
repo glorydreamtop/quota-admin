@@ -156,6 +156,7 @@ export function usePaint(): usePaintResult {
     foreignObject.appendChild(text);
     foreignObject.setAttribute('x', x.toString());
     foreignObject.setAttribute('y', y.toString());
+    foreignObject.classList.add('text');
     group.setAttribute('id', svgId);
     group.setAttribute('mark-type', 'text');
     group.appendChild(foreignObject);
@@ -363,7 +364,9 @@ export function usePaint(): usePaintResult {
 
   function makeShadow({ g }: makeShadowParams) {
     function textShadow() {
-      // 不用
+      const rectShadow = g.querySelector('.text')!.cloneNode() as SVGRectElement;
+      rectShadow.classList.replace('text', 'rect-shadow');
+      g.appendChild(rectShadow);
     }
     function arrowLineShadow() {
       const lineShadow = g.querySelector('.arrow-line')!.cloneNode(true) as SVGLineElement;
