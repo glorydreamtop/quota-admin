@@ -1,6 +1,6 @@
 import { dateUtil, formatToDate } from '/@/utils/dateUtil';
 import { cloneDeep } from 'lodash-es';
-const defaultChartCfg = {
+export const defaultChartCfg = {
   startDate: '',
   endDate: '',
   recent: undefined,
@@ -18,9 +18,65 @@ const defaultChartCfg = {
   textRect: { showLastest: false, showHighest: false },
   multiY: false,
   yAxis: undefined,
+  sortMonth: {
+    ifSortMonth: false,
+    list: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+    yearList: [],
+  },
+  structXLabel: {
+    ifStruct: false,
+    list: [
+      {
+        name: '-30D',
+        value: 30,
+        seriesType: 'line',
+      },
+      {
+        name: '-15D',
+        value: 15,
+        seriesType: 'line',
+      },
+      {
+        name: '-7D',
+        value: 7,
+        seriesType: 'line',
+      },
+      {
+        name: '-1D',
+        value: 1,
+        seriesType: 'line',
+      },
+      {
+        name: '-0D',
+        value: 0,
+        seriesType: 'line',
+      },
+    ],
+  },
   lastMulti: {
     multi: false,
     number: 1,
+  },
+  quantile: {
+    ifQuantile: false,
+    list: [
+      {
+        name: '1年',
+        value: 1,
+      },
+      {
+        name: '2年',
+        value: 2,
+      },
+      {
+        name: '3年',
+        value: 3,
+      },
+      {
+        name: '5年',
+        value: 5,
+      },
+    ],
   },
   decimal: 2,
   showXSplitLine: true,

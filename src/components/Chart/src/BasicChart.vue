@@ -87,7 +87,7 @@
   watch(
     config,
     async (v) => {
-      if (!Reflect.has(v, 'quotaList') || v.quotaList?.length === 0) return;
+      // if (!Reflect.has(v, 'quotaList') || v.quotaList?.length === 0) return;
       try {
         state.loading = true;
         console.log('chart config', v);

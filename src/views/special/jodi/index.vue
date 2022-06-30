@@ -30,13 +30,13 @@
                   class="flex-grow"
                   :ref="setChartRefs"
                 />
-                <div class="absolute bottom-0 right-8 scale z-9 cursor-nw-resize">
+                <div class="absolute bottom-2 right-3 scale z-9 cursor-nw-resize">
                   <ArrowsAltOutlined :rotate="90" :style="{ fontSize: '18px' }" />
                 </div>
-                <div class="absolute top-0 left-3 cursor-move drag z-9">
+                <div class="absolute top-2 right-10 cursor-move drag z-9">
                   <DragOutlined :style="{ fontSize: '18px' }" />
                 </div>
-                <div class="absolute top-0 left-10 cursor-pointer z-9" @click="delEle(item.id)">
+                <div class="absolute top-2 right-3 cursor-pointer z-9" @click="delEle(item.id)">
                   <DeleteOutlined :style="{ fontSize: '18px' }" />
                 </div>
               </div>
@@ -66,6 +66,7 @@
   import { cloneDeep, remove } from 'lodash-es';
   import { useModal } from '/@/components/Modal';
   import ModalSave from './components/ModalSave.vue';
+  import { defaultChartCfg } from '../specialCommon';
   import { useVersionTransfer } from '/@/utils/helper/versionTransfer';
   import {
     selectedTemplateModel,
@@ -87,88 +88,6 @@
     },
     setup() {
       const { huiChart } = useVersionTransfer();
-      const defaultChartCfg = {
-        startDate: '',
-        endDate: '',
-        recent: undefined,
-        timeType: 'default',
-        type: 'normal',
-        title: '',
-        ymin: null,
-        ymax: null,
-        rows: [],
-        colors: '',
-        colorsId: 0,
-        xLabel: null,
-        normalized: false,
-        seriesCfgMap: {},
-        textRect: { showLastest: false, showHighest: false },
-        multiY: false,
-        yAxis: undefined,
-        sortMonth: {
-          ifSortMonth: false,
-          list: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-          yearList: [],
-        },
-        structXLabel: {
-          ifStruct: false,
-          list: [
-            {
-              name: '-30D',
-              value: 30,
-              seriesType: 'line',
-            },
-            {
-              name: '-15D',
-              value: 15,
-              seriesType: 'line',
-            },
-            {
-              name: '-7D',
-              value: 7,
-              seriesType: 'line',
-            },
-            {
-              name: '-1D',
-              value: 1,
-              seriesType: 'line',
-            },
-            {
-              name: '-0D',
-              value: 0,
-              seriesType: 'line',
-            },
-          ],
-        },
-        lastMulti: {
-          multi: false,
-          number: 1,
-        },
-        quantile: {
-          ifQuantile: false,
-          list: [
-            {
-              name: '1年',
-              value: 1,
-            },
-            {
-              name: '2年',
-              value: 2,
-            },
-            {
-              name: '3年',
-              value: 3,
-            },
-            {
-              name: '5年',
-              value: 5,
-            },
-          ],
-        },
-        decimal: 2,
-        showXSplitLine: true,
-        fixData: [],
-      };
       const loading = ref(false);
       const jodiEnd = ref<HTMLElement>();
       const sortContainer = ref<HTMLElement>();
@@ -269,7 +188,6 @@
           options: initChartOptions(params),
         });
         await nextTick();
-        // redrawCharts();
         jodiEnd.value!.scrollIntoView({ behavior: 'smooth', block: 'end' });
       }
       async function initCharts(resData, params) {
@@ -291,14 +209,16 @@
               name: key,
             },
           ];
-          selectedTemplate.push({
-            id: `${key}${new Date().getTime()}`,
+          const temp = huiChart({
             config: configParams,
+          });
+          selectedTemplate.push({
+            id: `jodi${new Date().getTime()}`,
+            config: temp,
             options: initChartOptions(params, key),
           });
         }
         await nextTick();
-        redrawCharts();
         jodiEnd.value!.scrollIntoView({ behavior: 'smooth', block: 'end' });
       }
       // 返回单个图表配置参数
@@ -327,13 +247,6 @@
         } else {
           return data;
         }
-      }
-      function redrawCharts() {
-        chartrefs.forEach((chart: ComponentElRef & { paint: () => void }) => {
-          if (chart != null) {
-            chart.paint();
-          }
-        });
       }
       /***********保存start************/
       const [registerSave, { openModal: openModalSave }] = useModal();
@@ -370,7 +283,6 @@
       }
       function delEle(id) {
         remove(selectedTemplate, (template: selectedTemplateModel) => template.id === id);
-        redrawCharts();
       }
       function setSortable() {
         const el: HTMLElement | undefined = unref(sortContainer);
