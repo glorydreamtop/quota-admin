@@ -12,6 +12,7 @@ export const schemas: FormSchema[] = [
       span: 6,
     },
     defaultValue: [],
+    itemProps: { validateTrigger: 'blur' },
     componentProps: ({ formActionType }) => {
       return {
         mode: 'multiple',
@@ -65,6 +66,7 @@ export const schemas: FormSchema[] = [
       span: 6,
     },
     defaultValue: [],
+    itemProps: { validateTrigger: 'blur' },
     rules: [
       {
         required: true,
@@ -92,6 +94,7 @@ export const schemas: FormSchema[] = [
       span: 6,
     },
     defaultValue: [],
+    itemProps: { validateTrigger: 'blur' },
     rules: [
       {
         required: true,
