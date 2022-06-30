@@ -363,7 +363,7 @@ export function usePaint(): usePaintResult {
 
   function makeShadow({ g }: makeShadowParams) {
     function textShadow() {
-      // g.
+      // 不用
     }
     function arrowLineShadow() {
       const lineShadow = g.querySelector('.arrow-line')!.cloneNode(true) as SVGLineElement;
@@ -406,30 +406,6 @@ export function usePaint(): usePaintResult {
   const moveType = ref<groupType | ''>('');
   const moveTarget = ref<SVGElement>();
 
-  function move({ x, y }: { [key: string]: number }) {
-    console.log({ x, y });
-
-    function arrowLineMove() {
-      const e = moveTarget.value!;
-      const x1 = (parseInt(e.getAttribute('x1')!) + x).toString();
-      const y1 = (parseInt(e.getAttribute('y1')!) + y).toString();
-      const x2 = (parseInt(e.getAttribute('x2')!) + x).toString();
-      const y2 = (parseInt(e.getAttribute('y2')!) + y).toString();
-      e.setAttribute('x1', x1);
-      e.setAttribute('y1', y1);
-      e.setAttribute('x2', x2);
-      e.setAttribute('y2', y2);
-    }
-    const fns = {
-      // text: textMove,
-      arrow: arrowLineMove,
-      // line: lineMove,
-      // rect: rectMove,
-      // pencil: pencilMove,
-    };
-    fns[moveType.value]();
-  }
-
   function getMoveTarget(g: SVGGElement) {
     const selector = {
       text: '.text',
@@ -438,7 +414,8 @@ export function usePaint(): usePaintResult {
       rect: '.rect',
       pencil: '.pencil',
     };
-    return g.querySelector(selector[moveType.value])!;
+    const target: SVGElement = g.querySelector(selector[moveType.value])!;
+    return target;
   }
 
   function removeShadow(svg: SVGGElement) {
@@ -452,22 +429,32 @@ export function usePaint(): usePaintResult {
     const area = unref(paintArea)!;
     area.onmousemove = (e) => {
       if (!moveStatus.value) return;
-      move({ x: e.offsetX - start.x, y: e.offsetY - start.y });
+      moveTarget.value?.setAttribute(
+        'transform',
+        `translate(${e.offsetX - start.x},${e.offsetY - start.y})`,
+      );
     };
 
     SvgIdMap.forEach((svg) => {
       svg.classList.add('selected-light');
       makeShadow({ g: svg });
       svg.onmousedown = (e) => {
-        start.x = e.offsetX;
-        start.y = e.offsetY;
         moveStatus.value = true;
         moveType.value = svg.getAttribute('mark-type') as groupType;
         moveTarget.value = getMoveTarget(svg);
+        const [x, y] = (moveTarget.value.getAttribute('transform') ?? '0,0')
+          .match(/\-?\d+/g)!
+          .map((str) => parseFloat(str));
+        console.log(x, y);
+
+        start.x = e.offsetX - x;
+        start.y = e.offsetY - y;
         removeShadow(svg);
         area.onmouseup = () => {
           moveStatus.value = false;
           makeShadow({ g: svg });
+          moveTarget.value = void 0;
+          moveType.value = '';
         };
       };
     });
