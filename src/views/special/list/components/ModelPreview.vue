@@ -77,7 +77,7 @@
   import { ArrowsAltOutlined } from '@ant-design/icons-vue';
   import { defaultChartCfg } from '../../specialCommon';
   import { useVersionTransfer } from '/@/utils/helper/versionTransfer';
-  import { cloneDeep } from 'lodash';
+  import { cloneDeep } from 'lodash-es';
   import { dom2imgFile, fileType } from '/@/utils/domUtils';
   import { downloadByData } from '/@/utils/file/download';
   import { formatToDate, yearsAgo } from '/@/utils/dateUtil';

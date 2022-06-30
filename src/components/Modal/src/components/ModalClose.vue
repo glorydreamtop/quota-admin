@@ -19,10 +19,11 @@
   import { useDesign } from '/@/hooks/web/useDesign';
   import { Tooltip } from 'ant-design-vue';
   import { useI18n } from '/@/hooks/web/useI18n';
+  import Icon from '/@/components/Icon';
 
   export default defineComponent({
     name: 'ModalClose',
-    components: { Tooltip, FullscreenExitOutlined, FullscreenOutlined },
+    components: { Tooltip, FullscreenExitOutlined, FullscreenOutlined, Icon },
     props: {
       canFullscreen: { type: Boolean, default: true },
       fullScreen: { type: Boolean },

@@ -176,30 +176,6 @@
 
     &:hover {
       filter: drop-shadow(0px 0px 4px #f66);
-
-      path {
-        stroke-width: @hover-stroke-width;
-        stroke: @hover-mark-color;
-
-        &.arrow-arrow,
-        &.arrow-path {
-          stroke-width: 0;
-        }
-      }
-
-      line {
-        stroke: @hover-mark-color;
-
-        &.arrow-line-shadow,
-        &.arrow-line {
-          stroke-width: 0;
-        }
-      }
-
-      rect {
-        stroke-width: @hover-stroke-width;
-        stroke: @hover-mark-color;
-      }
     }
   }
 
@@ -210,7 +186,7 @@
 
   ::v-deep(.arrow-line-shadow) {
     stroke-width: 10;
-    stroke: blue;
+    stroke: transparent;
   }
 
   ::v-deep(.arrow-arrow),
@@ -224,15 +200,32 @@
     stroke: @mark-color;
   }
 
+  ::v-deep(.line-shadow) {
+    stroke-width: 4;
+    stroke: transparent;
+  }
+
   ::v-deep(.rect) {
     stroke-width: @stroke-width;
     stroke: @mark-color;
     fill: none;
   }
 
+  ::v-deep(.rect-shadow) {
+    stroke-width: 4;
+    stroke: transparent;
+    fill: none;
+  }
+
   ::v-deep(.pencil) {
     stroke-width: @stroke-width;
     stroke: @mark-color;
+    fill: none;
+  }
+
+  ::v-deep(.pencil-shadow) {
+    stroke-width: 4;
+    stroke: transparent;
     fill: none;
   }
 </style>
