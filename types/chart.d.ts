@@ -130,3 +130,10 @@ export type chartConfigType =
   | radarChartConfigType
   | structuralChartConfigType
   | pieChartConfigType;
+
+export interface chartSetting {
+  fullscreen: boolean;
+  mark: boolean;
+  side: boolean;
+  download: boolean;
+}

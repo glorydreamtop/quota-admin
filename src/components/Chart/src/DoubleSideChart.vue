@@ -18,6 +18,7 @@
         "
       >
         <Icon
+          v-if="setting.download"
           :class="[
             'download-icon animate__animated',
             (config.title ?? '').length === 0 ? 'disabled' : '',
@@ -35,6 +36,7 @@
         "
       >
         <div
+          v-if="setting.side"
           class="relative w-24px h-24px"
           :class="[(config.title ?? '').length === 0 ? 'disabled' : '']"
           @click="handleEvent(showTable ? 'showChart' : 'showTable')"
@@ -51,7 +53,12 @@
           />
         </div>
       </Tooltip>
-      <Icon icon="quanping|svg" size="24" @click="handleEvent('fullscreen')" />
+      <Icon
+        v-if="setting.fullscreen"
+        icon="quanping|svg"
+        size="24"
+        @click="handleEvent('fullscreen')"
+      />
       <Tooltip
         :title="
           paintMode
@@ -60,10 +67,10 @@
         "
       >
         <Icon
+          v-if="setting.mark"
           icon="fabiao|svg"
           size="22"
           :class="['filter paint-mode-icon', paintMode ? '' : 'grayscale-75']"
-          v-show="!inReport"
           @click="handleEvent('paintMode')"
         />
       </Tooltip>
@@ -102,12 +109,12 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, watchEffect, toRefs, nextTick, onMounted } from 'vue';
+  import { ref, watchEffect, toRefs, nextTick, onMounted, computed } from 'vue';
   import BasicChart from './BasicChart.vue';
   import PaintArea from './PaintArea.vue';
   import { QuotaDataTable } from '/@/components/QuotaTable';
   import { useFullscreen, useMagicKeys } from '@vueuse/core';
-  import { chartConfigType } from '../../../../types/chart';
+  import { chartConfigType, chartSetting } from '../../../../types/chart';
   import { EChartsCoreOption, EChartsType } from 'echarts/core';
   import { downloadByBase64 } from '/@/utils/file/download';
   import { useI18n } from '/@/hooks/web/useI18n';
@@ -119,12 +126,23 @@
 
   const props = defineProps<{
     config: chartConfigType;
+    setting: Partial<chartSetting>;
   }>();
   const emit = defineEmits<{
     (event: 'updateConfig', config: chartConfigType): void;
     (event: 'renderSuccess', options: EChartsCoreOption): void;
   }>();
   const { config } = toRefs(props);
+  const setting = computed(() => {
+    const def: chartSetting = {
+      download: true,
+      side: true,
+      fullscreen: true,
+      mark: true,
+    };
+    Object.assign(def, props.setting);
+    return def;
+  });
   const doubleSideChart = ref<HTMLDivElement>();
 
   // 是否在报告中，显示工具栏,否则仅在鼠标移动到图表上显示
