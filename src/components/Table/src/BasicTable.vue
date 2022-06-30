@@ -33,7 +33,7 @@
       </template> -->
       <template #bodyCell="{ column, record }">
         <template v-for="item in Object.keys($slots)" :key="item">
-          <slot v-if="column.key === item" :name="item" v-bind="record || {}"></slot>
+          <slot v-if="column.key === item" :name="item" v-bind="{ record } || {}"></slot>
         </template>
       </template>
       <!--      <template #[`header-${column.dataIndex}`] v-for="(column, index) in columns" :key="index">-->

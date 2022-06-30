@@ -49,16 +49,13 @@
         icon: 'ant-design:lock-outlined',
         label: t('sys.user.resetPwd'),
         popConfirm: {
-          title: () => {
-            // @ts-ignore
-            return h(Input, {
-              type: 'text',
-              size: 'small',
-              defaultValue: resetPwdText,
-              placeholder: t('sys.login.passwordPlaceholder'),
-              onInput: (e: ChangeEvent) => (resetPwdText.value = e.target.value),
-            });
-          },
+          title: h(Input, {
+            type: 'text',
+            size: 'small',
+            defaultValue: resetPwdText,
+            placeholder: t('sys.login.passwordPlaceholder'),
+            onInput: (e: ChangeEvent) => (resetPwdText.value = e.target.value),
+          }),
           confirm: async () => {
             if (!resetPwdText.value) return;
             const msg = await updateUserInfo({
