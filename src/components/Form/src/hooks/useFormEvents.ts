@@ -214,7 +214,7 @@ export function useFormEvents({
         }
       });
     });
-    _setDefaultValue(schema);
+    // _setDefaultValue(schema);
 
     schemaRef.value = uniqBy(schema, 'field');
   }
