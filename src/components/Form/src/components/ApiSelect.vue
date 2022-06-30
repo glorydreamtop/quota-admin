@@ -26,7 +26,7 @@
   import { isFunction } from '/@/utils/is';
   import { useRuleFormItem } from '/@/hooks/component/useFormItem';
   import { useAttrs } from '/@/hooks/core/useAttrs';
-  import { get, omit } from 'lodash-es';
+  import { get, isNull, omit } from 'lodash-es';
   import { LoadingOutlined } from '@ant-design/icons-vue';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { propTypes } from '/@/utils/propTypes';
@@ -45,6 +45,10 @@
       numberToString: propTypes.bool,
       api: {
         type: Function as PropType<(arg?: Recordable) => Promise<OptionsItem[]>>,
+        default: null,
+      },
+      options: {
+        type: Array,
         default: null,
       },
       // api params
@@ -74,17 +78,19 @@
       const getOptions = computed(() => {
         const { labelField, valueField, numberToString } = props;
 
-        return unref(options).reduce((prev, next: Recordable) => {
-          if (next) {
-            const value = next[valueField];
-            prev.push({
-              ...omit(next, [labelField, valueField]),
-              label: next[labelField],
-              value: numberToString ? `${value}` : value,
-            });
-          }
-          return prev;
-        }, [] as OptionsItem[]);
+        return isNull(props.options)
+          ? unref(options).reduce((prev, next: Recordable) => {
+              if (next) {
+                const value = next[valueField];
+                prev.push({
+                  ...omit(next, [labelField, valueField]),
+                  label: next[labelField],
+                  value: numberToString ? `${value}` : value,
+                });
+              }
+              return prev;
+            }, [] as OptionsItem[])
+          : props.options;
       });
 
       watchEffect(() => {
