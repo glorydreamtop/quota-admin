@@ -1,4 +1,5 @@
-import { reactive, ref, unref, onMounted, Ref } from 'vue';
+import { useMagicKeys } from '@vueuse/core';
+import { reactive, ref, unref, onMounted, Ref, watchEffect } from 'vue';
 import { buildShortUUID } from '/@/utils/uuid';
 
 const SvgIdMap = new Map<string, SVGGElement>();
@@ -31,9 +32,16 @@ interface setArrowParams {
 type setLineParams = setArrowParams;
 
 type usePaintResult = [
-  Ref<SVGElement | undefined>,
-  Ref<paintTypeEnum>,
-  { switchType: (type: paintTypeEnum) => void; removeGroup: (svgId: string) => void },
+  {
+    paintArea: Ref<SVGElement | undefined>;
+    paintType: Ref<paintTypeEnum>;
+    toolbar: Ref<HTMLElement>;
+  },
+  {
+    switchType: (type: paintTypeEnum) => void;
+    removeGroup: (svgId: string) => void;
+    clearAll: () => void;
+  },
 ];
 interface LineInfo {
   x1: number;
@@ -87,6 +95,13 @@ function removeGroup(svgId: string) {
   }
 }
 
+function clearAll() {
+  SvgIdMap.forEach((svg) => {
+    svg.remove();
+  });
+  SvgIdMap.clear();
+}
+
 function createGroup(svgId: string) {
   const group = document.createElementNS('http://www.w3.org/2000/svg', 'g');
   group.setAttribute('id', svgId);
@@ -96,7 +111,7 @@ function createGroup(svgId: string) {
 export function usePaint(): usePaintResult {
   const paintArea = ref<SVGElement>();
   const paintType = ref<paintTypeEnum>(paintTypeEnum.select);
-
+  const toolbar = ref<HTMLElement>();
   const paintStatus = ref(false);
 
   const current: currentParams = reactive({
@@ -364,8 +379,14 @@ export function usePaint(): usePaintResult {
 
   function makeShadow({ g }: makeShadowParams) {
     function textShadow() {
-      const rectShadow = g.querySelector('.text')!.cloneNode() as SVGRectElement;
-      rectShadow.classList.replace('text', 'rect-shadow');
+      const text = g.querySelector('.text')!;
+      const rectShadow = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      rectShadow.setAttribute('x', text.getAttribute('x')!);
+      rectShadow.setAttribute('y', text.getAttribute('y')!);
+      rectShadow.setAttribute('width', text.getAttribute('width')!);
+      rectShadow.setAttribute('height', text.getAttribute('height')!);
+      rectShadow.setAttribute('transform', text.getAttribute('transform')!);
+      rectShadow.classList.add('text-shadow');
       g.appendChild(rectShadow);
     }
     function arrowLineShadow() {
@@ -408,6 +429,7 @@ export function usePaint(): usePaintResult {
   const moveStatus = ref(false);
   const moveType = ref<groupType | ''>('');
   const moveTarget = ref<SVGElement>();
+  const selectedTarget = ref<SVGGElement>();
 
   function getMoveTarget(g: SVGGElement) {
     const selector = {
@@ -422,45 +444,79 @@ export function usePaint(): usePaintResult {
   }
 
   function removeShadow(svg: SVGGElement) {
-    ['.arrow-line-shadow', '.line-shadow', '.rect-shadow', '.pencil-shadow'].forEach((selector) =>
-      svg.querySelector(selector)?.remove(),
-    );
+    [
+      '.arrow-line-shadow',
+      '.line-shadow',
+      '.rect-shadow',
+      '.pencil-shadow',
+      '.text-shadow',
+    ].forEach((selector) => svg.querySelector(selector)?.remove());
   }
 
   function selectMode() {
     const start = { x: 0, y: 0 };
     const area = unref(paintArea)!;
-    area.onmousemove = (e) => {
-      if (!moveStatus.value) return;
-      moveTarget.value?.setAttribute(
-        'transform',
-        `translate(${e.offsetX - start.x},${e.offsetY - start.y})`,
-      );
-    };
-
     SvgIdMap.forEach((svg) => {
-      svg.classList.add('selected-light');
+      svg.classList.add('hover-light');
       makeShadow({ g: svg });
-      svg.onmousedown = (e) => {
-        moveStatus.value = true;
-        moveType.value = svg.getAttribute('mark-type') as groupType;
-        moveTarget.value = getMoveTarget(svg);
-        const [x, y] = (moveTarget.value.getAttribute('transform') ?? '0,0')
-          .match(/\-?\d+/g)!
-          .map((str) => parseFloat(str));
-        console.log(x, y);
-
-        start.x = e.offsetX - x;
-        start.y = e.offsetY - y;
-        removeShadow(svg);
-        area.onmouseup = () => {
-          moveStatus.value = false;
-          makeShadow({ g: svg });
-          moveTarget.value = void 0;
-          moveType.value = '';
-        };
-      };
     });
+
+    area.onmousedown = (e) => {
+      console.log(e);
+
+      const svg = (e.target as SVGElement).closest('g');
+      console.log(svg);
+      if (!svg?.hasAttribute('mark-type')) {
+        return;
+      }
+
+      moveType.value = svg.getAttribute('mark-type') as groupType;
+      moveTarget.value = getMoveTarget(svg);
+      const [x, y] = (moveTarget.value.getAttribute('transform') ?? '0,0')
+        .match(/\-?\d+/g)!
+        .map((str) => parseFloat(str));
+      start.x = e.offsetX - x;
+      start.y = e.offsetY - y;
+      area.onmousemove = (e) => {
+        moveStatus.value = true;
+        moveTarget.value?.setAttribute(
+          'transform',
+          `translate(${e.offsetX - start.x},${e.offsetY - start.y})`,
+        );
+        moveType.value === 'text' &&
+          moveTarget.value?.nextElementSibling?.setAttribute(
+            'transform',
+            `translate(${e.offsetX - start.x},${e.offsetY - start.y})`,
+          );
+      };
+      area.onmouseup = () => {
+        if (moveStatus.value) {
+          moveType.value !== 'text' && removeShadow(svg);
+          moveType.value !== 'text' && makeShadow({ g: svg });
+        }
+        moveStatus.value = false;
+        moveTarget.value = void 0;
+        moveType.value = '';
+        area.onmousemove = null;
+        area.onmouseup = null;
+      };
+    };
+    area.onclick = (e) => {
+      const svg = (e.target as SVGElement).closest('g');
+      console.log(e.target);
+
+      if (!svg) {
+        // 点到空白区
+        if (selectedTarget.value !== undefined) {
+          selectedTarget.value.classList.remove('mark-selected');
+          selectedTarget.value = undefined;
+        }
+        return;
+      }
+      selectedTarget.value?.classList.remove('mark-selected');
+      selectedTarget.value = svg;
+      svg?.classList.add('mark-selected');
+    };
   }
 
   const paintTypeFn = {
@@ -476,7 +532,7 @@ export function usePaint(): usePaintResult {
     if (paintType.value === type) return;
     paintType.value = type;
     SvgIdMap.forEach((svg) => {
-      svg.classList.remove('selected-light');
+      svg.classList.remove('hover-light');
       // 移除影子
       removeShadow(svg);
     });
@@ -495,5 +551,24 @@ export function usePaint(): usePaintResult {
       }
     };
   });
-  return [paintArea, paintType, { switchType, removeGroup }];
+  const { Delete, Backspace } = useMagicKeys({
+    passive: false,
+    onEventFired(e) {
+      if (
+        (e.key === 'Backspace' || e.key === 'Delete') &&
+        paintType.value === paintTypeEnum.select
+      ) {
+        e.preventDefault();
+      }
+    },
+  });
+  watchEffect(() => {
+    if (Backspace.value || Delete.value) {
+      removeGroup(selectedTarget.value!.id);
+    }
+  });
+  return [
+    { paintArea, paintType, toolbar },
+    { switchType, removeGroup, clearAll },
+  ];
 }

@@ -1,110 +1,113 @@
 <template>
-  <div
-    ref="doubleSideChart"
-    :class="[isFullscreen ? 'fullscreen' : '', paintMode ? 'paint-mode' : '']"
-  >
-    <div
-      :class="[
-        'toolbar',
-        inReport ? 'autohidden-toolbar gap-1' : 'gap-2',
-        isFullscreen ? 'mt-4' : '',
-      ]"
-    >
-      <Tooltip
-        :title="
-          showTable
-            ? t('quotaView.doubleSideChart.downloadXLSX')
-            : t('quotaView.doubleSideChart.downloadImg')
-        "
-      >
-        <Icon
-          v-if="setting.download"
-          :class="[
-            'download-icon animate__animated',
-            (config.title ?? '').length === 0 ? 'disabled' : '',
-          ]"
-          size="22"
-          icon="xiazai|svg"
-          @click="download"
-        />
-      </Tooltip>
-      <Tooltip
-        :title="
-          showTable
-            ? t('quotaView.doubleSideChart.chartView')
-            : t('quotaView.doubleSideChart.tableView')
-        "
+  <div ref="doubleSideChart">
+    <Teleport to="body" :disabled="!isFullscreen">
+      <div
+        :class="[isFullscreen ? 'fullscreen' : '', paintMode ? 'paint-mode' : '', 'w-full h-full']"
       >
         <div
-          v-if="setting.side"
-          class="relative w-24px h-24px"
-          :class="[(config.title ?? '').length === 0 ? 'disabled' : '']"
-          @click="handleEvent(showTable ? 'showChart' : 'showTable')"
+          :class="[
+            'toolbar',
+            inReport ? 'autohidden-toolbar gap-1' : 'gap-2',
+            isFullscreen ? 'mt-4' : '',
+          ]"
         >
+          <Tooltip
+            :title="
+              showTable
+                ? t('quotaView.doubleSideChart.downloadXLSX')
+                : t('quotaView.doubleSideChart.downloadImg')
+            "
+          >
+            <Icon
+              v-if="setting.download"
+              :class="[
+                'download-icon animate__animated',
+                (config.title ?? '').length === 0 ? 'disabled' : '',
+              ]"
+              size="22"
+              icon="xiazai|svg"
+              @click="download"
+            />
+          </Tooltip>
+          <Tooltip
+            :title="
+              showTable
+                ? t('quotaView.doubleSideChart.chartView')
+                : t('quotaView.doubleSideChart.tableView')
+            "
+          >
+            <div
+              v-if="setting.side"
+              class="relative w-24px h-24px"
+              :class="[(config.title ?? '').length === 0 ? 'disabled' : '']"
+              @click="handleEvent(showTable ? 'showChart' : 'showTable')"
+            >
+              <Icon
+                :class="['chartmode-icon', showTable ? 'front' : 'back']"
+                icon="fsux_tubiao_zhuzhuangtu|svg"
+                size="24"
+              />
+              <Icon
+                :class="['sheetmode-icon -mt-1px', !showTable ? 'front' : 'back']"
+                icon="fsux_tubiao_biaoge|svg"
+                size="24"
+              />
+            </div>
+          </Tooltip>
           <Icon
-            :class="['chartmode-icon', showTable ? 'front' : 'back']"
-            icon="fsux_tubiao_zhuzhuangtu|svg"
+            v-if="setting.fullscreen"
+            icon="quanping|svg"
             size="24"
+            @click="handleEvent('fullscreen')"
           />
-          <Icon
-            :class="['sheetmode-icon -mt-1px', !showTable ? 'front' : 'back']"
-            icon="fsux_tubiao_biaoge|svg"
-            size="24"
-          />
+          <Tooltip
+            :title="
+              paintMode
+                ? t('quotaView.doubleSideChart.paintModeOff')
+                : t('quotaView.doubleSideChart.paintModeOn')
+            "
+          >
+            <Icon
+              v-if="setting.mark"
+              icon="fabiao|svg"
+              size="22"
+              :class="['filter paint-mode-icon', paintMode ? '' : 'grayscale-75']"
+              @click="handleEvent('paintMode')"
+            />
+          </Tooltip>
         </div>
-      </Tooltip>
-      <Icon
-        v-if="setting.fullscreen"
-        icon="quanping|svg"
-        size="24"
-        @click="handleEvent('fullscreen')"
-      />
-      <Tooltip
-        :title="
-          paintMode
-            ? t('quotaView.doubleSideChart.paintModeOff')
-            : t('quotaView.doubleSideChart.paintModeOn')
-        "
-      >
-        <Icon
-          v-if="setting.mark"
-          icon="fabiao|svg"
-          size="22"
-          :class="['filter paint-mode-icon', paintMode ? '' : 'grayscale-75']"
-          @click="handleEvent('paintMode')"
-        />
-      </Tooltip>
-    </div>
-    <div
-      class="w-full h-full preserve-3d box"
-      :class="[isFullscreen ? 'pt-4' : '']"
-      id="quota-view-chartbox"
-    >
-      <BasicChart
-        :class="['chart-view w-full', showTable ? 'back' : 'front']"
-        :config="config"
-        :paintMode="paintMode"
-        @update-config="updateConfig"
-        @render-success="renderSuccess"
-        ref="chartRef"
-      />
-      <QuotaDataTable
-        v-if="loadTable"
-        :class="['table-view', showTable ? 'front' : 'back']"
-        :config="config"
-        ref="tableRef"
-      />
-      <!-- 绘制墨迹的区域 -->
-      <PaintArea :paint-mode="paintMode" />
-      <div
-        class="absolute flex items-center gap-4 top-2 right-2 cursor-pointer"
-        v-if="isFullscreen"
-        @click="handleEvent('fullscreen')"
-      >
-        <div class="text-white keybord">{{ t('quotaView.doubleSideChart.fullscreen') }}</div>
-        <Icon icon="ant-design:close-circle-outlined" class="!text-gray-600 !text-3xl" />
+        <div
+          class="w-full h-full preserve-3d box"
+          :class="[isFullscreen ? 'pt-4' : '']"
+          id="quota-view-chartbox"
+        >
+          <BasicChart
+            :class="['chart-view w-full', showTable ? 'back' : 'front']"
+            :config="config"
+            :paintMode="paintMode"
+            @update-config="updateConfig"
+            @render-success="renderSuccess"
+            ref="chartRef"
+          />
+          <QuotaDataTable
+            v-if="loadTable"
+            :class="['table-view', showTable ? 'front' : 'back']"
+            :config="config"
+            ref="tableRef"
+          />
+          <!-- 绘制墨迹的区域 -->
+          <PaintArea :paint-mode="paintMode" />
+          <div
+            class="absolute flex items-center gap-4 top-2 right-2 cursor-pointer"
+            v-if="isFullscreen"
+            @click="handleEvent('fullscreen')"
+          >
+            <div class="text-white keybord">{{ t('quotaView.doubleSideChart.fullscreen') }}</div>
+            <Icon icon="ant-design:close-circle-outlined" class="!text-gray-600 !text-3xl" />
+          </div>
+        </div>
       </div>
-    </div>
+    </Teleport>
   </div>
 </template>
 
@@ -113,7 +116,7 @@
   import BasicChart from './BasicChart.vue';
   import PaintArea from './PaintArea.vue';
   import { QuotaDataTable } from '/@/components/QuotaTable';
-  import { useFullscreen, useMagicKeys } from '@vueuse/core';
+  import { useMagicKeys } from '@vueuse/core';
   import { chartConfigType, chartSetting } from '../../../../types/chart';
   import { EChartsCoreOption, EChartsType } from 'echarts/core';
   import { downloadByBase64 } from '/@/utils/file/download';
@@ -126,7 +129,7 @@
 
   const props = defineProps<{
     config: chartConfigType;
-    setting: Partial<chartSetting>;
+    setting?: Partial<chartSetting>;
   }>();
   const emit = defineEmits<{
     (event: 'updateConfig', config: chartConfigType): void;
@@ -156,7 +159,7 @@
   const { Escape } = useMagicKeys();
   watchEffect(() => {
     // ESC键关闭全屏
-    if (Escape.value) exitFullscreen();
+    if (Escape.value) isFullscreen.value = false;
   });
 
   function updateConfig(cfg: chartConfigType) {
@@ -182,11 +185,7 @@
       handleEvent(showTable.value ? 'xlsx' : 'screenshot');
     }, 1000);
   }
-  const {
-    isFullscreen,
-    toggle: toggleFullscreen,
-    exit: exitFullscreen,
-  } = useFullscreen(doubleSideChart);
+  const isFullscreen = ref(false);
   // 响应工具栏事件
   async function handleEvent(type: string) {
     if (paintMode.value && type !== 'paintMode') return;
@@ -226,9 +225,11 @@
         showTable.value = false;
         break;
       case 'fullscreen':
-        toggleFullscreen();
+        isFullscreen.value = !isFullscreen.value;
+        break;
       case 'paintMode':
         paintMode.value = !paintMode.value;
+        break;
       default:
         break;
     }
@@ -237,6 +238,14 @@
 
 <style lang="less" scoped>
   .fullscreen {
+    position: absolute;
+    z-index: 999;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: @white;
+
     .chart-view {
       padding-top: 1rem;
       padding-bottom: 1rem;
@@ -312,7 +321,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 100;
+    z-index: 999;
 
     .chart-view {
       @apply bg-white;
