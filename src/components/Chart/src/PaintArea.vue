@@ -85,7 +85,7 @@
     paintMode: Boolean;
   }>();
 
-  const [paintArea, paintType, { switchType }] = usePaint();
+  const [{ paintArea, paintType }, { switchType }] = usePaint();
 
   const paintMask = ref<HTMLDivElement>();
 
