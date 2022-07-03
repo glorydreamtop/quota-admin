@@ -1,6 +1,6 @@
 <template>
   <div id="chart-paint-mode-area" :class="[paintMode ? '' : 'hidden']">
-    <div class="toolbar">
+    <div class="toolbar" ref="toolbar">
       <div
         title="选择"
         @click="switchType(paintTypeEnum.select)"
@@ -43,6 +43,9 @@
       >
         <Icon size="24" icon="cil:rectangle" />
       </div>
+      <div title="清除画布" @click="clearAll(paintArea!)">
+        <Icon size="20" icon="ic:baseline-cleaning-services" />
+      </div>
     </div>
     <svg
       ref="paintArea"
@@ -77,33 +80,29 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, toRefs, watch, nextTick } from 'vue';
-  import { usePaint, paintTypeEnum } from './mark';
+  import { ref, watch, nextTick } from 'vue';
+  import { usePaint } from '../mark';
+  import { paintTypeEnum } from './group';
   import Icon from '/@/components/Icon';
 
   const props = defineProps<{
     paintMode: Boolean;
   }>();
 
-  const [{ paintArea, paintType }, { switchType }] = usePaint();
+  const [{ paintArea, paintType }, { switchType, clearAll }] = usePaint();
 
   const paintMask = ref<HTMLDivElement>();
 
-  const { paintMode } = toRefs(props);
-
   const clipPath = ref('');
 
-  watch(paintMode, async () => {
-    await nextTick();
-    const { left, right, top, bottom } = paintArea.value!.getBoundingClientRect();
-    const {
-      left: left1,
-      right: right1,
-      top: top1,
-      bottom: bottom1,
-    } = paintArea.value!.previousElementSibling!.getBoundingClientRect();
-    clipPath.value = `polygon(0% 0%,0% 100%,${left}px 100%,${left}px ${top}px,${left1}px ${bottom1}px,${left1}px ${top1}px,${right1}px ${top1}px,${right1}px ${bottom1}px,${right}px ${top}px,${right}px ${bottom}px,${left}px ${bottom}px,${left}px 100%,100% 100%,100% 0%)`;
-  });
+  watch(
+    () => props.paintMode,
+    async () => {
+      await nextTick();
+      const { left, right, top, bottom } = paintArea.value!.getBoundingClientRect();
+      clipPath.value = `polygon(0% 0%,0% 100%,${left}px 100%,${left}px ${top}px,${right}px ${top}px,${right}px ${bottom}px,${left}px ${bottom}px,${left}px 100%,100% 100%,100% 0%)`;
+    },
+  );
 </script>
 
 <style lang="less" scoped>
@@ -113,7 +112,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 599;
+    z-index: 999;
     background-color: rgba(0, 0, 0, 0.3);
     animation: colorchange 0.3s;
     // display: none;
@@ -135,14 +134,13 @@
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 100;
+    z-index: 999;
   }
 
   .toolbar {
-    @apply border-b border-gray-300;
+    @apply border border-gray-300;
     position: absolute;
-    top: -30px;
-    height: 30px;
+    height: 32px;
     left: 30%;
     background-color: @white;
     z-index: 101;
@@ -171,12 +169,17 @@
   @hover-stroke-width: 4;
   @stroke-width: 1;
 
-  ::v-deep(.selected-light) {
+  ::v-deep(.hover-light) {
     transition: stroke-width 0.2s;
 
     &:hover {
       filter: drop-shadow(0px 0px 4px #f66);
     }
+  }
+
+  ::v-deep(.mark-selected) {
+    transition: stroke-width 0.2s;
+    filter: drop-shadow(0px 0px 4px #f66);
   }
 
   ::v-deep(.arrow-line) {
@@ -227,5 +230,11 @@
     stroke-width: 4;
     stroke: transparent;
     fill: none;
+  }
+
+  ::v-deep(.text-shadow) {
+    stroke-width: @stroke-width;
+    stroke: transparent;
+    fill: transparent;
   }
 </style>
