@@ -46,6 +46,9 @@
       <div title="清除画布" @click="clearAll(paintArea!)">
         <Icon size="20" icon="ic:baseline-cleaning-services" />
       </div>
+      <div title="导出数据" @click="getMarkData">
+        <Icon size="20" icon="mdi:code-json" />
+      </div>
     </div>
     <svg
       ref="paintArea"
@@ -89,11 +92,16 @@
     paintMode: Boolean;
   }>();
 
-  const [{ paintArea, paintType }, { switchType, clearAll }] = usePaint();
+  const [{ paintArea, paintType }, { switchType, clearAll, getData }] = usePaint();
 
   const paintMask = ref<HTMLDivElement>();
 
   const clipPath = ref('');
+
+  function getMarkData() {
+    const data = getData();
+    console.log(data);
+  }
 
   watch(
     () => props.paintMode,

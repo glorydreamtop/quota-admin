@@ -52,7 +52,6 @@
   // import { useI18n } from '/@/hooks/web/useI18n';
   import { useMutationObserver, useResizeObserver } from '@vueuse/core';
   // import { useUniqueField } from '../../quotaTable/components/helper';
-  // import { InteractEvent } from '@interactjs/types/index';
   import { getRem } from '/@/utils/domUtils';
 
   // import { useContextMenu } from '/@/hooks/web/useContextMenu';
@@ -207,7 +206,7 @@
     width: 50%;
     transition: border 0.3s;
     background-color: @white;
-    position: absolute;
+    // position: absolute;
 
     ::v-deep(.autohidden-toolbar) {
       opacity: 0;

@@ -2,7 +2,7 @@
   <div class="flex justify-start items-center h-layout-full p-4 gap-4 w-full overflow-hidden">
     <div
       ref="container"
-      class="absolute top-32 z-49 border w-60 flex justify-end bg-white drawer overflow-hidden"
+      class="absolute top-32 z-49 border w-70 flex justify-end bg-white drawer overflow-hidden"
       :style="{ height: `calc(100% - 9rem)` }"
     >
       <TemplateTree
@@ -134,6 +134,7 @@
       position: absolute;
       top: 40%;
       writing-mode: vertical-rl;
+      user-select: none;
     }
 
     &.hover-gray-shadow:hover {

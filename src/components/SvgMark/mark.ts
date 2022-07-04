@@ -1,4 +1,4 @@
-import { ref, unref, onMounted, Ref } from 'vue';
+import { ref, unref, onMounted, Ref, watch } from 'vue';
 import { removeShadow } from './components/mark';
 import {
   paintArrow,
@@ -8,17 +8,17 @@ import {
   paintText,
   selectMode,
 } from './components/setMark';
+import { removeGroup, clearAll, paintTypeEnum } from './components/group';
 import {
-  removeGroup,
   getAreaInfo,
   groupType,
-  clearAll,
   areaParams,
   hasAreaInfo,
   setAreaInfo,
   warn,
-  paintTypeEnum,
-} from './components/group';
+  getNodeData,
+  svgDataInfo,
+} from './components/utils';
 
 type usePaintResult = [
   {
@@ -26,7 +26,11 @@ type usePaintResult = [
     paintType: Ref<paintTypeEnum>;
     toolbar: Ref<HTMLElement | undefined>;
   },
-  { switchType: (type: paintTypeEnum) => void; clearAll: (area: SVGElement) => void },
+  {
+    switchType: (type: paintTypeEnum) => void;
+    clearAll: (area: SVGElement) => void;
+    getData: () => any;
+  },
 ];
 
 export function stopPaint(area: SVGElement) {
@@ -55,7 +59,7 @@ export function usePaint(): usePaintResult {
   const paintStatus = ref(false);
   const toolbar = ref<HTMLElement>();
   const svgIdMap = new Map<string, SVGGElement>();
-
+  const svgDataInfo = ref<svgDataInfo[]>([]);
   const moveStatus = ref(false);
   const moveType = ref<groupType | undefined>();
   const moveTarget = ref<SVGElement>();
@@ -63,20 +67,59 @@ export function usePaint(): usePaintResult {
   function switchType(type: paintTypeEnum) {
     if (paintType.value === type) return;
     paintType.value = type;
-    const { svgIdMap, currentTarget } = getAreaInfo(paintArea.value!);
-    svgIdMap.forEach((svg) => {
-      svg.classList.remove('hover-light');
-      svg.classList.remove('mark-selected');
-      currentTarget.svgElement.length = 0;
-      // 移除影子
-      removeShadow(svg);
+  }
+
+  function getData() {
+    svgDataInfo.value = [];
+    const markList = Array.from(paintArea.value!.children).filter(
+      (node) => node.tagName === 'g',
+    ) as SVGGElement[];
+    markList.forEach((g) => {
+      svgDataInfo.value.push(getNodeData(g));
     });
+    console.log(svgDataInfo);
+    return svgDataInfo;
+  }
+
+  watch(paintType, (type, oldType) => {
+    const { svgIdMap, currentTarget, textNode } = getAreaInfo(paintArea.value!);
+    if (oldType === paintTypeEnum.select) {
+      svgIdMap.forEach((svg) => {
+        svg.classList.remove('hover-light');
+        svg.classList.remove('mark-selected');
+        currentTarget.svgElement.length = 0;
+        // 移除影子
+        removeShadow(svg);
+      });
+      textNode.forEach((node) => {
+        node.classList.add('pointer-events-none');
+      });
+    }
+    if (type === paintTypeEnum.select) {
+      textNode.forEach((node) => {
+        node.classList.remove('pointer-events-none');
+      });
+    }
+    if (oldType === paintTypeEnum.text) {
+      textNode.forEach((node) => {
+        node.children[0].setAttribute('contenteditable', 'false');
+        node.classList.add('select-none');
+        node.classList.add('pointer-events-none');
+      });
+    }
+    if (type === paintTypeEnum.text) {
+      textNode.forEach((node) => {
+        node.children[0].setAttribute('contenteditable', 'true');
+        node.classList.remove('select-none');
+        node.classList.remove('pointer-events-none');
+      });
+    }
     paintArea.value!.onmousedown = null;
     paintArea.value!.onmousemove = null;
     paintArea.value!.onclick = null;
     paintArea.value!.onmouseup = null;
     paintTypeFn[type](paintArea.value!);
-  }
+  });
 
   onMounted(() => {
     if (hasAreaInfo(paintArea.value!)) {
@@ -95,6 +138,8 @@ export function usePaint(): usePaintResult {
         svgElement: [],
         svgId: '',
       },
+      textNode: new Set(),
+      svgDataInfo,
     };
     setAreaInfo(unref(paintArea)!, areaParams);
 
@@ -107,6 +152,6 @@ export function usePaint(): usePaintResult {
   });
   return [
     { paintArea, paintType, toolbar },
-    { switchType, clearAll },
+    { switchType, clearAll, getData },
   ];
 }

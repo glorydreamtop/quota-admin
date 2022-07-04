@@ -1,4 +1,5 @@
-import { getAreaInfo, groupType, paintTypeEnum, removeGroup, setSvgId } from './group';
+import { paintTypeEnum, removeGroup } from './group';
+import { getAreaInfo, groupType, setSvgId } from './utils';
 import {
   makeArrowLine,
   makeLine,
@@ -188,7 +189,7 @@ export function paintPencil(area: SVGElement) {
   };
 }
 export function paintText(area: SVGElement) {
-  const { paintStatus, paintType } = getAreaInfo(area);
+  const { paintStatus, textNode } = getAreaInfo(area);
   area.onclick = (e: MouseEvent) => {
     if ((e.target as Element).hasAttribute('contenteditable')) return;
     if (e.ctrlKey || e.altKey || e.button > 0 || paintStatus.value) return;
@@ -197,17 +198,6 @@ export function paintText(area: SVGElement) {
     text.oninput = () => {
       const { height } = text.getBoundingClientRect();
       foreignObject.setAttribute('height', `${height}`);
-    };
-    // 不取消可编辑性的话偶发错误，点击别的地方这里先focus了
-    text.onmouseenter = () => {
-      if (paintType.value !== paintTypeEnum.text) return;
-      text.setAttribute('contenteditable', 'true');
-      text.classList.remove('select-none');
-    };
-    text.onmouseleave = (e) => {
-      if ((e.target as HTMLDivElement) === document.activeElement) return;
-      text.setAttribute('contenteditable', 'false');
-      text.classList.add('select-none');
     };
     text.onfocus = () => {
       text.classList.replace('border-transparent', 'border-gray-300');
@@ -227,6 +217,7 @@ export function paintText(area: SVGElement) {
       }
     };
     setSvgId({ g: group, svgId, area });
+    textNode.add(foreignObject);
     area.appendChild(group);
     Promise.resolve().then(() => text.focus());
   };
