@@ -71,6 +71,18 @@
         </div>
         <div>
           <div class="min-w-3em text-justify mr-2">{{
+            t('quotaView.advance.axisSetting.xAxis.rotate')
+          }}</div>
+          <Input
+            size="small"
+            class="!w-42px !min-w-42px !mr-1"
+            v-model:value="currentCfg.axisLabel.rotate"
+            suffix="°"
+            @blur="(e) => onInputNumber(e, 'axisLabel.rotate')"
+          />
+        </div>
+        <div>
+          <div class="min-w-3em text-justify mr-2">{{
             t('quotaView.advance.axisSetting.xAxis.offset')
           }}</div>
           <Input
@@ -97,7 +109,7 @@
 <script lang="ts" setup>
   import { computed, reactive, ref, watch } from 'vue';
   import { Input, Switch, Radio, Popover, Button, DatePicker } from 'ant-design-vue';
-  import { cloneDeep, last, partition } from 'lodash-es';
+  import { cloneDeep, last, partition, set } from 'lodash-es';
   import { useI18n } from '/@/hooks/web/useI18n';
   import type { normalChartConfigType, XAxisOption } from '/#/chart';
   import { chartTypeEnum } from '/@/enums/chartEnum';
@@ -128,6 +140,7 @@
     name: '',
     axisLabel: {
       formatter: '{yyyy}/{M}/{d}',
+      rotate: 0,
     },
     alignZero: false,
   });
@@ -138,12 +151,12 @@
 
   const placement = ref<'top' | 'bottom'>('top');
   // 数字格式化
-  function onInputNumber(e: ChangeEvent, type: 'min' | 'max' | 'offset') {
+  function onInputNumber(e: ChangeEvent, type: 'min' | 'max' | 'offset' | 'axisLabel.rotate') {
     if (e.target.value === '') {
       currentCfg[type] = void 0;
       return;
     }
-    currentCfg[type] = parseFloat(e.target.value);
+    set(currentCfg, type, parseFloat(e.target.value));
   }
   const visible = ref(false);
   function setVisible(v) {

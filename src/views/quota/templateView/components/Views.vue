@@ -2,7 +2,7 @@
   <div class="overflow-scroll p-2 relative flex flex-col items-center">
     <PagePlaceHolder id="pagePlaceHolder" :pagination-info="paginationInfo" />
     <div
-      class="w-1440px overflow-hidden absolute grid-line"
+      class="w-1440px overflow-hidden absolute grid-line flex flex-wrap justify-start content-start"
       id="grid-container"
       @click.self="clearSelectKey"
       :style="gridAreaStyle"
@@ -13,7 +13,7 @@
         @click="insertSelectKey(element, $event)"
         :data-uniqid="element.uniqId"
         :class="[
-          'border rounded-sm overflow-hidden sortable',
+          'border rounded-sm overflow-hidden sortable  m-0',
           selectedTemplateDOMList.find((node) => node.uniqId === element.uniqId) ? 'selected' : '',
           pageSetting.showElementborder ? '' : 'border-light-50',
         ]"
@@ -41,7 +41,7 @@
     useTemplateListContext,
     useSelectTemplateListContext,
     usePageSettingContext,
-    // useDraggable,
+    useDraggable,
     paginationInfoType,
   } from '../hooks';
   import PagePlaceHolder from './PagePlaceHolder.vue';
@@ -132,44 +132,44 @@
       boxdom,
       (mutation) => {
         if (mutation[0].addedNodes.length === 0) return;
-        // useDraggable({
-        //   items: '.sortable',
-        //   handle: '.drag-handler',
-        //   onDraggle: (event) => {
-        //     const { _dom, target } = getDomConfig(event);
-        //     const transform = target.style.transform;
-        //     const reg = /translate\((\-?[0-9]+)px, (\-?[0-9]+)px\)/;
-        //     const match = reg.exec(transform);
-        //     if (match) {
-        //       const x = Number(match[1]) + event.dx;
-        //       const y = Number(match[2]) + event.dy;
-        //       _dom.pageConfig.transform = `translate(${x}px, ${y}px)`;
-        //     }
-        //   },
-        //   onDraggleEnd: (event) => {
-        //     const { _dom, target } = getDomConfig(event);
-        //     const transform = target.style.transform;
-        //     const reg = /translate\((\-?[0-9]+)px, (\-?[0-9]+)px\)/;
-        //     const match = reg.exec(transform);
-        //     if (match) {
-        //       const x = Number(match[1]) + event.dx;
-        //       const y = Number(match[2]) + event.dy;
-        //       _dom.pageConfig.transform = `translate(${Math.round(x / gridSize) * gridSize}px, ${
-        //         Math.round(y / gridSize) * gridSize
-        //       }px)`;
-        //     }
-        //   },
-        //   onResize: (event) => {
-        //     const { _dom } = getDomConfig(event);
-        //     _dom.pageConfig.width = `${event.rect.width}px`;
-        //     _dom.pageConfig.height = `${event.rect.height}px`;
-        //   },
-        //   onResizeEnd: (event) => {
-        //     const { _dom } = getDomConfig(event);
-        //     _dom.pageConfig.width = `${Math.round(event.rect.width / gridSize) * gridSize}px`;
-        //     _dom.pageConfig.height = `${Math.round(event.rect.height / gridSize) * gridSize}px`;
-        //   },
-        // });
+        useDraggable({
+          items: '.sortable',
+          handle: '.drag-handler',
+          onDraggle: (event) => {
+            const { _dom, target } = getDomConfig(event);
+            const transform = target.style.transform;
+            const reg = /translate\((\-?[0-9]+)px, (\-?[0-9]+)px\)/;
+            const match = reg.exec(transform);
+            if (match) {
+              const x = Number(match[1]) + event.dx;
+              const y = Number(match[2]) + event.dy;
+              _dom.pageConfig.transform = `translate(${x}px, ${y}px)`;
+            }
+          },
+          onDraggleEnd: (event) => {
+            const { _dom, target } = getDomConfig(event);
+            const transform = target.style.transform;
+            const reg = /translate\((\-?[0-9]+)px, (\-?[0-9]+)px\)/;
+            const match = reg.exec(transform);
+            if (match) {
+              const x = Number(match[1]) + event.dx;
+              const y = Number(match[2]) + event.dy;
+              _dom.pageConfig.transform = `translate(${Math.round(x / gridSize) * gridSize}px, ${
+                Math.round(y / gridSize) * gridSize
+              }px)`;
+            }
+          },
+          onResize: (event) => {
+            const { _dom } = getDomConfig(event);
+            _dom.pageConfig.width = `${event.rect.width}px`;
+            _dom.pageConfig.height = `${event.rect.height}px`;
+          },
+          onResizeEnd: (event) => {
+            const { _dom } = getDomConfig(event);
+            _dom.pageConfig.width = `${Math.round(event.rect.width / gridSize) * gridSize}px`;
+            _dom.pageConfig.height = `${Math.round(event.rect.height / gridSize) * gridSize}px`;
+          },
+        });
       },
       {
         childList: true,
@@ -189,6 +189,7 @@
     z-index: 9;
     border: 1px solid;
     border-color: @primary-color;
+    position: relative;
 
     &::after {
       position: absolute;
@@ -236,7 +237,7 @@
   }
 
   .grid-line {
-    @line-color: lighten(@primary-color, 40%);
+    @line-color: #f2f2f2;
     @grid-size: 40px;
     background: -webkit-linear-gradient(top, transparent @grid-size - 1, @line-color 0),
       -webkit-linear-gradient(left, transparent @grid-size - 1, @line-color 0);

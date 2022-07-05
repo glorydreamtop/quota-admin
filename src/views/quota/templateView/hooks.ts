@@ -3,8 +3,7 @@ import { createContext, useContext } from '/@/hooks/core/useContext';
 import type { pageSettingType, TemplateDOM } from '/#/template';
 import { remove } from 'lodash-es';
 import { useActiveElement, useMagicKeys } from '@vueuse/core';
-// import interact from 'interactjs';
-// import { InteractEvent } from '@interactjs/types/index';
+import interact from 'interactjs';
 import Icon from '/@/components/Icon';
 
 const templateKey: InjectionKey<Ref<TemplateDOM[]>> = Symbol();
@@ -171,88 +170,88 @@ export const imgTemplate: TemplateDOM = {
   },
 };
 
-// interface draggableOptions {
-//   handle?: string;
-//   items: string;
-//   restrict?: {
-//     restriction: string;
-//     elementRect: {
-//       top: string;
-//       left: string;
-//       bottom: string;
-//       right: string;
-//     };
-//   };
-//   onDraggleStart?: (e: InteractEvent) => void;
-//   onDraggleEnd?: (e: InteractEvent) => void;
-//   onDraggle?: (e: InteractEvent) => void;
-//   onResizeStart?: (e: InteractEvent) => void;
-//   onResizeEnd?: (e: InteractEvent) => void;
-//   onResize?: (e: InteractEvent) => void;
-// }
+interface draggableOptions {
+  handle?: string;
+  items: string;
+  restrict?: {
+    restriction: string;
+    elementRect: {
+      top: string;
+      left: string;
+      bottom: string;
+      right: string;
+    };
+  };
+  onDraggleStart?: (e: DragEvent) => void;
+  onDraggleEnd?: (e: DragEvent) => void;
+  onDraggle?: (e: DragEvent) => void;
+  onResizeStart?: (e: MouseEvent) => void;
+  onResizeEnd?: (e: MouseEvent) => void;
+  onResize?: (e: MouseEvent) => void;
+}
 
-// export function useDraggable({
-//   handle,
-//   items,
-//   onDraggleStart,
-//   onDraggle,
-//   onDraggleEnd,
-//   onResizeStart,
-//   onResize,
-//   onResizeEnd,
-// }: draggableOptions) {
-//   const handler = handle ?? items;
-//   const allowDraggable = ref(true);
+export function useDraggable({
+  handle,
+  items,
+  onDraggleStart,
+  onDraggle,
+  onDraggleEnd,
+  onResizeStart,
+  onResize,
+  onResizeEnd,
+}: draggableOptions) {
+  const handler = handle ?? items;
+  const allowDraggable = ref(true);
 
-//   interact(items)
-//     .draggable({
-//       modifiers: [
-//         // interact.modifiers.snap({
-//         //   targets: [interact.snappers.grid({ x: 30, y: 30 })],
-//         //   range: Infinity,
-//         //   relativePoints: [{ x: 0, y: 0 }],
-//         // }),
-//         interact.modifiers.restrict({
-//           restriction: 'parent',
-//           elementRect: { top: 0, left: 0, bottom: 1, right: 1 },
-//           endOnly: true,
-//         }),
-//       ],
-//     })
-//     .on('down', (event: InteractEvent) => {
-//       const target = event.target as HTMLElement;
-//       if (!target.closest(items)?.contains(target.closest(handler)!)) {
-//         allowDraggable.value = false;
-//         return;
-//       } else {
-//         allowDraggable.value = true;
-//         onDraggleStart?.call(null, event);
-//       }
-//     })
-//     .on('dragstart', (event: InteractEvent) => {
-//       if (!allowDraggable.value) return;
-//     })
-//     .on('dragmove', (event: InteractEvent) => {
-//       if (!allowDraggable.value) return;
-//       onDraggle?.call(null, event);
-//     })
-//     .on('dragend', (event: InteractEvent) => {
-//       onDraggleEnd?.call(null, event);
-//     })
-//     .resizable({
-//       // 任意方向都能resize
-//       edges: { right: true, bottom: true },
-//     })
-//     .on('resizestart', (event: InteractEvent) => {
-//       onResizeStart?.call(null, event);
-//     })
-//     .on('resizemove', (event: InteractEvent) => {
-//       onResize?.call(null, event);
-//     })
-//     .on('resizeend', (event: InteractEvent) => {
-//       onResizeEnd?.call(null, event);
-//     });
-// }
+  interact(items)
+    .draggable({
+      modifiers: [
+        // interact.modifiers.snap({
+        //   targets: [interact.snappers.grid({ x: 30, y: 30 })],
+        //   range: Infinity,
+        //   relativePoints: [{ x: 0, y: 0 }],
+        // }),
+        interact.modifiers.restrict({
+          restriction: 'parent',
+          elementRect: { top: 0, left: 0, bottom: 1, right: 1 },
+          endOnly: true,
+        }),
+      ],
+    })
+    .on('down', (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest(items)?.contains(target.closest(handler)!)) {
+        allowDraggable.value = false;
+        return;
+      } else {
+        allowDraggable.value = true;
+        onDraggleStart?.call(null, event);
+      }
+    })
+    .on('dragstart', (event: DragEvent) => {
+      if (!allowDraggable.value) return;
+    })
+    .on('dragmove', (event: DragEvent) => {
+      if (!allowDraggable.value) return;
+      onDraggle?.call(null, event);
+    })
+    .on('dragend', (event: DragEvent) => {
+      onDraggleEnd?.call(null, event);
+    })
+    .resizable({
+      // 任意方向都能resize
+      edges: { right: true, bottom: true },
+    })
+    .on('resizestart', (event: MouseEvent) => {
+      onResizeStart?.call(null, event);
+    })
+    .on('resizemove', (event: MouseEvent) => {
+      onResize?.call(null, event);
+    })
+    .on('resizeend', (event: MouseEvent) => {
+      onResizeEnd?.call(null, event);
+    });
+}
 
 export interface paginationInfoType {
   totalPage: number;

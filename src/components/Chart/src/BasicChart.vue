@@ -194,7 +194,7 @@
       eventType: 'contextmenu',
       target: 'series',
     });
-    instance.on('dblclick', (e) => {
+    instance.on('dblclick', function(e){
       if (props.paintMode) return;
       // 依次执行双击监听的所有事件
       eventBus
@@ -207,7 +207,7 @@
           }
         });
     });
-    instance.on('contextmenu', (e) => {
+    instance.on('contextmenu', function(e){
       if (props.paintMode) return;
       // 依次执行右键监听的所有事件
       eventBus
@@ -217,6 +217,7 @@
           if (e.componentType === event.target) {
             const dom = createMountNode(e);
             console.log(instance.getOption());
+            e.instance = this;
             event.event(dom, e, instance.getOption());
           }
         });

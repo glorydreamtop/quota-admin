@@ -138,6 +138,7 @@ export default {
         createX: '创建X轴',
         bottom: '下',
         top: '上',
+        rotate: '旋转',
         offset: '偏移',
         offsetTip: '如非轴显示重叠，请勿手动修改智能推断值',
         showLine: '显示轴线',

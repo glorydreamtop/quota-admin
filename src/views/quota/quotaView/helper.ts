@@ -60,31 +60,33 @@ const baseYAxisConfig = [
   },
 ];
 
-const baseXAxisConfig = [
-  {
-    min: undefined,
-    max: undefined,
-    inverse: false,
-    name: '下1',
-    offset: 0,
-    axisLine: {
-      show: true,
-      lineStyle: {
-        color: '#999999',
+const baseXAxisConfig = ({ formatter }: { formatter: string }) => {
+  return [
+    {
+      min: undefined,
+      max: undefined,
+      inverse: false,
+      name: '下1',
+      offset: 0,
+      axisLine: {
+        show: true,
+        lineStyle: {
+          color: '#999999',
+        },
+      },
+      position: 'bottom',
+      axisLabel: {
+        formatter,
       },
     },
-    position: 'bottom',
-    axisLabel: {
-      formatter: '{yyyy}/{M}/{d}',
-    },
-  },
-];
+  ];
+};
 
 export function getChartDefaultConfig(type: chartTypeEnum): Partial<chartConfigType> {
   const defaultConfig = {
     normal: {
       type: chartTypeEnum.normal,
-      xAxis: baseXAxisConfig,
+      xAxis: baseXAxisConfig({ formatter: '{yyyy}/{M}/{d}' }),
       yAxis: baseYAxisConfig,
     } as normalChartConfigType,
     seasonal: {
@@ -101,6 +103,7 @@ export function getChartDefaultConfig(type: chartTypeEnum): Partial<chartConfigT
         startMonth: 1,
       },
       type: chartTypeEnum.bar,
+      xAxis: baseXAxisConfig({ formatter: '{value}' }),
       yAxis: baseYAxisConfig,
     } as barChartConfigType,
     normalRadar: {

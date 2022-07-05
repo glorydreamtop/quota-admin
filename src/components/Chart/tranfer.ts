@@ -13,7 +13,7 @@ import type {
   XAXisComponentOption,
   YAXisComponentOption,
 } from 'echarts';
-import { cloneDeep, max, maxBy, min, minBy, remove, round, pick } from 'lodash-es';
+import { cloneDeep, max, maxBy, min, minBy, remove, round, pick, merge } from 'lodash-es';
 import {
   useAddGraphicElement,
   useHighestQuotaData,
@@ -330,13 +330,22 @@ export async function useBarChart(chartConfig: barChartConfigType) {
 
   const options: EChartsOption = {
     title: titleConfig(chartConfig),
-    xAxis: {
-      type: 'category',
-      axisTick: {
-        alignWithLabel: true,
-      },
-      triggerEvent: true,
-    },
+    xAxis: chartConfig.xAxis?.map((x) => {
+      const base: XAXisComponentOption = {
+        type: 'category',
+        triggerEvent: true,
+        axisLabel: {
+          hideOverlap: false,
+          interval: 0,
+        },
+        axisTick: {
+          alignWithLabel: true,
+          interval: 0,
+        },
+      };
+      merge(base,x)
+      return base;
+    }),
     yAxis: chartConfig.yAxis?.map((y) => {
       const _y = useScientificNotation(y);
       const base: YAXisComponentOption = {
