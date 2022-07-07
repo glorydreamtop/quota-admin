@@ -10,6 +10,7 @@ specifiers:
   '@ant-design/icons-vue': ^6.1.0
   '@commitlint/cli': ^16.2.3
   '@commitlint/config-conventional': ^16.2.1
+  '@formkit/auto-animate': ^1.0.0-beta.1
   '@iconify/iconify': ^2.2.1
   '@iconify/json': ^2.1.30
   '@interactjs/types': ^1.10.11
@@ -129,6 +130,7 @@ specifiers:
 dependencies:
   '@ant-design/colors': 6.0.0
   '@ant-design/icons-vue': 6.1.0_vue@3.2.37
+  '@formkit/auto-animate': 1.0.0-beta.1_vue@3.2.37
   '@iconify/iconify': 2.2.1
   '@logicflow/core': 1.1.21
   '@logicflow/extension': 1.1.21
@@ -1724,6 +1726,20 @@ packages:
     transitivePeerDependencies:
       - supports-color
     dev: true
+
+  /@formkit/auto-animate/1.0.0-beta.1_vue@3.2.37:
+    resolution: {integrity: sha512-I3OWOBaPZKSJL4bsooXI8kC3q7bcgibD2oML0P/Lir6MnbvUe/0/7EH8br024juvM/Ulm9C9xGx9CJUQYrOWSA==}
+    peerDependencies:
+      react: ^16.8.0
+      vue: ^3.0.0
+    peerDependenciesMeta:
+      react:
+        optional: true
+      vue:
+        optional: true
+    dependencies:
+      vue: 3.2.37
+    dev: false
 
   /@humanwhocodes/config-array/0.9.5:
     resolution: {integrity: sha512-ObyMyWxZiCu/yTisA7uzx81s40xR2fD5Cg/2Kq7G02ajkNubJf6BopgDTmDyc3U7sXpNKM8cYOw7s7Tyr+DnCw==}

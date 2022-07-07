@@ -92,7 +92,6 @@
       if ((!hasQuotaList && http) || !Reflect.has(v, 'http')) return;
       try {
         state.loading = true;
-        console.log('chart config', v);
         getInstance()?.on('finished', function () {
           nextTick(() => {
             emit('renderSuccess', getInstance()!.getOption());

@@ -16,6 +16,7 @@ import { setupI18n } from '/@/locales/setupI18n';
 import { setupAegisSDK } from '/@/utils/lib/aegis';
 import { registerGlobComp } from '/@/components/registerGlobComp';
 import { setupVxeTable } from './utils/lib/vxetable';
+import { setupAutoAnimate } from './utils/lib/animate';
 
 async function bootstrap() {
   const app = createApp(App);
@@ -47,6 +48,8 @@ async function bootstrap() {
   setupVxeTable(app);
 
   setupAegisSDK(app);
+
+  setupAutoAnimate(app);
 
   app.mount('#app');
   return true;

@@ -9,6 +9,7 @@ import {
   LegendComponentOption,
   SeriesOption,
   YAXisComponentOption,
+  GridComponentOption,
   EChartsType,
 } from 'echarts';
 import { encodeSvgForCss } from '/@/components/Icon';
@@ -955,6 +956,9 @@ export function useLegendName({
 }) {
   const { seriesSetting } = chartConfig;
   (options.legend! as LegendComponentOption).formatter = (name: string) => {
+    return seriesSetting?.find((q) => q.name === name)?.legendName ?? name;
+  };
+  (options.grid! as GridComponentOption).tooltip.formatter = (name: string) => {
     return seriesSetting?.find((q) => q.name === name)?.legendName ?? name;
   };
 }

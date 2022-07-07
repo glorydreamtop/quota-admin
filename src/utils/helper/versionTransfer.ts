@@ -322,6 +322,9 @@ export function huiChart() {
       config.timeConfig.pastValue = 1;
       config.timeConfig.pastUnit = quotaDataPastUnitTypeEnum.last;
     }
+    if ([chartTypeEnum.structural, chartTypeEnum.seasonalLunar,chartTypeEnum.bar].includes(o.type)) {
+      config.xAxis[0].axisLabel.formatter = '{value}';
+    }
     if (o.structXLabel.ifStruct) {
       (config as structuralChartConfigType).structuralOffset = o.structXLabel.list
         .map((item) => item.value)

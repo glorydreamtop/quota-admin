@@ -2,7 +2,7 @@
   <div ref="doubleSideChart">
     <Teleport to="body" :disabled="!isFullscreen">
       <div
-        :class="[isFullscreen ? 'fullscreen' : '', paintMode ? 'paint-mode' : '', 'w-full h-full']"
+        :class="[isFullscreen ? 'fullscreen' : '', 'w-full h-full']"
       >
         <div
           :class="[
@@ -315,18 +315,18 @@
     padding: 6px 10px 8px 10px;
   }
 
-  .paint-mode {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 999;
+  // .paint-mode {
+  //   position: absolute;
+  //   top: 0;
+  //   left: 0;
+  //   width: 100%;
+  //   height: 100%;
+  //   z-index: 999;
 
-    .chart-view {
-      @apply bg-white;
-    }
-  }
+  //   .chart-view {
+  //     @apply bg-white;
+  //   }
+  // }
 
   .paint-mode-icon {
     transition: filter 0.2s ease;
