@@ -264,7 +264,7 @@ export const jodiHttp = createAxios({
 export const vesselHttp = createAxios({
   timeout: 120 * 1000,
   requestOptions: {
-    apiUrl: globSetting.vesselUrl,
+    apiUrl: isProdMode() ? globSetting.vesselUrl : 'http://vessel.shducheng.net:8084',
   },
 });
 //monitor服务
