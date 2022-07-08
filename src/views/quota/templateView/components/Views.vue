@@ -2,7 +2,7 @@
   <div class="overflow-scroll p-2 relative flex flex-col items-center">
     <PagePlaceHolder id="pagePlaceHolder" :pagination-info="paginationInfo" />
     <div
-      class="w-1440px overflow-hidden absolute grid-line flex flex-wrap justify-start content-start"
+      class="w-1440px absolute grid-line flex flex-wrap justify-start content-start"
       ref="gridContainer"
       @click.self="clearSelectKey"
       :style="gridAreaStyle"
@@ -14,7 +14,7 @@
         @mouseenter="handleEnter"
         :data-uniqid="element.uniqId"
         :class="[
-          'border rounded-sm overflow-hidden sortable  m-0',
+          'border rounded-sm overflow-hidden relative sortable  m-0',
           selectedTemplateDOMList.find((node) => node.uniqId === element.uniqId) ? 'selected' : '',
           pageSetting.showElementborder ? '' : 'border-light-50',
         ]"
@@ -24,16 +24,26 @@
         }"
       >
         <Icon icon="akar-icons:drag-horizontal" class="drag-handler pl-1 pt-1 !text-primary" />
+        <Icon
+          v-if="['Chart'].includes(element.type)"
+          @click="setEditComp(element)"
+          icon="zhanghuxiugai|svg"
+          size="24"
+          class="edit-icon absolute top-0 right-0 z-9"
+        />
         <component
           :is="compTypeMap[element.type]"
           v-model:config="element.config"
-          :class="[
-            'w-full h-full text-base',
-            element.type === 'Chart' ? 'py-1' : '',
-            dragStatus ? 'pointer-events-none' : '',
-          ]"
+          :class="['w-full h-full text-base', element.type === 'Chart' ? 'py-1' : '']"
         />
       </div>
+      <div
+        class="cursor-insert animate__animated animate__infinite animate__flash animate__slow"
+        :style="insertPosition"
+      ></div>
+    </div>
+    <div class="h-600px w-fit absolute top-0 right-0 bg-white z-10">
+      <Advance />
     </div>
   </div>
 </template>
@@ -48,32 +58,31 @@
     nextTick,
     CSSProperties,
     onMounted,
+    watchEffect,
   } from 'vue';
   import {
     useMultiSelect,
     useTemplateListContext,
     useSelectTemplateListContext,
     usePageSettingContext,
-    useDraggable1,
     paginationInfoType,
+    useResizeListener,
   } from '../hooks';
   import PagePlaceHolder from './PagePlaceHolder.vue';
+  import Advance from '../../quotaView/components/Advance.vue';
   import { DoubleSideChart } from '/@/components/Chart';
   import BasicText from './Text.vue';
   import BasicImg from './Image.vue';
   import Icon from '/@/components/Icon';
-  // import { useI18n } from '/@/hooks/web/useI18n';
   import { useResizeObserver } from '@vueuse/core';
-  // import { useUniqueField } from '../../quotaTable/components/helper';
   import { getRem } from '/@/utils/domUtils';
   import { useSortable } from '/@/hooks/web/useSortable';
   import { isNullAndUnDef } from '/@/utils/is';
-  import { once, on } from '/@/utils/domUtils';
+  import { chartConfigType } from '/#/chart';
+  import { createChartConfigContext } from '../../quotaView/components/hooks';
+  import { mergeAndRemove } from '/@/utils/helper/commonHelper';
+  import { TemplateDOM } from '/#/template';
 
-  // import { useContextMenu } from '/@/hooks/web/useContextMenu';
-
-  // const { t } = useI18n();
-  // const [createContextMenu] = useContextMenu();
   // 页面设置
   const pageSetting = usePageSettingContext();
   const gridAreaStyle: ComputedRef<CSSProperties> = computed(() => {
@@ -87,70 +96,55 @@
   });
   // 选中的模块
   const selectedTemplateDOMList = useSelectTemplateListContext();
-
   const templateList = useTemplateListContext();
+  const { insertSelectKey, clearSelectKey } = useMultiSelect(templateList, selectedTemplateDOMList);
+  const { handleEnter } = useResizeListener({
+    GRIDSIZE: 40,
+    templateList,
+  });
   const compTypeMap = {
     Chart: DoubleSideChart,
     Text: BasicText,
     Img: BasicImg,
   };
-  const { insertSelectKey, clearSelectKey } = useMultiSelect(templateList, selectedTemplateDOMList);
+  const insertPosition = reactive({
+    display: 'none',
+    top: `0px`,
+    left: `0px`,
+    height: `0px`,
+  });
+  watchEffect(
+    () => {
+      const list = selectedTemplateDOMList.value;
+      const el = gridContainer.value?.querySelector(
+        `[data-uniqid=${
+          list.length > 0
+            ? list.length === 1
+              ? list[0].uniqId
+              : null
+            : templateList.value.at(-1)?.uniqId
+        }]`,
+      ) as HTMLElement;
+      Object.assign(insertPosition, {
+        display: el ? 'initial' : 'none',
+        top: `${(el?.offsetTop ?? 4) - 8}px`,
+        left: `${(el?.offsetLeft ?? 0) + (el?.offsetWidth ?? 2) - 2}px`,
+        height: `${(el?.offsetHeight ?? 0) + 16}px`,
+      });
+    },
+    {
+      flush: 'post',
+    },
+  );
   const paginationInfo: paginationInfoType = reactive({
     totalPage: 1,
   });
-  const GRIDSIZE = 40;
-  function handleEnter(e: MouseEvent) {
-    const target = e.target as HTMLElement;
-    const temp = templateList.value.find((el) => el.uniqId === target.getAttribute('data-uniqid'))!;
-    let resizeStatus = false;
-    on(target, 'mouseup', () => {
-      if (resizeStatus) {
-        temp.pageConfig.width = `${Math.round(target.offsetWidth / GRIDSIZE) * GRIDSIZE}px`;
-        temp.pageConfig.height = `${Math.round(target.offsetHeight / GRIDSIZE) * GRIDSIZE}px`;
-        resizeStatus = false;
-      }
-    });
-    const { stop } = useResizeObserver(target, ([{ contentRect }]) => {
-      const { width, height } = contentRect;
-      temp.pageConfig.width = `${width + 2}px`;
-      temp.pageConfig.height = `${height + 2}px`;
-      resizeStatus = true;
-    });
-    once(target, 'mouseleave', () => {
-      stop();
-    });
-  }
-  // const { getUniqueField } = useUniqueField();
 
-  // function checkOverflow(boxdom: HTMLDivElement) {
-  //   for (let i = 0; i < boxdom.childElementCount; i++) {
-  //     const child = boxdom.children[i] as HTMLElement;
-  //     if (
-  //       child.offsetTop + child.offsetHeight > boxdom.offsetTop + boxdom.offsetHeight ||
-  //       child.offsetLeft + child.offsetWidth > boxdom.offsetLeft + boxdom.offsetWidth
-  //     )
-  //       return i;
-  //   }
-  //   return false;
-  // }
-  // function dragHandleMenu(event: MouseEvent) {
-  //   createContextMenu({
-  //     event,
-  //     items: [
-  //       {
-  //         label: t('templateView.view.dragHandleMenu.wholeLine'),
-  //       },
-  //       {
-  //         label: t('templateView.view.dragHandleMenu.notWholeLine'),
-  //       },
-  //     ],
-  //   });
-  // }
-  function getDomConfig(event) {
-    const target = event.target as HTMLElement;
-    const _dom = templateList.value.find((temp) => temp.uniqId === target.dataset['uniqid'])!;
-    return { target, _dom };
+  const editCompConfig: chartConfigType = reactive({});
+  function setEditComp(temp: TemplateDOM) {
+    mergeAndRemove(editCompConfig, temp.config);
   }
+  createChartConfigContext(editCompConfig);
   const gridContainer = ref<HTMLElement>();
   onMounted(async () => {
     await nextTick();
@@ -200,17 +194,16 @@
     z-index: 9;
     border: 1px solid;
     border-color: @primary-color;
-    // position: absolute;
+  }
 
-    // &::after {
-    //   position: absolute;
-    //   top: 0;
-    //   left: 0;
-    //   bottom: 0;
-    //   right: 0;
-    //   background-color: @primary-color;
-    //   opacity: 50%;
-    // }
+  .cursor-insert {
+    position: absolute;
+    width: 4px;
+    background-color: rgba(27, 145, 255, 1);
+    z-index: 9;
+    transition-property: height, top, left;
+    transition-duration: 0.3s;
+    border-radius: 2px;
   }
 
   .sortable {
@@ -226,7 +219,9 @@
 
     &:hover {
       resize: both;
-      .drag-handler {
+
+      .drag-handler,
+      .edit-icon {
         opacity: 1;
       }
 
@@ -235,7 +230,8 @@
       }
     }
 
-    .drag-handler {
+    .drag-handler,
+    .edit-icon {
       opacity: 0;
       position: absolute;
       z-index: 9;

@@ -2,10 +2,9 @@ import { h, InjectionKey, onMounted, ref, Ref, render, unref, watchEffect } from
 import { createContext, useContext } from '/@/hooks/core/useContext';
 import type { pageSettingType, TemplateDOM } from '/#/template';
 import { remove } from 'lodash-es';
-import { useActiveElement, useMagicKeys } from '@vueuse/core';
-import interact from 'interactjs';
+import { useActiveElement, useMagicKeys, useResizeObserver } from '@vueuse/core';
 import Icon from '/@/components/Icon';
-import { dom2imgFile } from '/@/utils/domUtils';
+import { on, once } from '/@/utils/domUtils';
 
 const templateKey: InjectionKey<Ref<TemplateDOM[]>> = Symbol();
 
@@ -111,8 +110,6 @@ export function useMultiSelect(
       if (currentIndex > maxIndex) {
         maxIndex = currentIndex;
       }
-      console.log(templateList.value);
-
       for (let index = minIndex; index <= maxIndex; index++) {
         const key = templateList.value[index].uniqId;
         if (list.findIndex((t) => t.uniqId === key) === -1) {
@@ -171,166 +168,6 @@ export const imgTemplate: TemplateDOM = {
   },
 };
 
-interface draggableOptions {
-  container: Ref<HTMLElement | undefined>;
-  handle?: string;
-  items: string;
-  restrict?: {
-    restriction: string;
-    elementRect: {
-      top: string;
-      left: string;
-      bottom: string;
-      right: string;
-    };
-  };
-  onDraggleStart?: (e: DragEvent) => void;
-  onDraggleEnd?: (e: DragEvent) => void;
-  onDraggle?: (e: DragEvent) => void;
-  onResizeStart?: (e: MouseEvent) => void;
-  onResizeEnd?: (e: MouseEvent) => void;
-  onResize?: (e: MouseEvent) => void;
-}
-
-export function useDraggable({
-  handle,
-  items,
-  onDraggleStart,
-  onDraggle,
-  onDraggleEnd,
-  onResizeStart,
-  onResize,
-  onResizeEnd,
-}: draggableOptions) {
-  const handler = handle ?? items;
-  const allowDraggable = ref(true);
-
-  interact(items)
-    .draggable({
-      modifiers: [
-        // interact.modifiers.snap({
-        //   targets: [interact.snappers.grid({ x: 30, y: 30 })],
-        //   range: Infinity,
-        //   relativePoints: [{ x: 0, y: 0 }],
-        // }),
-        interact.modifiers.restrict({
-          restriction: 'parent',
-          elementRect: { top: 0, left: 0, bottom: 1, right: 1 },
-          endOnly: true,
-        }),
-      ],
-    })
-    .on('down', (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
-      if (!target.closest(items)?.contains(target.closest(handler)!)) {
-        allowDraggable.value = false;
-        return;
-      } else {
-        allowDraggable.value = true;
-        onDraggleStart?.call(null, event);
-      }
-    })
-    .on('dragstart', (event: DragEvent) => {
-      if (!allowDraggable.value) return;
-    })
-    .on('dragmove', (event: DragEvent) => {
-      if (!allowDraggable.value) return;
-      onDraggle?.call(null, event);
-    })
-    .on('dragend', (event: DragEvent) => {
-      onDraggleEnd?.call(null, event);
-    })
-    .resizable({
-      // 任意方向都能resize
-      edges: { right: true, bottom: true },
-    })
-    .on('resizestart', (event: MouseEvent) => {
-      onResizeStart?.call(null, event);
-    })
-    .on('resizemove', (event: MouseEvent) => {
-      onResize?.call(null, event);
-    })
-    .on('resizeend', (event: MouseEvent) => {
-      onResizeEnd?.call(null, event);
-    });
-}
-
-export function useDraggable1({
-  container,
-  handle,
-  items,
-  onDraggleStart,
-  onDraggle,
-  onDraggleEnd,
-  onResizeStart,
-  onResize,
-  onResizeEnd,
-}: draggableOptions) {
-  const handler = handle ?? items;
-  function getDragItems() {
-    return Array.from(container.value!.querySelectorAll(handler)) as HTMLElement[];
-  }
-  function getOtherDragItems() {
-    return getDragItems().filter((item) => !item.classList.contains('move'));
-  }
-  const allowDraggable = ref(false);
-  const dragStatus = ref(false);
-  const startInfo = {
-    x: 0,
-    y: 0,
-  };
-  const moveTarget = ref<HTMLElement>();
-  function movestartListener(e: MouseEvent) {
-    const target = e.target as HTMLElement;
-    if (!target.closest(handler)) return;
-    console.log('start');
-    const box = container.value!;
-    moveTarget.value = target.closest(items) as HTMLElement;
-    allowDraggable.value = true;
-    startInfo.x = e.pageX;
-    startInfo.y = e.pageY;
-    box.addEventListener('mousemove', mousemoveListener);
-    box.addEventListener('mouseup', mouseupListener);
-  }
-  function mousemoveListener(e: MouseEvent) {
-    if (!allowDraggable.value) return;
-    if (!dragStatus.value) {
-      console.log(dragStatus.value);
-      dragStatus.value = true;
-      moveTarget.value!.style.top = `${moveTarget.value?.offsetTop}px`;
-      moveTarget.value!.style.left = `${moveTarget.value?.offsetLeft}px`;
-      moveTarget.value!.classList.add('move');
-      getOtherDragItems().forEach((item) => item.addEventListener('mouseenter', mouseenterListener));
-    }
-    moveTarget.value!.style.transform = `translate(${e.pageX - startInfo.x}px,${
-      e.pageY - startInfo.y
-    }px)`;
-  }
-  function mouseenterListener(e: MouseEvent) {
-    console.log(e)
-  }
-  function mouseupListener(e: MouseEvent) {
-    console.log('end');
-    allowDraggable.value = false;
-    dragStatus.value = false;
-    console.log(`${moveTarget.value?.offsetTop},${e.pageY},${startInfo.y}`);
-    
-    moveTarget.value!.style.top = `${moveTarget.value?.offsetTop! + e.pageY - startInfo.y}px`;
-    moveTarget.value!.style.left = `${moveTarget.value?.offsetLeft! + e.pageX - startInfo.x}px`;
-    moveTarget.value!.style.transform = 'unset';
-    const box = container.value!;
-    box.removeEventListener('mouseup', mouseupListener);
-    box.removeEventListener('mousemove', mousemoveListener);
-    getOtherDragItems().forEach((item) => item.removeEventListener('mouseover', mouseoverListener));
-  }
-  onMounted(() => {
-    const box = container.value!;
-    box.addEventListener('mousedown', movestartListener);
-  });
-
-  return [{ dragStatus }];
-}
-
 export interface paginationInfoType {
   totalPage: number;
 }
@@ -385,4 +222,34 @@ export function useDrawer(container: Ref<HTMLElement | undefined>) {
     icon.el!.classList.toggle('rotate');
   }
   onMounted(init);
+}
+
+interface useResizeListenerParams {
+  templateList: Ref<TemplateDOM[]>;
+  GRIDSIZE: number;
+}
+
+export function useResizeListener({ templateList, GRIDSIZE }: useResizeListenerParams) {
+  function handleEnter(e: MouseEvent) {
+    const target = e.target as HTMLElement;
+    const temp = templateList.value.find((el) => el.uniqId === target.getAttribute('data-uniqid'))!;
+    let resizeStatus = false;
+    on(target, 'mouseup', () => {
+      if (resizeStatus) {
+        temp.pageConfig.width = `${Math.round(target.offsetWidth / GRIDSIZE) * GRIDSIZE}px`;
+        temp.pageConfig.height = `${Math.round(target.offsetHeight / GRIDSIZE) * GRIDSIZE}px`;
+        resizeStatus = false;
+      }
+    });
+    const { stop } = useResizeObserver(target, ([{ contentRect }]) => {
+      const { width, height } = contentRect;
+      temp.pageConfig.width = `${width + 2}px`;
+      temp.pageConfig.height = `${height + 2}px`;
+      resizeStatus = true;
+    });
+    once(target, 'mouseleave', () => {
+      stop();
+    });
+  }
+  return { handleEnter };
 }

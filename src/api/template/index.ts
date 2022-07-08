@@ -2,12 +2,13 @@ import { defHttp } from '/@/utils/http';
 import type { TemplateItem } from '/#/template';
 import type { CategoryTreeModel } from '/#/quota';
 import { CategoryTreeType } from '/@/enums/quotaEnum';
-import { getTemplateDataParams, getDirTemplateParams } from './model';
+import { getTemplateDataParams, getDirTemplateParams, updateTemplateParams } from './model';
 
 enum Api {
   GetCategoryTree = '/updatemonitor/dict-index/categoryTree',
   GetDirTemplate = '/template/templateByCategory',
   GetTemplate = '/template/templateQuery',
+  UpdateTemplate = '/template/templateSaveOrUpdate',
 }
 
 export enum searchType {
@@ -36,8 +37,15 @@ export function getDirTemplate(params: getDirTemplateParams) {
 }
 
 export function getTemplateData(params: getTemplateDataParams) {
-  return defHttp.post<TemplateItem>({
+  return defHttp.get<TemplateItem>({
     url: Api.GetTemplate,
+    params,
+  });
+}
+
+export function updateTemplate(params: updateTemplateParams) {
+  return defHttp.post({
+    url: Api.UpdateTemplate,
     params,
   });
 }

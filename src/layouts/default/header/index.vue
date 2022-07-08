@@ -176,7 +176,7 @@
         return unref(getSplit) ? MenuModeEnum.HORIZONTAL : null;
       });
       //@ts-ignore
-      const version = /23592/i.test(import.meta.env.VITE_PROXY) ? 'TEST' : 'PROD';
+      const version = /dev/i.test(import.meta.env.VITE_PROXY) ? 'TEST' : 'PROD';
 
       return {
         prefixCls,

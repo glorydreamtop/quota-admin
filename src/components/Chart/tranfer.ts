@@ -77,6 +77,9 @@ const gridConfig: GridComponentOption = {
   right: '2%',
   top: 60,
   bottom: 60,
+  tooltip: {
+    formatter: void 0,
+  },
 };
 const legendConfig: LegendComponentOption = {
   show: true,
@@ -343,7 +346,7 @@ export async function useBarChart(chartConfig: barChartConfigType) {
           interval: 0,
         },
       };
-      merge(base,x)
+      merge(base, x);
       return base;
     }),
     yAxis: chartConfig.yAxis?.map((y) => {

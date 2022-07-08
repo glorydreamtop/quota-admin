@@ -17,20 +17,20 @@
   import Advance from './Advance.vue';
   import { DoubleSideChart } from '/@/components/Chart';
   import { echartMitter, useChartConfigContext } from './hooks';
-  import { reactive } from 'vue';
+  import { reactive, toRaw } from 'vue';
   import type { chartConfigType } from '/#/chart';
   import { cloneDeep, mergeWith } from 'lodash-es';
   import { EChartsCoreOption } from 'echarts/core';
   import { mergeAndRemove } from '/@/utils/helper/commonHelper';
+  import { updateTemplate } from '/@/api/template';
+  import { useRoute } from 'vue-router';
+  import { CategoryTreeType } from '/@/enums/quotaEnum';
+
+  const route = useRoute();
 
   const chartConfig = useChartConfigContext();
   const config = reactive({}) as chartConfigType;
   function paint() {
-    // mergeWith(config, cloneDeep(chartConfig), (target, src) => {
-    //   if (target instanceof Array) {
-    //     return reactive(src);
-    //   }
-    // });
     mergeAndRemove(config, chartConfig);
   }
   function updateConfig(cfg: chartConfigType) {
@@ -44,6 +44,13 @@
   // 绘图完成
   function renderSuccess(options: EChartsCoreOption) {
     echartMitter.emit('echartOptions', options);
+  }
+  function saveTemplate() {
+    updateTemplate({
+      id: parseInt(route.params.templateId as string) ?? undefined,
+      template: JSON.stringify(toRaw(chartConfig)),
+      type: CategoryTreeType.sysTemplate,
+    });
   }
 </script>
 
