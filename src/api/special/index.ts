@@ -43,49 +43,69 @@ export function getOptionsDataList(params: any) {
 
 //船期数据更新时间
 export function getVesselUpdateTime() {
-  return vesselHttp.request<any>({
-    url: Api.VesselUpdateTime,
-    method: 'GET',
-    headers: {
-      'Content-Type': ContentTypeEnum.FORM_URLENCODED,
+  return vesselHttp.request<any>(
+    {
+      url: Api.VesselUpdateTime,
+      method: 'GET',
+      headers: {
+        'Content-Type': ContentTypeEnum.FORM_URLENCODED,
+      },
     },
-  });
+    {
+      isTransformResponse: false,
+    },
+  );
 }
 
 //船期数据（进出口）查询
 export function getVesselImportDataQuery(params: any) {
-  return vesselHttp.request<BasicFetchResult<QuotaUpdateGroup>>({
-    url: Api.VesselImportDataQuery,
-    method: 'POST',
-    params,
-    headers: {
-      'Content-Type': ContentTypeEnum.FORM_URLENCODED,
+  return vesselHttp.request<BasicFetchResult<QuotaUpdateGroup>>(
+    {
+      url: Api.VesselImportDataQuery,
+      method: 'POST',
+      params,
+      headers: {
+        'Content-Type': ContentTypeEnum.FORM_URLENCODED,
+      },
     },
-  });
+    {
+      isTransformResponse: false,
+    },
+  );
 }
 
 //船期数据（报表）查询
 export function getVesselStatDataQuery(params: any) {
-  return vesselHttp.request<BasicFetchResult<QuotaUpdateGroup>>({
-    url: Api.VesselStatDataQuery,
-    method: 'POST',
-    params,
-    headers: {
-      'Content-Type': ContentTypeEnum.FORM_URLENCODED,
+  return vesselHttp.request<BasicFetchResult<QuotaUpdateGroup>>(
+    {
+      url: Api.VesselStatDataQuery,
+      method: 'POST',
+      params,
+      headers: {
+        'Content-Type': ContentTypeEnum.FORM_URLENCODED,
+      },
     },
-  });
+    {
+      isTransformResponse: false,
+    },
+  );
 }
 
 //船期菜单栏目录列表
 export function getVesselOptionsDataList(params: any, key: string) {
-  return vesselHttp.request<BasicFetchResult<QuotaUpdateGroup>>({
-    url: Api.VesselOptionsDataList + '?column=' + key,
-    method: 'POST',
-    params,
-    headers: {
-      'Content-Type': ContentTypeEnum.FORM_URLENCODED,
+  return vesselHttp.request<BasicFetchResult<QuotaUpdateGroup>>(
+    {
+      url: Api.VesselOptionsDataList + '?column=' + key,
+      method: 'POST',
+      params,
+      headers: {
+        'Content-Type': ContentTypeEnum.FORM_URLENCODED,
+      },
     },
-  });
+    {
+      isTransformResponse: false,
+    },
+  );
 }
 
 //专项数据列表

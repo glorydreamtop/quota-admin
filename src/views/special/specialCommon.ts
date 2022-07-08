@@ -1,5 +1,9 @@
 import { dateUtil, formatToDate } from '/@/utils/dateUtil';
 import { cloneDeep } from 'lodash-es';
+import { useVersionTransfer } from '/@/utils/helper/versionTransfer';
+import { useRecentLegend } from '/@/components/Chart/helper';
+import { echartSeriesTypeEnum } from '/@/enums/chartEnum';
+const { huiChart } = useVersionTransfer();
 export const defaultChartCfg = {
   startDate: '',
   endDate: '',
@@ -109,6 +113,11 @@ export function generateVesselImportConfig(res, params) {
         name: '船期数据',
       },
     ];
+    configParams.fixData[0].data.sort((a, b) => a[0] - b[0]);
+    const huiConfig = huiChart({
+      config: configParams,
+    });
+    return huiConfig;
   } else if (params.group_frequency == 'week') {
     let resData = res.map((item) => {
       return {
@@ -124,6 +133,11 @@ export function generateVesselImportConfig(res, params) {
         name: '船期数据',
       },
     ];
+    configParams.fixData[0].data.sort((a, b) => a[0] - b[0]);
+    const huiConfig = huiChart({
+      config: configParams,
+    });
+    return huiConfig;
   } else if (params.group_frequency == 'year') {
     configParams.seriesCfgMap = {
       Total: { title: 'Total', type: 'line', lineWidth: 2, yAxisIndex: 0 },
@@ -141,9 +155,20 @@ export function generateVesselImportConfig(res, params) {
       },
     ];
     configParams.type = 'bar';
+    configParams.fixData[0].data.sort((a, b) => a[0] - b[0]);
+    const huiConfig = huiChart({
+      config: configParams,
+    });
+    for (let index = 0; index < huiConfig.fixData[0].data.length; index++) {
+      const legendName = useRecentLegend(huiConfig.fixData[0].data.length, index);
+      huiConfig.seriesSetting.push({
+        name: legendName,
+        legendName: huiConfig.fixData[0].data[index][0],
+        seriesType: echartSeriesTypeEnum.bar,
+      });
+    }
+    return huiConfig;
   }
-  configParams.fixData[0].data.sort((a, b) => a[0] - b[0]);
-  return configParams;
 }
 // 生成船期报表图表配置
 export function generateVesselReportConfig(res, params) {
@@ -176,6 +201,10 @@ export function generateVesselReportConfig(res, params) {
       },
     ];
     configParams.fixData[0].data.sort((a, b) => a[0] - b[0]);
+    const huiConfig = huiChart({
+      config: configParams,
+    });
+    return huiConfig;
   } else if (params.group_frequency == 'week') {
     let resData = res.map((item) => {
       return {
@@ -192,6 +221,10 @@ export function generateVesselReportConfig(res, params) {
       },
     ];
     configParams.fixData[0].data.sort((a, b) => a[0] - b[0]);
+    const huiConfig = huiChart({
+      config: configParams,
+    });
+    return huiConfig;
   } else if (params.group_frequency == 'year') {
     configParams.type = 'bar';
     if (params.group_load == '' && params.group_discharge == '') {
@@ -211,6 +244,18 @@ export function generateVesselReportConfig(res, params) {
         },
       ];
       configParams.fixData[0].data.sort((a, b) => a[0] - b[0]);
+      const huiConfig = huiChart({
+        config: configParams,
+      });
+      for (let index = 0; index < huiConfig.fixData[0].data.length; index++) {
+        const legendName = useRecentLegend(huiConfig.fixData[0].data.length, index);
+        huiConfig.seriesSetting.push({
+          name: legendName,
+          legendName: huiConfig.fixData[0].data[index][0],
+          seriesType: echartSeriesTypeEnum.bar,
+        });
+      }
+      return huiConfig;
     } else {
       const curType = params.group_load == '' ? params.group_discharge : params.group_load;
       const dataObj = {};
@@ -228,6 +273,18 @@ export function generateVesselReportConfig(res, params) {
         configParams.seriesCfgMap[key] = { title: key, type: 'line', lineWidth: 2, yAxisIndex: 0 };
         configParams.fixData.push({ name: key, data: dataObj[key] });
       }
+      const huiConfig = huiChart({
+        config: configParams,
+      });
+      for (let index = 0; index < huiConfig.fixData[0].data.length; index++) {
+        const legendName = useRecentLegend(huiConfig.fixData[0].data.length, index);
+        huiConfig.seriesSetting.push({
+          name: legendName,
+          legendName: huiConfig.fixData[0].data[index][0],
+          seriesType: echartSeriesTypeEnum.bar,
+        });
+      }
+      return huiConfig;
     }
   } else if (params.group_frequency == 'year%') {
     configParams.type = 'bar';
@@ -259,6 +316,18 @@ export function generateVesselReportConfig(res, params) {
         },
       ];
       configParams.fixData[0].data.sort((a, b) => a[0] - b[0]);
+      const huiConfig = huiChart({
+        config: configParams,
+      });
+      for (let index = 0; index < huiConfig.fixData[0].data.length; index++) {
+        const legendName = useRecentLegend(huiConfig.fixData[0].data.length, index);
+        huiConfig.seriesSetting.push({
+          name: legendName,
+          legendName: huiConfig.fixData[0].data[index][0],
+          seriesType: echartSeriesTypeEnum.bar,
+        });
+      }
+      return huiConfig;
     } else {
       const curType = params.group_load == '' ? params.group_discharge : params.group_load;
       for (let i = 0; i < res.length; i++) {
@@ -288,9 +357,20 @@ export function generateVesselReportConfig(res, params) {
         configParams.seriesCfgMap[key] = { title: key, type: 'line', lineWidth: 2, yAxisIndex: 0 };
         configParams.fixData.push({ name: key, data: dataObj[key] });
       }
+      const huiConfig = huiChart({
+        config: configParams,
+      });
+      for (let index = 0; index < huiConfig.fixData[0].data.length; index++) {
+        const legendName = useRecentLegend(huiConfig.fixData[0].data.length, index);
+        huiConfig.seriesSetting.push({
+          name: legendName,
+          legendName: huiConfig.fixData[0].data[index][0],
+          seriesType: echartSeriesTypeEnum.bar,
+        });
+      }
+      return huiConfig;
     }
   }
-  return configParams;
 }
 function getVesselValue(item, type) {
   if (type == 'basic') {
