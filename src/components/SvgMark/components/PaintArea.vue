@@ -43,8 +43,11 @@
       >
         <Icon size="24" icon="cil:rectangle" />
       </div>
-      <div title="清除画布" @click="clearAll">
+      <div title="清除画布" @click="clearAll(paintArea!)">
         <Icon size="20" icon="ic:baseline-cleaning-services" />
+      </div>
+      <div title="导出数据" @click="getMarkData">
+        <Icon size="20" icon="mdi:code-json" />
       </div>
     </div>
     <svg
@@ -81,18 +84,24 @@
 
 <script lang="ts" setup>
   import { ref, watch, nextTick } from 'vue';
-  import { usePaint, paintTypeEnum } from './mark';
+  import { usePaint } from '../mark';
+  import { paintTypeEnum } from './group';
   import Icon from '/@/components/Icon';
 
   const props = defineProps<{
     paintMode: Boolean;
   }>();
 
-  const [{ paintArea, paintType, toolbar }, { switchType, removeGroup, clearAll }] = usePaint();
+  const [{ paintArea, paintType }, { switchType, clearAll, getData }] = usePaint();
 
   const paintMask = ref<HTMLDivElement>();
 
   const clipPath = ref('');
+
+  function getMarkData() {
+    const data = getData();
+    console.log(data);
+  }
 
   watch(
     () => props.paintMode,

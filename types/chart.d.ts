@@ -45,7 +45,11 @@ export interface seriesSettingType {
   name?: string;
   legendName?: string;
   color?: string;
+  // 显示所有点标记
   symbol?: boolean;
+  // 显示label的点
+  symbolPoints?: string[];
+  currentPoint?: [string, number?];
 }
 // export interface baseQuotaSettingType {}
 export interface baseChartConfigType {

@@ -158,6 +158,8 @@ export function pingChart() {
             },
           },
         ],
+        http: true,
+        fixData: [],
       } as chartConfigType,
     };
 
@@ -310,8 +312,8 @@ export function huiChart() {
           },
         },
       ],
-      http: o.http,
-      fixData: o.fixData,
+      http: o.http || true,
+      fixData: o.fixData | [],
     };
     if (o.lastMulti.multi) {
       config.timeConfig.pastValue = o.lastMulti.number;
@@ -319,6 +321,9 @@ export function huiChart() {
     if (o.type === chartTypeEnum.pie) {
       config.timeConfig.pastValue = 1;
       config.timeConfig.pastUnit = quotaDataPastUnitTypeEnum.last;
+    }
+    if ([chartTypeEnum.structural, chartTypeEnum.seasonalLunar,chartTypeEnum.bar].includes(o.type)) {
+      config.xAxis[0].axisLabel.formatter = '{value}';
     }
     if (o.structXLabel.ifStruct) {
       (config as structuralChartConfigType).structuralOffset = o.structXLabel.list

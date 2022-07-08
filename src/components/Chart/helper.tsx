@@ -9,6 +9,8 @@ import {
   LegendComponentOption,
   SeriesOption,
   YAXisComponentOption,
+  GridComponentOption,
+  EChartsType,
 } from 'echarts';
 import { encodeSvgForCss } from '/@/components/Icon';
 import { last, maxBy, nth, remove, round, cloneDeep, has, isObject } from 'lodash-es';
@@ -21,7 +23,6 @@ import SeriesEdit from './src/SeriesEditor.vue';
 import { getColorScheme } from '/@/api/color';
 import { isNumber, isArray } from '/@/utils/is';
 import { fade, rgbToHex } from '/@/utils/color';
-import { GraphicComponentLooseOption } from 'echarts/types/dist/shared';
 
 const { t } = useI18n();
 export async function fetchQuotaData(params: getQuotaDataParams) {
@@ -598,6 +599,13 @@ export function setSeriesInfo({ info, chartConfig, seriesInfo, options }: setSer
     .slice(0, 3)
     .map((v) => parseInt(v));
   info.color = rgbToHex.apply(null, color);
+  const { offsetX, offsetY } = seriesInfo.event;
+  const [xValue,yValue] = (seriesInfo.instance as EChartsType).convertFromPixel(
+    { seriesIndex: seriesInfo.seriesIndex },
+    [offsetX, offsetY],
+  );
+  console.log(xValue,yValue);
+  
   function caseNormal() {
     const seriesIndex = seriesInfo.seriesIndex;
     const series = options.series![seriesIndex];
@@ -620,6 +628,7 @@ export function setSeriesInfo({ info, chartConfig, seriesInfo, options }: setSer
     }
     info.yAxisIndex = series.yAxisIndex + 1;
     info.xAxisIndex = series.xAxisIndex + 1;
+    info.currentPoint = [formatToDate(xValue)];
   }
   function caseSeasonal() {
     const seriesIndex = seriesInfo.seriesIndex;
@@ -643,6 +652,7 @@ export function setSeriesInfo({ info, chartConfig, seriesInfo, options }: setSer
     }
     info.yAxisIndex = (series.yAxisIndex ?? 0) + 1;
     info.xAxisIndex = (series.xAxisIndex ?? 0) + 1;
+    info.currentPoint = [formatToDate(xValue,'MM/DD')];
   }
   function caseBar() {
     const seriesIndex = seriesInfo.seriesIndex;
@@ -666,6 +676,7 @@ export function setSeriesInfo({ info, chartConfig, seriesInfo, options }: setSer
     }
     info.yAxisIndex = (series.yAxisIndex ?? 0) + 1;
     info.xAxisIndex = (series.xAxisIndex ?? 0) + 1;
+    info.currentPoint = [xValue.toString()];
   }
   function caseStructral() {
     const seriesIndex = seriesInfo.seriesIndex;
@@ -945,6 +956,9 @@ export function useLegendName({
 }) {
   const { seriesSetting } = chartConfig;
   (options.legend! as LegendComponentOption).formatter = (name: string) => {
+    return seriesSetting?.find((q) => q.name === name)?.legendName ?? name;
+  };
+  (options.grid! as GridComponentOption).tooltip.formatter = (name: string) => {
     return seriesSetting?.find((q) => q.name === name)?.legendName ?? name;
   };
 }

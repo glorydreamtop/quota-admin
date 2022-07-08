@@ -189,17 +189,17 @@ export enum fileType {
 export interface dom2imgFileParams {
   dom: HTMLElement;
   fileName?: string;
-  type: fileType;
+  type: fileType | 'base64';
   scale?: number;
 }
 
 // DOM截图生成文件对象
-export async function dom2imgFile({
+export async function dom2imgFile<T extends File | Blob | string>({
   dom,
   fileName,
   type,
   scale,
-}: dom2imgFileParams): Promise<File | Blob> {
+}: dom2imgFileParams) {
   if (scale === undefined) {
     scale = 1;
   }
@@ -220,8 +220,9 @@ export async function dom2imgFile({
   const obj = {
     blob: dataURLtoBlob(canvasRes.toDataURL('image/jpeg', 1.0)),
     file: dataURLtoFile(canvasRes.toDataURL('image/jpeg', 1.0), fileName!),
+    dataURL: canvasRes.toDataURL('image/jpeg', 1.0),
   };
-  return obj[type];
+  return obj[type] as Promise<T>;
 }
 
 export function setRem() {

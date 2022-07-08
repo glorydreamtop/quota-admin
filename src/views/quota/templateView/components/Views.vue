@@ -2,8 +2,8 @@
   <div class="overflow-scroll p-2 relative flex flex-col items-center">
     <PagePlaceHolder id="pagePlaceHolder" :pagination-info="paginationInfo" />
     <div
-      class="w-1440px overflow-hidden absolute grid-line"
-      id="grid-container"
+      class="w-1440px overflow-hidden absolute grid-line flex flex-wrap justify-start content-start"
+      ref="gridContainer"
       @click.self="clearSelectKey"
       :style="gridAreaStyle"
     >
@@ -11,23 +11,27 @@
         v-for="element in templateList"
         :key="element.uniqId"
         @click="insertSelectKey(element, $event)"
+        @mouseenter="handleEnter"
         :data-uniqid="element.uniqId"
         :class="[
-          'border rounded-sm overflow-hidden sortable',
+          'border rounded-sm overflow-hidden sortable  m-0',
           selectedTemplateDOMList.find((node) => node.uniqId === element.uniqId) ? 'selected' : '',
           pageSetting.showElementborder ? '' : 'border-light-50',
         ]"
         :style="{
           width: element.pageConfig.width,
           height: element.pageConfig.height,
-          transform: element.pageConfig.transform,
         }"
       >
         <Icon icon="akar-icons:drag-horizontal" class="drag-handler pl-1 pt-1 !text-primary" />
         <component
           :is="compTypeMap[element.type]"
           v-model:config="element.config"
-          :class="['w-full h-full text-base', element.type === 'Chart' ? 'py-2' : '']"
+          :class="[
+            'w-full h-full text-base',
+            element.type === 'Chart' ? 'py-1' : '',
+            dragStatus ? 'pointer-events-none' : '',
+          ]"
         />
       </div>
     </div>
@@ -35,13 +39,22 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, reactive, computed, ComputedRef, nextTick, CSSProperties, onMounted } from 'vue';
+  import {
+    ref,
+    unref,
+    reactive,
+    computed,
+    ComputedRef,
+    nextTick,
+    CSSProperties,
+    onMounted,
+  } from 'vue';
   import {
     useMultiSelect,
     useTemplateListContext,
     useSelectTemplateListContext,
     usePageSettingContext,
-    // useDraggable,
+    useDraggable1,
     paginationInfoType,
   } from '../hooks';
   import PagePlaceHolder from './PagePlaceHolder.vue';
@@ -50,10 +63,12 @@
   import BasicImg from './Image.vue';
   import Icon from '/@/components/Icon';
   // import { useI18n } from '/@/hooks/web/useI18n';
-  import { useMutationObserver, useResizeObserver } from '@vueuse/core';
+  import { useResizeObserver } from '@vueuse/core';
   // import { useUniqueField } from '../../quotaTable/components/helper';
-  // import { InteractEvent } from '@interactjs/types/index';
   import { getRem } from '/@/utils/domUtils';
+  import { useSortable } from '/@/hooks/web/useSortable';
+  import { isNullAndUnDef } from '/@/utils/is';
+  import { once, on } from '/@/utils/domUtils';
 
   // import { useContextMenu } from '/@/hooks/web/useContextMenu';
 
@@ -83,7 +98,28 @@
   const paginationInfo: paginationInfoType = reactive({
     totalPage: 1,
   });
-
+  const GRIDSIZE = 40;
+  function handleEnter(e: MouseEvent) {
+    const target = e.target as HTMLElement;
+    const temp = templateList.value.find((el) => el.uniqId === target.getAttribute('data-uniqid'))!;
+    let resizeStatus = false;
+    on(target, 'mouseup', () => {
+      if (resizeStatus) {
+        temp.pageConfig.width = `${Math.round(target.offsetWidth / GRIDSIZE) * GRIDSIZE}px`;
+        temp.pageConfig.height = `${Math.round(target.offsetHeight / GRIDSIZE) * GRIDSIZE}px`;
+        resizeStatus = false;
+      }
+    });
+    const { stop } = useResizeObserver(target, ([{ contentRect }]) => {
+      const { width, height } = contentRect;
+      temp.pageConfig.width = `${width + 2}px`;
+      temp.pageConfig.height = `${height + 2}px`;
+      resizeStatus = true;
+    });
+    once(target, 'mouseleave', () => {
+      stop();
+    });
+  }
   // const { getUniqueField } = useUniqueField();
 
   // function checkOverflow(boxdom: HTMLDivElement) {
@@ -115,11 +151,11 @@
     const _dom = templateList.value.find((temp) => temp.uniqId === target.dataset['uniqid'])!;
     return { target, _dom };
   }
+  const gridContainer = ref<HTMLElement>();
   onMounted(async () => {
     await nextTick();
-    const boxdom = document.getElementById('grid-container') as HTMLDivElement;
+    const boxdom = unref(gridContainer)!;
     const pagePlaceHolder = document.getElementById('pagePlaceHolder') as HTMLDivElement;
-
     useResizeObserver(pagePlaceHolder, (entries) => {
       const { height } = entries[0].contentRect;
       // getRem()*4是页面之间的gap
@@ -127,55 +163,29 @@
         height - pageSetting.paddingBottom - pageSetting.paddingTop - getRem() * 5
       }px`;
     });
-    const gridSize = 40;
-    // 监听有新模块加入
-    useMutationObserver(
-      boxdom,
-      (mutation) => {
-        if (mutation[0].addedNodes.length === 0) return;
-        // useDraggable({
-        //   items: '.sortable',
-        //   handle: '.drag-handler',
-        //   onDraggle: (event) => {
-        //     const { _dom, target } = getDomConfig(event);
-        //     const transform = target.style.transform;
-        //     const reg = /translate\((\-?[0-9]+)px, (\-?[0-9]+)px\)/;
-        //     const match = reg.exec(transform);
-        //     if (match) {
-        //       const x = Number(match[1]) + event.dx;
-        //       const y = Number(match[2]) + event.dy;
-        //       _dom.pageConfig.transform = `translate(${x}px, ${y}px)`;
-        //     }
-        //   },
-        //   onDraggleEnd: (event) => {
-        //     const { _dom, target } = getDomConfig(event);
-        //     const transform = target.style.transform;
-        //     const reg = /translate\((\-?[0-9]+)px, (\-?[0-9]+)px\)/;
-        //     const match = reg.exec(transform);
-        //     if (match) {
-        //       const x = Number(match[1]) + event.dx;
-        //       const y = Number(match[2]) + event.dy;
-        //       _dom.pageConfig.transform = `translate(${Math.round(x / gridSize) * gridSize}px, ${
-        //         Math.round(y / gridSize) * gridSize
-        //       }px)`;
-        //     }
-        //   },
-        //   onResize: (event) => {
-        //     const { _dom } = getDomConfig(event);
-        //     _dom.pageConfig.width = `${event.rect.width}px`;
-        //     _dom.pageConfig.height = `${event.rect.height}px`;
-        //   },
-        //   onResizeEnd: (event) => {
-        //     const { _dom } = getDomConfig(event);
-        //     _dom.pageConfig.width = `${Math.round(event.rect.width / gridSize) * gridSize}px`;
-        //     _dom.pageConfig.height = `${Math.round(event.rect.height / gridSize) * gridSize}px`;
-        //   },
-        // });
+    // 支持拖动排序
+    const { initSortable } = useSortable(boxdom, {
+      handle: '.drag-handler',
+      draggable: '.sortable',
+      dataIdAttr: 'data-uniqid',
+      dragoverBubble: true,
+      onEnd: (evt) => {
+        const { oldIndex, newIndex } = evt;
+        if (isNullAndUnDef(oldIndex) || isNullAndUnDef(newIndex) || oldIndex === newIndex) {
+          return;
+        }
+        // Sort column
+        const columns = templateList.value;
+        if (oldIndex > newIndex) {
+          columns.splice(newIndex, 0, columns[oldIndex]);
+          columns.splice(oldIndex + 1, 1);
+        } else {
+          columns.splice(newIndex + 1, 0, columns[oldIndex]);
+          columns.splice(oldIndex, 1);
+        }
       },
-      {
-        childList: true,
-      },
-    );
+    });
+    initSortable();
   });
 </script>
 
@@ -190,24 +200,24 @@
     z-index: 9;
     border: 1px solid;
     border-color: @primary-color;
+    // position: absolute;
 
-    &::after {
-      position: absolute;
-      top: 0;
-      left: 0;
-      bottom: 0;
-      right: 0;
-      background-color: @primary-color;
-      opacity: 50%;
-    }
+    // &::after {
+    //   position: absolute;
+    //   top: 0;
+    //   left: 0;
+    //   bottom: 0;
+    //   right: 0;
+    //   background-color: @primary-color;
+    //   opacity: 50%;
+    // }
   }
 
   .sortable {
     box-sizing: border-box;
-    width: 50%;
     transition: border 0.3s;
     background-color: @white;
-    position: absolute;
+    // position: absolute;
 
     ::v-deep(.autohidden-toolbar) {
       opacity: 0;
@@ -215,6 +225,7 @@
     }
 
     &:hover {
+      resize: both;
       .drag-handler {
         opacity: 1;
       }
@@ -232,12 +243,16 @@
     }
   }
 
+  .move {
+    position: absolute;
+  }
+
   #grid-container {
     // width: calc(100% - 1rem);
   }
 
   .grid-line {
-    @line-color: lighten(@primary-color, 40%);
+    @line-color: #f2f2f2;
     @grid-size: 40px;
     background: -webkit-linear-gradient(top, transparent @grid-size - 1, @line-color 0),
       -webkit-linear-gradient(left, transparent @grid-size - 1, @line-color 0);
