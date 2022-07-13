@@ -100,9 +100,81 @@
 </script>
 
 <style lang="less" scoped>
-  .card-theme {
-    @apply relative w-52 grid bg-primary-50 border border-primary-100 px-2 py-1 shadow-md shadow-primary-50 text-xs;
+  html[data-theme='dark'] {
+    .card-theme {
+      --tw-bg-opacity: 0.1 !important;
 
+      .quota-title {
+        @apply mt-5 cursor-pointer select-none text-xl leading-tight font-bold tracking-1px  text-primary whitespace-nowrap border-b border-primary-200 pb-2px pr-1 w-fit max-w-full overflow-x-hidden;
+
+        grid-row: 1/2;
+        grid-column: 1/4;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .quota-sourceCode {
+        @apply mt-1 w-fit text-primary-400;
+
+        grid-row: 2/3;
+        grid-column: 1/4;
+      }
+
+      .quota-unit {
+        @apply w-30 text-center w-fit text-primary-400;
+
+        grid-row: 3/4;
+        grid-column: 1/3;
+        align-self: end;
+      }
+
+      .quota-date {
+        @apply text-primary-400;
+
+        grid-row: 4/5;
+        grid-column: 1/2;
+        align-self: end;
+      }
+
+      .sourceType {
+        @apply absolute bg-primary !text-white pl-1 pr-2 py-2px top-2 -right-2;
+
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: -6px;
+          right: 0;
+          // 伪类三角形
+          border-style: solid;
+          border-width: 6px 8px 0 0;
+          border-color: #c2c2c2 transparent transparent #c2c2c2;
+        }
+      }
+
+      .icon-slot {
+        grid-row: 4/5;
+        grid-column: 3/4;
+        justify-self: end;
+      }
+
+      .card-footer {
+        grid-row: 5/6;
+        grid-column: 1/4;
+      }
+
+      .divide {
+        @apply border-t border-primary-200 mt-1;
+      }
+    }
+
+    .card-notselected {
+      @apply filter grayscale-75;
+    }
+  }
+
+  .card-theme {
+    --tw-bg-opacity: 0.5 !important;
+    @apply relative w-52 grid bg-primary-100 border border-primary-100 px-2 py-1 text-xs;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: min-content min-content auto min-content min-content;
     min-height: 7rem;

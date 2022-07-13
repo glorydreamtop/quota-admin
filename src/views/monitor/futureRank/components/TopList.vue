@@ -1,5 +1,5 @@
 <template>
-  <div class="h-full overflow-y-scroll relative">
+  <div class="h-full overflow-y-scroll relative bg-white">
     <slot></slot>
     <div
       class="flex text-center h-10 items-center even:bg-gray-50 border-b border-gray-100"

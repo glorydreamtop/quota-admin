@@ -1,5 +1,5 @@
 <template>
-  <div class="relative flex h-40 p-4 bg-white shadow-md shadow-primary-50 min-h-40">
+  <div class="relative flex h-40 p-4 bg-white min-h-40">
     <div class="flex flex-col flex-wrap w-auto gap-3 pr-2 border-r border-gray-300 pt-2px">
       <Tooltip placement="left">
         <template #title>{{ t('quotaView.quotaList.formula') }}</template>

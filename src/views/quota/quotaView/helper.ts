@@ -164,7 +164,7 @@ export function useDrawer(container: Ref<HTMLElement | undefined>) {
     'div',
     {
       onClick: hide,
-      class: 'line hover-gray-shadow',
+      class: 'line hover-gray-shadow border-l',
     },
     [icon],
   );

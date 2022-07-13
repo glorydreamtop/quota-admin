@@ -1,9 +1,7 @@
 <template>
   <div class="h-layout-full flex flex-col gap-4 p-4 w-full">
     <div class="flex items-center h-1/2 min-h-400px gap-4">
-      <div
-        class="w-60 h-full bg-white shadow-md shadow-primary-50 p-4 flex flex-col gap-2 overflow-y-scroll no-scroll-bar"
-      >
+      <div class="w-60 h-full bg-white p-4 flex flex-col gap-2 overflow-y-scroll no-scroll-bar">
         <RadioGroup size="small" v-model:value="searchParams.type" button-style="solid">
           <RadioButton value="contract">{{ t('monitor.futureRank.contract') }}</RadioButton>
           <RadioButton value="productId">{{ t('monitor.futureRank.productName') }}</RadioButton>
@@ -54,9 +52,7 @@
           </template>
         </DatePicker>
       </div>
-      <div
-        class="flex justify-start gap-4 flex-grow h-full children:bg-white children:shadow-md children:shadow-primary-50 children:h-full children:flex-grow"
-      >
+      <div class="flex justify-start gap-4 flex-grow h-full children:h-full children:flex-grow">
         <TopList :data-list="rankList.done" @openDetail="openDetail">
           <div class="flex text-center h-10 items-center sticky top-0 bg-white shadow-md">
             <div class="w-20">{{ t('monitor.futureRank.rankIndex') }}</div>
@@ -89,9 +85,7 @@
         </TopList>
       </div>
     </div>
-    <div
-      class="flex-grow bg-white shadow-md shadow-primary-50 flex items-center justify-between p-4 w-full"
-    >
+    <div class="flex-grow bg-white flex items-center justify-between p-4 w-full">
       <RankChart class="w-1/2" :data-list="rankList.buy" :title="chartTitle.buy" :size="10" />
       <RankChart class="w-1/2" :data-list="rankList.sale" :title="chartTitle.sale" :size="10" />
     </div>

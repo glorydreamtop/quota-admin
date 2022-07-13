@@ -12,7 +12,7 @@
         <Component :is="item.content" :key="item.key" />
       </CollapsePanel>
     </Collapse>
-    <div class="save">
+    <div class="save bg-white">
       <Tooltip title="暂不开放保存模板功能，期待你体验后的宝贵建议哦^_^">
         <Button block>
           <span>{{ t('quotaView.advance.saveBtn') }}</span>
@@ -114,7 +114,6 @@
     height: 100%;
     position: absolute;
     top: 0;
-    border-left: 1px solid #e8e8e8;
 
     .arrow-icon {
       color: rgba(156, 163, 175, 1) !important;
@@ -144,7 +143,6 @@
     position: absolute;
     bottom: 0;
     left: 36px;
-    background-color: @white;
     width: calc(100% - 56px);
     height: @save-button-size + 16px;
     z-index: 9;

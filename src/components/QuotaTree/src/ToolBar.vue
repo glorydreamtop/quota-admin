@@ -1,5 +1,5 @@
 <template>
-  <div class="toolbar">
+  <div class="toolbar bg-white border">
     <Icon
       v-repeat-click="getData"
       :class="['cursor-pointer !text-primary animate__animated', loading ? ' animate__flash' : '']"
@@ -44,7 +44,6 @@
     @apply shadow-gray-400;
     @apply shadow;
     @apply p-1;
-    @apply border;
 
     position: absolute;
     top: 90px;
@@ -54,6 +53,5 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
-    background-color: white;
   }
 </style>

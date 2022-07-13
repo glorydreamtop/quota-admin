@@ -59,6 +59,7 @@ export function configThemePlugin(isBuild: boolean): PluginOption[] {
         'primary-1': 'rgb(255 255 255 / 8%)',
         'text-color-base': '#c9d1d9',
         'component-background': '#151515',
+        'layout-body-background': '#2a2c2c',
         'heading-color': 'rgb(255 255 255 / 65%)',
         // black: '#0e1117',
         // #8b949e

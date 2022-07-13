@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-grow p-4 bg-white shadow-md shadow-primary-50 relative min-w-fit">
+  <div class="flex flex-grow p-4 bg-white border relative min-w-fit">
     <div class="relative flex-grow">
       <ToolBar @paint="paint" />
       <DoubleSideChart

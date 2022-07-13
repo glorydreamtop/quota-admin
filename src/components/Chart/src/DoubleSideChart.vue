@@ -1,9 +1,7 @@
 <template>
   <div ref="doubleSideChart">
     <Teleport to="body" :disabled="!isFullscreen">
-      <div
-        :class="[isFullscreen ? 'fullscreen' : '', 'w-full h-full']"
-      >
+      <div :class="[isFullscreen ? 'fullscreen' : '', 'w-full h-full']">
         <div
           :class="[
             'toolbar',
@@ -114,7 +112,7 @@
 <script lang="ts" setup>
   import { ref, watchEffect, toRefs, nextTick, onMounted, computed } from 'vue';
   import BasicChart from './BasicChart.vue';
-  import { PaintArea } from '/@/components/SvgMark';
+  import { PaintArea } from 'svg-mark';
   import { QuotaDataTable } from '/@/components/QuotaTable';
   import { useMagicKeys } from '@vueuse/core';
   import { chartConfigType, chartSetting } from '../../../../types/chart';

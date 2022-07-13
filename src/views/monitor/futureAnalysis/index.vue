@@ -1,7 +1,7 @@
 <template>
   <div class="h-layout-full p-4 flex flex-col gap-4">
     <div
-      class="w-full p-4 bg-white shadow-md shadow-primary-50 flex gap-4 justify-start items-center"
+      class="w-full p-4 bg-white flex gap-4 justify-start items-center"
       v-loading="!state.allowQueryDate"
     >
       <span>
@@ -38,11 +38,7 @@
         >{{ t('monitor.getAvailableDate') }}</div
       >
     </div>
-    <div
-      class="w-full bg-white shadow-md shadow-primary-50 flex-grow"
-      id="future-analysis"
-      v-loading="state.loading"
-    >
+    <div class="w-full bg-white flex-grow" id="future-analysis" v-loading="state.loading">
       <Tabs :tabBarStyle="{ textAlign: 'center' }" v-model:activeKey="activeKey">
         <TabPane class="flex" key="share" :tab="t('monitor.futureAnalysis.share')" forceRender>
           <div class="w-1/3 future-analysis-chart" :ref="chartRef.share.buy"></div>

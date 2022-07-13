@@ -1,10 +1,10 @@
-.bg-white {
-  background-color: @component-background !important;
-}
-
 html[data-theme='light'] {
   .text-secondary {
     color: rgb(0 0 0 / 45%);
+  }
+
+  .bg-white {
+    background-color: @component-background !important;
   }
 
   .ant-alert-success {
@@ -30,6 +30,18 @@ html[data-theme='light'] {
 [data-theme='dark'] {
   .text-secondary {
     color: #8b949e;
+  }
+
+  .bg-white {
+    background-color: #151515 !important;
+  }
+
+  .border,
+  .border-b,
+  .border-t,
+  .border-r,
+  .border-l {
+    border-color: #303030;
   }
 
   .ant-card-grid-hoverable:hover {

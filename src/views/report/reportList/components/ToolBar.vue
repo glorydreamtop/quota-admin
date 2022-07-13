@@ -1,5 +1,5 @@
 <template>
-  <div class="flex gap-4 bg-white p-4 shadow-md shadow-primary-50">
+  <div class="flex gap-4 bg-white p-4">
     <Button type="primary" @click="createReport">
       <template #icon>
         <Icon icon="ant-design:plus-outlined" />

@@ -23,12 +23,12 @@ export function generateModifyVars(dark = false) {
     hack: `${modifyVars.hack} @import (reference) "${resolve('src/design/config.less')}";`,
     'primary-color': primary,
     ...primaryColorObj,
-    'info-color': primary,
     'processing-color': primary,
+    // 反馈组件
     'success-color': '#30BF78', //  Success color
     'error-color': '#F4664A', //  False color
     'warning-color': '#FAAD14', //   Warning color
-    //'border-color-base': '#EEEEEE',
+    'info-color': primary,
     'font-size-base': '14px', //  Main font size
     'border-radius-base': '2px', //  Component/float fillet
     'link-color': primary, //   Link color

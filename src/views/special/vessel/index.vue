@@ -70,7 +70,7 @@
     getVesselUpdateTime,
   } from '/@/api/special/index';
   import { schemas } from './formData';
-  import { cloneDeep, remove } from 'lodash';
+  import { cloneDeep, remove } from 'lodash-es';
   import { useModal } from '/@/components/Modal';
   import ModalSave from './components/ModalSave.vue';
   import { getSpecialInfoById } from '/@/api/special/index';

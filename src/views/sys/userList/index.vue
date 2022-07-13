@@ -1,7 +1,7 @@
 <template>
   <div class="h-layout-full p-4 flex flex-col gap-4">
     <ToolBar @update-user-list="updateUserList" />
-    <div class="bg-white p-4 shadow-md shadow-primary-50">
+    <div class="bg-white p-4">
       <BasicTable @register="registerTable" @edit-end="editCellEnd">
         <template #action="{ record }">
           <TableAction :actions="actions(record)" />
