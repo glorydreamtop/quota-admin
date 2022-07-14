@@ -1,5 +1,5 @@
 <template>
-  <div class="border-l-gray-300 w-380px overflow-x-hidden relative select-none" ref="container">
+  <div class="border-l-gray-300 w-380px overflow-x-hidden relative select-none">
     <Collapse
       class="overflow-x-hidden overflow-y-scroll drawer-main"
       v-model:activeKey="collapseKey"
@@ -12,25 +12,21 @@
         <Component :is="item.content" :key="item.key" />
       </CollapsePanel>
     </Collapse>
-    <div class="save bg-white">
-      <Tooltip title="暂不开放保存模板功能，期待你体验后的宝贵建议哦^_^">
-        <Button block>
-          <span>{{ t('quotaView.advance.saveBtn') }}</span>
-        </Button>
-      </Tooltip>
+    <div class="actions bg-white">
+      <slot name="actions"></slot>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-  import { Divider, Collapse, Button, Tooltip } from 'ant-design-vue';
+  import { Divider, Collapse } from 'ant-design-vue';
   import { useI18n } from '/@/hooks/web/useI18n';
-  import { useDrawer } from '../helper';
+
   import { ref, shallowRef } from 'vue';
   import { Model, Axis, DataSource, Formatter, Base } from './advance';
 
   const CollapsePanel = Collapse.Panel;
-  const container = ref<HTMLElement>();
+
   const { t } = useI18n();
   const collapseKey = ref('base');
 
@@ -61,12 +57,10 @@
       content: Axis,
     },
   ]);
-
-  useDrawer(container);
 </script>
 
 <style lang="less" scoped>
-  @save-button-size: 40px;
+  @actions-height: 40px;
 
   ::v-deep(.label) {
     @apply flex items-center gap-2;
@@ -101,7 +95,7 @@
   .drawer-main {
     transition: opacity 0.2s ease;
     padding-left: 20px;
-    height: calc(100% - @save-button-size - 16px);
+    height: calc(100% - @actions-height - 16px);
     position: absolute;
     left: 0;
     right: 0;
@@ -138,17 +132,17 @@
     }
   }
 
-  .save {
+  .actions {
     @apply flex items-end justify-center border-t border-gray-200;
     position: absolute;
     bottom: 0;
     left: 36px;
     width: calc(100% - 56px);
-    height: @save-button-size + 16px;
+    height: @actions-height + 16px;
     z-index: 9;
 
     .ant-btn {
-      height: @save-button-size;
+      height: @actions-height;
     }
   }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="overflow-scroll p-2 relative flex flex-col items-center">
+  <div class="overflow-y-scroll p-2 relative flex flex-col items-center">
     <PagePlaceHolder id="pagePlaceHolder" :pagination-info="paginationInfo" />
     <div
       class="w-1440px absolute grid-line flex flex-wrap justify-start content-start"
@@ -38,12 +38,9 @@
         />
       </div>
       <div
-        class="cursor-insert animate__animated animate__infinite animate__flash animate__slow"
+        class="cursor-insert pointer-events-none animate__animated animate__infinite animate__flash animate__slow"
         :style="insertPosition"
       ></div>
-    </div>
-    <div class="h-600px w-fit absolute top-0 right-0 bg-white z-10">
-      <Advance />
     </div>
   </div>
 </template>
@@ -69,7 +66,6 @@
     useResizeListener,
   } from '../hooks';
   import PagePlaceHolder from './PagePlaceHolder.vue';
-  import Advance from '../../quotaView/components/Advance.vue';
   import { DoubleSideChart } from '/@/components/Chart';
   import BasicText from './Text.vue';
   import BasicImg from './Image.vue';
@@ -78,10 +74,11 @@
   import { getRem } from '/@/utils/domUtils';
   import { useSortable } from '/@/hooks/web/useSortable';
   import { isNullAndUnDef } from '/@/utils/is';
-  import { chartConfigType } from '/#/chart';
-  import { createChartConfigContext } from '../../quotaView/components/hooks';
-  import { mergeAndRemove } from '/@/utils/helper/commonHelper';
-  import { TemplateDOM } from '/#/template';
+  import { TemplateDOM, tempConfigs } from '/#/template';
+
+  const emit = defineEmits<{
+    (event: 'editTemp', temp: TemplateDOM): void;
+  }>();
 
   // 页面设置
   const pageSetting = usePageSettingContext();
@@ -140,11 +137,10 @@
     totalPage: 1,
   });
 
-  const editCompConfig: chartConfigType = reactive({});
   function setEditComp(temp: TemplateDOM) {
-    mergeAndRemove(editCompConfig, temp.config);
+    emit('editTemp', temp);
   }
-  createChartConfigContext(editCompConfig);
+
   const gridContainer = ref<HTMLElement>();
   onMounted(async () => {
     await nextTick();

@@ -33,7 +33,7 @@ export function setupAegisSDK(app: App) {
       : Aegis.environment.test, // 环境
   });
   app.config.errorHandler = function (err: Error, _, info) {
-    console.log(`Error: ${err.toString()}\nStack: ${err.stack}\nInfo: ${info}`);
+    console.error(`Error: ${err.toString()}\nStack: ${err.stack}\nInfo: ${info}`);
     aegis!.error(`Error: ${err.toString()}\nStack: ${err.stack}\nInfo: ${info}`);
   };
 }

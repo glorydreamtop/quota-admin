@@ -14,7 +14,7 @@ export interface TemplateDOM {
   [key: string]: any;
   type: 'Chart' | 'Table' | 'Text' | 'Img';
   version?: versionEnum;
-  config: chartConfigType | TextConfig | ImgConfig;
+  config: tempConfigs;
   categoryId?: number;
   id?: number;
   uniqId: string;
@@ -53,3 +53,5 @@ export interface pageSettingType {
   };
   showElementborder: boolean;
 }
+
+export type tempConfigs = chartConfigType | TextConfig | ImgConfig;

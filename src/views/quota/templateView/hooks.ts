@@ -172,26 +172,32 @@ export interface paginationInfoType {
   totalPage: number;
 }
 
-export function useDrawer(container: Ref<HTMLElement | undefined>) {
+interface useDrawerParams {
+  position: 'left' | 'right';
+  container: Ref<HTMLElement | undefined>;
+  barText?:string;
+}
+
+export function useDrawer({ container, position = 'right',barText }: useDrawerParams) {
   const containerHidden = ref(false);
   const icon = h(Icon, {
     icon: 'ant-design:left-outlined',
-    class: 'arrow-icon',
+    class: 'drawer-bar-arrow',
   });
-  const tip = h(
+  const text = h(
     'span',
     {
-      class: 'tip',
+      class: 'drawer-bar-text',
     },
-    '模板树',
+    barText,
   );
   const line = h(
     'div',
     {
       onClick: hide,
-      class: 'line hover-gray-shadow',
+      class: 'drawer-bar drawer-bar-hover',
     },
-    [icon, tip],
+    [icon, text],
   );
   let main: HTMLElement;
   let startWidth: number;

@@ -15,8 +15,9 @@
     <template v-else #title>
       <slot name="title"></slot>
     </template>
-
+    <slot v-if="getBindValues.scrollOptions?.enableScroll === false"></slot>
     <ScrollContainer
+      v-else
       :style="getScrollContentStyle"
       v-loading="getLoading"
       :loading-tip="loadingText || t('common.loadingText')"
@@ -56,7 +57,7 @@
 
   export default defineComponent({
     components: { Drawer, ScrollContainer, DrawerFooter, DrawerHeader },
-    inheritAttrs: false,
+    inheritAttrs: true,
     props: basicProps,
     emits: ['visible-change', 'ok', 'close', 'register'],
     setup(props, { emit }) {
@@ -88,13 +89,13 @@
           visible: unref(visibleRef),
         };
         opt.title = undefined;
-        const { isDetail, width, wrapClassName, getContainer } = opt;
+        const { isDetail, width, getContainer } = opt;
         if (isDetail) {
           if (!width) {
             opt.width = '100%';
           }
           const detailCls = `${prefixCls}__detail`;
-          opt.class = wrapClassName ? `${wrapClassName} ${detailCls}` : detailCls;
+          opt.class = opt.class ? `${opt.class} ${detailCls}` : detailCls;
 
           if (!getContainer) {
             // TODO type error?
@@ -105,6 +106,7 @@
       });
 
       const getBindValues = computed((): DrawerProps => {
+        console.log(attrs);
         return {
           ...attrs,
           ...unref(getProps),
