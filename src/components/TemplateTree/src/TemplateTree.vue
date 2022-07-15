@@ -61,7 +61,7 @@
 
   const emit = defineEmits<{
     (event: 'selectNode', node: TemplateItem): void;
-    (event: 'selectFolder', folder: CategoryTreeModel): void;
+    (event: 'selectFolder', folder: CategoryTreeModel, path: string[]): void;
   }>();
   const props = defineProps<{
     showSearch: boolean;
@@ -205,7 +205,7 @@
     } else {
       await loadData(parentNode.id);
       const path: number[] = findPath(
-        treeProps[CategoryTreeType.sysTemplate].treeData,
+        treeProps[treeType.value].treeData,
         (item) => item.id === parentNode!.id,
       ).map((path) => path.id);
       instance?.setExpandedKeys(uniq([...path, ...instance.getExpandedKeys()]));
@@ -221,8 +221,12 @@
     useMultiSelect({
       onSingleSelect: ({ dataRef, allowMultiSelect }) => {
         // 仅在单选情况下直接触发选择事件
+        const path: string[] = findPath(
+          treeProps[treeType.value].treeData,
+          (item) => item.id === dataRef.id,
+        ).map((path) => path.name);
         if (!allowMultiSelect) {
-          emit('selectFolder', dataRef as CategoryTreeModel);
+          emit('selectFolder', dataRef as CategoryTreeModel, path);
         } else {
           emit(
             'selectNode',

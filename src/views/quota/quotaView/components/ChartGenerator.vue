@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-grow p-4 bg-white border relative min-w-fit">
+  <div class="flex flex-grow p-4 bg-white border relative min-w-fit" id="chart-generator">
     <div class="relative flex-grow">
       <ToolBar @paint="paint" />
       <DoubleSideChart
@@ -9,13 +9,25 @@
         @render-success="renderSuccess"
       />
     </div>
-    <Advance ref="advance">
-      <template #actions>
-        <Button block @click="saveTemplate">
-          <span>{{ t('quotaView.advance.saveBtn') }}</span>
-        </Button>
-      </template>
-    </Advance>
+    <BarDrawer
+      width="380px"
+      :style="{
+        top: '0',
+        height: '100%',
+        right: '0',
+      }"
+      getContainer="#chart-generator"
+      inside
+    >
+      <Advance>
+        <template #actions>
+          <Button block @click="saveTemplate" :disabled="!allowSave">
+            <span>{{ t('quotaView.advance.saveBtn') }}</span>
+          </Button>
+        </template>
+      </Advance>
+    </BarDrawer>
+    <TempSave @register="registerTempSave"></TempSave>
   </div>
 </template>
 <script lang="ts" setup>
@@ -23,7 +35,7 @@
   import Advance from './Advance.vue';
   import { DoubleSideChart } from '/@/components/Chart';
   import { echartMitter, useChartConfigContext } from './hooks';
-  import { reactive, ref, toRaw } from 'vue';
+  import { reactive, ref, toRaw, watch, nextTick } from 'vue';
   import { Button } from 'ant-design-vue';
   import type { chartConfigType } from '/#/chart';
   import { cloneDeep, mergeWith } from 'lodash-es';
@@ -33,13 +45,29 @@
   import { useRoute } from 'vue-router';
   import { CategoryTreeType } from '/@/enums/quotaEnum';
   import { useI18n } from '/@/hooks/web/useI18n';
+  import { BarDrawer, useDrawer } from '/@/components/Drawer';
+  import { TempSave } from '/@/components/TempSave';
 
   const route = useRoute();
   const { t } = useI18n();
   const chartConfig = useChartConfigContext();
+  // 配置变化后要绘制一次才能允许保存
+  const allowSave = ref(true);
+  watch(
+    chartConfig,
+    (v) => {
+      if (v) {
+        allowSave.value = false;
+      }
+    },
+    { deep: true },
+  );
   const config = reactive({}) as chartConfigType;
   function paint() {
     mergeAndRemove(config, chartConfig);
+    nextTick(() => {
+      allowSave.value = true;
+    });
   }
   function updateConfig(cfg: chartConfigType) {
     mergeWith(chartConfig, cloneDeep(cfg), (target, src) => {
@@ -54,14 +82,16 @@
     echartMitter.emit('echartOptions', options);
   }
   function saveTemplate() {
-    updateTemplate({
-      id: parseInt(route.params.templateId as string) ?? undefined,
-      template: JSON.stringify(toRaw(chartConfig)),
-      type: CategoryTreeType.sysTemplate,
+    openTempSave(true, {
+      chartConfig: toRaw(chartConfig),
     });
   }
-  // const advance = ref<HTMLElement>();
-  // useDrawer(advance);
+
+  const [registerTempSave, { openDrawer: openTempSave }] = useDrawer();
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+  ::v-deep(.ant-drawer-body) {
+    padding-right: 1rem;
+  }
+</style>

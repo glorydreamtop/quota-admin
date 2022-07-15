@@ -27,13 +27,12 @@
     createUniqIdContext,
     insertDOM,
   } from './hooks';
-  import { reactive, ref, onMounted } from 'vue';
+  import { reactive, ref } from 'vue';
   import type { pageSettingType, TemplateDOM } from '/#/template';
   import { useUniqueField } from '../quotaTable/components/helper';
   import { chartConfigType } from '/#/chart';
   import { timeConfigEnum } from '/@/enums/chartEnum';
   import { today, yearsAgo } from '/@/utils/dateUtil';
-  import { useDrawer } from '/@/components/Drawer';
 
   const templateList = ref<TemplateDOM[]>([]);
   const selectedTemplateList = ref<TemplateDOM[]>([]);

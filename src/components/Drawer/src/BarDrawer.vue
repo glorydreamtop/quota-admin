@@ -1,46 +1,67 @@
 <template>
-  <Drawer
-    :mask="false"
-    :closable="false"
-    :headerStyle="{ display: 'none' }"
-    :style="{
-      position: 'absolute',
-      width: visible ? width : '1rem',
-    }"
-    :class="prefixCls"
-    @afterVisibleChange="afterVisibleChange"
-    v-bind="$attrs"
-    v-model:visible="visible"
-  >
-    <slot></slot>
-    <div
-      ref="drawerBar"
-      class="line-bar"
-      :style="{ [$attrs.placement === 'left' ? 'right' : 'left']: 0 }"
-      @click="toggleVisible"
+  <div>
+    <Drawer
+      :mask="false"
+      :closable="false"
+      :headerStyle="{ display: 'none' }"
+      :style="{
+        position: 'absolute',
+        width: visible ? props.width : '1rem',
+      }"
+      :class="`${prefixCls}-main`"
+      @afterVisibleChange="afterVisibleChange"
+      v-bind="$attrs"
+      v-model:visible="visible"
     >
-      <Icon
-        :icon="
-          visible
-            ? $attrs.placement === 'left'
-              ? 'ant-design:left-outlined'
-              : 'ant-design:right-outlined'
-            : $attrs.placement === 'left'
-            ? 'ant-design:right-outlined'
-            : 'ant-design:left-outlined'
-        "
-      />
-    </div>
-  </Drawer>
+      <slot></slot>
+      <div
+        ref="drawerBar"
+        class="line-bar"
+        :style="{ [$attrs.placement === 'left' ? 'right' : 'left']: 0 }"
+        @click="toggleVisible"
+      >
+        <Icon
+          :icon="
+            visible
+              ? $attrs.placement === 'left'
+                ? 'ant-design:left-outlined'
+                : 'ant-design:right-outlined'
+              : $attrs.placement === 'left'
+              ? 'ant-design:right-outlined'
+              : 'ant-design:left-outlined'
+          "
+        />
+      </div>
+    </Drawer>
+    <div
+      v-if="props.inside"
+      :class="`${prefixCls}-shadow`"
+      :style="{
+        width: visible ? props.width : '1rem',
+      }"
+    ></div>
+  </div>
 </template>
 
+<script lang="ts">
+  import { defineComponent } from 'vue';
+  import { propTypes } from '/@/utils/propTypes';
+
+  export default defineComponent({
+    inheritAttrs: false,
+  });
+</script>
+
 <script lang="ts" setup>
-  import { ref, useAttrs } from 'vue';
+  import { ref } from 'vue';
   import { Drawer } from 'ant-design-vue';
   import Icon from '/@/components/Icon';
   import { useDesign } from '/@/hooks/web/useDesign';
 
-  const width = useAttrs().width as string;
+  const props = defineProps({
+    inside: propTypes.bool.def(false),
+    width: propTypes.string.def('300px'),
+  });
 
   const visible = ref(true);
 
@@ -63,18 +84,18 @@
 <style lang="less">
   @prefix-cls: ~'@{namespace}-bar-drawer';
 
-  .@{prefix-cls}{
+  .@{prefix-cls}-main {
     .line-bar {
-    position: absolute;
-    top: 0;
-    width: 1rem;
-    height: 100%;
-    display: flex;
-    align-items: center;
-  }
+      position: absolute;
+      top: 0;
+      width: 1rem;
+      height: 100%;
+      display: flex;
+      align-items: center;
 
-   &:hover {
-      @apply bg-gray-200;
+      &:hover {
+        @apply bg-gray-100;
+      }
     }
 
     &.ant-drawer {
@@ -84,5 +105,11 @@
         overflow: hidden;
       }
     }
+
+  }
+
+  .@{prefix-cls}-shadow{
+      transition: width 0.3s;
+      height: 100%;
   }
 </style>

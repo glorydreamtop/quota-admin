@@ -106,7 +106,6 @@
       });
 
       const getBindValues = computed((): DrawerProps => {
-        console.log(attrs);
         return {
           ...attrs,
           ...unref(getProps),

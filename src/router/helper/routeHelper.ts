@@ -174,8 +174,9 @@ function makeName(url: string) {
 // convert the menuList to AppRouteRecordRaw
 export function convertRoute(menuList: MenuItem[]): AppRouteRecordRaw[] {
   const routes: AppRouteRecordRaw[] = menuList.map((item) => {
+    // 用quota/quotaView/:id这种形式描述了路由参数，在没参数时会自动去掉:id
     const route = {
-      path: item.url.replace(/\#/g, '/'),
+      path: item.url.replace(/(\#)|(\/:.*)/g, '/'),
       component:
         item.type === 0
           ? 'LAYOUT'

@@ -66,7 +66,7 @@ const baseXAxisConfig = ({ formatter }: { formatter: string }) => {
       min: undefined,
       max: undefined,
       inverse: false,
-      name: '下1',
+      name: '主1',
       offset: 0,
       axisLine: {
         show: true,
@@ -152,55 +152,4 @@ export function getChartDefaultConfig(type: chartTypeEnum): Partial<chartConfigT
   const config = cloneDeep(baseConfig);
   merge(config, defaultConfig[type]);
   return config;
-}
-
-export function useDrawer(container: Ref<HTMLElement | undefined>) {
-  const containerHidden = ref(false);
-  const icon = h(Icon, {
-    icon: 'ant-design:right-outlined',
-    class: 'arrow-icon',
-  });
-  const line = h(
-    'div',
-    {
-      onClick: hide,
-      class: 'line hover-gray-shadow border-l',
-    },
-    [icon],
-  );
-  let main: HTMLElement;
-  let startWidth: number;
-  function init() {
-    const parent = unref(container)!;
-    render(line, parent);
-    startWidth = parent.offsetWidth;
-    Object.assign(parent.style, {
-      width: `${startWidth}px`,
-      height: '100%',
-      transition: 'width .3s',
-    });
-    main = parent.getElementsByClassName('drawer-main')[0] as HTMLElement;
-    Object.assign(main.style, {
-      width: `${main.offsetWidth}px`,
-      minWidth: `${main.offsetWidth}px`,
-    });
-  }
-  function hide() {
-    const parent = unref(container)!;
-    const line = parent.getElementsByClassName('line')[0] as HTMLElement;
-    const actions = parent.getElementsByClassName('actions')[0] as HTMLElement;
-    const remainWidth = line.offsetWidth;
-    if (containerHidden.value) {
-      parent.style.width = `${startWidth}px`;
-      actions.style.display = 'flex';
-    } else {
-      parent.style.width = `${remainWidth}px`;
-      actions.style.display = 'none';
-    }
-    containerHidden.value = !containerHidden.value;
-    line.classList.toggle('gray-shadow');
-    line.classList.toggle('hover-gray-shadow');
-    icon.el!.classList.toggle('rotate');
-  }
-  onMounted(init);
 }

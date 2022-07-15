@@ -171,65 +171,6 @@ export const imgTemplate: TemplateDOM = {
 export interface paginationInfoType {
   totalPage: number;
 }
-
-interface useDrawerParams {
-  position: 'left' | 'right';
-  container: Ref<HTMLElement | undefined>;
-  barText?:string;
-}
-
-export function useDrawer({ container, position = 'right',barText }: useDrawerParams) {
-  const containerHidden = ref(false);
-  const icon = h(Icon, {
-    icon: 'ant-design:left-outlined',
-    class: 'drawer-bar-arrow',
-  });
-  const text = h(
-    'span',
-    {
-      class: 'drawer-bar-text',
-    },
-    barText,
-  );
-  const line = h(
-    'div',
-    {
-      onClick: hide,
-      class: 'drawer-bar drawer-bar-hover',
-    },
-    [icon, text],
-  );
-  let main: HTMLElement;
-  let startWidth: number;
-  function init() {
-    const parent = unref(container)!;
-    render(line, parent);
-    startWidth = parent.offsetWidth;
-    Object.assign(parent.style, {
-      width: `${startWidth}px`,
-      transition: 'width .3s',
-    });
-    main = parent.getElementsByClassName('drawer-main')[0] as HTMLElement;
-    Object.assign(main.style, {
-      width: `${main.offsetWidth}px`,
-    });
-  }
-  function hide() {
-    const parent = unref(container)!;
-    const line = parent.getElementsByClassName('line')[0] as HTMLElement;
-    const remainWidth = line.offsetWidth;
-    if (containerHidden.value) {
-      parent.style.width = `${startWidth}px`;
-    } else {
-      parent.style.width = `${remainWidth}px`;
-    }
-    containerHidden.value = !containerHidden.value;
-    line.classList.toggle('hover-gray-shadow');
-    icon.el!.classList.toggle('rotate');
-  }
-  onMounted(init);
-}
-
 interface useResizeListenerParams {
   templateList: Ref<TemplateDOM[]>;
   GRIDSIZE: number;
