@@ -1,6 +1,17 @@
 import { CSSProperties } from 'vue';
 import { chartConfigType } from './chart';
 import { versionEnum } from '/@/enums/chartEnum';
+import { CategoryTreeType } from '/@/enums/quotaEnum';
+
+/**
+ * @param template 由 {config,category_id} 对象stringify得到
+ */
+export interface TemplateApiNeed {
+  type: CategoryTreeType.sysTemplate | CategoryTreeType.userTemplate;
+  template: string;
+  temolate_name: string;
+  id?: number;
+}
 
 export interface TemplateItem {
   [key: string]: any;

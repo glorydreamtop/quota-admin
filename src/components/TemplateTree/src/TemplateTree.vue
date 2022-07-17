@@ -61,7 +61,12 @@
 
   const emit = defineEmits<{
     (event: 'selectNode', node: TemplateItem): void;
-    (event: 'selectFolder', folder: CategoryTreeModel, path: string[]): void;
+    (
+      event: 'selectFolder',
+      folder: CategoryTreeModel,
+      path: string[],
+      type: CategoryTreeType.sysTemplate | CategoryTreeType.userTemplate,
+    ): void;
   }>();
   const props = defineProps<{
     showSearch: boolean;
@@ -226,7 +231,7 @@
           (item) => item.id === dataRef.id,
         ).map((path) => path.name);
         if (!allowMultiSelect) {
-          emit('selectFolder', dataRef as CategoryTreeModel, path);
+          emit('selectFolder', dataRef as CategoryTreeModel, path, treeType.value);
         } else {
           emit(
             'selectNode',
