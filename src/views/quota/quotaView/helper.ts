@@ -9,10 +9,13 @@ import type {
   structuralChartConfigType,
 } from '/#/chart';
 import { today, yearsAgo } from '/@/utils/dateUtil';
-import { timeConfigEnum, chartTypeEnum, structuralOffsetUnitEnum } from '/@/enums/chartEnum';
+import {
+  timeConfigEnum,
+  chartTypeEnum,
+  structuralOffsetUnitEnum,
+  versionEnum,
+} from '/@/enums/chartEnum';
 import { quotaDataPastUnitTypeEnum } from '/@/api/quota';
-import { h, onMounted, Ref, ref, render, unref } from 'vue';
-import Icon from '/@/components/Icon';
 import { cloneDeep, merge } from 'lodash-es';
 
 const baseConfig: Partial<chartConfigType> = {
@@ -38,6 +41,7 @@ const baseConfig: Partial<chartConfigType> = {
   },
   seriesSetting: [],
   http: true,
+  version: versionEnum.PROChart,
 };
 
 const baseYAxisConfig = [

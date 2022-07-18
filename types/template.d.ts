@@ -16,7 +16,7 @@ export interface TemplateApiNeed {
 export interface TemplateItem {
   [key: string]: any;
   version: versionEnum;
-  config: chartConfigType | TextConfig;
+  config: tempConfigs;
   categoryId: number;
   id: number;
 }

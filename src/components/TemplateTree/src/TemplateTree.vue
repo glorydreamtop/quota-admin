@@ -156,13 +156,17 @@
   }
 
   async function loadData(key: number) {
+    console.log('search');
+
     const type = unref(treeType.value);
     const instance = getTreeInstance(type);
     const res = await getDirTemplate({ categoryId: key, type });
+    console.log(res);
+
     const { parentNode } = findParentNode(key, type);
-    parentNode.children = res.map((item: TemplateItem & TreeItem) => {
+    const list = res.map((item: TemplateItem & TreeItem) => {
       const json = JSON.parse(item.options);
-      if (Reflect.has(json, 'config')) {
+      if (Reflect.has(json, 'config') && !/\\"version\":2/g.test(json['config'] as string)) {
         item.version = versionEnum.HUIChart;
         item.config = huiChart(json);
         item.name = item.config.name;
@@ -178,6 +182,11 @@
       item.categoryId = key;
       return item;
     });
+    if (parentNode.children) {
+      parentNode.children.push(...list);
+    } else {
+      parentNode.children = list;
+    }
     instance?.setExpandedKeys(uniq([key, ...instance.getExpandedKeys()]));
   }
   // 启用高亮Hooks
@@ -246,6 +255,17 @@
       (e.node.dataRef as CategoryTreeModel).icon = e.node.expanded
         ? 'flat-color-icons:opened-folder'
         : 'flat-color-icons:folder';
+    }
+    if (
+      (e.node.dataRef as CategoryTreeModel).children?.every((item) => item.folder) &&
+      e.node.expanded
+    ) {
+      console.log('尝试查找');
+      try {
+        // 这是一个异步ajax
+        loadData(e.node.eventKey);
+      } catch (error) {}
+      // return;
     }
     const instance = getTreeInstance(treeType.value);
     // 拿到待操作的树数据

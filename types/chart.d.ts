@@ -7,6 +7,7 @@ import {
   echartSeriesTypeEnum,
   structuralOffsetUnitEnum,
   timeConfigEnum,
+  versionEnum,
 } from '/@/enums/chartEnum';
 import { SelectedQuotaItem } from '/@/views/quota/quotaView/components/hooks';
 
@@ -75,6 +76,7 @@ export interface baseChartConfigType {
 
   quotaList: Nullable<SelectedQuotaItem[]>;
   seriesSetting: seriesSettingType[];
+  readonly version: versionEnum.PROChart
 }
 
 export interface reactSettingType {

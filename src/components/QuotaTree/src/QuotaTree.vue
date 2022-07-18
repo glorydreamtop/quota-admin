@@ -305,9 +305,9 @@
     ) {
       try {
         // 这是一个异步ajax
-        return loadData(e.node.eventKey);
+        loadData(e.node.eventKey);
       } catch (error) {}
-      return;
+      // return;
     }
     const instance = getTreeInstance(treeType.value);
     // 拿到待操作的树数据
