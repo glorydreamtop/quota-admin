@@ -79,7 +79,7 @@
   const treeType = ref<TemplateType>(CategoryTreeType.sysTemplate);
 
   const { getTemplateIcon, getTemplateName } = useTemplateVersion();
-  const { pingChart, huiChart } = useVersionTransfer();
+  const { pingChart, huiChart, proChart } = useVersionTransfer();
   const isFolder = (node: TemplateItem | CategoryTreeModel) =>
     Reflect.has(node, 'folder') && (node as CategoryTreeModel).folder;
   function iconFilter(node: TemplateItem | CategoryTreeModel) {
@@ -156,17 +156,13 @@
   }
 
   async function loadData(key: number) {
-    console.log('search');
-
     const type = unref(treeType.value);
     const instance = getTreeInstance(type);
     const res = await getDirTemplate({ categoryId: key, type });
-    console.log(res);
-
     const { parentNode } = findParentNode(key, type);
     const list = res.map((item: TemplateItem & TreeItem) => {
       const json = JSON.parse(item.options);
-      if (Reflect.has(json, 'config') && !/\\"version\":2/g.test(json['config'] as string)) {
+      if (Reflect.has(json, 'config') && json.config.version !== 2) {
         item.version = versionEnum.HUIChart;
         item.config = huiChart(json);
         item.name = item.config.name;
@@ -175,6 +171,8 @@
         item.config = pingChart(json);
       } else {
         item.version = versionEnum.PROChart;
+        item.config = proChart(json);
+        item.name = item.config.title;
       }
       item.icon = iconFilter(item);
       item.isLeaf = true;
@@ -260,7 +258,6 @@
       (e.node.dataRef as CategoryTreeModel).children?.every((item) => item.folder) &&
       e.node.expanded
     ) {
-      console.log('尝试查找');
       try {
         // 这是一个异步ajax
         loadData(e.node.eventKey);
@@ -324,8 +321,6 @@
           label: t('template.actions.multiSelectQuota'),
           icon: '',
           handler: () => {
-            console.log(highLightList);
-
             for (let i = 0; i < highLightList.length; i++) {
               const node = highLightList[i];
               // 创建一个宏任务，让数组的watch阶段性触发

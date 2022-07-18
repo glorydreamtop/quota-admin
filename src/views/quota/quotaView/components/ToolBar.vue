@@ -1,5 +1,5 @@
 <template>
-  <Button type="primary" class="!absolute right-4 top-0 z-19 w-36" @click="paint">
+  <Button type="primary" class="btn" @click="paint">
     <template #icon>
       <Icon size="22" icon="ph:paint-brush-duotone" />
     </template>
@@ -55,4 +55,13 @@
   }
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+  .btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    z-index: 19;
+    width: fit-content;
+    line-height: 1rem;
+  }
+</style>

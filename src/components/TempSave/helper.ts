@@ -2,10 +2,15 @@ import { createLocalStorage } from '/@/utils/cache/storageCache';
 
 const tempSavePathHistroy = createLocalStorage();
 
-export function getPathHistory() {
+export interface folderPathType {
+  path: string[];
+  categoryId: number;
+}
+
+export function getPathHistory(): folderPathType {
   return tempSavePathHistroy.get('tempSavePathHistroy');
 }
 
-export function setPathHistory(path: string[]) {
-  return tempSavePathHistroy.set('tempSavePathHistroy', path);
+export function setPathHistory(folderPath: folderPathType) {
+  return tempSavePathHistroy.set('tempSavePathHistroy', folderPath);
 }

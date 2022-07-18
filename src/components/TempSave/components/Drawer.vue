@@ -15,28 +15,28 @@
         class="w-full drawerTree"
         @select-folder="selectFolder"
       />
-      <div class="grid grid-cols-2 grid-rows-3 gap-4 h-200px border-t pt-2">
+      <div class="grid grid-cols-2 grid-rows-3 gap-4 row-auto h-210px border-t pt-2">
         <div class="col-span-2 row-span-1 flex items-center flex-wrap gap-y-1">
           <span class="whitespace-nowrap">上次选中的目录</span>
-          <template v-for="name in historyPath" :key="name">
+          <template v-for="name in historyPath.path" :key="name">
             <Icon class="arrow" size="12" icon="ant-design:right-outlined" />
             <span
               class="bg-gray-100 leading-5 px-1 border border-gray-400 whitespace-nowrap name"
               >{{ name }}</span
             >
           </template>
-          <BasicHelp titile="使用这个位置">
+          <BasicHelp tile="使用这个位置">
             <Icon
               @click="applyPath"
-              :class="[historyPath === folderPath ? 'same' : '']"
-              size="12"
+              :class="[historyPath.path === folderPath.path ? 'same' : '']"
+              size="18"
               icon="ant-design:check-circle-outlined"
             />
           </BasicHelp>
         </div>
         <div class="col-span-2 row-span-1 flex items-center flex-wrap gap-y-1">
           <span class="whitespace-nowrap">选中的目录</span>
-          <template v-for="name in folderPath" :key="name">
+          <template v-for="name in folderPath.path" :key="name">
             <Icon class="arrow" size="12" icon="ant-design:right-outlined" />
             <span
               class="bg-gray-100 leading-5 px-1 border border-gray-400 whitespace-nowrap name"
@@ -52,7 +52,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { reactive, ref } from 'vue';
+  import { reactive, ref, toRaw } from 'vue';
   import { useRoute } from 'vue-router';
   import { Button } from 'ant-design-vue';
   import { chartConfigType } from '/#/chart';
@@ -62,7 +62,7 @@
   import { TemplateTree } from '/@/components/TemplateTree';
   import { BasicHelp } from '/@/components/Basic';
   import { CategoryTreeModel } from '/#/quota';
-  import { getPathHistory, setPathHistory } from '../helper';
+  import { getPathHistory, setPathHistory, folderPathType } from '../helper';
   import { TemplateApiNeed } from '/#/template';
   import { CategoryTreeType } from '/@/enums/quotaEnum';
 
@@ -78,9 +78,8 @@
 
   const [register, { closeDrawer }] = useDrawerInner(
     ({ chartConfig, categoryId }: { chartConfig: chartConfigType; categoryId: number }) => {
-      console.log(getPathHistory());
       configApiNeed.config = chartConfig;
-      historyPath.value = getPathHistory();
+      Object.assign(historyPath, getPathHistory());
     },
   );
   const configApiNeed: templateConfigApiNeed = reactive({
@@ -94,8 +93,14 @@
     id: templateId || void 0,
   });
 
-  const folderPath = ref<string[]>([]);
-  const historyPath = ref<string[]>([]);
+  const folderPath: folderPathType = reactive({
+    path: [],
+    categoryId: NaN,
+  });
+  const historyPath: folderPathType = reactive({
+    path: [],
+    categoryId: NaN,
+  });
 
   const loading = ref(false);
 
@@ -104,20 +109,21 @@
     path: string[],
     type: CategoryTreeType.sysTemplate | CategoryTreeType.userTemplate,
   ) {
-    folderPath.value = path;
-    configApiNeed.category_id = folderNode.id;
+    folderPath.path = path;
+    folderPath.categoryId = folderNode.id;
     tempInfo.type = type;
   }
 
   function applyPath() {
-    folderPath.value = historyPath.value;
+    Object.assign(folderPath, historyPath);
   }
 
   async function saveTemplate() {
     loading.value = true;
+    configApiNeed.category_id = folderPath.categoryId;
     tempInfo.template = JSON.stringify(configApiNeed);
     await updateTemplate(tempInfo);
-    setPathHistory(folderPath.value);
+    setPathHistory(toRaw(folderPath));
     loading.value = false;
     closeDrawer();
   }
@@ -125,8 +131,8 @@
 
 <style lang="less" scoped>
   .drawerTree {
-    max-height: calc(100% - 200px);
-    height: calc(100% - 200px);
+    max-height: calc(100% - 210px);
+    height: calc(100% - 210px);
   }
 
   .name:last-of-type {

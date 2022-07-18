@@ -322,7 +322,9 @@ export function huiChart() {
       config.timeConfig.pastValue = 1;
       config.timeConfig.pastUnit = quotaDataPastUnitTypeEnum.last;
     }
-    if ([chartTypeEnum.structural, chartTypeEnum.seasonalLunar,chartTypeEnum.bar].includes(o.type)) {
+    if (
+      [chartTypeEnum.structural, chartTypeEnum.seasonalLunar, chartTypeEnum.bar].includes(o.type)
+    ) {
       config.xAxis[0].axisLabel.formatter = '{value}';
     }
     if (o.structXLabel.ifStruct) {
@@ -358,9 +360,16 @@ export function huiChart() {
   };
 }
 
+export function proChart() {
+  return function transform(options) {
+    return options.config;
+  };
+}
+
 export function useVersionTransfer() {
   return {
     pingChart: pingChart(),
     huiChart: huiChart(),
+    proChart: proChart(),
   };
 }
