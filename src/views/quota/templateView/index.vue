@@ -1,6 +1,6 @@
 <template>
   <div
-    class="h-layout-full p-4 overflow-hidden w-full flex flex-col w-full relative"
+    class="h-layout-full overflow-hidden w-full flex flex-col w-full relative page"
     id="templateView-page-wrapper"
   >
     <TreeDrawer
@@ -9,7 +9,7 @@
       getContainer="#templateView-page-wrapper"
     />
     <ToolBar />
-    <Views class="views-box" @edit-temp="updateCurEditCfg" />
+    <Views @edit-temp="updateCurEditCfg" />
     <Edit :temp="editTempConfig" getContainer="#templateView-page-wrapper" />
   </div>
 </template>
@@ -59,7 +59,9 @@
     },
     showElementborder: true,
   });
-  const editTempConfig = reactive<TemplateDOM>({} as TemplateDOM);
+  const editTempConfig = reactive<TemplateDOM>({
+    config: {},
+  } as TemplateDOM);
   // 注入模板列表
   createTemplateListContext(templateList);
   // 注入选中的模板列表
@@ -78,6 +80,7 @@
     }
     Object.assign(editTempConfig, config);
   }
+
   const { getUniqueField } = useUniqueField(usedUniqId.value);
   function selectNode(node: TemplateDOM) {
     node.uniqId = getUniqueField();
@@ -99,4 +102,12 @@
   }
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+  ::v-deep(.ant-drawer-body) {
+    padding: 1rem;
+  }
+
+  .page {
+    background-color: #e6e6e6;
+  }
+</style>

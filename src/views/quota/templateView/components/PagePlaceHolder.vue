@@ -8,13 +8,12 @@
     <div
       :class="[
         'pages bg-white shadow-lg shadow-gray-300 flex flex-col',
-        pageSetting.pagination ? 'mb-8' : '',
+        pageSetting.pagination ? 'mb-4' : '',
       ]"
       v-for="pageIdx in paginationInfo.totalPage"
       :key="pageIdx"
       :data-pageid="pageIdx"
       :style="pageStyle"
-      @click.self="clearSelectKey"
     >
       <!-- 页眉start -->
       <div class="pb-1 border-b page-header" v-show="pageSetting.header.show">
@@ -40,7 +39,7 @@
           @input="pageFooterChange('left', $event)"
           >{{ pageSetting.footer.left }}</span
         >
-        <span class="footer-page-num" v-show="pageSetting.footer.pageNum">{{ pageIdx + 1 }}</span>
+        <span class="footer-page-num" v-show="pageSetting.footer.pageNum">{{ pageIdx }}</span>
         <span v-show="pageSetting.footer.show" class="flex gap-1"
           ><img class="w-3.5 h-3.5" src="http://121.4.186.36:23587/favicon.ico" /><span
             contenteditable

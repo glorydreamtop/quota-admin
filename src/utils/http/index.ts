@@ -257,14 +257,14 @@ export const nodeHttp = createAxios({
 export const jodiHttp = createAxios({
   timeout: 120 * 1000,
   requestOptions: {
-    apiUrl: isProdMode() ? globSetting.jodiUrl : 'http://vessel.shducheng.net:8085',
+    apiUrl: isProdMode() ? globSetting.jodiUrl : 'https://vessel.shducheng.net:8085',
   },
 });
 //vessel服务
 export const vesselHttp = createAxios({
   timeout: 120 * 1000,
   requestOptions: {
-    apiUrl: isProdMode() ? globSetting.vesselUrl : 'http://vessel.shducheng.net:8084',
+    apiUrl: isProdMode() ? globSetting.vesselUrl : 'https://vessel.shducheng.net:8084',
   },
 });
 //monitor服务
@@ -274,6 +274,6 @@ export const monitorHttp = createAxios({
     // apiUrl: isProdMode() ? globSetting.monitorUrl : '/report-gen-dev',
     apiUrl: isProdMode()
       ? globSetting.monitorUrl
-      : 'http://app.shducheng.net:8080/module/futures_basis',
+      : 'https://app.shducheng.net:8080/module/futures_basis',
   },
 });

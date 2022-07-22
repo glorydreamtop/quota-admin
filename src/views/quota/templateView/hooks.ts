@@ -1,9 +1,9 @@
-import { h, InjectionKey, onMounted, ref, Ref, render, unref, watchEffect } from 'vue';
+import { InjectionKey, onDeactivated, Ref, watchEffect } from 'vue';
 import { createContext, useContext } from '/@/hooks/core/useContext';
 import type { pageSettingType, TemplateDOM } from '/#/template';
 import { remove } from 'lodash-es';
 import { useActiveElement, useMagicKeys, useResizeObserver } from '@vueuse/core';
-import Icon from '/@/components/Icon';
+
 import { on, once } from '/@/utils/domUtils';
 
 const templateKey: InjectionKey<Ref<TemplateDOM[]>> = Symbol();
@@ -56,21 +56,31 @@ export function useMultiSelect(
   selectTemplateList: Ref<TemplateDOM[]>,
 ): useMultiSelectRes {
   const activeElement = useActiveElement();
+  // 是否离开当前路由
+  let leavePage = false;
   const { Ctrl_A, Delete, Backspace } = useMagicKeys({
     passive: false,
     onEventFired(e) {
+      if (leavePage) return;
       if (e.ctrlKey && e.key === 'a' && e.type === 'keydown') {
         e.preventDefault();
       }
       if (e.key === 'Backspace' || e.key === 'Delete') {
         if (!activeElement.value!.hasAttribute('contentEditable')) {
+          console.log('默认行为');
+
           e.preventDefault();
         }
       }
     },
   });
 
-  watchEffect(() => {
+  onDeactivated(() => {
+    leavePage = true;
+    stop();
+  });
+
+  const stop = watchEffect(() => {
     if (Ctrl_A.value) selectTemplateList.value = templateList.value.map((temp) => temp);
     if (Backspace.value || Delete.value) {
       if (activeElement.value!.hasAttribute('contentEditable')) return;
@@ -78,6 +88,7 @@ export function useMultiSelect(
         return selectTemplateList.value.some((temp) => t.uniqId === temp.uniqId);
       });
     }
+    leavePage = false;
   });
 
   function insertSelectKey(temp: TemplateDOM, nativeEvent: PointerEvent) {

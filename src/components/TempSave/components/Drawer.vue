@@ -25,7 +25,7 @@
               >{{ name }}</span
             >
           </template>
-          <BasicHelp tile="使用这个位置">
+          <BasicHelp text="使用这个位置">
             <Icon
               @click="applyPath"
               :class="[historyPath.path === folderPath.path ? 'same' : '']"

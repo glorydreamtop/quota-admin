@@ -32,7 +32,7 @@ export default {
       f: '长图',
     },
     baseSize: '修改基础尺寸',
-    baseSizeTip: '宽度可写百分比或固定值，高度只允许固定值，非法字符将被解析为300px',
+    baseSizeTip: '输入覆盖的网格数量，例如宽12就是横跨12个网格',
     insertText: {
       btn: '插入文本框',
     },

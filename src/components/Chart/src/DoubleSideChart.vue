@@ -110,7 +110,7 @@
 </template>
 
 <script lang="ts" setup>
-  import { ref, watchEffect, toRefs, nextTick, onMounted, computed } from 'vue';
+  import { ref, watchEffect, toRefs, nextTick, onMounted, computed, onUnmounted } from 'vue';
   import BasicChart from './BasicChart.vue';
   import { PaintArea } from 'svg-mark';
   import { QuotaDataTable } from '/@/components/QuotaTable';
@@ -151,11 +151,14 @@
   onMounted(() => {
     inReport.value = doubleSideChart.value!.parentElement!.hasAttribute('data-uniqid');
   });
+  onUnmounted(() => {
+    stop();
+  });
   const paintMode = ref(false);
   const showTable = ref(false);
   const loadTable = ref(false);
   const { Escape } = useMagicKeys();
-  watchEffect(() => {
+  const stop = watchEffect(() => {
     // ESC键关闭全屏
     if (Escape.value) isFullscreen.value = false;
   });

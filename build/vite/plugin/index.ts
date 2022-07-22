@@ -13,6 +13,7 @@ import { configStyleImportPlugin } from './styleImport';
 import { configVisualizerConfig } from './visualizer';
 import { configThemePlugin } from './theme';
 import { configSvgIconsPlugin } from './svgSprite';
+import mkcert from 'vite-plugin-mkcert';
 
 export function createVitePlugins(viteEnv: ViteEnv, isBuild: boolean) {
   const { VITE_BUILD_COMPRESS, VITE_BUILD_COMPRESS_DELETE_ORIGIN_FILE, VITE_BUILD_VISUALIZER } =
@@ -65,6 +66,10 @@ export function createVitePlugins(viteEnv: ViteEnv, isBuild: boolean) {
     VITE_BUILD_VISUALIZER && vitePlugins.push(configVisualizerConfig());
     // vite-plugin-pwa
     vitePlugins.push(configPwaConfig(viteEnv));
+  }
+
+  if (!isBuild) {
+    vitePlugins.push(mkcert() as PluginOption);
   }
 
   return vitePlugins;

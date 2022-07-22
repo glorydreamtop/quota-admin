@@ -1,46 +1,51 @@
 <template>
-  <div class="overflow-y-scroll p-2 relative flex flex-col items-center">
-    <PagePlaceHolder id="pagePlaceHolder" :pagination-info="paginationInfo" />
-    <div
-      class="w-1440px absolute grid-line flex flex-wrap justify-start content-start"
-      ref="gridContainer"
-      @click.self="clearSelectKey"
-      :style="gridAreaStyle"
-    >
+  <div class="mr-2 relative flex-grow">
+    <div class="ruler"></div>
+    <div class="overflow-y-scroll mt-8 relative flex flex-col items-center">
+      <PagePlaceHolder id="pagePlaceHolder" :pagination-info="paginationInfo" />
       <div
-        v-for="element in templateList"
-        :key="element.uniqId"
-        @click="insertSelectKey(element, $event)"
-        @mouseenter="handleEnter"
-        :data-uniqid="element.uniqId"
-        :class="[
-          'border rounded-sm overflow-hidden relative sortable  m-0',
-          selectedTemplateDOMList.find((node) => node.uniqId === element.uniqId) ? 'selected' : '',
-          pageSetting.showElementborder ? '' : 'border-light-50',
-        ]"
-        :style="{
-          width: element.pageConfig.width,
-          height: element.pageConfig.height,
-        }"
+        class="w-1440px absolute grid-line flex flex-wrap justify-start content-start"
+        ref="gridContainer"
+        @click.self="clearSelectKey"
+        :style="gridAreaStyle"
       >
-        <Icon icon="akar-icons:drag-horizontal" class="drag-handler pl-1 pt-1 !text-primary" />
-        <Icon
-          v-if="['Chart'].includes(element.type)"
-          @click="setEditComp(element)"
-          icon="zhanghuxiugai|svg"
-          size="24"
-          class="edit-icon absolute top-0 right-0 z-9"
-        />
-        <component
-          :is="compTypeMap[element.type]"
-          v-model:config="element.config"
-          :class="['w-full h-full text-base', element.type === 'Chart' ? 'py-1' : '']"
-        />
+        <div
+          v-for="element in templateList"
+          :key="element.uniqId"
+          @click="insertSelectKey(element, $event)"
+          @mouseenter="handleEnter"
+          :data-uniqid="element.uniqId"
+          :class="[
+            'border rounded-sm overflow-hidden relative sortable  m-0',
+            selectedTemplateDOMList.find((node) => node.uniqId === element.uniqId)
+              ? 'selected'
+              : '',
+            pageSetting.showElementborder ? '' : 'border-light-50',
+          ]"
+          :style="{
+            width: element.pageConfig.width,
+            height: element.pageConfig.height,
+          }"
+        >
+          <Icon icon="akar-icons:drag-horizontal" class="drag-handler pl-1 pt-1 !text-primary" />
+          <Icon
+            v-if="['Chart'].includes(element.type)"
+            @click="setEditComp(element)"
+            icon="zhanghuxiugai|svg"
+            size="24"
+            class="edit-icon absolute top-0 right-0 z-9"
+          />
+          <component
+            :is="compTypeMap[element.type]"
+            v-model:config="element.config"
+            :class="['w-full h-full text-base', element.type === 'Chart' ? 'py-1' : '']"
+          />
+        </div>
+        <div
+          class="cursor-insert pointer-events-none animate__animated animate__infinite animate__flash animate__slow"
+          :style="insertPosition"
+        ></div>
       </div>
-      <div
-        class="cursor-insert pointer-events-none animate__animated animate__infinite animate__flash animate__slow"
-        :style="insertPosition"
-      ></div>
     </div>
   </div>
 </template>
@@ -74,7 +79,7 @@
   import { getRem } from '/@/utils/domUtils';
   import { useSortable } from '/@/hooks/web/useSortable';
   import { isNullAndUnDef } from '/@/utils/is';
-  import { TemplateDOM, tempConfigs } from '/#/template';
+  import { TemplateDOM } from '/#/template';
 
   const emit = defineEmits<{
     (event: 'editTemp', temp: TemplateDOM): void;
@@ -134,7 +139,7 @@
     },
   );
   const paginationInfo: paginationInfoType = reactive({
-    totalPage: 1,
+    totalPage: 3,
   });
 
   function setEditComp(temp: TemplateDOM) {
@@ -191,7 +196,7 @@
     border: 1px solid;
     border-color: @primary-color;
   }
-
+  // 光标
   .cursor-insert {
     position: absolute;
     width: 4px;
@@ -234,20 +239,26 @@
       transition: opacity 0.2s;
     }
   }
-
-  .move {
-    position: absolute;
-  }
-
-  #grid-container {
-    // width: calc(100% - 1rem);
-  }
+  @line-color: #f2f2f2;
+  @grid-size: 40px;
 
   .grid-line {
-    @line-color: #f2f2f2;
-    @grid-size: 40px;
     background: -webkit-linear-gradient(top, transparent @grid-size - 1, @line-color 0),
       -webkit-linear-gradient(left, transparent @grid-size - 1, @line-color 0);
+    background-size: @grid-size @grid-size;
+  }
+
+  .ruler {
+    position: absolute;
+    z-index: 9;
+    top: -10px;
+    width: 100%;
+    height: 20px;
+    background-image: -webkit-linear-gradient(
+      left,
+      transparent @grid-size - 1,
+      darken(@line-color, 20%) 0
+    );
     background-size: @grid-size @grid-size;
   }
 </style>

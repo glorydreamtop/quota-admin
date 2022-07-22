@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-center justify-between p-2 mb-2 bg-white border hover:shadow toolbar">
+  <div class="flex items-center justify-between p-2 bg-white border hover:shadow toolbar">
     <Tabs v-model:activeKey="menuList.key" size="small">
       <TabPane
         key="pageConfig"

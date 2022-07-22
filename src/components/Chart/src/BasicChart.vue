@@ -14,16 +14,7 @@
 </template>
 
 <script lang="ts" setup>
-  import {
-    nextTick,
-    onBeforeUnmount,
-    onDeactivated,
-    ref,
-    toRefs,
-    unref,
-    watch,
-    reactive,
-  } from 'vue';
+  import { nextTick, ref, toRefs, unref, watch, reactive } from 'vue';
   import type { Ref } from 'vue';
   import { useECharts } from '/@/hooks/web/useECharts';
   import { useI18n } from '/@/hooks/web/useI18n';
@@ -38,7 +29,10 @@
     useQuantileRadarChart,
   } from '../tranfer';
   import type { chartConfigType, normalChartConfigType } from '/#/chart';
-  import { onMountedOrActivated } from '/@/hooks/core/onMountedOrActivated';
+  import {
+    onMountedOrActivated,
+    onUnmountedOrDeactivated,
+  } from '/@/hooks/core/onMountedOrActivated';
   import { useDebounceFn, useResizeObserver } from '@vueuse/core';
   import {
     createMountNode,
@@ -132,15 +126,8 @@
     const instance = getInstance()!;
     // 自适应大小
     const handler = useDebounceFn(resize, 100);
-    const { stop } = useResizeObserver(unref(chartElRef), () => {
-      handler();
-    });
-    onBeforeUnmount(() => {
-      stop();
-    });
-    onDeactivated(() => {
-      stop();
-    });
+    const { stop: stopResizeObserve } = useResizeObserver(unref(chartElRef), handler);
+
     // 编辑标题
     const titleClickEvent = useChartTitlePopover({
       chartConfig: config.value,
@@ -193,7 +180,7 @@
       eventType: 'contextmenu',
       target: 'series',
     });
-    instance.on('dblclick', function(e){
+    instance.on('dblclick', function (e) {
       if (props.paintMode) return;
       // 依次执行双击监听的所有事件
       eventBus
@@ -202,11 +189,12 @@
           // 匹配对应类型的事件
           if (e.componentType === event.target) {
             const dom = createMountNode(e);
-            event.event(dom, e);
+            e.instance = this;
+            event.event(dom, e, instance.getOption());
           }
         });
     });
-    instance.on('contextmenu', function(e){
+    instance.on('contextmenu', function (e) {
       if (props.paintMode) return;
       // 依次执行右键监听的所有事件
       eventBus
@@ -215,11 +203,16 @@
           // 匹配对应类型的事件
           if (e.componentType === event.target) {
             const dom = createMountNode(e);
-            console.log(instance.getOption());
             e.instance = this;
             event.event(dom, e, instance.getOption());
           }
         });
+    });
+    onUnmountedOrDeactivated(() => {
+      stopResizeObserve();
+      instance.off('contextmenu');
+      instance.off('dblclick');
+      eventBus.length = 0;
     });
   });
 </script>

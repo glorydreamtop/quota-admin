@@ -27,7 +27,7 @@
         </template>
       </Advance>
     </BarDrawer>
-    <TempSave @register="registerTempSave"></TempSave>
+    <TempSave @register="registerTempSave" />
   </div>
 </template>
 <script lang="ts" setup>
@@ -41,9 +41,7 @@
   import { cloneDeep, mergeWith } from 'lodash-es';
   import { EChartsCoreOption } from 'echarts/core';
   import { mergeAndRemove } from '/@/utils/helper/commonHelper';
-  import { updateTemplate } from '/@/api/template';
   import { useRoute } from 'vue-router';
-  import { CategoryTreeType } from '/@/enums/quotaEnum';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { BarDrawer, useDrawer } from '/@/components/Drawer';
   import { TempSave } from '/@/components/TempSave';

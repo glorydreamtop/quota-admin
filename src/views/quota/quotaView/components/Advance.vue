@@ -1,7 +1,7 @@
 <template>
-  <div class="w-full h-full overflow-x-hidden relative select-none">
+  <div class="w-full h-full overflow-x-hidden relative select-none flex flex-col gap-4">
     <Collapse
-      class="overflow-x-hidden overflow-y-scroll drawer-main"
+      class="overflow-x-hidden overflow-y-scroll flex-grow"
       v-model:activeKey="collapseKey"
       :bordered="false"
     >
@@ -12,7 +12,7 @@
         <Component :is="item.content" :key="item.key" />
       </CollapsePanel>
     </Collapse>
-    <div class="actions bg-white">
+    <div class="flex items-end justify-center gap-1 w-full bg-white">
       <slot name="actions"></slot>
     </div>
   </div>
@@ -88,61 +88,5 @@
     font-size: 12px;
     margin-top: -2px;
     margin-right: -4px;
-  }
-
-  // 收起配置界面用的css
-
-  .drawer-main {
-    transition: opacity 0.2s ease;
-    padding-left: 20px;
-    height: calc(100% - @actions-height - 16px);
-    position: absolute;
-    left: 0;
-    right: 0;
-  }
-
-  ::v-deep(.line) {
-    transition: background-color 0.3s;
-    width: 20px;
-    min-width: 20px;
-    height: 100%;
-    position: absolute;
-    top: 0;
-
-    .arrow-icon {
-      color: rgba(156, 163, 175, 1) !important;
-      transition: transform 0.5s;
-      position: absolute;
-      top: 50%;
-      font-size: 20px;
-
-      &.rotate {
-        transform: rotate(180deg);
-      }
-    }
-
-    &.hover-gray-shadow:hover {
-      background-color: rgba(243, 244, 246, 1);
-      border-left-color: rgba(243, 244, 246, 1);
-    }
-
-    &.gray-shadow {
-      background-color: rgba(243, 244, 246, 1);
-      border-left-color: rgba(243, 244, 246, 1);
-    }
-  }
-
-  .actions {
-    @apply flex items-end justify-center border-t border-gray-200;
-    position: absolute;
-    bottom: 0;
-    left: 36px;
-    width: calc(100% - 56px);
-    height: @actions-height + 16px;
-    z-index: 9;
-
-    .ant-btn {
-      height: @actions-height;
-    }
   }
 </style>
