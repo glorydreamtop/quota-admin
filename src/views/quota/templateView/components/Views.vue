@@ -1,10 +1,11 @@
 <template>
-  <div class="mr-2 relative flex-grow">
-    <div class="ruler"></div>
-    <div class="overflow-y-scroll mt-8 relative flex flex-col items-center">
+  <div class="mr-2 relative view-box overflow-hidden">
+    <Ruler :left="gridAreaStyle.left" :top="gridAreaStyle.top" />
+    <Scale />
+    <div class="mt-8 pages-box">
       <PagePlaceHolder id="pagePlaceHolder" :pagination-info="paginationInfo" />
       <div
-        class="w-1440px absolute grid-line flex flex-wrap justify-start content-start"
+        class="w-1200px absolute grid-line flex flex-wrap justify-start content-start"
         ref="gridContainer"
         @click.self="clearSelectKey"
         :style="gridAreaStyle"
@@ -74,6 +75,8 @@
   import { DoubleSideChart } from '/@/components/Chart';
   import BasicText from './Text.vue';
   import BasicImg from './Image.vue';
+  import Ruler from './views/Ruler.vue';
+  import Scale from './views/Scale.vue';
   import Icon from '/@/components/Icon';
   import { useResizeObserver } from '@vueuse/core';
   import { getRem } from '/@/utils/domUtils';
@@ -89,10 +92,10 @@
   const pageSetting = usePageSettingContext();
   const gridAreaStyle: ComputedRef<CSSProperties> = computed(() => {
     return {
-      top: `calc(${pageSetting.paddingTop}px + 1.75rem)`,
-      left: `calc(${pageSetting.paddingLeft}px + 50% - ${
-        (pageSetting.paddingLeft + pageSetting.paddingRight + 8 + 1440) / 2
-      }px)`,
+      top: `calc(${pageSetting.paddingTop}px + 1.5rem)`,
+      left: `calc((100% - ${
+        pageSetting.paddingLeft + pageSetting.paddingRight + 8 + 1200
+      }px) / 2 + ${pageSetting.paddingLeft}px)`,
       minHeight: `900px`,
     };
   });
@@ -153,9 +156,13 @@
     const pagePlaceHolder = document.getElementById('pagePlaceHolder') as HTMLDivElement;
     useResizeObserver(pagePlaceHolder, (entries) => {
       const { height } = entries[0].contentRect;
-      // getRem()*4是页面之间的gap
+      // getRem()刚好是页面之间的gap
       boxdom.style.height = `${
-        height - pageSetting.paddingBottom - pageSetting.paddingTop - getRem() * 5
+        height -
+        pageSetting.paddingBottom -
+        pageSetting.paddingTop -
+        getRem() * paginationInfo.totalPage -
+        getRem() * 1.5
       }px`;
     });
     // 支持拖动排序
@@ -241,6 +248,7 @@
   }
   @line-color: #f2f2f2;
   @grid-size: 40px;
+  @ruler-color: darken(@line-color, 30%);
 
   .grid-line {
     background: -webkit-linear-gradient(top, transparent @grid-size - 1, @line-color 0),
@@ -248,17 +256,25 @@
     background-size: @grid-size @grid-size;
   }
 
-  .ruler {
-    position: absolute;
-    z-index: 9;
-    top: -10px;
+  .view-box {
+    width: calc(100% - 8px);
+    height: calc(100% - 6rem);
+  }
+
+  .pages-box {
     width: 100%;
-    height: 20px;
-    background-image: -webkit-linear-gradient(
-      left,
-      transparent @grid-size - 1,
-      darken(@line-color, 20%) 0
-    );
-    background-size: @grid-size @grid-size;
+    height: calc(100% - 2rem);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: absolute;
+    overflow-y: scroll;
+  }
+
+  #pagePlaceHolder,
+  .grid-line {
+    transform-origin: 50% 0;
+    transform: scale(v-bind('pageSetting.scale/100'));
+    transition: transform 0.2s;
   }
 </style>

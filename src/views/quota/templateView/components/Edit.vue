@@ -2,7 +2,7 @@
   <BarDrawer
     width="340px"
     :style="{
-      top: '7.5rem',
+      top: '8rem',
       height: '420px',
       right: '2rem',
     }"

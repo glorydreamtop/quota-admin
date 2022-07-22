@@ -8,7 +8,7 @@
       placement="left"
       getContainer="#templateView-page-wrapper"
     />
-    <ToolBar />
+    <ToolBar class="h-24" />
     <Views @edit-temp="updateCurEditCfg" />
     <Edit :temp="editTempConfig" getContainer="#templateView-page-wrapper" />
   </div>
@@ -58,6 +58,7 @@
       pageNum: true,
     },
     showElementborder: true,
+    scale: 100,
   });
   const editTempConfig = reactive<TemplateDOM>({
     config: {},
@@ -86,7 +87,7 @@
     node.uniqId = getUniqueField();
     node.type = node.version! < 3 ? 'Chart' : 'Table';
     node.pageConfig = {
-      width: '480px',
+      width: '400px',
       height: '240px',
       transform: 'translate(0px, 0px)',
     };

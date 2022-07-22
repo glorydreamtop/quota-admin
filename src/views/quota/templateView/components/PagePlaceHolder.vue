@@ -2,7 +2,7 @@
   <!-- 这个8px是滚动条宽度 -->
   <div
     :style="{
-      width: `${pageSetting.paddingLeft + pageSetting.paddingRight + 8 + 1440}px`,
+      width: `${pageSetting.paddingLeft + pageSetting.paddingRight + 8 + 1200}px`,
     }"
   >
     <div
@@ -16,7 +16,7 @@
       :style="pageStyle"
     >
       <!-- 页眉start -->
-      <div class="pb-1 border-b page-header" v-show="pageSetting.header.show">
+      <div class="border-b page-header" v-show="pageSetting.header.show">
         <span contenteditable @input="pageHeaderChange('left', $event)">{{
           pageSetting.header.left
         }}</span>
@@ -30,9 +30,9 @@
         >
       </div>
       <!-- 页眉end -->
-      <div class="page-main w-1440px flex-grow"> </div>
+      <div class="page-main w-1200px flex-grow"> </div>
       <!-- 页脚start -->
-      <div class="pt-1 border-t page-footer">
+      <div class="border-t page-footer">
         <span
           contenteditable
           v-show="pageSetting.footer.show"
@@ -99,13 +99,13 @@
   .page-footer {
     @apply border-gray-200;
     @apply text-sm;
-    @apply leading-4;
+    @apply leading-6;
     @apply px-1;
     @apply text-gray-300;
 
     position: relative;
     width: 100%;
-    height: 1.25rem;
+    height: 1.5rem;
     display: flex;
     justify-content: space-between;
     align-items: center;

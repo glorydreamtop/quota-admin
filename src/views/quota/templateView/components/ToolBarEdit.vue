@@ -71,7 +71,7 @@
     sameTimeRange: false,
     showLastest: false,
     baseSize: {
-      width: 12,
+      width: 10,
       height: 6,
     },
     colorsId: 0,

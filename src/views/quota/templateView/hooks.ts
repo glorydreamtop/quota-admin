@@ -66,8 +66,11 @@ export function useMultiSelect(
         e.preventDefault();
       }
       if (e.key === 'Backspace' || e.key === 'Delete') {
-        if (!activeElement.value!.hasAttribute('contentEditable')) {
-          console.log('默认行为');
+        if (
+          !activeElement.value!.hasAttribute('contentEditable') &&
+          activeElement.value!.tagName !== 'INPUT'
+        ) {
+          console.log(activeElement.value!.tagName);
 
           e.preventDefault();
         }

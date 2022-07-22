@@ -63,6 +63,7 @@ export interface pageSettingType {
     pageNum: boolean;
   };
   showElementborder: boolean;
+  scale: number;
 }
 
 export type tempConfigs = chartConfigType | TextConfig | ImgConfig;
