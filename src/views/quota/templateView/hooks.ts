@@ -5,6 +5,7 @@ import { remove } from 'lodash-es';
 import { useActiveElement, useMagicKeys, useResizeObserver } from '@vueuse/core';
 
 import { on, once } from '/@/utils/domUtils';
+import mitt from '/@/utils/mitt';
 
 const templateKey: InjectionKey<Ref<TemplateDOM[]>> = Symbol();
 
@@ -214,3 +215,6 @@ export function useResizeListener({ templateList, GRIDSIZE }: useResizeListenerP
   }
   return { handleEnter };
 }
+
+// editTemp事件，接受一个templateDOM类型的单个模板信息对象
+export const pageEventBus = mitt();

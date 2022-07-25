@@ -10,7 +10,7 @@ export interface TableConfigSchema extends TableConfigType {
 export const tableConfigSchemaList = ref<TableConfigSchema[]>([
   {
     title: '',
-    preview: 'http://121.4.186.36:23588/cms/downloadFile?fileKey=files/table1.png',
+    preview: 'https://img.shducheng.net/cms/downloadFile?fileKey=files/table1.png',
     name: '最新两期差值',
     timeConfig: {
       endDate: formatToDate(),
@@ -137,7 +137,7 @@ export const tableConfigSchemaList = ref<TableConfigSchema[]>([
   },
   {
     title: '',
-    preview: 'http://121.4.186.36:23588/cms/downloadFile?fileKey=files/table4.png',
+    preview: 'https://img.shducheng.net/cms/downloadFile?fileKey=files/table4.png',
     name: '空白5行5列',
     timeConfig: {
       endDate: formatToDate(),

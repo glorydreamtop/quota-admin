@@ -15,7 +15,7 @@
   }>();
   const { t } = useI18n();
   const [createContextMenu] = useContextMenu();
-  const fallback = 'http://121.4.186.36:23588/cms/downloadFile?fileKey=files/no-img.svg';
+  const fallback = 'https://img.shducheng.net/cms/downloadFile?fileKey=files/no-img.svg';
   const { config } = toRefs(props);
   const style: ComputedRef<CSSProperties> = computed(() => ({
     objectFit: config.value.mode,

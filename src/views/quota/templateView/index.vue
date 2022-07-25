@@ -10,22 +10,22 @@
     />
     <ToolBar class="h-24" />
     <Views @edit-temp="updateCurEditCfg" />
-    <Edit :temp="editTempConfig" getContainer="#templateView-page-wrapper" />
+    <Edit getContainer="#templateView-page-wrapper" />
   </div>
 </template>
 
 <script lang="ts" setup name="templateView">
   import Views from './components/Views.vue';
-  import Edit from './components/Edit.vue';
-  import ToolBar from './components/ToolBar.vue';
-  import TreeDrawer from './components/TreeDrawer.vue';
+  import Edit from './components/float/Edit.vue';
+  import ToolBar from './components/toolbar/ToolBar.vue';
+  import TreeDrawer from './components/float/TreeDrawer.vue';
 
   import {
     createPageSettingContext,
     createSelectTemplateListContext,
     createTemplateListContext,
     createUniqIdContext,
-    insertDOM,
+    insertDOM
   } from './hooks';
   import { reactive, ref } from 'vue';
   import type { pageSettingType, TemplateDOM } from '/#/template';

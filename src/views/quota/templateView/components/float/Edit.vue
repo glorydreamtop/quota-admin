@@ -24,23 +24,28 @@
 </template>
 
 <script lang="ts" setup>
-  import Advance from '../../quotaView/components/Advance.vue';
+  import Advance from '../../../quotaView/components/Advance.vue';
   import { BarDrawer } from '/@/components/Drawer';
   import { Button } from 'ant-design-vue';
   import { TemplateDOM } from '/#/template';
-  import { reactive, watchEffect } from 'vue';
-  import { createChartConfigContext } from '../../quotaView/components/hooks';
+  import { onMounted, reactive, watchEffect } from 'vue';
+  import { createChartConfigContext } from '../../../quotaView/components/hooks';
   import { mergeAndRemove } from '/@/utils/helper/commonHelper';
   import { chartConfigType } from '/#/chart';
   import { BasicHelp } from '/@/components/Basic';
+  import { pageEventBus } from '../../hooks';
 
-  const props = defineProps<{
-    temp: TemplateDOM;
-  }>();
+  const temp = reactive({} as TemplateDOM);
   const config = reactive({}) as chartConfigType;
   createChartConfigContext<chartConfigType>(config);
   watchEffect(() => {
-    mergeAndRemove(config, props.temp.config);
+    mergeAndRemove(config, temp.config);
+  });
+
+  onMounted(() => {
+    pageEventBus.on('editTemp', (_temp: TemplateDOM) => {
+      Object.assign(temp, _temp);
+    });
   });
 </script>
 

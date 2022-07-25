@@ -42,22 +42,22 @@
     {
       icon: 'ant-design:file-excel-filled',
       name: t('quota.quotaUpload.quotaExcel'),
-      link: 'http://121.4.186.36:23588/cms/downloadFile?fileKey=files/指标导入模板.xlsx',
+      link: 'http://imgs.shducheng.net/cms/downloadFile?fileKey=files/指标导入模板.xlsx',
     },
     {
       icon: 'ant-design:file-excel-outlined',
       name: t('quota.quotaUpload.quotaDataExcel1'),
-      link: 'http://115.159.126.104/download/files/%E6%95%B0%E6%8D%AE%E5%AF%BC%E5%85%A5%E6%A8%A1%E6%9D%BF.xlsx',
+      link: 'https://img.shducheng.net/cms/downloadFile?fileKey=files/数据导入模板.xlsx',
     },
     {
       icon: 'ant-design:file-excel-outlined',
       name: t('quota.quotaUpload.quotaDataExcel2'),
-      link: 'http://121.4.186.36:23588/cms/downloadFile?fileKey=files/万得数据导入模板.xlsx',
+      link: 'https://img.shducheng.net/cms/downloadFile?fileKey=files/万得数据导入模板.xlsx',
     },
     {
       icon: 'ant-design:file-excel-outlined',
       name: t('quota.quotaUpload.quotaDataExcel3'),
-      link: 'http://121.4.186.36:23588/cms/downloadFile?fileKey=files/钢联数据导入模板.xlsx',
+      link: 'https://img.shducheng.net/cms/downloadFile?fileKey=files/钢联数据导入模板.xlsx',
     },
   ]);
 </script>

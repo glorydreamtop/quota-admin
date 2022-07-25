@@ -75,7 +75,7 @@
   import { Switch, Popover, Button, Tooltip, Radio, Input } from 'ant-design-vue';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { cloneDeep, merge } from 'lodash-es';
-  import { usePageSettingContext } from '../hooks';
+  import { usePageSettingContext } from '../../hooks';
 
   const RadioButton = Radio.Button;
   const RadioGroup = Radio.Group;

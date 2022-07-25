@@ -1,6 +1,7 @@
 <template>
   <!-- 这个8px是滚动条宽度 -->
   <div
+    id="pagePlaceHolder"
     :style="{
       width: `${pageSetting.paddingLeft + pageSetting.paddingRight + 8 + 1200}px`,
     }"
@@ -8,7 +9,7 @@
     <div
       :class="[
         'pages bg-white shadow-lg shadow-gray-300 flex flex-col',
-        pageSetting.pagination ? 'mb-4' : '',
+        pageSetting.pagination ? 'mb-23px' : '',
       ]"
       v-for="pageIdx in paginationInfo.totalPage"
       :key="pageIdx"
@@ -20,8 +21,8 @@
         <span contenteditable @input="pageHeaderChange('left', $event)">{{
           pageSetting.header.left
         }}</span>
-        <span class="flex gap-1"
-          ><img class="w-3.5 h-3.5" src="http://121.4.186.36:23587/favicon.ico" /><span
+        <span class="flex gap-1 page-header-right"
+          ><img class="w-3.5 h-3.5" src="https://www.shducheng.net/favicon.ico" /><span
             contenteditable
             @input="pageHeaderChange('right', $event)"
             class="text-right"
@@ -40,8 +41,8 @@
           >{{ pageSetting.footer.left }}</span
         >
         <span class="footer-page-num" v-show="pageSetting.footer.pageNum">{{ pageIdx }}</span>
-        <span v-show="pageSetting.footer.show" class="flex gap-1"
-          ><img class="w-3.5 h-3.5" src="http://121.4.186.36:23587/favicon.ico" /><span
+        <span v-show="pageSetting.footer.show" class="flex gap-1 page-footer-right"
+          ><img class="w-3.5 h-3.5 ico" src="https://www.shducheng.net/favicon.ico" /><span
             contenteditable
             @input="pageFooterChange('right', $event)"
             >{{ pageSetting.footer.right }}</span
@@ -72,11 +73,12 @@
       paddingBottom: `${pageSetting.paddingBottom}px`,
       paddingLeft: `${pageSetting.paddingLeft}px`,
       paddingRight: `${pageSetting.paddingRight}px`,
-      aspectRatio: pageSetting.pagination
-        ? pageSetting.horizontal
-          ? '300/210'
-          : '210/300'
-        : 'unset',
+      height: '360px',
+      // aspectRatio: pageSetting.pagination
+      //   ? pageSetting.horizontal
+      //     ? '300/210'
+      //     : '210/300'
+      //   : 'unset',
     };
   });
 
@@ -92,7 +94,13 @@
   .pages {
     // width: 100%;
     height: auto;
-    min-height: 1200px;
+    // min-height: 1200px;
+  }
+
+  #pagePlaceHolder {
+    transform-origin: 50% 0;
+    transform: scale(v-bind('pageSetting.scale/100'));
+    transition: transform 0.2s;
   }
 
   .page-header,
@@ -118,9 +126,26 @@
     }
   }
 
+  .page-header-right,
+  .page-footer-right {
+    display: inline-flex;
+    align-items: center;
+  }
+
   .footer-page-num {
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
+  }
+
+  @line-color: #f2f2f2;
+  @grid-size: 40px;
+  @ruler-color: darken(@line-color, 30%);
+
+  .page-main {
+    background-image: -webkit-linear-gradient(top, transparent @grid-size - 1, @line-color 0),
+      -webkit-linear-gradient(left, transparent @grid-size - 1, @line-color 0);
+    background-size: @grid-size @grid-size;
+    background-repeat: repeat;
   }
 </style>

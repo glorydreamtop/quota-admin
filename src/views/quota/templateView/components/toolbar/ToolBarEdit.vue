@@ -57,7 +57,7 @@
   import { Popover, Button, Input, Switch, DatePicker } from 'ant-design-vue';
   import ColorSchemeSelector from './ColorSchemeSelector.vue';
   import { formatToDate, yearsAgo } from '/@/utils/dateUtil';
-  import { useSelectTemplateListContext, useTemplateListContext } from '../hooks';
+  import { useSelectTemplateListContext, useTemplateListContext } from '../../hooks';
   import type { chartConfigType } from '/#/chart';
   import Icon from '/@/components/Icon';
   import { BasicHelp } from '/@/components/Basic';

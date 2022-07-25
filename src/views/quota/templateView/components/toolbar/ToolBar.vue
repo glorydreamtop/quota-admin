@@ -55,7 +55,7 @@
   import { Button, Tabs } from 'ant-design-vue';
   import { cloneDeep, remove } from 'lodash-es';
   import { reactive, ref, nextTick } from 'vue';
-  import { useUniqueField } from '../../quotaTable/components/helper';
+  import { useUniqueField } from '../../../quotaTable/components/helper';
   import {
     textTemplate,
     imgTemplate,
@@ -63,7 +63,7 @@
     useTemplateListContext,
     useUniqIdContext,
     insertDOM,
-  } from '../hooks';
+  } from '../../hooks';
   import { useI18n } from '/@/hooks/web/useI18n';
   import { dom2imgFile, fileType } from '/@/utils/domUtils';
   import { downloadByData } from '/@/utils/file/download';
