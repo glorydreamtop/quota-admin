@@ -25,7 +25,7 @@
     createSelectTemplateListContext,
     createTemplateListContext,
     createUniqIdContext,
-    insertDOM
+    insertDOM,
   } from './hooks';
   import { reactive, ref } from 'vue';
   import type { pageSettingType, TemplateDOM } from '/#/template';
@@ -99,7 +99,6 @@
       }
     }
     insertDOM(templateList, selectedTemplateList, node);
-    console.log(node);
   }
 </script>
 

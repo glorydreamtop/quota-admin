@@ -498,7 +498,6 @@ export function useRecentLegend(len: number, index: number, inverse = true) {
 // 支持折线图series右键菜单
 export function useLineChartContextMenu({ onOk, chartConfig }: chartTitlePopoverParams) {
   return function (dom: HTMLElement, e: any, options: EChartsOption) {
-    console.log(e);
     // const idx = xAxisIndex;
     function SeriesEditComponent() {
       let yAxisIndexCache;
@@ -600,12 +599,11 @@ export function setSeriesInfo({ info, chartConfig, seriesInfo, options }: setSer
     .map((v) => parseInt(v));
   info.color = rgbToHex.apply(null, color);
   const { offsetX, offsetY } = seriesInfo.event;
-  const [xValue,yValue] = (seriesInfo.instance as EChartsType).convertFromPixel(
+  const [xValue, yValue] = (seriesInfo.instance as EChartsType).convertFromPixel(
     { seriesIndex: seriesInfo.seriesIndex },
     [offsetX, offsetY],
   );
-  console.log(xValue,yValue);
-  
+
   function caseNormal() {
     const seriesIndex = seriesInfo.seriesIndex;
     const series = options.series![seriesIndex];
@@ -652,7 +650,7 @@ export function setSeriesInfo({ info, chartConfig, seriesInfo, options }: setSer
     }
     info.yAxisIndex = (series.yAxisIndex ?? 0) + 1;
     info.xAxisIndex = (series.xAxisIndex ?? 0) + 1;
-    info.currentPoint = [formatToDate(xValue,'MM/DD')];
+    info.currentPoint = [formatToDate(xValue, 'MM/DD')];
   }
   function caseBar() {
     const seriesIndex = seriesInfo.seriesIndex;
@@ -917,7 +915,6 @@ export function useSeriesSetting({
           ...getSeriesStyle({ ser: s, seriesSetting, index }),
           ...getAxisIndex(seriesSetting),
         });
-        console.log(s);
       });
     },
     [chartTypeEnum.normalRadar]: () => {

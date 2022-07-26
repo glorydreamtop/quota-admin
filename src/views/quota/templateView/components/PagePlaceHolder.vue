@@ -9,7 +9,7 @@
     <div
       :class="[
         'pages bg-white shadow-lg shadow-gray-300 flex flex-col',
-        pageSetting.pagination ? 'mb-23px' : '',
+        pageSetting.pagination ? 'mb-4' : '',
       ]"
       v-for="pageIdx in paginationInfo.totalPage"
       :key="pageIdx"
@@ -73,7 +73,7 @@
       paddingBottom: `${pageSetting.paddingBottom}px`,
       paddingLeft: `${pageSetting.paddingLeft}px`,
       paddingRight: `${pageSetting.paddingRight}px`,
-      height: '360px',
+      height: '720px',
       // aspectRatio: pageSetting.pagination
       //   ? pageSetting.horizontal
       //     ? '300/210'

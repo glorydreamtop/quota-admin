@@ -119,9 +119,9 @@
       ) as HTMLElement;
       Object.assign(insertPosition, {
         display: el ? 'initial' : 'none',
-        top: `${(el?.offsetTop ?? 4) - 8}px`,
-        left: `${(el?.offsetLeft ?? 0) + (el?.offsetWidth ?? 2) - 2}px`,
-        height: `${(el?.offsetHeight ?? 0) + 16}px`,
+        top: `${(el?.clientTop ?? 4) - 8}px`,
+        left: `${(el?.clientLeft ?? 0) + (el?.clientWidth ?? 2) - 2}px`,
+        height: `${(el?.clientHeight ?? 0) + 16}px`,
       });
     },
     {
@@ -135,12 +135,13 @@
     await nextTick();
     const boxdom = unref(gridContainer)!;
     const pagePlaceHolder = document.getElementById('pagePlaceHolder') as HTMLDivElement;
-    useResizeObserver(pagePlaceHolder, () => {
+    // setPagesInfo(pagePlaceHolder);
+    useResizeObserver(pagePlaceHolder, ([{ target }]) => {
       const pages = pagePlaceHolder.getElementsByClassName('page-main')!;
       const { bottom } = last(pages)!.getBoundingClientRect();
       const { top } = pages[0].getBoundingClientRect();
       boxdom.style.height = `${bottom - top}px`;
-      setPagesInfo(pagePlaceHolder);
+      // setPagesInfo(target as HTMLElement);
     });
     // 支持拖动排序
     const { initSortable } = useSortable(boxdom, {
