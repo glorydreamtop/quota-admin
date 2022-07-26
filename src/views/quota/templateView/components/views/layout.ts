@@ -62,6 +62,7 @@ function updateNextAll(el: Element | null) {
     setItem(el, {
       ...omit(el.getBoundingClientRect(), 'toJSON'),
       page: checkIntersect(el as HTMLElement),
+      next: el.nextElementSibling as HTMLElement,
     });
     console.log('处理', el);
   }
@@ -79,6 +80,7 @@ function checkIntersect(el: HTMLElement) {
     }
     if (Number.isNaN(pageIndex) && top <= elTop && bottom >= elTop && bottom < elBottom) {
       pageIndex = page + 1;
+      console.log('换页啦');
       const { top: shouldPageTop } = pagesInfo.find((_page) => _page.page === pageIndex)!;
       el.style.marginTop = `${shouldPageTop - elTop}px`;
     }
@@ -109,8 +111,9 @@ export function useLayout(container: Ref<HTMLElement | undefined>) {
         }
         if (removedNodes.length > 0) {
           const lastNode = removedNodes[removedNodes.length - 1] as HTMLElement;
-          const preNode = (removedNodes[0] as HTMLElement).previousElementSibling;
-          const next = getItem(lastNode)?.next;
+          const preNode = (removedNodes[0] as Element).previousElementSibling as HTMLElement;
+          const next = preNode.nextElementSibling as HTMLElement;
+          console.log(preNode, next);
           if (preNode) {
             setItem(preNode, { ...getItem(preNode)!, next });
           }
